@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Track your guitar practice sessions, set goals, and monitor your progress">
+    <meta name="theme-color" content="#6366f1">
+    <title>Guitar Practice Journal</title>
+
+    <!-- Optimized CSS Loading with absolute paths -->
+    <link rel="stylesheet" href="/journal/styles/main.css">
+    <link rel="stylesheet" href="/journal/styles/components.css">
+    <link rel="stylesheet" href="/journal/styles/pages.css">
+
+    <!-- PWA -->
+    <link rel="manifest" href="/journal/manifest.json">
+
+    <!-- Preload critical resources -->
+    <link rel="modulepreload" href="/journal/src/app.js">
+    <link rel="preload" href="/journal/styles/main.css" as="style">
+
+    <!-- Set base path for all relative URLs -->
+    <base href="/journal/">
+</head>
+<body>
+    <div id="app">
+        <!-- Loading state -->
+        <div class="app-loading" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background: #0a0a0a;">
+            <div class="loading-spinner" style="width: 50px; height: 50px; border: 3px solid #374151; border-top-color: #6366f1; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            <p style="color: #e0e0e0; margin-top: 20px;">Loading Guitar Practice Journal...</p>
+            <div id="error-message" style="color: #ef4444; margin-top: 20px; text-align: center; max-width: 600px; display: none;"></div>
+        </div>
+    </div>
+
+    <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+
+    <!-- Core application with absolute path -->
+    <script type="module">
+        import { App } from '/journal/src/app.js';
+
+        // Initialize app when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            const app = new App();
+            app.init().catch(err => {
+                console.error('Failed to initialize app:', err);
+                const errorDiv = document.getElementById('error-message');
+                errorDiv.style.display = 'block';
+                errorDiv.innerHTML = `
+                    <strong>Initialization Error</strong><br>
+                    ${err.message}<br><br>
+                    Check the console for more details.
+                `;
+            });
+        });
+
+        // Error handling
+        window.addEventListener('error', (e) => {
+            console.error('Application error:', e);
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.style.display = 'block';
+
+            if (e.message.includes('Failed to fetch dynamically imported module') ||
+                e.message.includes('Failed to resolve module specifier')) {
+                errorDiv.innerHTML = `
+                    <strong>Module Loading Error</strong><br>
+                    Failed to load required modules.<br><br>
+                    <strong>Possible issues:</strong><br>
+                    1. Missing files in src/ directory<br>
+                    2. Incorrect file paths<br>
+                    3. Case-sensitive filename issues<br><br>
+                    <small>Error: ${e.message}</small>
+                `;
+            } else {
+                errorDiv.innerHTML = `
+                    <strong>Application Error</strong><br>
+                    ${e.message}<br><br>
+                    Check the console for more details.
+                `;
+            }
+        });
+    </script>
+
+    <!-- Register Service Worker with base path -->
+    <script>
+        if ('serviceWorker' in navigator && window.location.protocol !== 'file:') {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/journal/service-worker.js')
+                    .then(reg => console.log('Service Worker registered'))
+                    .catch(err => console.error('Service Worker registration failed:', err));
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,777 @@
+/* Page-Specific Styles */
+
+/* ========================================
+   LAYOUT COMPONENTS
+   ======================================== */
+.main-header {
+    background: linear-gradient(135deg, var(--bg-card) 0%, #0f0f23 100%);
+    border-radius: var(--radius-xl);
+    padding: var(--space-xl) var(--space-lg);
+    margin-bottom: var(--space-xl);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-lg);
+}
+
+.main-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+    animation: pulse 4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+.header-content {
+    position: relative;
+    z-index: 1;
+}
+
+.subtitle {
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+    margin-top: var(--space-sm);
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    position: relative;
+    z-index: 1;
+}
+
+.main-nav {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+}
+
+.nav-link {
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-weight: 600;
+    transition: all var(--transition-base);
+}
+
+.nav-link:hover {
+    transform: translateY(-2px);
+}
+
+.main-footer {
+    margin-top: var(--space-2xl);
+    padding: var(--space-lg);
+    text-align: center;
+}
+
+/* ========================================
+   DASHBOARD PAGE
+   ======================================== */
+.dashboard-page {
+    min-height: 100vh;
+    width: 100%;
+    padding: var(--space-lg);
+}
+
+.dashboard-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--space-lg);
+}
+
+.dashboard-grid {
+    display: grid;
+    gap: var(--space-xl);
+    grid-template-columns: 1fr;
+}
+
+/* Dashboard Sections */
+.timer-section,
+.audio-section,
+.form-section,
+.goals-section,
+.recent-section {
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    padding: var(--space-xl);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--border);
+}
+
+.stats-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-lg);
+    margin-bottom: var(--space-xl);
+    width: 100%;
+}
+
+/* Stats Panel Grid */
+.stats-panel {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-lg);
+    width: 100%;
+}
+
+/* Section Headers */
+.timer-section h2,
+.form-section h2,
+.goals-section h2,
+.audio-section h2 {
+    text-align: center;
+}
+
+/* Timer Controls */
+.timer-controls {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-md);
+    margin-top: var(--space-lg);
+    flex-wrap: wrap;
+}
+
+/* Audio Controls */
+.audio-upload {
+    text-align: center;
+    margin: var(--space-lg) 0;
+}
+
+.audio-controls-row {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-md);
+    margin: var(--space-lg) 0;
+    flex-wrap: wrap;
+}
+
+.loop-controls {
+    background: var(--bg-input);
+    padding: var(--space-lg);
+    border-radius: var(--radius-lg);
+    margin-top: var(--space-lg);
+}
+
+.loop-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--space-md);
+    margin: var(--space-lg) 0;
+}
+
+.loop-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md);
+    text-align: center;
+    margin: var(--space-lg) 0;
+}
+
+.loop-count-control {
+    text-align: center;
+    margin-top: var(--space-lg);
+}
+
+/* Export Controls */
+.export-controls {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-md);
+    flex-wrap: wrap;
+}
+
+/* ========================================
+   CALENDAR PAGE
+   ======================================== */
+.calendar-page {
+    min-height: 100vh;
+    width: 100%;
+    padding: var(--space-lg);
+}
+
+.calendar-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--space-lg);
+}
+
+/* Calendar Sections */
+.goals-section,
+.calendar-section,
+.calendar-history {
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    padding: var(--space-xl);
+    margin-bottom: var(--space-xl);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--border);
+}
+
+/* Calendar Controls */
+.calendar-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--space-lg);
+    gap: var(--space-lg);
+}
+
+.calendar-controls .btn {
+    padding: var(--space-sm) var(--space-md);
+}
+
+#calendarMonth {
+    margin: 0 var(--space-lg);
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+/* Calendar Grid */
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    margin-bottom: var(--space-xl);
+}
+
+.calendar-header {
+    text-align: center;
+    font-weight: 600;
+    color: var(--text-secondary);
+    padding: var(--space-sm);
+    font-size: 0.875rem;
+}
+
+.calendar-day {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-input);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    position: relative;
+    transition: all var(--transition-base);
+    cursor: pointer;
+    overflow: hidden;
+    min-height: 60px;
+}
+
+.calendar-day:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    border-color: var(--primary);
+}
+
+.calendar-day.other-month {
+    opacity: 0.3;
+}
+
+.calendar-day.today {
+    border: 2px solid var(--primary);
+    background: rgba(99, 102, 241, 0.1);
+}
+
+.calendar-day.has-practice .calendar-day-number {
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.calendar-quadrants {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    pointer-events: none;
+}
+
+.calendar-quadrant {
+    background: transparent;
+    transition: background-color var(--transition-base);
+}
+
+.calendar-quadrant.completed {
+    background: rgba(99, 102, 241, 0.6);
+}
+
+.calendar-day-number {
+    font-size: 1rem;
+    font-weight: 600;
+    z-index: 1;
+    position: relative;
+    color: var(--text-primary);
+}
+
+/* Practice Area Goals */
+.practice-area-goals {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-lg);
+    margin-top: var(--space-lg);
+}
+
+.practice-area-goal {
+    background: var(--bg-input);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    border: 1px solid var(--border);
+    transition: all var(--transition-base);
+}
+
+.practice-area-goal:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.goal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-md);
+}
+
+.goal-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.goal-target {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.goal-target input {
+    width: 80px;
+    padding: var(--space-xs) var(--space-sm);
+    background: var(--bg-dark);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    text-align: center;
+}
+
+.add-practice-area-goal {
+    background: var(--bg-input);
+    border: 2px dashed var(--border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    min-height: 150px;
+}
+
+.add-practice-area-goal:hover {
+    border-color: var(--primary);
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.add-icon {
+    font-size: 2rem;
+    margin-bottom: var(--space-sm);
+    color: var(--primary);
+}
+
+.add-text {
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* Calendar Stats */
+.calendar-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-lg);
+    margin-bottom: var(--space-xl);
+}
+
+/* Streak Badges */
+.streak-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+    justify-content: center;
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--border);
+}
+
+.streak-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--space-md) var(--space-lg);
+    background: var(--bg-input);
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--border);
+    transition: all var(--transition-base);
+    opacity: 0.5;
+    filter: grayscale(1);
+}
+
+.streak-badge.earned {
+    border-color: var(--primary);
+    background: rgba(99, 102, 241, 0.1);
+    animation: badgeGlow 2s ease-in-out infinite;
+    opacity: 1;
+    filter: grayscale(0);
+}
+
+@keyframes badgeGlow {
+    0%, 100% { box-shadow: 0 0 10px rgba(99, 102, 241, 0.3); }
+    50% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.6); }
+}
+
+.badge-icon {
+    font-size: 2.5rem;
+    margin-bottom: var(--space-sm);
+}
+
+.badge-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+/* Calendar Entries */
+#calendarEntries {
+    padding: var(--space-lg);
+}
+
+.calendar-entry {
+    background: var(--bg-input);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-md);
+    transition: all var(--transition-base);
+}
+
+.calendar-entry:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.entry-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-sm);
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+}
+
+.entry-date {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.entry-duration {
+    background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+    color: white;
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.entry-area {
+    color: var(--text-primary);
+    font-weight: 500;
+    margin-bottom: var(--space-sm);
+}
+
+.entry-notes {
+    color: var(--text-secondary);
+    font-style: italic;
+    font-size: 0.875rem;
+}
+
+/* Practice Day Modal */
+.practice-day-modal .modal-content {
+    max-width: 700px;
+}
+
+.practice-day-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+    padding: var(--space-lg);
+    background: var(--bg-input);
+    border-radius: var(--radius-lg);
+}
+
+.day-stat {
+    text-align: center;
+}
+
+.day-session {
+    background: var(--bg-input);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-md);
+    border: 1px solid var(--border);
+}
+
+.session-time {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin-bottom: var(--space-sm);
+}
+
+.session-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-sm);
+}
+
+.session-area {
+    font-weight: 600;
+    color: var(--primary);
+}
+
+/* ========================================
+   AUTH PAGE
+   ======================================== */
+.auth-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-lg);
+}
+
+.auth-container {
+    width: 100%;
+    max-width: 400px;
+}
+
+.auth-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    padding: var(--space-xl);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+    border: 1px solid var(--border);
+    animation: fadeIn var(--transition-slow);
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+}
+
+.auth-tabs {
+    display: flex;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-xl);
+}
+
+.auth-tab {
+    flex: 1;
+    padding: var(--space-sm);
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    cursor: pointer;
+    text-align: center;
+    transition: all var(--transition-base);
+    font-weight: 500;
+}
+
+.auth-tab.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.auth-form {
+    display: none;
+}
+
+.auth-form.active {
+    display: block;
+}
+
+.demo-info {
+    text-align: center;
+    margin-top: var(--space-lg);
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.demo-credentials {
+    background: var(--bg-input);
+    padding: var(--space-sm);
+    border-radius: var(--radius-md);
+    margin-top: var(--space-sm);
+    font-family: monospace;
+    cursor: pointer;
+}
+
+.demo-credentials:hover {
+    background: rgba(99, 102, 241, 0.1);
+}
+
+.device-note {
+    margin-top: var(--space-lg);
+    padding: var(--space-md);
+    background: rgba(99, 102, 241, 0.05);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: var(--radius-md);
+    text-align: left;
+}
+
+.device-note p {
+    margin-bottom: var(--space-sm);
+    color: var(--text-primary);
+}
+
+.device-note ul {
+    margin: 0;
+    padding-left: var(--space-lg);
+    color: var(--text-secondary);
+}
+
+.device-note li {
+    margin-bottom: var(--space-xs);
+}
+
+/* ========================================
+   MODALS
+   ======================================== */
+.reminder-modal {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+}
+
+.reminder-modal .modal-content {
+    text-align: center;
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+.empty-state {
+    text-align: center;
+    color: var(--text-secondary);
+    padding: var(--space-2xl);
+    font-style: italic;
+    opacity: 0.7;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 768px) {
+    .dashboard-page,
+    .calendar-page {
+        padding: var(--space-md);
+    }
+
+    .dashboard-content,
+    .calendar-content {
+        padding: 0;
+    }
+
+    .main-header {
+        text-align: center;
+        padding: var(--space-lg) var(--space-md);
+    }
+
+    .user-info {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stats-section,
+    .stats-panel {
+        grid-template-columns: 1fr;
+    }
+
+    .timer-controls,
+    .audio-controls-row {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .timer-controls .btn,
+    .audio-controls-row .btn {
+        width: 100%;
+    }
+
+    .calendar-grid {
+        gap: 4px;
+    }
+
+    .calendar-day {
+        font-size: 0.75rem;
+        min-height: 50px;
+    }
+
+    .calendar-day-number {
+        font-size: 0.875rem;
+    }
+
+    .practice-area-goals {
+        grid-template-columns: 1fr;
+    }
+
+    .calendar-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .export-controls {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .export-controls .btn {
+        width: 100%;
+    }
+
+    .loop-buttons {
+        grid-template-columns: 1fr;
+    }
+
+    .loop-info {
+        grid-template-columns: 1fr;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
