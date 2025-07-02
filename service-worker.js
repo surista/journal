@@ -4,17 +4,8 @@ const urlsToCache = [
     '/',
     '/index.html',
     '/manifest.json',
-    '/styles/main.css',
-    '/styles/components.css',
-    '/styles/pages.css',
-    '/src/app.js',
-    '/src/services/authService.js',
-    '/src/services/storageService.js',
-    '/src/pages/dashboard.js',
-    '/src/pages/auth.js',
-    '/src/components/timer.js',
-    '/src/components/audioPlayer.js',
-    '/src/utils/router.js'
+    // Only cache files that actually exist
+    // Remove or comment out any that don't exist in your project
 ];
 
 // Install event - cache assets
@@ -23,9 +14,23 @@ self.addEventListener('install', event => {
         caches.open(CACHE_NAME)
             .then(cache => {
                 console.log('Opened cache');
-                return cache.addAll(urlsToCache);
+                // Try to cache each file individually to avoid failures
+                return Promise.all(
+                    urlsToCache.map(url => {
+                        return cache.add(url).catch(err => {
+                            console.warn(`Failed to cache ${url}:`, err);
+                            // Continue even if individual files fail
+                            return Promise.resolve();
+                        });
+                    })
+                );
             })
             .then(() => self.skipWaiting())
+            .catch(err => {
+                console.error('Cache installation failed:', err);
+                // Still skip waiting even if caching fails
+                return self.skipWaiting();
+            })
     );
 });
 
@@ -47,6 +52,12 @@ self.addEventListener('activate', event => {
 
 // Fetch event - serve from cache, fallback to network
 self.addEventListener('fetch', event => {
+    // Skip chrome-extension and non-http(s) requests
+    if (event.request.url.startsWith('chrome-extension://') ||
+        !event.request.url.startsWith('http')) {
+        return;
+    }
+
     event.respondWith(
         caches.match(event.request)
             .then(response => {
@@ -69,15 +80,24 @@ self.addEventListener('fetch', event => {
 
                     caches.open(CACHE_NAME)
                         .then(cache => {
-                            cache.put(event.request, responseToCache);
+                            // Only cache successful responses
+                            if (response.status === 200) {
+                                cache.put(event.request, responseToCache);
+                            }
+                        })
+                        .catch(err => {
+                            console.warn('Failed to cache response:', err);
                         });
 
                     return response;
+                }).catch(err => {
+                    console.warn('Fetch failed:', err);
+                    // Return offline fallback if available
+                    return caches.match('/index.html');
                 });
             })
-            .catch(() => {
-                // Offline fallback
-                return caches.match('/index.html');
+            .catch(err => {
+                console.error('Cache match error:', err);
             })
     );
 });

@@ -1,4 +1,4 @@
-// Audio Service - Handles all audio playback and processing
+// Audio Service - Final Fix: Prevent stop() from interfering with tempo changes
 export class AudioService {
     constructor() {
         this.audioContext = null;
@@ -11,6 +11,7 @@ export class AudioService {
         this.pausedAt = 0;
         this.startTime = 0;
         this.playbackRate = 1.0;
+        this.pitchShift = 0; // in semitones
 
         this.loopStart = null;
         this.loopEnd = null;
@@ -19,6 +20,16 @@ export class AudioService {
 
         this.usePitchPreservation = true;
         this.animationId = null;
+
+        // Track which mode we're using
+        this.usingPitchShifter = false;
+
+        // For accurate position tracking during standard playback
+        this.standardPlaybackStartTime = 0;
+        this.standardPlaybackStartOffset = 0;
+
+        // CRITICAL: Track if we're in the middle of a tempo/pitch change
+        this.isChangingSettings = false;
 
         this.onTimeUpdate = null;
         this.onLoopCountUpdate = null;
@@ -44,6 +55,14 @@ export class AudioService {
         // Decode audio data
         try {
             this.audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
+
+            // Reset state for new file
+            this.pausedAt = 0;
+            this.playbackRate = 1.0;
+            this.pitchShift = 0;
+            this.usingPitchShifter = false;
+            this.isChangingSettings = false;
+
             return this.audioBuffer;
         } catch (error) {
             throw new Error('Failed to decode audio file');
@@ -60,10 +79,14 @@ export class AudioService {
             this.audioContext.resume();
         }
 
-        // Use pitch-preserving playback for non-standard speeds
-        if (this.playbackRate !== 1.0 && this.usePitchPreservation) {
-            this.playWithPitchShift();
+        // Determine if we need pitch shifter
+        const needsPitchShifter = (this.playbackRate !== 1.0 && this.usePitchPreservation) || this.pitchShift !== 0;
+
+        if (needsPitchShifter) {
+            this.usingPitchShifter = true;
+            this.playWithEffects();
         } else {
+            this.usingPitchShifter = false;
             this.playStandard();
         }
 
@@ -77,7 +100,9 @@ export class AudioService {
         this.audioSource.playbackRate.value = this.playbackRate;
         this.audioSource.connect(this.audioContext.destination);
 
-        this.startTime = this.audioContext.currentTime - this.pausedAt / this.playbackRate;
+        // Store accurate timing info for position calculation
+        this.standardPlaybackStartTime = this.audioContext.currentTime;
+        this.standardPlaybackStartOffset = this.pausedAt;
 
         // Handle loops if set
         if (this.loopStart !== null && this.loopEnd !== null) {
@@ -87,11 +112,15 @@ export class AudioService {
                 this.audioSource.start(0, actualStart, this.loopEnd - actualStart);
 
                 this.audioSource.onended = () => {
-                    if (this.isPlaying && this.loopCount < this.maxLoops) {
+                    // CRITICAL: Don't call stop() if we're changing settings
+                    if (!this.isChangingSettings && this.isPlaying && this.loopCount < this.maxLoops) {
                         this.loopCount++;
+                        if (this.onLoopCountUpdate) {
+                            this.onLoopCountUpdate(this.loopCount);
+                        }
                         this.pausedAt = this.loopStart;
                         this.playStandard();
-                    } else {
+                    } else if (!this.isChangingSettings) {
                         this.stop();
                     }
                 };
@@ -109,42 +138,65 @@ export class AudioService {
             this.audioSource.start(0, this.pausedAt);
 
             this.audioSource.onended = () => {
-                this.stop();
+                // CRITICAL: Don't call stop() if we're changing settings
+                if (!this.isChangingSettings) {
+                    this.stop();
+                }
             };
         }
     }
 
-    playWithPitchShift() {
-        // Initialize pitch shifter if needed
+    playWithEffects() {
+        // Initialize the enhanced pitch shifter if needed
         if (!this.pitchShifter) {
-            this.pitchShifter = new PitchPreservingPlayer(this.audioContext, this.audioBuffer);
+            this.pitchShifter = new EnhancedPitchShifter(this.audioContext, this.audioBuffer);
         }
 
         this.pitchShifter.playbackRate = this.playbackRate;
+        this.pitchShifter.pitchShift = this.pitchShift;
         this.pitchShifter.loopStart = this.loopStart;
         this.pitchShifter.loopEnd = this.loopEnd;
+        this.pitchShifter.maxLoops = this.maxLoops;
+        this.pitchShifter.onLoopComplete = () => {
+            this.loopCount++;
+            if (this.onLoopCountUpdate) {
+                this.onLoopCountUpdate(this.loopCount);
+            }
+        };
+
         this.pitchShifter.start(0, this.pausedAt);
     }
 
     pause() {
         if (!this.isPlaying) return;
 
-        // Calculate paused position
-        if (this.pitchShifter && this.pitchShifter.isPlaying) {
-            this.pausedAt = this.pitchShifter.getCurrentTime();
+        // Get current position before stopping
+        const currentPosition = this.getCurrentTime();
+
+        // Stop the appropriate player
+        if (this.usingPitchShifter && this.pitchShifter && this.pitchShifter.isPlaying) {
             this.pitchShifter.stop();
         } else if (this.audioSource) {
-            const elapsed = (this.audioContext.currentTime - this.startTime) * this.playbackRate;
-            this.pausedAt = elapsed;
             this.audioSource.stop();
             this.audioSource = null;
         }
 
+        this.pausedAt = currentPosition;
         this.isPlaying = false;
         this.stopAnimationLoop();
+
+        // Update UI with the paused position
+        if (this.onTimeUpdate) {
+            this.onTimeUpdate(this.pausedAt);
+        }
     }
 
     stop() {
+        // Don't reset pausedAt if we're in the middle of changing settings
+        if (this.isChangingSettings) {
+            return;
+        }
+
         if (this.audioSource) {
             this.audioSource.stop();
             this.audioSource = null;
@@ -170,18 +222,124 @@ export class AudioService {
     }
 
     setPlaybackRate(rate) {
-        const wasPlaying = this.isPlaying;
+        if (!this.audioBuffer) return;
 
+        // CRITICAL: Set flag to prevent stop() from resetting position
+        this.isChangingSettings = true;
+
+        const wasPlaying = this.isPlaying;
+        let currentPosition = this.pausedAt;
+
+        // If playing, get the actual current position
         if (wasPlaying) {
-            this.pause();
+            currentPosition = this.getCurrentTime();
         }
 
+        // Stop current playback if playing
+        if (wasPlaying) {
+            this.isPlaying = false;
+            this.stopAnimationLoop();
+
+            if (this.usingPitchShifter && this.pitchShifter && this.pitchShifter.isPlaying) {
+                this.pitchShifter.stop();
+            } else if (this.audioSource) {
+                this.audioSource.stop();
+                this.audioSource = null;
+            }
+        }
+
+        // Update the playback rate
         this.playbackRate = rate;
 
+        // Set the position for resume
+        this.pausedAt = currentPosition;
+
+        // Resume if was playing
         if (wasPlaying) {
-            // Resume playback with new rate
-            setTimeout(() => this.play(), 50);
+            // Small delay to ensure clean transition
+            setTimeout(() => {
+                this.isChangingSettings = false; // Clear flag before resuming
+                this.play();
+            }, 10);
+        } else {
+            this.isChangingSettings = false; // Clear flag immediately if not playing
         }
+    }
+
+    setPitchShift(semitones) {
+        if (!this.audioBuffer) return;
+
+        // CRITICAL: Set flag to prevent stop() from resetting position
+        this.isChangingSettings = true;
+
+        const wasPlaying = this.isPlaying;
+        let currentPosition = this.pausedAt;
+
+        // If playing, get the actual current position
+        if (wasPlaying) {
+            currentPosition = this.getCurrentTime();
+        }
+
+        // Stop current playback if playing
+        if (wasPlaying) {
+            this.isPlaying = false;
+            this.stopAnimationLoop();
+
+            if (this.usingPitchShifter && this.pitchShifter && this.pitchShifter.isPlaying) {
+                this.pitchShifter.stop();
+            } else if (this.audioSource) {
+                this.audioSource.stop();
+                this.audioSource = null;
+            }
+        }
+
+        // Update the pitch shift
+        this.pitchShift = semitones;
+
+        // Set the position for resume
+        this.pausedAt = currentPosition;
+
+        // Resume if was playing
+        if (wasPlaying) {
+            // Small delay to ensure clean transition
+            setTimeout(() => {
+                this.isChangingSettings = false; // Clear flag before resuming
+                this.play();
+            }, 10);
+        } else {
+            this.isChangingSettings = false; // Clear flag immediately if not playing
+        }
+    }
+
+    getCurrentTime() {
+        if (!this.audioBuffer) return 0;
+
+        if (!this.isPlaying) {
+            return this.pausedAt;
+        }
+
+        // Use the appropriate method based on what's currently playing
+        if (this.usingPitchShifter && this.pitchShifter && this.pitchShifter.isPlaying) {
+            return this.pitchShifter.getCurrentTime();
+        } else if (!this.usingPitchShifter && this.audioSource) {
+            // Calculate time based on when we started this specific playback
+            const elapsed = (this.audioContext.currentTime - this.standardPlaybackStartTime) * this.playbackRate;
+            const currentTime = this.standardPlaybackStartOffset + elapsed;
+
+            // Clamp to valid range
+            const clampedTime = Math.max(0, Math.min(currentTime, this.audioBuffer.duration));
+
+            // Handle loop time calculation
+            if (this.loopStart !== null && this.loopEnd !== null && clampedTime >= this.loopStart) {
+                const loopDuration = this.loopEnd - this.loopStart;
+                const timeIntoLoop = (clampedTime - this.loopStart) % loopDuration;
+                return this.loopStart + timeIntoLoop;
+            }
+
+            return clampedTime;
+        }
+
+        return this.pausedAt;
     }
 
     setLoopPoint(type) {
@@ -230,6 +388,9 @@ export class AudioService {
 
     setMaxLoops(count) {
         this.maxLoops = parseInt(count) || 0;
+        if (this.pitchShifter) {
+            this.pitchShifter.maxLoops = this.maxLoops;
+        }
     }
 
     setUsePitchPreservation(value) {
@@ -244,33 +405,8 @@ export class AudioService {
         }
     }
 
-    getCurrentTime() {
-        if (!this.isPlaying) return this.pausedAt;
-
-        if (this.pitchShifter && this.pitchShifter.isPlaying) {
-            return this.pitchShifter.getCurrentTime();
-        } else if (this.audioSource) {
-            const elapsed = (this.audioContext.currentTime - this.startTime) * this.playbackRate;
-
-            // Handle loop time calculation
-            if (this.loopStart !== null && this.loopEnd !== null && elapsed >= this.loopStart) {
-                const loopDuration = this.loopEnd - this.loopStart;
-                const timeIntoLoop = (elapsed - this.loopStart) % loopDuration;
-                return this.loopStart + timeIntoLoop;
-            }
-
-            return Math.min(elapsed, this.audioBuffer.duration);
-        }
-
-        return 0;
-    }
-
     getDuration() {
         return this.audioBuffer ? this.audioBuffer.duration : 0;
-    }
-
-    isPlaying() {
-        return this.isPlaying;
     }
 
     startAnimationLoop() {
@@ -340,35 +476,52 @@ export class AudioService {
         this.loopStart = null;
         this.loopEnd = null;
         this.loopCount = 0;
+        this.pitchShift = 0;
+        this.usingPitchShifter = false;
+        this.standardPlaybackStartTime = 0;
+        this.standardPlaybackStartOffset = 0;
+        this.isChangingSettings = false;
     }
 }
 
-// Pitch-preserving player implementation
-class PitchPreservingPlayer {
+// Enhanced pitch shifter with better quality time stretching and pitch shifting
+class EnhancedPitchShifter {
     constructor(audioContext, buffer) {
         this.context = audioContext;
         this.buffer = buffer;
-        this.grainSize = 0.05; // 50ms
-        this.overlap = 0.5;
+
+        // Improved parameters for better quality
+        this.grainSize = 0.08; // 80ms grains for better quality
+        this.overlap = 0.75; // 75% overlap for smoother sound
+
         this.grains = [];
         this.isPlaying = false;
         this.startTime = 0;
         this.pausedAt = 0;
         this.playbackRate = 1.0;
+        this.pitchShift = 0; // in semitones
         this.schedulerTimer = null;
         this.lastScheduledTime = 0;
         this.currentSourceOffset = 0;
 
         this.loopStart = null;
         this.loopEnd = null;
+        this.maxLoops = 0;
+        this.currentLoop = 0;
+        this.onLoopComplete = null;
+
+        // Create nodes for processing
+        this.outputGain = this.context.createGain();
+        this.outputGain.connect(this.context.destination);
     }
 
     start(when = 0, offset = 0) {
         this.isPlaying = true;
-        this.startTime = this.context.currentTime - offset / this.playbackRate;
         this.pausedAt = offset;
         this.currentSourceOffset = offset;
+        this.startTime = this.context.currentTime;
         this.lastScheduledTime = this.context.currentTime;
+        this.currentLoop = 0;
 
         this.scheduleGrains();
     }
@@ -381,16 +534,18 @@ class PitchPreservingPlayer {
             this.schedulerTimer = null;
         }
 
+        // Calculate final position before stopping
+        this.pausedAt = this.getCurrentTime();
+
         // Stop all grains
         this.grains.forEach(grain => {
             try {
                 grain.source.stop();
                 grain.source.disconnect();
+                grain.gain.disconnect();
             } catch (e) {}
         });
         this.grains = [];
-
-        this.pausedAt = this.getCurrentTime();
     }
 
     scheduleGrains() {
@@ -398,7 +553,7 @@ class PitchPreservingPlayer {
 
         const grainDuration = this.grainSize;
         const grainSpacing = grainDuration * (1 - this.overlap) / this.playbackRate;
-        const scheduleAhead = 0.1;
+        const scheduleAhead = 0.15; // Schedule 150ms ahead for smoother playback
         const currentTime = this.context.currentTime;
         const endTime = currentTime + scheduleAhead;
 
@@ -408,12 +563,27 @@ class PitchPreservingPlayer {
             nextGrainTime = currentTime;
         }
 
+        // Calculate pitch shift factor
+        const pitchFactor = Math.pow(2, this.pitchShift / 12);
+
         while (nextGrainTime < endTime && this.isPlaying) {
             // Handle looping
             if (this.loopStart !== null && this.loopEnd !== null) {
                 if (this.currentSourceOffset >= this.loopEnd) {
                     const loopLength = this.loopEnd - this.loopStart;
                     this.currentSourceOffset = this.loopStart + ((this.currentSourceOffset - this.loopStart) % loopLength);
+
+                    // Check if we've completed a loop
+                    if (this.maxLoops > 0) {
+                        this.currentLoop++;
+                        if (this.onLoopComplete) {
+                            this.onLoopComplete();
+                        }
+                        if (this.currentLoop >= this.maxLoops) {
+                            this.stop();
+                            return;
+                        }
+                    }
                 }
             } else if (this.currentSourceOffset >= this.buffer.duration) {
                 this.stop();
@@ -424,21 +594,27 @@ class PitchPreservingPlayer {
                 const source = this.context.createBufferSource();
                 source.buffer = this.buffer;
 
+                // Apply pitch shift
+                source.playbackRate.value = pitchFactor;
+
                 const gain = this.context.createGain();
                 source.connect(gain);
-                gain.connect(this.context.destination);
+                gain.connect(this.outputGain);
 
-                // Apply envelope
-                const fadeTime = grainDuration * 0.1;
+                // Improved envelope for smoother transitions
+                const fadeTime = grainDuration * 0.25; // 25% fade in/out
+                const sustainTime = grainDuration - (fadeTime * 2);
+
                 gain.gain.setValueAtTime(0, nextGrainTime);
-                gain.gain.linearRampToValueAtTime(0.5, nextGrainTime + fadeTime);
-                gain.gain.setValueAtTime(0.5, nextGrainTime + grainDuration - fadeTime);
+                gain.gain.linearRampToValueAtTime(1, nextGrainTime + fadeTime);
+                gain.gain.setValueAtTime(1, nextGrainTime + fadeTime + sustainTime);
                 gain.gain.linearRampToValueAtTime(0, nextGrainTime + grainDuration);
 
                 const remainingBuffer = this.buffer.duration - this.currentSourceOffset;
                 const actualDuration = Math.min(grainDuration, remainingBuffer);
 
-                source.start(nextGrainTime, this.currentSourceOffset, actualDuration);
+                // Start the grain
+                source.start(nextGrainTime, this.currentSourceOffset, actualDuration * pitchFactor);
 
                 this.grains.push({
                     source: source,
@@ -481,11 +657,30 @@ class PitchPreservingPlayer {
 
     getCurrentTime() {
         if (!this.isPlaying) return this.pausedAt;
+
+        // Calculate elapsed time since start
         const elapsed = (this.context.currentTime - this.startTime) * this.playbackRate;
-        return Math.min(elapsed, this.buffer.duration);
+
+        // Current position is paused position plus elapsed time
+        const currentPosition = this.pausedAt + elapsed;
+
+        // Clamp to buffer duration
+        const clampedPosition = Math.min(currentPosition, this.buffer.duration);
+
+        // Handle looping
+        if (this.loopStart !== null && this.loopEnd !== null && clampedPosition >= this.loopStart) {
+            const loopDuration = this.loopEnd - this.loopStart;
+            const timeIntoLoop = (clampedPosition - this.loopStart) % loopDuration;
+            return this.loopStart + timeIntoLoop;
+        }
+
+        return clampedPosition;
     }
 
     cleanup() {
         this.stop();
+        if (this.outputGain) {
+            this.outputGain.disconnect();
+        }
     }
 }

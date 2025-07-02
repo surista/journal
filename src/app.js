@@ -115,18 +115,14 @@ class App {
                 this.currentPage.destroy();
             }
 
-            // Dynamic import with base path
+            // Dynamic import with better error handling
             console.log('Attempting to import dashboard module...');
             let DashboardPage;
 
             try {
-                // Build the full URL explicitly
-                const baseUrl = window.location.origin;
-                const modulePath = `${baseUrl}${this.basePath}src/pages/dashboard.js`;
-                console.log('Importing from full URL:', modulePath);
-
-                const module = await import(modulePath);
-                console.log('Dashboard module imported:', module);
+                // Use relative import path - this should work better
+                const module = await import('./pages/dashboard.js');
+                console.log('Dashboard module imported successfully:', module);
 
                 DashboardPage = module.DashboardPage;
 
@@ -135,25 +131,42 @@ class App {
                 }
 
             } catch (importError) {
-                console.error('Import error:', importError);
+                console.error('Import error details:', {
+                    message: importError.message,
+                    stack: importError.stack,
+                    type: importError.constructor.name
+                });
 
-                // Try without src directory
+                // If relative import fails, try other approaches
                 try {
-                    const baseUrl = window.location.origin;
-                    const modulePath = `${baseUrl}${this.basePath}pages/dashboard.js`;
-                    console.log('Trying alternate path:', modulePath);
+                    // Try with explicit base path
+                    const basePath = this.basePath.endsWith('/') ? this.basePath : this.basePath + '/';
+                    const modulePath = `${basePath}src/pages/dashboard.js`;
+                    console.log('Trying alternate import path:', modulePath);
 
                     const module = await import(modulePath);
                     DashboardPage = module.DashboardPage;
+
                 } catch (secondError) {
                     console.error('Second import attempt failed:', secondError);
 
-                    // Try relative import as last resort
+                    // Last resort - check if the file exists and has correct syntax
                     try {
-                        const module = await import('./pages/dashboard.js');
-                        DashboardPage = module.DashboardPage;
-                    } catch (fallbackError) {
-                        console.error('All import attempts failed');
+                        // This will help identify if it's a syntax error in dashboard.js
+                        const response = await fetch(`${this.basePath}src/pages/dashboard.js`);
+                        const text = await response.text();
+                        console.log('Dashboard.js file exists, first 500 chars:', text.substring(0, 500));
+
+                        // Check for common syntax errors
+                        if (text.includes('export class DashboardPage')) {
+                            console.log('Dashboard class export found');
+                        } else {
+                            console.error('Dashboard class export NOT found');
+                        }
+
+                        // Re-throw the original error with more context
+                        throw new Error(`Failed to import dashboard module. Original error: ${importError.message}. The file exists but may have a syntax error.`);
+                    } catch (fetchError) {
                         throw new Error(`Failed to import dashboard module: ${importError.message}`);
                     }
                 }
@@ -193,7 +206,13 @@ class App {
                         <details style="margin: 2rem auto; max-width: 600px; text-align: left;">
                             <summary style="cursor: pointer; color: var(--primary);">Technical Details</summary>
                             <pre style="background: var(--bg-input); padding: 1rem; border-radius: 8px; overflow-x: auto; margin-top: 1rem;">
-${error.stack}
+${error.stack || 'No stack trace available'}
+
+Base Path: ${this.basePath}
+Current URL: ${window.location.href}
+Import attempts:
+1. ./pages/dashboard.js
+2. ${this.basePath}src/pages/dashboard.js
                             </pre>
                         </details>
                         <button onclick="location.reload()" class="btn btn-primary">
@@ -225,27 +244,25 @@ ${error.stack}
                 this.currentPage.destroy();
             }
 
-            // Dynamic import with proper URL construction
+            // Dynamic import with proper error handling
             let CalendarPage;
 
             try {
-                const baseUrl = window.location.origin;
-                const modulePath = `${baseUrl}${this.basePath}src/pages/calendar.js`;
-                console.log('Importing calendar from:', modulePath);
-
-                const module = await import(modulePath);
+                // Use relative import path
+                const module = await import('./pages/calendar.js');
+                console.log('Calendar module imported:', module);
                 CalendarPage = module.CalendarPage;
             } catch (importError) {
-                // Try without src directory
+                console.error('Calendar import error:', importError);
+
+                // Try alternate path
                 try {
-                    const baseUrl = window.location.origin;
-                    const modulePath = `${baseUrl}${this.basePath}pages/calendar.js`;
+                    const basePath = this.basePath.endsWith('/') ? this.basePath : this.basePath + '/';
+                    const modulePath = `${basePath}src/pages/calendar.js`;
                     const module = await import(modulePath);
                     CalendarPage = module.CalendarPage;
                 } catch (fallbackError) {
-                    // Try relative path as last resort
-                    const module = await import('./pages/calendar.js');
-                    CalendarPage = module.CalendarPage;
+                    throw new Error(`Failed to import calendar module: ${importError.message}`);
                 }
             }
 
@@ -256,7 +273,23 @@ ${error.stack}
 
         } catch (error) {
             console.error('Failed to load calendar:', error);
-            notificationManager.error('Failed to load calendar page');
+            notificationManager.error('Failed to load calendar page: ' + error.message);
+
+            // Show error in UI
+            const errorDiv = document.getElementById('app');
+            if (errorDiv) {
+                errorDiv.innerHTML = `
+                    <div style="padding: 2rem; text-align: center;">
+                        <h2 style="color: var(--danger);">Failed to load calendar</h2>
+                        <p style="color: var(--text-secondary); margin: 1rem 0;">
+                            Error: ${error.message}
+                        </p>
+                        <button onclick="location.reload()" class="btn btn-primary">
+                            Reload Page
+                        </button>
+                    </div>
+                `;
+            }
         } finally {
             this.hideLoading();
         }
@@ -273,27 +306,25 @@ ${error.stack}
                 this.currentPage.destroy();
             }
 
-            // Dynamic import with proper URL construction
+            // Dynamic import with proper error handling
             let AuthPage;
 
             try {
-                const baseUrl = window.location.origin;
-                const modulePath = `${baseUrl}${this.basePath}src/pages/auth.js`;
-                console.log('Importing auth from:', modulePath);
-
-                const module = await import(modulePath);
+                // Use relative import path
+                const module = await import('./pages/auth.js');
+                console.log('Auth module imported:', module);
                 AuthPage = module.AuthPage;
             } catch (importError) {
-                // Try without src directory
+                console.error('Auth import error:', importError);
+
+                // Try alternate path
                 try {
-                    const baseUrl = window.location.origin;
-                    const modulePath = `${baseUrl}${this.basePath}pages/auth.js`;
+                    const basePath = this.basePath.endsWith('/') ? this.basePath : this.basePath + '/';
+                    const modulePath = `${basePath}src/pages/auth.js`;
                     const module = await import(modulePath);
                     AuthPage = module.AuthPage;
                 } catch (fallbackError) {
-                    // Try relative path as last resort
-                    const module = await import('./pages/auth.js');
-                    AuthPage = module.AuthPage;
+                    throw new Error(`Failed to import auth module: ${importError.message}`);
                 }
             }
 
@@ -330,7 +361,23 @@ ${error.stack}
 
         } catch (error) {
             console.error('Failed to load auth page:', error);
-            notificationManager.error('Failed to load login page');
+            notificationManager.error('Failed to load login page: ' + error.message);
+
+            // Show error in UI
+            const errorDiv = document.getElementById('app');
+            if (errorDiv) {
+                errorDiv.innerHTML = `
+                    <div style="padding: 2rem; text-align: center;">
+                        <h2 style="color: var(--danger);">Failed to load login page</h2>
+                        <p style="color: var(--text-secondary); margin: 1rem 0;">
+                            Error: ${error.message}
+                        </p>
+                        <button onclick="location.reload()" class="btn btn-primary">
+                            Reload Page
+                        </button>
+                    </div>
+                `;
+            }
         } finally {
             this.hideLoading();
         }
@@ -368,30 +415,6 @@ ${error.stack}
         this.hideLoading();
     }
 }
-
-// Initialize app when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM loaded, initializing app...');
-
-    const app = new App();
-
-    // Expose app instance globally for debugging
-    window.app = app;
-
-    app.init().catch(err => {
-        console.error('Failed to initialize app:', err);
-        const errorDiv = document.getElementById('error-message');
-        if (errorDiv) {
-            errorDiv.style.display = 'block';
-            errorDiv.innerHTML = `
-                <strong>Initialization Error</strong><br>
-                ${err.message}<br><br>
-                <strong>Stack trace:</strong><br>
-                <pre style="font-size: 0.8em; white-space: pre-wrap;">${err.stack}</pre>
-            `;
-        }
-    });
-});
 
 // Export for use in other modules
 export { App };

@@ -1,4 +1,4 @@
-// Audio Player Component - Updated with Play/Pause/Stop controls
+// Audio Player Component - Complete working version
 import { AudioService } from '../services/audioService.js';
 import { WaveformVisualizer } from './waveform.js';
 import { Metronome } from './metronome.js';
@@ -367,7 +367,6 @@ export class AudioPlayer {
         }
 
         // Loop count update - modified to trigger metronome tempo progression
-        const originalOnLoopCountUpdate = this.audioService.onLoopCountUpdate;
         this.audioService.onLoopCountUpdate = (count) => {
             const loopElement = document.getElementById('currentLoop');
             if (loopElement) {
@@ -379,14 +378,10 @@ export class AudioPlayer {
                 this.metronome.onLoopComplete();
 
                 // Update audio playback speed if metronome tempo changed
-                if (this.metronome.tempoProgression.enabled) {
+                if (this.metronome.tempoProgression && this.metronome.tempoProgression.enabled) {
                     const speedPercentage = (this.metronome.tempo / this.metronome.originalTempo) * 100;
                     this.setSpeed(speedPercentage);
                 }
-            }
-
-            if (originalOnLoopCountUpdate) {
-                originalOnLoopCountUpdate(count);
             }
         };
 
@@ -513,21 +508,6 @@ export class AudioPlayer {
             return;
         }
 
-        // Clear any existing loops from previous file
-        this.clearLoop();
-
-        // Reset playback speed and pitch
-        this.resetSpeed();
-        this.resetPitch();
-
-        // Reset loop counter
-        this.resetLoopCounter();
-
-        // Store original tempo for metronome sync
-        if (this.metronome) {
-            this.metronome.originalTempo = this.metronome.tempo;
-        }
-
         this.currentFileName = file.name;
         if (fileNameDisplay) {
             fileNameDisplay.textContent = `Loading: ${file.name}...`;
@@ -565,6 +545,21 @@ export class AudioPlayer {
                 durationElement.textContent = TimeUtils.formatTime(duration);
             }
 
+            // Clear any existing loops from previous file
+            this.clearLoop();
+
+            // Reset playback speed and pitch
+            this.resetSpeed();
+            this.resetPitch();
+
+            // Reset loop counter
+            this.resetLoopCounter();
+
+            // Store original tempo for metronome sync
+            if (this.metronome) {
+                this.metronome.originalTempo = this.metronome.tempo;
+            }
+
             // Update saved sessions display to reflect new file
             this.renderSavedSessions();
 
@@ -575,6 +570,7 @@ export class AudioPlayer {
 
         } catch (error) {
             console.error('Error loading audio file:', error);
+            console.error('Error stack:', error.stack);
             const errorMessage = error.message || 'Unknown error occurred';
 
             if (errorDiv) {
@@ -872,44 +868,54 @@ export class AudioPlayer {
         }
     }
 
-    setPitch(semitones) {
-        if (this.audioService.setPitchShift) {
-            this.audioService.setPitchShift(semitones);
-        }
-        const element = this.container.querySelector('#pitchValue');
-        if (element) {
-            element.textContent = semitones > 0 ? `+${semitones}` : semitones;
-        }
-
-        // Update preset button styles
-        const presetBtns = this.container.querySelectorAll('.pitch-preset');
-        presetBtns.forEach(btn => {
-            const btnValue = parseInt(btn.dataset.semitones);
-            if (btnValue === Math.round(semitones)) {
-                btn.classList.add('active');
-            } else {
-                btn.classList.remove('active');
-            }
-        });
+setPitch(semitones) {
+    // Check if the setPitchShift method exists
+    if (this.audioService && typeof this.audioService.setPitchShift === 'function') {
+        this.audioService.setPitchShift(semitones);
+    } else {
+        console.warn('setPitchShift method not available in audioService - pitch adjustment will not work until audioService is updated');
+        // Store the value for display purposes
+        this.currentPitchShift = semitones;
     }
 
-    adjustPitch(change) {
-        const slider = this.container.querySelector('#pitchSlider');
-        if (slider) {
-            const newValue = parseFloat(slider.value) + change;
-            const clampedValue = Math.max(-12, Math.min(12, newValue));
-            slider.value = clampedValue;
-            this.setPitch(clampedValue);
-        }
+    const element = this.container.querySelector('#pitchValue');
+    if (element) {
+        element.textContent = semitones > 0 ? `+${semitones}` : semitones;
     }
 
-    resetPitch() {
-        const slider = this.container.querySelector('#pitchSlider');
-        if (slider) {
-            slider.value = 0;
-            this.setPitch(0);
+    // Update preset button styles
+    const presetBtns = this.container.querySelectorAll('.pitch-preset');
+    presetBtns.forEach(btn => {
+        const btnValue = parseInt(btn.dataset.semitones);
+        if (btnValue === Math.round(semitones)) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
         }
+    });
+}
+
+resetPitch() {
+    const slider = this.container.querySelector('#pitchSlider');
+    if (slider) {
+        slider.value = 0;
+        this.setPitch(0);
     }
+
+    // Reset the stored value
+    this.currentPitchShift = 0;
+}
+
+// Also update adjustPitch to be safe
+adjustPitch(change) {
+    const slider = this.container.querySelector('#pitchSlider');
+    if (slider) {
+        const newValue = parseFloat(slider.value) + change;
+        const clampedValue = Math.max(-12, Math.min(12, newValue));
+        slider.value = clampedValue;
+        this.setPitch(clampedValue);
+    }
+}
 
     updateTimeDisplay(currentTime) {
         const timeElement = this.container.querySelector('#currentTime');
