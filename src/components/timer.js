@@ -1,4 +1,4 @@
-// Timer Component - Fixed with inline styles for visibility
+// Timer Component - Updated for compact display integration
 import { TimeUtils } from '../utils/helpers.js';
 import { notificationManager } from '../services/notificationManager.js';
 
@@ -18,9 +18,24 @@ export class Timer {
         // Performance optimization
         this.lastDisplayUpdate = 0;
         this.displayUpdateInterval = 100;
+
+        // Compact mode flag
+        this.isCompactMode = false;
     }
 
     render() {
+        // Check if we're rendering in compact mode by looking at container ID
+        if (this.container && this.container.id && this.container.id.includes('compact')) {
+            this.isCompactMode = true;
+            // Compact rendering is handled by the dashboard component
+            return;
+        }
+
+        // Original full timer render for other uses
+        this.renderFullTimer();
+    }
+
+    renderFullTimer() {
         // Make sure container exists
         if (!this.container) {
             console.error('Timer container not found');
@@ -227,6 +242,11 @@ export class Timer {
     }
 
     updateTimerDisplay() {
+        // If in compact mode, update method is overridden by dashboard
+        if (this.isCompactMode && this.updateTimerDisplay !== Timer.prototype.updateTimerDisplay) {
+            return;
+        }
+
         const displayElement = document.getElementById('timerDisplay');
         if (displayElement) {
             const totalSeconds = Math.floor(this.elapsedTime / 1000);
@@ -246,6 +266,9 @@ export class Timer {
     }
 
     attachEventListeners() {
+        // Only attach if not in compact mode (compact mode handles its own listeners)
+        if (this.isCompactMode) return;
+
         const startBtn = document.getElementById('startTimer');
         const stopBtn = document.getElementById('stopTimer');
         const resetBtn = document.getElementById('resetTimer');
@@ -336,13 +359,16 @@ export class Timer {
             this.interval = setInterval(() => this.updateTimer(), 10);
             this.isRunning = true;
 
-            const startBtn = document.getElementById('startTimer');
-            const stopBtn = document.getElementById('stopTimer');
-            const subtitle = document.getElementById('timerSubtitle');
+            // Update UI for full timer
+            if (!this.isCompactMode) {
+                const startBtn = document.getElementById('startTimer');
+                const stopBtn = document.getElementById('stopTimer');
+                const subtitle = document.getElementById('timerSubtitle');
 
-            if (startBtn) startBtn.style.display = 'none';
-            if (stopBtn) stopBtn.style.display = 'inline-flex';
-            if (subtitle) subtitle.textContent = 'Practice in progress...';
+                if (startBtn) startBtn.style.display = 'none';
+                if (stopBtn) stopBtn.style.display = 'inline-flex';
+                if (subtitle) subtitle.textContent = 'Practice in progress...';
+            }
 
             notificationManager.success('Practice timer started! 🎸');
 
@@ -359,16 +385,20 @@ export class Timer {
             clearInterval(this.interval);
             this.isRunning = false;
 
-            const startBtn = document.getElementById('startTimer');
-            const stopBtn = document.getElementById('stopTimer');
-            const subtitle = document.getElementById('timerSubtitle');
+            // Update UI for full timer
+            if (!this.isCompactMode) {
+                const startBtn = document.getElementById('startTimer');
+                const stopBtn = document.getElementById('stopTimer');
+                const subtitle = document.getElementById('timerSubtitle');
 
-            if (startBtn) startBtn.style.display = 'inline-flex';
-            if (stopBtn) stopBtn.style.display = 'none';
+                if (startBtn) startBtn.style.display = 'inline-flex';
+                if (stopBtn) stopBtn.style.display = 'none';
+
+                const duration = TimeUtils.formatDuration(Math.floor(this.elapsedTime / 1000));
+                if (subtitle) subtitle.textContent = `Paused at ${duration}`;
+            }
 
             const duration = TimeUtils.formatDuration(Math.floor(this.elapsedTime / 1000));
-            if (subtitle) subtitle.textContent = `Paused at ${duration}`;
-
             notificationManager.success(`Timer stopped. Great practice! You practiced for ${duration} 🎉`);
 
             this.clearScheduledNotifications();
@@ -389,13 +419,16 @@ export class Timer {
 
         this.updateTimerDisplay();
 
-        const subtitle = document.getElementById('timerSubtitle');
-        const startBtn = document.getElementById('startTimer');
-        const stopBtn = document.getElementById('stopTimer');
+        // Update UI for full timer
+        if (!this.isCompactMode) {
+            const subtitle = document.getElementById('timerSubtitle');
+            const startBtn = document.getElementById('startTimer');
+            const stopBtn = document.getElementById('stopTimer');
 
-        if (subtitle) subtitle.textContent = 'Ready to practice';
-        if (startBtn) startBtn.style.display = 'inline-flex';
-        if (stopBtn) stopBtn.style.display = 'none';
+            if (subtitle) subtitle.textContent = 'Ready to practice';
+            if (startBtn) startBtn.style.display = 'inline-flex';
+            if (stopBtn) stopBtn.style.display = 'none';
+        }
 
         this.updateProgress();
         this.clearScheduledNotifications();
@@ -420,8 +453,9 @@ export class Timer {
     }
 
     updateProgress() {
-        const goalSelect = document.getElementById('sessionGoal');
-        const progressBar = document.getElementById('timerProgress');
+        // Handle both full and compact timer progress updates
+        const goalSelect = document.getElementById('sessionGoal') || document.getElementById('compactSessionGoal');
+        const progressBar = document.getElementById('timerProgress') || document.getElementById('compactTimerProgress');
 
         if (!goalSelect || !progressBar) return;
 
@@ -483,7 +517,12 @@ export class Timer {
 
     loadTimerPreferences() {
         try {
-            const preferences = localStorage.getItem('timerPreferences');
+            // Try loading compact preferences first, then fall back to regular preferences
+            let preferences = localStorage.getItem('compactTimerPreferences');
+            if (!preferences) {
+                preferences = localStorage.getItem('timerPreferences');
+            }
+
             if (preferences) {
                 const { sessionGoal, syncEnabled } = JSON.parse(preferences);
                 const goalSelect = document.getElementById('sessionGoal');

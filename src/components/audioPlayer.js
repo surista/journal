@@ -1,4 +1,4 @@
-// Audio Player Component - Complete working version
+// Audio Player Component - Complete working version with quality controls
 import { AudioService } from '../services/audioService.js';
 import { WaveformVisualizer } from './waveform.js';
 import { Metronome } from './metronome.js';
@@ -188,6 +188,39 @@ export class AudioPlayer {
                             </div>
                         </div>
                     </div>
+
+                    <!-- Audio Quality Controls -->
+                    <div class="audio-quality-control">
+                        <h3>Audio Quality Settings</h3>
+                        <div class="quality-controls">
+                            <div class="quality-mode-control">
+                                <label for="qualityMode">Quality Mode:</label>
+                                <select id="qualityMode" class="quality-select">
+                                    <option value="low">Low Quality (Fast)</option>
+                                    <option value="medium" selected>Medium Quality</option>
+                                    <option value="high">High Quality (Slow)</option>
+                                </select>
+                                <div class="quality-description" id="qualityDescription">
+                                    Balanced quality and performance for most devices
+                                </div>
+                            </div>
+                            
+                            <div class="adaptive-quality-control">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="adaptiveQuality" checked style="width: 20px; height: 20px; cursor: pointer;">
+                                    <span>Auto-adjust quality for performance</span>
+                                </label>
+                                <div class="adaptive-hint">
+                                    Automatically reduces quality if performance issues are detected
+                                </div>
+                            </div>
+                            
+                            <div class="quality-indicator" id="qualityIndicator" style="display: none;">
+                                <span class="indicator-label">Current Performance:</span>
+                                <span class="indicator-status" id="performanceStatus">Good</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Metronome Section -->
@@ -225,6 +258,130 @@ export class AudioPlayer {
                 .btn-warning:hover {
                     transform: translateY(-2px);
                     box-shadow: 0 10px 20px rgba(245, 158, 11, 0.3);
+                }
+
+                /* Audio Quality Control Styles */
+                .audio-quality-control {
+                    background: var(--bg-input);
+                    padding: var(--space-lg);
+                    border-radius: var(--radius-lg);
+                    margin-top: var(--space-lg);
+                    border: 1px solid var(--border);
+                }
+
+                .audio-quality-control h3 {
+                    margin-bottom: var(--space-md);
+                    color: var(--text-primary);
+                    font-size: 1.1rem;
+                }
+
+                .quality-controls {
+                    display: flex;
+                    flex-direction: column;
+                    gap: var(--space-md);
+                }
+
+                .quality-mode-control {
+                    display: flex;
+                    flex-direction: column;
+                    gap: var(--space-sm);
+                }
+
+                .quality-mode-control label {
+                    color: var(--text-secondary);
+                    font-weight: 500;
+                    font-size: 0.875rem;
+                }
+
+                .quality-select {
+                    padding: var(--space-sm) var(--space-md);
+                    background: var(--bg-dark);
+                    border: 1px solid var(--border);
+                    border-radius: var(--radius-md);
+                    color: var(--text-primary);
+                    font-size: 1rem;
+                    cursor: pointer;
+                    transition: all var(--transition-base);
+                }
+
+                .quality-select:hover,
+                .quality-select:focus {
+                    border-color: var(--primary);
+                    outline: none;
+                }
+
+                .quality-description {
+                    font-size: 0.875rem;
+                    color: var(--text-secondary);
+                    font-style: italic;
+                }
+
+                .adaptive-quality-control {
+                    display: flex;
+                    flex-direction: column;
+                    gap: var(--space-xs);
+                }
+
+                .adaptive-quality-control .checkbox-label {
+                    display: flex;
+                    align-items: center;
+                    gap: var(--space-sm);
+                    cursor: pointer;
+                }
+
+                .adaptive-hint {
+                    font-size: 0.75rem;
+                    color: var(--text-secondary);
+                    margin-left: 28px;
+                }
+
+                .quality-indicator {
+                    padding: var(--space-sm) var(--space-md);
+                    background: var(--bg-dark);
+                    border-radius: var(--radius-md);
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-top: var(--space-sm);
+                }
+
+                .indicator-label {
+                    color: var(--text-secondary);
+                    font-size: 0.875rem;
+                }
+
+                .indicator-status {
+                    font-weight: 600;
+                    padding: var(--space-xs) var(--space-sm);
+                    border-radius: var(--radius-sm);
+                    font-size: 0.875rem;
+                }
+
+                .indicator-status.good {
+                    color: var(--success);
+                    background: rgba(16, 185, 129, 0.1);
+                }
+
+                .indicator-status.medium {
+                    color: var(--warning);
+                    background: rgba(245, 158, 11, 0.1);
+                }
+
+                .indicator-status.poor {
+                    color: var(--danger);
+                    background: rgba(239, 68, 68, 0.1);
+                }
+
+                /* Responsive adjustments */
+                @media (max-width: 768px) {
+                    .quality-controls {
+                        gap: var(--space-lg);
+                    }
+
+                    .quality-mode-control label,
+                    .adaptive-quality-control .checkbox-label span {
+                        font-size: 1rem;
+                    }
                 }
             </style>
         `;
@@ -325,6 +482,35 @@ export class AudioPlayer {
             });
         });
 
+        // Quality controls
+        const qualityMode = this.container.querySelector('#qualityMode');
+        if (qualityMode) {
+            qualityMode.addEventListener('change', (e) => {
+                this.audioService.setQualityMode(e.target.value);
+                this.updateQualityDescription(e.target.value);
+                notificationManager.info(`Audio quality set to ${e.target.value}`);
+            });
+        }
+
+        const adaptiveQuality = this.container.querySelector('#adaptiveQuality');
+        if (adaptiveQuality) {
+            adaptiveQuality.addEventListener('change', (e) => {
+                this.audioService.setAdaptiveQuality(e.target.checked);
+                if (e.target.checked) {
+                    notificationManager.info('Adaptive quality enabled - will adjust automatically for best performance');
+                } else {
+                    notificationManager.info('Adaptive quality disabled - using fixed quality mode');
+                }
+            });
+        }
+
+        // Monitor performance if using pitch shifter
+        setInterval(() => {
+            if (this.audioService.isPlaying && this.audioService.usingPitchShifter && this.audioService.pitchShifter) {
+                this.updatePerformanceIndicator();
+            }
+        }, 2000);
+
         // Loop controls
         const setStartBtn = this.container.querySelector('#setLoopStartBtn');
         const setEndBtn = this.container.querySelector('#setLoopEndBtn');
@@ -396,6 +582,46 @@ export class AudioPlayer {
                 }
             }
         });
+    }
+
+    updateQualityDescription(mode) {
+        const descriptions = {
+            low: 'Basic quality with minimal processing - best for slower devices',
+            medium: 'Balanced quality and performance for most devices',
+            high: 'Best quality with advanced processing - requires more CPU'
+        };
+
+        const descriptionEl = document.getElementById('qualityDescription');
+        if (descriptionEl) {
+            descriptionEl.textContent = descriptions[mode] || '';
+        }
+    }
+
+    updatePerformanceIndicator() {
+        if (!this.audioService.pitchShifter || !this.audioService.pitchShifter.performanceMonitor) return;
+
+        const indicator = document.getElementById('qualityIndicator');
+        const status = document.getElementById('performanceStatus');
+
+        if (!indicator || !status) return;
+
+        const avgFrameTime = this.audioService.pitchShifter.performanceMonitor.averageFrameTime;
+
+        indicator.style.display = 'flex';
+
+        if (avgFrameTime < 5) {
+            status.textContent = 'Excellent';
+            status.className = 'indicator-status good';
+        } else if (avgFrameTime < 10) {
+            status.textContent = 'Good';
+            status.className = 'indicator-status good';
+        } else if (avgFrameTime < 15) {
+            status.textContent = 'Fair';
+            status.className = 'indicator-status medium';
+        } else {
+            status.textContent = 'Poor';
+            status.className = 'indicator-status poor';
+        }
     }
 
     play() {
@@ -681,6 +907,7 @@ export class AudioPlayer {
             loopEnd: this.loopEndTime,
             playbackSpeed: parseFloat(document.getElementById('speedSlider').value) / 100,
             pitchShift: parseFloat(document.getElementById('pitchSlider').value),
+            qualityMode: document.getElementById('qualityMode').value,
             createdAt: new Date().toISOString()
         };
 
@@ -723,6 +950,12 @@ export class AudioPlayer {
                 pitchDisplay = `<span class="pitch-info">🎵 ${pitchValue} semitones</span>`;
             }
 
+            // Quality mode display
+            let qualityDisplay = '';
+            if (session.qualityMode) {
+                qualityDisplay = `<span class="quality-info">🎚️ ${session.qualityMode} quality</span>`;
+            }
+
             return `
                 <div class="saved-session-item ${isCurrentFile ? 'current-file' : 'different-file'}">
                     <div class="session-item-header">
@@ -735,6 +968,7 @@ export class AudioPlayer {
                             ${hasLoop ? `<span>🔁 ${TimeUtils.formatTime(session.loopStart)} - ${TimeUtils.formatTime(session.loopEnd)}</span>` : '<span>🎵 Full Track</span>'}
                             <span>⚡ ${Math.round(session.playbackSpeed * 100)}% speed</span>
                             ${pitchDisplay}
+                            ${qualityDisplay}
                         </div>
                         ${session.notes ? `<div class="session-notes">${session.notes}</div>` : ''}
                         <div class="session-date">${date.toLocaleDateString()} ${date.toLocaleTimeString()}</div>
@@ -810,6 +1044,16 @@ export class AudioPlayer {
             }
         }
 
+        // Set quality mode if available
+        if (session.qualityMode) {
+            const qualitySelect = document.getElementById('qualityMode');
+            if (qualitySelect) {
+                qualitySelect.value = session.qualityMode;
+                this.audioService.setQualityMode(session.qualityMode);
+                this.updateQualityDescription(session.qualityMode);
+            }
+        }
+
         notificationManager.success(`Loaded session: ${session.name}`);
     }
 
@@ -868,54 +1112,42 @@ export class AudioPlayer {
         }
     }
 
-setPitch(semitones) {
-    // Check if the setPitchShift method exists
-    if (this.audioService && typeof this.audioService.setPitchShift === 'function') {
+    setPitch(semitones) {
         this.audioService.setPitchShift(semitones);
-    } else {
-        console.warn('setPitchShift method not available in audioService - pitch adjustment will not work until audioService is updated');
-        // Store the value for display purposes
-        this.currentPitchShift = semitones;
-    }
-
-    const element = this.container.querySelector('#pitchValue');
-    if (element) {
-        element.textContent = semitones > 0 ? `+${semitones}` : semitones;
-    }
-
-    // Update preset button styles
-    const presetBtns = this.container.querySelectorAll('.pitch-preset');
-    presetBtns.forEach(btn => {
-        const btnValue = parseInt(btn.dataset.semitones);
-        if (btnValue === Math.round(semitones)) {
-            btn.classList.add('active');
-        } else {
-            btn.classList.remove('active');
+        const element = this.container.querySelector('#pitchValue');
+        if (element) {
+            element.textContent = semitones > 0 ? `+${semitones}` : semitones;
         }
-    });
-}
 
-resetPitch() {
-    const slider = this.container.querySelector('#pitchSlider');
-    if (slider) {
-        slider.value = 0;
-        this.setPitch(0);
+        // Update preset button styles
+        const presetBtns = this.container.querySelectorAll('.pitch-preset');
+        presetBtns.forEach(btn => {
+            const btnValue = parseInt(btn.dataset.semitones);
+            if (btnValue === Math.round(semitones)) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
     }
 
-    // Reset the stored value
-    this.currentPitchShift = 0;
-}
-
-// Also update adjustPitch to be safe
-adjustPitch(change) {
-    const slider = this.container.querySelector('#pitchSlider');
-    if (slider) {
-        const newValue = parseFloat(slider.value) + change;
-        const clampedValue = Math.max(-12, Math.min(12, newValue));
-        slider.value = clampedValue;
-        this.setPitch(clampedValue);
+    resetPitch() {
+        const slider = this.container.querySelector('#pitchSlider');
+        if (slider) {
+            slider.value = 0;
+            this.setPitch(0);
+        }
     }
-}
+
+    adjustPitch(change) {
+        const slider = this.container.querySelector('#pitchSlider');
+        if (slider) {
+            const newValue = parseFloat(slider.value) + change;
+            const clampedValue = Math.max(-12, Math.min(12, newValue));
+            slider.value = clampedValue;
+            this.setPitch(clampedValue);
+        }
+    }
 
     updateTimeDisplay(currentTime) {
         const timeElement = this.container.querySelector('#currentTime');
