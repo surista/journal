@@ -1,0 +1,292 @@
+/* Metronome Component Styles */
+
+.metronome-container {
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    padding: var(--space-xl);
+    box-shadow: var(--shadow-xl);
+    border: 1px solid var(--border);
+    width: 100%;  /* Add this */
+    max-width: none;  /* Add this */
+}
+
+.metronome-title {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+    color: var(--text-primary);
+}
+
+/* Metronome visual */
+.metronome-visual {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: var(--space-xl);
+}
+
+.pulsating-circle {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: transform 0.1s ease;
+    box-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
+}
+
+.pulsating-circle.pulse {
+    transform: scale(1.1);
+    box-shadow: 0 0 50px rgba(99, 102, 241, 0.8);
+}
+
+.tempo-display {
+    font-size: var(--text-4xl);
+    font-weight: bold;
+    color: white;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.bpm-label {
+    font-size: var(--text-sm);
+    color: white;
+    opacity: 0.9;
+}
+
+/* Beat indicators */
+.beat-indicators {
+    display: flex;
+    gap: var(--space-sm);
+    margin-top: var(--space-xl);
+}
+
+.beat-indicator {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--bg-input);
+    border: 2px solid var(--border);
+    transition: var(--transition-fast);
+}
+
+.beat-indicator.accent {
+    border-color: var(--primary);
+}
+
+.beat-indicator.active {
+    background: var(--primary);
+    transform: scale(1.3);
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.6);
+}
+
+.beat-indicator.active.accent {
+    background: var(--secondary);
+    box-shadow: 0 0 20px rgba(168, 85, 247, 0.8);
+}
+
+/* Tempo controls */
+.tempo-controls {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-xl);
+    flex-wrap: wrap;
+}
+
+.play-btn {
+    padding: var(--space-md) var(--space-xl);
+    background: var(--success);
+    border: none;
+    border-radius: var(--radius-lg);
+    color: white;
+    font-size: var(--text-xl);
+    cursor: pointer;
+    transition: var(--transition-base);
+}
+
+.play-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+}
+
+.play-btn.playing {
+    background: var(--danger);
+}
+
+/* Tempo slider */
+.tempo-slider-container {
+    margin-bottom: var(--space-xl);
+}
+
+.tempo-slider {
+    width: 100%;
+    margin-bottom: var(--space-sm);
+}
+
+.tempo-marks {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--text-xs);
+    color: var(--text-secondary);
+}
+
+/* Time signature section */
+.time-signature-section,
+.sound-selection,
+.volume-control,
+.precount-section {
+    margin-bottom: var(--space-xl);
+}
+
+.metronome-select {
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+/* Accent pattern */
+.accent-pattern-section {
+    margin-bottom: var(--space-xl);
+}
+
+.accent-toggles {
+    display: flex;
+    gap: var(--space-sm);
+    margin-top: var(--space-sm);
+}
+
+.accent-toggle {
+    width: 40px;
+    height: 40px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--bg-input);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: var(--transition-base);
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.accent-toggle.accented {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+/* Volume control */
+.volume-slider {
+    width: calc(100% - 60px);
+    margin-right: var(--space-sm);
+}
+
+#volumeDisplay {
+    font-weight: 600;
+    color: var(--primary);
+}
+
+/* Tempo progression */
+.tempo-progression-section {
+    background: var(--bg-input);
+    padding: var(--space-xl);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-xl);
+}
+
+.tempo-progression-section h4 {
+    margin-bottom: var(--space-md);
+    color: var(--text-primary);
+}
+
+.progression-controls {
+    margin-top: var(--space-md);
+}
+
+.progression-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-sm);
+}
+
+.progression-row input[type="number"] {
+    width: 80px;
+    padding: var(--space-xs) var(--space-sm);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+}
+
+.small-select {
+    padding: var(--space-xs) var(--space-sm);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+}
+
+.progression-status {
+    margin-top: var(--space-sm);
+    padding: var(--space-sm);
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+/* Tap tempo */
+.tap-tempo-section {
+    text-align: center;
+}
+
+.tap-tempo-btn {
+    padding: var(--space-md) var(--space-xl);
+    background: var(--primary);
+    border: none;
+    border-radius: var(--radius-lg);
+    color: white;
+    cursor: pointer;
+    transition: var(--transition-base);
+    font-weight: 600;
+}
+
+.tap-tempo-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
+}
+
+.tap-tempo-btn:active {
+    transform: translateY(0);
+}
+
+.tap-tempo-hint {
+    display: block;
+    margin-top: var(--space-sm);
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .tempo-controls {
+        flex-direction: column;
+    }
+
+    .accent-toggles {
+        flex-wrap: wrap;
+    }
+
+    .progression-row {
+        flex-wrap: wrap;
+    }
+}

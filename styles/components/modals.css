@@ -1,0 +1,250 @@
+/* Modal Component Styles */
+
+/* Modal backdrop */
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    z-index: var(--z-modal-backdrop);
+    animation: fadeIn 0.2s ease;
+    backdrop-filter: blur(4px);
+}
+
+/* Modal content */
+.modal-content {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-xl);
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-2xl);
+    z-index: var(--z-modal);
+    animation: scaleIn 0.3s ease;
+}
+
+/* Modal header */
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-lg);
+    padding-bottom: var(--space-lg);
+    border-bottom: 1px solid var(--border);
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: var(--text-xl);
+    font-weight: 600;
+}
+
+/* Modal close button */
+.modal-close {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: var(--transition-base);
+    font-size: var(--text-lg);
+    line-height: 1;
+}
+
+.modal-close:hover {
+    background: var(--danger);
+    border-color: var(--danger);
+    color: white;
+}
+
+/* Modal body */
+.modal-body {
+    margin-bottom: var(--space-lg);
+}
+
+/* Modal footer/actions */
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-md);
+    margin-top: var(--space-xl);
+}
+
+/* Responsive modal */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+        margin: var(--space-md);
+        padding: var(--space-lg);
+    }
+}
+
+/* Practice day modal specific */
+.practice-day-modal .modal-content {
+    max-width: 600px;
+}
+
+.practice-day-summary {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: var(--space-xl);
+    padding: var(--space-lg);
+    background: var(--bg-input);
+    border-radius: var(--radius-lg);
+}
+
+.day-stat {
+    text-align: center;
+}
+
+.day-stat .stat-value {
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: var(--space-xs);
+}
+
+.day-stat .stat-label {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+.practice-day-sessions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.day-session {
+    background: var(--bg-input);
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+}
+
+.session-time {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    margin-bottom: var(--space-xs);
+}
+
+.session-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.session-area {
+    font-weight: 500;
+}
+
+.session-duration {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+/* Stats detail modal */
+.stats-detail-modal .modal-content {
+    max-width: 700px;
+}
+
+.stat-breakdown {
+    background: var(--bg-input);
+    padding: var(--space-lg);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-xl);
+}
+
+.breakdown-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-sm) 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.breakdown-item:last-child {
+    border-bottom: none;
+}
+
+.breakdown-label {
+    color: var(--text-secondary);
+}
+
+.breakdown-value {
+    font-weight: 600;
+    color: var(--primary);
+}
+
+/* Alert/Confirm modals */
+.modal-alert,
+.modal-confirm {
+    text-align: center;
+}
+
+.modal-alert .modal-icon,
+.modal-confirm .modal-icon {
+    font-size: var(--text-5xl);
+    margin-bottom: var(--space-lg);
+}
+
+.modal-alert.success .modal-icon {
+    color: var(--success);
+}
+
+.modal-alert.warning .modal-icon {
+    color: var(--warning);
+}
+
+.modal-alert.danger .modal-icon {
+    color: var(--danger);
+}
+
+.modal-message {
+    font-size: var(--text-lg);
+    color: var(--text-secondary);
+    margin-bottom: var(--space-xl);
+}
+
+/* Fullscreen modal */
+.modal-fullscreen .modal-content {
+    width: 100vw;
+    height: 100vh;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    border-radius: 0;
+    transform: none;
+    top: 0;
+    left: 0;
+}
+
+/* Slide-in modal */
+.modal-slide-in .modal-content {
+    position: fixed;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 400px;
+    max-width: 90vw;
+    transform: none;
+    border-radius: 0;
+    animation: slideInRight 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .modal-slide-in .modal-content {
+        width: 100vw;
+    }
+}

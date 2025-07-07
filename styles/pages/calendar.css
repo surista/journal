@@ -1,0 +1,402 @@
+/* Calendar Page Styles */
+
+.calendar-page {
+    min-height: 100vh;
+    background: var(--bg-dark);
+}
+
+.calendar-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--space-xl);
+}
+
+@media (max-width: 768px) {
+    .calendar-content {
+        padding: var(--space-md);
+    }
+}
+
+/* Goals section */
+.goals-section {
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    padding: var(--space-xl);
+    margin-bottom: var(--space-xl);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border);
+}
+
+.goals-section h2 {
+    margin-bottom: var(--space-sm);
+}
+
+.goals-section .text-secondary {
+    margin-bottom: var(--space-lg);
+}
+
+/* Practice area goals */
+.practice-area-goals {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--space-md);
+}
+
+.practice-area-goal {
+    background: var(--bg-input);
+    padding: var(--space-lg);
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--border);
+    transition: var(--transition-base);
+}
+
+.practice-area-goal:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+}
+
+.goal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-md);
+}
+
+.goal-title {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.goal-target {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.goal-target label {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+.goal-target input {
+    width: 80px;
+    padding: var(--space-xs) var(--space-sm);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    text-align: center;
+}
+
+.goal-target span {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+/* Add practice area goal button */
+.add-practice-area-goal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-input);
+    padding: var(--space-xl);
+    border-radius: var(--radius-lg);
+    border: 2px dashed var(--border);
+    cursor: pointer;
+    transition: var(--transition-base);
+    min-height: 120px;
+}
+
+.add-practice-area-goal:hover {
+    border-color: var(--primary);
+    background: var(--bg-card);
+}
+
+.add-icon {
+    font-size: var(--text-2xl);
+    margin-bottom: var(--space-sm);
+    color: var(--primary);
+}
+
+.add-text {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+/* Calendar section */
+.calendar-section {
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    padding: var(--space-xl);
+    margin-bottom: var(--space-xl);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border);
+}
+
+/* Calendar controls */
+.calendar-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--space-xl);
+    margin-bottom: var(--space-xl);
+}
+
+.calendar-controls h3 {
+    margin: 0;
+    font-size: var(--text-2xl);
+    color: var(--text-primary);
+}
+
+/* Calendar grid */
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+}
+
+.calendar-header {
+    text-align: center;
+    font-weight: 600;
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    padding: var(--space-sm);
+}
+
+/* Calendar day */
+.calendar-day {
+    aspect-ratio: 1;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    position: relative;
+    cursor: pointer;
+    transition: var(--transition-base);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60px;
+}
+
+.calendar-day:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.calendar-day.other-month {
+    opacity: 0.3;
+    cursor: default;
+}
+
+.calendar-day.today {
+    border: 2px solid var(--primary);
+    background: var(--bg-card);
+}
+
+.calendar-day.has-practice {
+    background: var(--bg-card);
+    border-color: var(--primary);
+}
+
+/* Calendar quadrants */
+.calendar-quadrants {
+    position: absolute;
+    inset: 2px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 2px;
+}
+
+.calendar-quadrant {
+    background: var(--bg-input);
+    border-radius: 2px;
+    transition: var(--transition-base);
+}
+
+.calendar-quadrant.completed {
+    background: var(--primary);
+}
+
+/* Calendar day number */
+.calendar-day-number {
+    position: absolute;
+    bottom: 4px;
+    right: 6px;
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--text-secondary);
+    z-index: 1;
+}
+
+.calendar-day.has-practice .calendar-day-number {
+    color: var(--primary);
+}
+
+/* Calendar history */
+.calendar-history {
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    padding: var(--space-xl);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border);
+}
+
+.calendar-history h2 {
+    margin-bottom: var(--space-lg);
+}
+
+/* Calendar entries */
+.calendar-entry {
+    background: var(--bg-input);
+    padding: var(--space-lg);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-md);
+    border: 1px solid var(--border);
+    transition: var(--transition-base);
+}
+
+.calendar-entry:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+}
+
+.entry-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-sm);
+}
+
+.entry-date {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+.entry-duration {
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.entry-area {
+    font-weight: 500;
+    margin-bottom: var(--space-sm);
+}
+
+.entry-notes {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+/* Empty state */
+.empty-state {
+    text-align: center;
+    padding: var(--space-3xl);
+    color: var(--text-secondary);
+}
+
+/* Calendar animations */
+@keyframes calendarDayPop {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.calendar-day {
+    animation: calendarDayPop 0.3s ease;
+    animation-fill-mode: backwards;
+}
+
+.calendar-day:nth-child(7n+1) { animation-delay: 0.05s; }
+.calendar-day:nth-child(7n+2) { animation-delay: 0.1s; }
+.calendar-day:nth-child(7n+3) { animation-delay: 0.15s; }
+.calendar-day:nth-child(7n+4) { animation-delay: 0.2s; }
+.calendar-day:nth-child(7n+5) { animation-delay: 0.25s; }
+.calendar-day:nth-child(7n+6) { animation-delay: 0.3s; }
+.calendar-day:nth-child(7n) { animation-delay: 0.35s; }
+
+/* Responsive calendar */
+@media (max-width: 768px) {
+    .calendar-grid {
+        gap: 4px;
+    }
+
+    .calendar-day {
+        min-height: 50px;
+    }
+
+    .calendar-day-number {
+        font-size: 0.625rem;
+    }
+
+    .practice-area-goals {
+        grid-template-columns: 1fr;
+    }
+}
+
+.calendar-stats {
+    display: flex;
+    gap: var(--space-xl);
+    margin: var(--space-xl) 0;
+}
+
+.stat-card {
+    flex: 1;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+}
+
+/* Streak badges horizontal layout */
+.badges {
+    display: flex;
+    gap: var(--space-lg);
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-xs);
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    transition: all 0.3s ease;
+}
+
+.badge.unearned {
+    opacity: 0.4;
+    filter: grayscale(100%);
+}
+
+.badge.earned {
+    opacity: 1;
+    filter: none;
+    border-color: var(--primary);
+    background: var(--bg-card);
+}
+
+.badge-icon {
+    font-size: 2rem;
+}
+
+.badge-label {
+    font-size: 0.875rem;
+    text-align: center;
+}

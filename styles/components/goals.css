@@ -1,0 +1,218 @@
+/* Goals Component Styles */
+
+.goals-list {
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    padding: var(--space-xl);
+    box-shadow: var(--shadow-xl);
+    border: 1px solid var(--border);
+}
+
+/* Goal form */
+.goal-form {
+    background: var(--bg-input);
+    padding: var(--space-xl);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-xl);
+}
+
+.goal-search {
+    margin-bottom: var(--space-md);
+}
+
+.goal-metrics-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: var(--space-md);
+    margin-bottom: var(--space-md);
+}
+
+@media (max-width: 768px) {
+    .goal-metrics-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Goals stats */
+.goals-stats {
+    display: flex;
+    justify-content: space-around;
+    background: var(--bg-input);
+    padding: var(--space-lg);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-xl);
+}
+
+.goal-stat {
+    text-align: center;
+}
+
+/* Goals list */
+#goalsList {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+/* Goal progress */
+.goal-progress {
+    margin: var(--space-sm) 0;
+}
+
+.progress-bar-container {
+    background: var(--bg-card);
+    height: 8px;
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    margin-bottom: var(--space-xs);
+}
+
+.progress-bar {
+    height: 100%;
+    background: var(--primary);
+    transition: width 0.5s ease;
+}
+
+.progress-text {
+    font-size: var(--text-xs);
+    color: var(--text-secondary);
+    text-align: right;
+}
+
+/* Goal priority indicators */
+.goal-item[data-priority="5"] {
+    border-left: 4px solid var(--danger);
+}
+
+.goal-item[data-priority="4"] {
+    border-left: 4px solid var(--warning);
+}
+
+.goal-item[data-priority="3"] {
+    border-left: 4px solid var(--primary);
+}
+
+.goal-item[data-priority="2"] {
+    border-left: 4px solid var(--success);
+}
+
+/* Goal animations */
+@keyframes goalComplete {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+        background: var(--success);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.goal-item.completing {
+    animation: goalComplete 0.5s ease;
+}
+
+/* Goal update button */
+.btn-update {
+    padding: var(--space-sm) var(--space-md);
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+}
+
+.btn-update:hover {
+    background: var(--primary-dark);
+}
+
+/* Goal categories */
+.goal-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-lg);
+}
+
+.goal-category-filter {
+    padding: var(--space-xs) var(--space-md);
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-full);
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition-base);
+}
+
+.goal-category-filter:hover {
+    background: var(--bg-card);
+    border-color: var(--primary);
+}
+
+.goal-category-filter.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+/* Goal statistics breakdown */
+.goal-stats-breakdown {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-md);
+    margin-top: var(--space-xl);
+}
+
+.goal-stat-card {
+    background: var(--bg-input);
+    padding: var(--space-lg);
+    border-radius: var(--radius-lg);
+    text-align: center;
+}
+
+.goal-stat-icon {
+    font-size: var(--text-2xl);
+    margin-bottom: var(--space-sm);
+}
+
+.goal-stat-value {
+    font-size: var(--text-3xl);
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: var(--space-xs);
+}
+
+.goal-stat-label {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+/* Goal particles animation */
+@keyframes goalParticle {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(
+            calc(-50% + var(--particle-x)),
+            calc(-50% + var(--particle-y))
+        ) scale(1);
+        opacity: 0;
+    }
+}
+
+.goal-particle {
+    position: fixed;
+    width: 8px;
+    height: 8px;
+    background: var(--primary);
+    left: 50%;
+    top: 50%;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: goalParticle 1s ease-out;
+    z-index: var(--z-notification);
+}

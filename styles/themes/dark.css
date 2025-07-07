@@ -1,0 +1,324 @@
+/* Dark Theme Styles - Default Theme */
+
+/* ========================================
+   DARK THEME VARIABLES
+   ======================================== */
+:root[data-theme="dark"],
+:root:not([data-theme]) {
+    /* Primary Colors */
+    --primary: #6366f1;
+    --primary-dark: #4f46e5;
+    --primary-light: #818cf8;
+    --secondary: #a855f7;
+    --secondary-dark: #9333ea;
+    --secondary-light: #c084fc;
+
+    /* Status Colors */
+    --success: #10b981;
+    --success-dark: #059669;
+    --success-light: #34d399;
+    --danger: #ef4444;
+    --danger-dark: #dc2626;
+    --danger-light: #f87171;
+    --warning: #f59e0b;
+    --warning-dark: #d97706;
+    --warning-light: #fbbf24;
+    --info: #3b82f6;
+    --info-dark: #2563eb;
+    --info-light: #60a5fa;
+
+    /* Backgrounds */
+    --bg-dark: #0a0a0a;
+    --bg-darker: #050505;
+    --bg-card: #1f1f23;
+    --bg-card-hover: #2a2a2e;
+    --bg-input: #2a2a2e;
+    --bg-input-hover: #323238;
+    --bg-modal: rgba(0, 0, 0, 0.9);
+    --bg-sidebar: #1a1a1e;
+    --bg-overlay: rgba(0, 0, 0, 0.7);
+
+    /* Text Colors */
+    --text-primary: #ffffff;
+    --text-secondary: #9ca3af;
+    --text-tertiary: #6b7280;
+    --text-muted: #4b5563;
+    --text-disabled: #374151;
+
+    /* Borders */
+    --border: #374151;
+    --border-light: #4b5563;
+    --border-focus: #6366f1;
+    --border-error: #ef4444;
+    --border-success: #10b981;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.5);
+    --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.3);
+
+    /* Scrollbar */
+    --scrollbar-track: #1a1a1e;
+    --scrollbar-thumb: #4b5563;
+    --scrollbar-thumb-hover: #6b7280;
+
+    /* Code */
+    --code-bg: #1e1e1e;
+    --code-text: #d4d4d4;
+    --code-comment: #6a9955;
+    --code-string: #ce9178;
+    --code-keyword: #569cd6;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    --gradient-danger: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    --gradient-dark: linear-gradient(135deg, #1f1f23 0%, #0f0f13 100%);
+
+    /* Opacity values for dark theme */
+    --opacity-hover: 0.8;
+    --opacity-disabled: 0.5;
+    --opacity-overlay: 0.9;
+}
+
+/* ========================================
+   DARK THEME SPECIFIC OVERRIDES
+   ======================================== */
+
+/* Body and base elements */
+[data-theme="dark"] body,
+body:not([data-theme]) {
+    background: var(--bg-dark);
+    color: var(--text-primary);
+}
+
+/* Sidebar adjustments */
+[data-theme="dark"] .sidebar {
+    background: var(--bg-sidebar);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Cards and surfaces */
+[data-theme="dark"] .card,
+[data-theme="dark"] .stat-card,
+[data-theme="dark"] .modal-content {
+    background: var(--bg-card);
+    box-shadow: var(--shadow-lg);
+}
+
+[data-theme="dark"] .card:hover,
+[data-theme="dark"] .stat-card:hover {
+    background: var(--bg-card-hover);
+    box-shadow: var(--shadow-xl);
+}
+
+/* Input elements */
+[data-theme="dark"] input,
+[data-theme="dark"] select,
+[data-theme="dark"] textarea {
+    background: var(--bg-input);
+    border-color: var(--border);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] input:hover,
+[data-theme="dark"] select:hover,
+[data-theme="dark"] textarea:hover {
+    background: var(--bg-input-hover);
+    border-color: var(--border-light);
+}
+
+[data-theme="dark"] input:focus,
+[data-theme="dark"] select:focus,
+[data-theme="dark"] textarea:focus {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* Buttons */
+[data-theme="dark"] .btn {
+    box-shadow: var(--shadow-md);
+}
+
+[data-theme="dark"] .btn:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+[data-theme="dark"] .btn-secondary {
+    background: var(--bg-input);
+    border-color: var(--border);
+}
+
+[data-theme="dark"] .btn-secondary:hover {
+    background: var(--bg-input-hover);
+    border-color: var(--border-light);
+}
+
+/* Navigation */
+[data-theme="dark"] .nav-item {
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .nav-item:hover {
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .nav-item.active {
+    background: rgba(99, 102, 241, 0.15);
+    color: var(--primary);
+}
+
+/* Calendar specific */
+[data-theme="dark"] .calendar-day {
+    background: var(--bg-input);
+    border-color: var(--border);
+}
+
+[data-theme="dark"] .calendar-day:hover {
+    background: var(--bg-input-hover);
+    box-shadow: var(--shadow-md);
+}
+
+[data-theme="dark"] .calendar-day.today {
+    border-color: var(--primary);
+    background: rgba(99, 102, 241, 0.1);
+}
+
+/* Modals */
+[data-theme="dark"] .modal {
+    background: var(--bg-modal);
+}
+
+/* Scrollbars */
+[data-theme="dark"] ::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+}
+
+/* Code blocks */
+[data-theme="dark"] code,
+[data-theme="dark"] pre {
+    background: var(--code-bg);
+    color: var(--code-text);
+}
+
+/* Tables */
+[data-theme="dark"] table {
+    border-color: var(--border);
+}
+
+[data-theme="dark"] th {
+    background: var(--bg-input);
+    border-color: var(--border);
+}
+
+[data-theme="dark"] td {
+    border-color: var(--border);
+}
+
+[data-theme="dark"] tr:hover {
+    background: var(--bg-input);
+}
+
+/* Tooltips */
+[data-theme="dark"] .tooltip {
+    background: var(--bg-card);
+    border-color: var(--border);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Progress bars */
+[data-theme="dark"] .progress-bar-container {
+    background: var(--bg-input);
+}
+
+/* Badges */
+[data-theme="dark"] .badge {
+    background: var(--bg-input);
+    border-color: var(--border);
+}
+
+/* Dividers */
+[data-theme="dark"] hr,
+[data-theme="dark"] .divider {
+    border-color: var(--border);
+}
+
+/* Loading states */
+[data-theme="dark"] .skeleton {
+    background: linear-gradient(
+        90deg,
+        var(--bg-input) 0%,
+        var(--bg-card) 50%,
+        var(--bg-input) 100%
+    );
+}
+
+/* Selection */
+[data-theme="dark"] ::selection {
+    background: var(--primary);
+    color: white;
+}
+
+/* Focus rings */
+[data-theme="dark"] *:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+/* Disabled states */
+[data-theme="dark"] [disabled],
+[data-theme="dark"] .disabled {
+    opacity: var(--opacity-disabled);
+    cursor: not-allowed;
+}
+
+/* Links */
+[data-theme="dark"] a {
+    color: var(--primary);
+}
+
+[data-theme="dark"] a:hover {
+    color: var(--primary-light);
+}
+
+[data-theme="dark"] a:visited {
+    color: var(--secondary);
+}
+
+/* ========================================
+   DARK THEME ANIMATIONS
+   ======================================== */
+
+/* Glow effects for dark theme */
+[data-theme="dark"] .glow {
+    box-shadow: var(--shadow-glow);
+}
+
+[data-theme="dark"] .glow:hover {
+    box-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
+}
+
+/* Subtle animations for dark theme */
+[data-theme="dark"] * {
+    transition-duration: 200ms;
+}
+
+[data-theme="dark"] .card,
+[data-theme="dark"] .btn,
+[data-theme="dark"] .nav-item {
+    transition: all 200ms ease;
+}

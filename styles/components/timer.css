@@ -1,0 +1,384 @@
+/* Timer Component Styles */
+
+/* Timer wrapper */
+.timer-wrapper {
+    padding: var(--space-2xl);
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+    border: 1px solid var(--border);
+}
+
+/* Timer display */
+.timer-display {
+    font-size: var(--text-5xl);
+    font-weight: 300;
+    text-align: center;
+    margin: var(--space-xl) auto;
+    padding: var(--space-md);
+    font-variant-numeric: tabular-nums;
+    color: var(--primary);
+    line-height: 1.2;
+    min-height: 80px;
+    font-family: var(--font-mono);
+}
+
+.timer-subtitle {
+    text-align: center;
+    color: var(--text-secondary);
+    margin-bottom: var(--space-xl);
+    font-size: var(--text-base);
+}
+
+/* Timer controls */
+.timer-controls {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+    flex-wrap: wrap;
+}
+
+/* Timer sync control */
+.timer-sync-control {
+    text-align: center;
+    margin: var(--space-xl) 0;
+    padding: var(--space-xl);
+    background: var(--bg-input);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+}
+
+.sync-toggle-label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    cursor: pointer;
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+    transition: var(--transition-base);
+}
+
+.sync-toggle-label:hover {
+    background: var(--bg-card);
+}
+
+.sync-status {
+    margin-top: var(--space-sm);
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+/* Timer stats */
+.timer-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-xl);
+    margin-top: var(--space-xl);
+}
+
+.timer-stat {
+    text-align: center;
+}
+
+/* Timer goal select */
+.timer-goal-select {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--space-sm) var(--space-md);
+    color: var(--text-primary);
+    font-size: var(--text-base);
+    width: 100%;
+    max-width: 150px;
+    cursor: pointer;
+}
+
+/* Timer progress */
+.timer-progress {
+    background: var(--bg-input);
+    height: 20px;
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    margin-top: var(--space-sm);
+    border: 1px solid var(--border);
+}
+
+.timer-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+    transition: width 0.3s ease;
+    width: 0%;
+}
+
+/* Compact timer (for dashboard) */
+.compact-timer-section {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-lg);
+    border: 1px solid var(--border);
+}
+
+.compact-timer-wrapper {
+    display: flex;
+    gap: var(--space-xl);
+    align-items: center;
+}
+
+@media (max-width: 768px) {
+    .compact-timer-wrapper {
+        flex-direction: column;
+    }
+}
+
+.compact-timer-left {
+    flex: 1;
+}
+
+.compact-timer-display {
+    font-size: var(--text-3xl);
+    font-weight: 300;
+    font-variant-numeric: tabular-nums;
+    color: var(--primary);
+    text-align: center;
+    margin-bottom: var(--space-md);
+}
+
+.compact-timer-controls {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-sm);
+}
+
+.compact-start-btn,
+.compact-stop-btn,
+.compact-reset-btn {
+    padding: var(--space-sm) var(--space-md);
+    font-size: var(--text-sm);
+}
+
+.compact-timer-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.compact-timer-goal {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.compact-timer-goal label {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+.compact-timer-goal select {
+    flex: 1;
+    padding: var(--space-xs) var(--space-sm);
+    font-size: var(--text-sm);
+}
+
+.compact-timer-progress {
+    flex: 1;
+}
+
+.compact-progress-bar {
+    background: var(--bg-input);
+    height: 12px;
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+
+.compact-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+    transition: width 0.3s ease;
+    width: 0%;
+}
+
+.compact-timer-sync {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.compact-sync-toggle {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.compact-sync-label {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    cursor: pointer;
+    user-select: none;
+}
+
+/* Timer animations */
+@keyframes timerPulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.timer-display.active {
+    animation: timerPulse 1s ease-in-out infinite;
+}
+
+/* Session timer widget */
+.session-timer-widget {
+    position: fixed;
+    bottom: var(--space-xl);
+    left: var(--space-xl);
+    background: var(--bg-card);
+    border: 2px solid var(--primary);
+    border-radius: var(--radius-lg);
+    padding: var(--space-md);
+    box-shadow: var(--shadow-xl);
+    z-index: var(--z-fixed);
+    min-width: 200px;
+}
+
+.session-timer-widget .timer-display {
+    font-size: var(--text-2xl);
+    margin: 0;
+    min-height: auto;
+}
+
+.session-timer-widget .timer-controls {
+    margin: var(--space-sm) 0 0;
+    gap: var(--space-xs);
+}
+
+.session-timer-widget .btn {
+    padding: var(--space-xs) var(--space-sm);
+    font-size: var(--text-sm);
+}
+
+/* Timer Section Styles - Add to your CSS */
+
+/* Timer section should always be visible and non-collapsible */
+.timer-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-lg);
+    box-shadow: var(--shadow-md);
+}
+
+/* Timer widget styling */
+.timer-widget {
+    text-align: center;
+}
+
+.timer-title {
+    font-size: 1.25rem;
+    margin-bottom: var(--space-md);
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+}
+
+.timer-display {
+    font-size: 3rem;
+    font-weight: 700;
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
+    color: var(--primary);
+    margin: var(--space-lg) 0;
+    letter-spacing: 0.05em;
+}
+
+.timer-controls {
+    display: flex;
+    gap: var(--space-md);
+    justify-content: center;
+    margin-bottom: var(--space-md);
+}
+
+.timer-controls .btn {
+    min-width: 120px;
+}
+
+.timer-hint {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+/* Layout adjustments for tabs with timer */
+.audio-layout,
+.metronome-layout {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+}
+
+/* Ensure practice form section can still collapse */
+.log-practice-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-lg);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.log-practice-section.collapsed {
+    max-height: 60px;
+}
+
+.log-practice-section.collapsed .log-practice-content {
+    display: none;
+}
+
+/* Make buttons more responsive */
+.timer-controls button {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.timer-controls button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.timer-controls button:active {
+    transform: translateY(0);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Timer sync checkbox */
+.timer-sync-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-top: var(--space-md);
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.timer-sync-label input[type="checkbox"] {
+    cursor: pointer;
+}
+
+.timer-sync-label:hover {
+    color: var(--text-primary);
+}
