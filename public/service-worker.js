@@ -19,7 +19,6 @@ const STATIC_CACHE_URLS = [
     // Service files
     './src/services/authService.js',
     './src/services/storageService.js',
-    './src/services/indexedDBService.js',
     './src/services/audioService.js',
     './src/services/notificationManager.js',
 

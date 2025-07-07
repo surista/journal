@@ -13,21 +13,7 @@ export class StorageService {
         this.backupDebounceTimer = null;
         this.backupDebounceDelay = 5000; // 5 seconds
 
-        // Initialize IndexedDB if available
-        this.initIndexedDB();
-    }
 
-    // Initialize IndexedDB for large data storage
-    async initIndexedDB() {
-        try {
-            const { IndexedDBService } = await import('./indexedDBService.js');
-            this.indexedDB = new IndexedDBService(this.userId);
-            await this.indexedDB.init();
-            console.log('IndexedDB initialized');
-        } catch (error) {
-            console.warn('IndexedDB not available, falling back to localStorage', error);
-        }
-    }
 
     // Practice Entries
     async savePracticeEntry(entry) {
@@ -49,10 +35,6 @@ export class StorageService {
                 localStorage.setItem(key, JSON.stringify(entries));
             }
 
-            // Also save to IndexedDB if available
-            if (this.indexedDB) {
-                await this.indexedDB.savePracticeSession(entry);
-            }
 
             // Update stats
             await this.updateStats(entry);
@@ -398,14 +380,7 @@ export class StorageService {
                 console.warn('Could not store backup in localStorage:', e);
             }
 
-            // Store in IndexedDB if available for better persistence
-            if (this.indexedDB) {
-                try {
-                    await this.indexedDB.saveBackup(backupData);
-                } catch (e) {
-                    console.warn('Could not store backup in IndexedDB:', e);
-                }
-            }
+
 
             // Check if this is the first backup
             const hasSeenBackupNotice = localStorage.getItem(`${this.prefix}has_seen_backup_notice`);
@@ -804,10 +779,6 @@ export class StorageService {
                 }
             });
 
-            // Clear IndexedDB if available
-            if (this.indexedDB) {
-                await this.indexedDB.clearAll();
-            }
 
             return true;
         } catch (error) {

@@ -1462,24 +1462,17 @@ export class DashboardPage {
                     this.components.audioPlayer.audio.pause();
                 }
 
-                // Clean up components
-                this.destroy();
+                // Clear local storage
+                localStorage.removeItem('currentUser');
+                localStorage.removeItem('authToken');
 
-                // Call authService logout
-                await this.authService.logout();
-
-                // Redirect to login
-                const currentPath = window.location.pathname;
-                const basePath = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
-                const loginUrl = `${window.location.origin}${basePath}login.html`;
-
-                console.log('Redirecting to login:', loginUrl);
-                window.location.href = loginUrl;
+                // Redirect to login page
+                window.location.href = './login.html';
 
             } catch (error) {
                 console.error('Error during logout:', error);
                 // Force redirect even on error
-                window.location.href = window.location.href.replace('index.html', 'login.html');
+                window.location.href = './login.html';
             }
         }
     }
