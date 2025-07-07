@@ -113,71 +113,8 @@ class App {
     }
 
     async loadAuthPage() {
-        console.log('🔓 Loading authentication page...');
-
-        try {
-            // Redirect to login.html instead of rendering inline
-            window.location.href = './login.html';
-
-        } catch (error) {
-            console.error('❌ Failed to redirect to auth page:', error);
-
-            // Fallback: render inline auth if redirect fails
-            const app = document.getElementById('app');
-            app.innerHTML = `
-                <div class="auth-container" style="
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    bottom: 0;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    background: #0a0a0a;
-                    padding: 20px;
-                ">
-                    <div class="auth-card" style="
-                        background: #1a1a1a;
-                        padding: 2rem;
-                        border-radius: 12px;
-                        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-                        max-width: 400px;
-                        width: 100%;
-                        border: 1px solid #374151;
-                    ">
-                        <h1 style="text-align: center; color: #6366f1; margin-bottom: 2rem; font-size: 2rem;">
-                            🎸 Guitar Practice Journal
-                        </h1>
-                        
-                        <p style="text-align: center; color: #e5e7eb; margin-bottom: 2rem;">
-                            Redirecting to login page...
-                        </p>
-                        
-                        <div style="text-align: center;">
-                            <button onclick="window.location.href='./login.html'" style="
-                                padding: 0.875rem 2rem;
-                                background: #6366f1;
-                                color: white;
-                                border: none;
-                                border-radius: 6px;
-                                cursor: pointer;
-                                font-weight: 600;
-                                font-size: 1rem;
-                            ">
-                                Go to Login Page
-                            </button>
-                        </div>
-                        
-                        <div style="text-align: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #374151;">
-                            <p style="color: #9ca3af; font-size: 0.875rem;">
-                                If you're not redirected, click the button above
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
+        console.log('🔓 No user found, redirecting to login page...');
+        window.location.replace('./login.html');
     }
 
     async loadDashboardPage() {

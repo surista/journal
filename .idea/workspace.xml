@@ -5,75 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5f27d1ec-c487-41e1-b5ff-716c9eb2c02f" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CHANGELOG.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/CONTRIBUTING.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/MAP.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/USAGE.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/login.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/manifest.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/service-worker.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/LazyImage.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/VirtualScrollList.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/achievementBadges.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/audioPlayer.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/goalsList.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/metronome.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/practiceForm.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/statsPanel.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/streakHeatMap.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/timer.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/waveform.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/config.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/auth.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/calendar.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/dashboard.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/audioService.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/authService.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/indexedDBService.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/notificationManager.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/notificationService.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/pushNotificationService.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/storageService.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/themeService.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/helpers.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/router.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles/base/animations.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles/base/reset.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles/base/typography.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles/base/variables.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles/components/achievements.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles/components/audio-player.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles/components/buttons.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles/components/cards.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles/components/forms.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles/components/goals.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles/components/heatmap.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles/components/loading.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles/components/metronome.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles/components/modals.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles/components/notifications.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles/components/stats.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles/components/timer.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles/components/waveform.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles/layout/grid.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles/layout/header.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles/layout/responsive.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles/layout/sidebar.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles/main.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles/pages/auth.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles/pages/calendar.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles/pages/dashboard.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles/themes/dark.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles/themes/light.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles/utilities/audio-player-fixes.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles/utilities/display.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles/utilities/helpers.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles/utilities/spacing.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles/utilities/text.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -149,7 +81,7 @@
       <workItem from="1751599018096" duration="31683000" />
       <workItem from="1751711414070" duration="138000" />
       <workItem from="1751711668849" duration="78789000" />
-      <workItem from="1751926390272" duration="3187000" />
+      <workItem from="1751926390272" duration="4159000" />
     </task>
     <servers />
   </component>
