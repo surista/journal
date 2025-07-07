@@ -12,8 +12,7 @@ export class StorageService {
         this.autoBackupEnabled = true;
         this.backupDebounceTimer = null;
         this.backupDebounceDelay = 5000; // 5 seconds
-
-
+    }
 
     // Practice Entries
     async savePracticeEntry(entry) {
@@ -34,7 +33,6 @@ export class StorageService {
             } else {
                 localStorage.setItem(key, JSON.stringify(entries));
             }
-
 
             // Update stats
             await this.updateStats(entry);
@@ -164,14 +162,14 @@ export class StorageService {
 
     async calculateCurrentStreak() {
         try {
-            const entries = await this.getPracticeEntries();
-            if (entries.length === 0) return 0;
+            const sessions = await this.getPracticeEntries();
+            if (sessions.length === 0) return 0;
 
             const today = new Date().toDateString();
             const yesterday = new Date(Date.now() - 86400000).toDateString();
 
             // Check if practiced today or yesterday
-            const practiceDates = new Set(entries.map(e => new Date(e.date).toDateString()));
+            const practiceDates = new Set(sessions.map(s => new Date(s.date).toDateString()));
 
             if (!practiceDates.has(today) && !practiceDates.has(yesterday)) {
                 return 0;
@@ -379,8 +377,6 @@ export class StorageService {
             } catch (e) {
                 console.warn('Could not store backup in localStorage:', e);
             }
-
-
 
             // Check if this is the first backup
             const hasSeenBackupNotice = localStorage.getItem(`${this.prefix}has_seen_backup_notice`);
@@ -778,7 +774,6 @@ export class StorageService {
                     localStorage.removeItem(key);
                 }
             });
-
 
             return true;
         } catch (error) {
