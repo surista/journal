@@ -116,116 +116,67 @@ class App {
         console.log('🔓 Loading authentication page...');
 
         try {
+            // Redirect to login.html instead of rendering inline
+            window.location.href = './login.html';
+
+        } catch (error) {
+            console.error('❌ Failed to redirect to auth page:', error);
+
+            // Fallback: render inline auth if redirect fails
             const app = document.getElementById('app');
             app.innerHTML = `
-                <div class="auth-container" style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--bg-dark); padding: 20px;">
-                    <div class="auth-card" style="background: var(--bg-card); padding: 2rem; border-radius: 12px; box-shadow: var(--shadow-xl); max-width: 400px; width: 100%; border: 1px solid var(--border);">
-                        <h1 style="text-align: center; color: var(--primary); margin-bottom: 2rem; font-size: 2rem;">
+                <div class="auth-container" style="
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background: #0a0a0a;
+                    padding: 20px;
+                ">
+                    <div class="auth-card" style="
+                        background: #1a1a1a;
+                        padding: 2rem;
+                        border-radius: 12px;
+                        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+                        max-width: 400px;
+                        width: 100%;
+                        border: 1px solid #374151;
+                    ">
+                        <h1 style="text-align: center; color: #6366f1; margin-bottom: 2rem; font-size: 2rem;">
                             🎸 Guitar Practice Journal
                         </h1>
                         
-                        <form id="loginForm" style="display: flex; flex-direction: column; gap: 1.25rem;">
-                            <div class="form-group">
-                                <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-weight: 500;">Email:</label>
-                                <input 
-                                    type="email" 
-                                    id="email" 
-                                    value="demo@example.com" 
-                                    style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-input); color: var(--text-primary); font-size: 1rem;" 
-                                    placeholder="Enter your email"
-                                    required
-                                >
-                            </div>
-                            <div class="form-group">
-                                <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-weight: 500;">Password:</label>
-                                <input 
-                                    type="password" 
-                                    id="password" 
-                                    value="demo123" 
-                                    style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-input); color: var(--text-primary); font-size: 1rem;" 
-                                    placeholder="Enter your password"
-                                    required
-                                >
-                            </div>
-                            <button 
-                                type="submit" 
-                                id="loginBtn"
-                                style="padding: 0.875rem; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 1rem; margin-top: 0.5rem; transition: all 0.2s ease;"
-                                onmouseover="this.style.background='var(--primary-dark)'"
-                                onmouseout="this.style.background='var(--primary)'"
-                            >
-                                <span id="loginBtnText">Login</span>
-                            </button>
-                        </form>
+                        <p style="text-align: center; color: #e5e7eb; margin-bottom: 2rem;">
+                            Redirecting to login page...
+                        </p>
                         
-                        <div style="text-align: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
-                            <p style="color: var(--text-tertiary); font-size: 0.875rem; margin-bottom: 0.5rem;">
-                                Demo credentials are pre-filled
-                            </p>
-                            <p style="color: var(--text-tertiary); font-size: 0.75rem;">
-                                Version: ${this.config.version} | Build: ${new Date(this.config.buildTimestamp).toLocaleDateString()}
+                        <div style="text-align: center;">
+                            <button onclick="window.location.href='./login.html'" style="
+                                padding: 0.875rem 2rem;
+                                background: #6366f1;
+                                color: white;
+                                border: none;
+                                border-radius: 6px;
+                                cursor: pointer;
+                                font-weight: 600;
+                                font-size: 1rem;
+                            ">
+                                Go to Login Page
+                            </button>
+                        </div>
+                        
+                        <div style="text-align: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #374151;">
+                            <p style="color: #9ca3af; font-size: 0.875rem;">
+                                If you're not redirected, click the button above
                             </p>
                         </div>
                     </div>
                 </div>
             `;
-
-            // Add login handler
-            const loginForm = document.getElementById('loginForm');
-            const loginBtn = document.getElementById('loginBtn');
-            const loginBtnText = document.getElementById('loginBtnText');
-
-            loginForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-
-                const email = document.getElementById('email').value.trim();
-                const password = document.getElementById('password').value;
-
-                if (!email || !password) {
-                    this.showToast('Please fill in all fields', 'error');
-                    return;
-                }
-
-                try {
-                    // Disable form during login
-                    loginBtn.disabled = true;
-                    loginBtnText.textContent = 'Logging in...';
-
-                    console.log('🔐 Attempting login...');
-                    const result = await this.authService.login(email, password);
-
-                    if (result.success) {
-                        console.log('✅ Login successful');
-                        loginBtnText.textContent = 'Success! Redirecting...';
-
-                        // Initialize storage service
-                        const user = this.authService.getCurrentUser();
-                        const storageModule = await import('./services/storageService.js');
-                        this.storageService = new storageModule.StorageService(user.id);
-
-                        // Small delay for UI feedback
-                        await new Promise(resolve => setTimeout(resolve, 500));
-
-                        // Load dashboard
-                        await this.loadDashboardPage();
-
-                    } else {
-                        loginBtn.disabled = false;
-                        loginBtnText.textContent = 'Login';
-                        this.showToast(result.error || 'Login failed', 'error');
-                    }
-
-                } catch (error) {
-                    console.error('❌ Login error:', error);
-                    loginBtn.disabled = false;
-                    loginBtnText.textContent = 'Login';
-                    this.showToast('Login error: ' + error.message, 'error');
-                }
-            });
-
-        } catch (error) {
-            console.error('❌ Failed to load auth page:', error);
-            this.showError('Failed to load login page', error);
         }
     }
 
