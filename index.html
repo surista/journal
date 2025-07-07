@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="Track your guitar practice sessions, set goals, and monitor your progress">
     <meta name="theme-color" content="#6366f1">
     <title>Guitar Practice Journal v7.7.1</title>
@@ -36,220 +36,229 @@
     <link rel="stylesheet" href="styles/main.css">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImEiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM2MzY2ZjEiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNhODU1ZjciLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIGZpbGw9InVybCgjYSkiIHJ4PSI0Ii8+PHRleHQgeD0iMTYiIHk9IjIyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj7wn464PC90ZXh0Pjwvc3ZnPg==">
+    <link rel="icon" type="image/svg+xml"
+          href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImEiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM2MzY2ZjEiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNhODU1ZjciLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIGZpbGw9InVybCgjYSkiIHJ4PSI0Ii8+PHRleHQgeD0iMTYiIHk9IjIyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj7wn464PC90ZXh0Pjwvc3ZnPg==">
 
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
 </head>
 <body>
-    <div id="app">
-        <!-- Loading state -->
-        <div class="app-loading" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background: #0a0a0a;">
-            <div class="loading-spinner" style="width: 50px; height: 50px; border: 3px solid #374151; border-top-color: #6366f1; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-            <p style="color: #e0e0e0; margin-top: 20px;">Loading Guitar Practice Journal v7.6.2...</p>
-            <div id="error-message" style="color: #ef4444; margin-top: 20px; text-align: center; max-width: 600px; display: none;"></div>
-            <div id="debug-info" style="color: #9ca3af; margin-top: 10px; font-size: 12px; font-family: monospace; display: none;"></div>
-        </div>
+<div id="app">
+    <!-- Loading state -->
+    <div class="app-loading"
+         style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background: #0a0a0a;">
+        <div class="loading-spinner"
+             style="width: 50px; height: 50px; border: 3px solid #374151; border-top-color: #6366f1; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+        <p style="color: #e0e0e0; margin-top: 20px;">Loading Guitar Practice Journal v7.6.2...</p>
+        <div id="error-message"
+             style="color: #ef4444; margin-top: 20px; text-align: center; max-width: 600px; display: none;"></div>
+        <div id="debug-info"
+             style="color: #9ca3af; margin-top: 10px; font-size: 12px; font-family: monospace; display: none;"></div>
     </div>
+</div>
 
-    <style>
-        /* Critical CSS for loading state */
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+<style>
+    /* Critical CSS for loading state */
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
         }
-
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #0a0a0a;
-            color: #f9fafb;
+        100% {
+            transform: rotate(360deg);
         }
+    }
 
-        .app-loading {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 9999;
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: #0a0a0a;
+        color: #f9fafb;
+    }
+
+    .app-loading {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 9999;
+    }
+
+    #error-message {
+        max-width: 90%;
+        margin: 0 auto;
+        padding: 1rem;
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid #ef4444;
+        border-radius: 8px;
+        line-height: 1.5;
+    }
+
+    #error-message button {
+        margin: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: #6366f1;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    #error-message button:hover {
+        background: #5856eb;
+    }
+</style>
+
+<!-- Simplified App Loading Script -->
+<script type="module">
+    console.log('🚀 Starting app initialization...');
+
+    const debugInfo = document.getElementById('debug-info');
+    const errorDiv = document.getElementById('error-message');
+
+    function showDebugInfo(message) {
+        console.log('🔧 Debug:', message);
+        if (debugInfo) {
+            debugInfo.style.display = 'block';
+            debugInfo.textContent = `Debug: ${message}`;
         }
+    }
 
-        #error-message {
-            max-width: 90%;
-            margin: 0 auto;
-            padding: 1rem;
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid #ef4444;
-            border-radius: 8px;
-            line-height: 1.5;
-        }
-
-        #error-message button {
-            margin: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: #6366f1;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        #error-message button:hover {
-            background: #5856eb;
-        }
-    </style>
-
-    <!-- Simplified App Loading Script -->
-    <script type="module">
-        console.log('🚀 Starting app initialization...');
-
-        const debugInfo = document.getElementById('debug-info');
-        const errorDiv = document.getElementById('error-message');
-
-        function showDebugInfo(message) {
-            console.log('🔧 Debug:', message);
-            if (debugInfo) {
-                debugInfo.style.display = 'block';
-                debugInfo.textContent = `Debug: ${message}`;
-            }
-        }
-
-        function showError(message, error = null) {
-            console.error('❌ Error:', message, error);
-            if (errorDiv) {
-                errorDiv.style.display = 'block';
-                errorDiv.innerHTML = `
+    function showError(message, error = null) {
+        console.error('❌ Error:', message, error);
+        if (errorDiv) {
+            errorDiv.style.display = 'block';
+            errorDiv.innerHTML = `
                     <strong>Application Error</strong><br>
                     ${message}<br><br>
                     <button onclick="location.reload()">Reload Page</button>
                     <button onclick="clearCacheAndReload()">Clear Cache & Reload</button>
                 `;
-            }
         }
+    }
 
-        // Cache clearing function
-        window.clearCacheAndReload = async function() {
-            try {
-                if ('caches' in window) {
-                    const cacheNames = await caches.keys();
-                    await Promise.all(cacheNames.map(name => caches.delete(name)));
-                }
-                localStorage.clear();
-                sessionStorage.clear();
-                if ('serviceWorker' in navigator) {
-                    const registrations = await navigator.serviceWorker.getRegistrations();
-                    for (let registration of registrations) {
-                        await registration.unregister();
-                    }
-                }
-                location.reload(true);
-            } catch (error) {
-                console.error('Cache clear error:', error);
-                location.reload(true);
+    // Cache clearing function
+    window.clearCacheAndReload = async function () {
+        try {
+            if ('caches' in window) {
+                const cacheNames = await caches.keys();
+                await Promise.all(cacheNames.map(name => caches.delete(name)));
             }
-        };
-
-        // Global error handler
-        window.addEventListener('error', (e) => {
-            showError(`Script error: ${e.message}`, e);
-        });
-
-        window.addEventListener('unhandledrejection', (e) => {
-            showError(`Promise rejection: ${e.reason}`, e);
-        });
-
-        // Initialize app
-        async function initializeApp() {
-            try {
-                showDebugInfo('Loading configuration...');
-
-                // Import config with timeout
-                const configPromise = import('./src/config.js');
-                const configTimeout = new Promise((_, reject) =>
-                    setTimeout(() => reject(new Error('Config loading timeout')), 10000)
-                );
-
-                const configModule = await Promise.race([configPromise, configTimeout]);
-                const appConfig = configModule.default;
-
-                showDebugInfo('Configuration loaded successfully');
-                console.log('📋 Config loaded:', appConfig.basePath);
-
-                showDebugInfo('Loading main application...');
-
-                // Import app with timeout
-                const appPromise = import('./src/app.js');
-                const appTimeout = new Promise((_, reject) =>
-                    setTimeout(() => reject(new Error('App loading timeout')), 10000)
-                );
-
-                const appModule = await Promise.race([appPromise, appTimeout]);
-                const { App } = appModule;
-
-                showDebugInfo('Application module loaded, initializing...');
-                console.log('🎸 App class loaded, creating instance...');
-
-                // Create and initialize app
-                window.app = new App();
-
-                showDebugInfo('Calling app.init()...');
-                await window.app.init();
-
-                console.log('✅ App initialized successfully!');
-
-                // Hide loading screen
-                const loader = document.querySelector('.app-loading');
-                if (loader) {
-                    loader.style.display = 'none';
-                }
-
-            } catch (error) {
-                console.error('❌ App initialization failed:', error);
-
-                if (error.message.includes('timeout')) {
-                    showError('App loading timed out. This might be a network issue or missing files.');
-                } else if (error.message.includes('Failed to resolve module specifier')) {
-                    showError(`Module not found: ${error.message}. Check that all files exist in the src/ directory.`);
-                } else if (error.message.includes('Failed to fetch')) {
-                    showError('Failed to load required files. Check your internet connection and file structure.');
-                } else {
-                    showError(`Initialization failed: ${error.message}`);
+            localStorage.clear();
+            sessionStorage.clear();
+            if ('serviceWorker' in navigator) {
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                for (let registration of registrations) {
+                    await registration.unregister();
                 }
             }
+            location.reload(true);
+        } catch (error) {
+            console.error('Cache clear error:', error);
+            location.reload(true);
         }
+    };
 
-        // Start initialization when DOM is ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initializeApp);
-        } else {
-            initializeApp();
-        }
+    // Global error handler
+    window.addEventListener('error', (e) => {
+        showError(`Script error: ${e.message}`, e);
+    });
 
-        // Fallback timeout - if app doesn't load in 30 seconds, show error
-        setTimeout(() => {
+    window.addEventListener('unhandledrejection', (e) => {
+        showError(`Promise rejection: ${e.reason}`, e);
+    });
+
+    // Initialize app
+    async function initializeApp() {
+        try {
+            showDebugInfo('Loading configuration...');
+
+            // Import config with timeout
+            const configPromise = import('./src/config.js');
+            const configTimeout = new Promise((_, reject) =>
+                setTimeout(() => reject(new Error('Config loading timeout')), 10000)
+            );
+
+            const configModule = await Promise.race([configPromise, configTimeout]);
+            const appConfig = configModule.default;
+
+            showDebugInfo('Configuration loaded successfully');
+            console.log('📋 Config loaded:', appConfig.basePath);
+
+            showDebugInfo('Loading main application...');
+
+            // Import app with timeout
+            const appPromise = import('./src/app.js');
+            const appTimeout = new Promise((_, reject) =>
+                setTimeout(() => reject(new Error('App loading timeout')), 10000)
+            );
+
+            const appModule = await Promise.race([appPromise, appTimeout]);
+            const {App} = appModule;
+
+            showDebugInfo('Application module loaded, initializing...');
+            console.log('🎸 App class loaded, creating instance...');
+
+            // Create and initialize app
+            window.app = new App();
+
+            showDebugInfo('Calling app.init()...');
+            await window.app.init();
+
+            console.log('✅ App initialized successfully!');
+
+            // Hide loading screen
             const loader = document.querySelector('.app-loading');
-            if (loader && loader.style.display !== 'none') {
-                showError('App failed to load within 30 seconds. There may be a problem with the application files.');
+            if (loader) {
+                loader.style.display = 'none';
             }
-        }, 30000);
 
-    </script>
+        } catch (error) {
+            console.error('❌ App initialization failed:', error);
 
-    <!-- Service Worker Registration -->
-    <script>
-        if ('serviceWorker' in navigator && window.location.protocol !== 'file:') {
-            window.addEventListener('load', async () => {
-                try {
-                    const registration = await navigator.serviceWorker.register('service-worker.js');
-                    console.log('✅ Service Worker registered successfully');
-                } catch (error) {
-                    console.warn('⚠️ Service Worker registration failed:', error);
-                    // Don't block app loading if SW fails
-                }
-            });
+            if (error.message.includes('timeout')) {
+                showError('App loading timed out. This might be a network issue or missing files.');
+            } else if (error.message.includes('Failed to resolve module specifier')) {
+                showError(`Module not found: ${error.message}. Check that all files exist in the src/ directory.`);
+            } else if (error.message.includes('Failed to fetch')) {
+                showError('Failed to load required files. Check your internet connection and file structure.');
+            } else {
+                showError(`Initialization failed: ${error.message}`);
+            }
         }
-    </script>
+    }
+
+    // Start initialization when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeApp);
+    } else {
+        initializeApp();
+    }
+
+    // Fallback timeout - if app doesn't load in 30 seconds, show error
+    setTimeout(() => {
+        const loader = document.querySelector('.app-loading');
+        if (loader && loader.style.display !== 'none') {
+            showError('App failed to load within 30 seconds. There may be a problem with the application files.');
+        }
+    }, 30000);
+
+</script>
+
+<!-- Service Worker Registration -->
+<script>
+    if ('serviceWorker' in navigator && window.location.protocol !== 'file:') {
+        window.addEventListener('load', async () => {
+            try {
+                const registration = await navigator.serviceWorker.register('service-worker.js');
+                console.log('✅ Service Worker registered successfully');
+            } catch (error) {
+                console.warn('⚠️ Service Worker registration failed:', error);
+                // Don't block app loading if SW fails
+            }
+        });
+    }
+</script>
 </body>
 </html>

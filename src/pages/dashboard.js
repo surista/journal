@@ -584,6 +584,8 @@ export class DashboardPage {
         if (this.isDestroyed) return;
 
         switch (tabName) {
+            // In dashboard.js, update the initializeTabComponent method for the audio case:
+
             case 'audio':
                 const audioPlayerContainer = document.getElementById('audioPlayerContainer');
                 if (!audioPlayerContainer) {
@@ -601,29 +603,35 @@ export class DashboardPage {
                         // Create the audio player instance
                         this.components.audioPlayer = new AudioPlayer(audioPlayerContainer, this.audioService);
 
-                        // Pass storage service
+                        // IMPORTANT: Pass storage service BEFORE calling init()
                         this.components.audioPlayer.storageService = this.storageService;
 
                         // Store reference to dashboard for timer access
                         this.components.audioPlayer.dashboard = this;
 
-                        // Initialize immediately since the tab is now active
+                        // Initialize the component
                         this.components.audioPlayer.init();
                         this.components.audioPlayer.isInitialized = true;
 
-                        console.log('Audio Player initialized successfully');
+                        console.log('Audio Player initialized successfully with storage service');
                     } catch (error) {
                         console.error('Error initializing Audio Player:', error);
                         audioPlayerContainer.innerHTML = `
-                           <div class="error-state" style="padding: 2rem; text-align: center; color: var(--text-secondary);">
-                               <h3>Unable to load Audio Player</h3>
-                               <p>${error.message}</p>
-                               <button class="btn btn-primary" onclick="location.reload()">Reload Page</button>
-                           </div>
-                       `;
+               <div class="error-state" style="padding: 2rem; text-align: center; color: var(--text-secondary);">
+                   <h3>Unable to load Audio Player</h3>
+                   <p>${error.message}</p>
+                   <button class="btn btn-primary" onclick="location.reload()">Reload Page</button>
+               </div>
+           `;
                     }
                 } else {
-                    // If already initialized, ensure it's properly displayed
+                    // If already initialized, ensure storage service is still available
+                    if (!this.components.audioPlayer.storageService) {
+                        this.components.audioPlayer.storageService = this.storageService;
+                        console.log('Storage service re-attached to audio player');
+                    }
+
+                    // Ensure it's properly displayed
                     console.log('Audio Player already initialized, ensuring visibility');
                     if (this.components.audioPlayer.render) {
                         this.components.audioPlayer.render();

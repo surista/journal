@@ -211,7 +211,7 @@ export class StreakHeatMap {
     }
 
     getTooltip(date, dayData) {
-        const dateStr = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+        const dateStr = date.toLocaleDateString('en-US', {weekday: 'short', month: 'short', day: 'numeric'});
         if (!dayData) {
             return `${dateStr}: No practice`;
         }
@@ -225,7 +225,8 @@ export class StreakHeatMap {
 
     async getLongestStreak(entries) {
         try {
-            const stats = await this.storageService.calculateStats();
+            // Use getStats() instead of calculateStats()
+            const stats = await this.storageService.getStats();
             return stats.longestStreak || 0;
         } catch (error) {
             console.error('Error getting longest streak:', error);

@@ -51,20 +51,26 @@ export class StatsPanel {
 
     async update() {
         try {
-            // Get stats - await since calculateStats is async
-            this.stats = await this.storageService.calculateStats();
+            // Get basic stats
+            const stats = await this.storageService.getStats();
 
-            // Ensure we have valid stats
-            if (!this.stats) {
-                console.error('No stats returned from calculateStats');
-                this.stats = {
-                    totalTime: 0,
-                    totalSessions: 0,
-                    averageSession: 0,
-                    currentStreak: 0,
-                    longestStreak: 0
-                };
+            // Get practice entries for additional calculations
+            const entries = await this.storageService.getPracticeEntries();
+
+            // Calculate average session
+            let averageSession = 0;
+            if (stats.totalSessions > 0 && stats.totalSeconds > 0) {
+                averageSession = Math.floor(stats.totalSeconds / stats.totalSessions);
             }
+
+            // Set the stats with calculated values
+            this.stats = {
+                totalTime: stats.totalSeconds || 0,
+                totalSessions: stats.totalSessions || 0,
+                averageSession: averageSession,
+                currentStreak: stats.currentStreak || 0,
+                longestStreak: stats.longestStreak || 0
+            };
 
             this.updateDisplay();
         } catch (error) {
@@ -142,48 +148,48 @@ export class StatsPanel {
         }
     }
 
-    showDetailedStats(statIndex) {
-        const modal = document.createElement('div');
-        modal.className = 'modal stats-detail-modal';
+    async showDetailedStats(statIndex) {
+    const modal = document.createElement('div');
+    modal.className = 'modal stats-detail-modal';
 
-        let content = '';
-        switch (statIndex) {
-            case 0: // Total Time
-                content = this.getTimeBreakdown();
-                break;
-            case 1: // Sessions
-                content = this.getSessionsBreakdown();
-                break;
-            case 2: // Streak
-                content = this.getStreakBreakdown();
-                break;
-            case 3: // Average
-                content = this.getAverageBreakdown();
-                break;
-        }
-
-        modal.innerHTML = `
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>Detailed Statistics</h3>
-                    <button class="modal-close" onclick="this.closest('.modal').remove()">✕</button>
-                </div>
-                <div class="stats-detail-content">
-                    ${content}
-                </div>
-            </div>
-        `;
-
-        document.body.appendChild(modal);
-        modal.style.display = 'block';
-
-        // Close on outside click
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.remove();
-            }
-        });
+    let content = '';
+    switch (statIndex) {
+        case 0: // Total Time
+            content = await this.getTimeBreakdown();
+            break;
+        case 1: // Sessions
+            content = await this.getSessionsBreakdown();
+            break;
+        case 2: // Streak
+            content = await this.getStreakBreakdown();
+            break;
+        case 3: // Average
+            content = await this.getAverageBreakdown();
+            break;
     }
+
+    modal.innerHTML = `
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Detailed Statistics</h3>
+                <button class="modal-close" onclick="this.closest('.modal').remove()">✕</button>
+            </div>
+            <div class="stats-detail-content">
+                ${content}
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+    modal.style.display = 'block';
+
+    // Close on outside click
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    });
+}
 
     async getTimeBreakdown() {
         const entries = await this.storageService.getPracticeEntries();
@@ -199,45 +205,49 @@ export class StatsPanel {
         // Practice time by area
         const timeByArea = {};
         entries.forEach(entry => {
-            const area = entry.practiceArea;
-            const duration = entry.duration || 0;
-            timeByArea[area] = (timeByArea[area] || 0) + duration;
+            if (entry && entry.practiceArea && entry.duration) {
+                const area = entry.practiceArea;
+                const duration = entry.duration || 0;
+                timeByArea[area] = (timeByArea[area] || 0) + duration;
+            }
         });
 
         const sortedAreas = Object.entries(timeByArea)
             .sort((a, b) => b[1] - a[1])
             .slice(0, 5);
 
+        const totalTime = this.stats?.totalTime || 1; // Prevent division by zero
+
         return `
-            <h4>Practice Time Analysis</h4>
-            <div class="stat-breakdown">
-                <div class="breakdown-item">
-                    <span class="breakdown-label">Last 7 days:</span>
-                    <span class="breakdown-value">${this.formatDuration(last7Days.totalTime)}</span>
-                </div>
-                <div class="breakdown-item">
-                    <span class="breakdown-label">Last 30 days:</span>
-                    <span class="breakdown-value">${this.formatDuration(last30Days.totalTime)}</span>
-                </div>
-                <div class="breakdown-item">
-                    <span class="breakdown-label">All time:</span>
-                    <span class="breakdown-value">${this.formatDuration(this.stats.totalTime || 0)}</span>
-                </div>
+        <h4>Practice Time Analysis</h4>
+        <div class="stat-breakdown">
+            <div class="breakdown-item">
+                <span class="breakdown-label">Last 7 days:</span>
+                <span class="breakdown-value">${this.formatDuration(last7Days.totalTime)}</span>
             </div>
-            
-            <h4>Top Practice Areas</h4>
-            <div class="area-breakdown">
-                ${sortedAreas.map(([area, time]) => `
-                    <div class="area-item">
-                        <span class="area-name">${area}</span>
-                        <div class="area-bar">
-                            <div class="area-progress" style="width: ${(time / (this.stats.totalTime || 1)) * 100}%"></div>
-                        </div>
-                        <span class="area-time">${this.formatDuration(time)}</span>
+            <div class="breakdown-item">
+                <span class="breakdown-label">Last 30 days:</span>
+                <span class="breakdown-value">${this.formatDuration(last30Days.totalTime)}</span>
+            </div>
+            <div class="breakdown-item">
+                <span class="breakdown-label">All time:</span>
+                <span class="breakdown-value">${this.formatDuration(this.stats.totalTime || 0)}</span>
+            </div>
+        </div>
+        
+        <h4>Top Practice Areas</h4>
+        <div class="area-breakdown">
+            ${sortedAreas.map(([area, time]) => `
+                <div class="area-item">
+                    <span class="area-name">${area}</span>
+                    <div class="area-bar">
+                        <div class="area-progress" style="width: ${(time / totalTime) * 100}%"></div>
                     </div>
-                `).join('')}
-            </div>
-        `;
+                    <span class="area-time">${this.formatDuration(time)}</span>
+                </div>
+            `).join('')}
+        </div>
+    `;
     }
 
     async getSessionsBreakdown() {
@@ -252,7 +262,7 @@ export class StatsPanel {
 
         entries.forEach(entry => {
             const date = new Date(entry.date);
-            const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
+            const dayName = date.toLocaleDateString('en-US', {weekday: 'long'});
             sessionsByDay[dayName] = (sessionsByDay[dayName] || 0) + 1;
         });
 
@@ -263,9 +273,9 @@ export class StatsPanel {
             <h4>Sessions by Day of Week</h4>
             <div class="weekday-chart">
                 ${dayOrder.map(day => {
-                    const count = sessionsByDay[day] || 0;
-                    const height = (count / maxSessions) * 100;
-                    return `
+            const count = sessionsByDay[day] || 0;
+            const height = (count / maxSessions) * 100;
+            return `
                         <div class="weekday-bar">
                             <div class="bar-fill" style="height: ${height}%">
                                 <span class="bar-value">${count}</span>
@@ -273,7 +283,7 @@ export class StatsPanel {
                             <span class="bar-label">${day.substr(0, 3)}</span>
                         </div>
                     `;
-                }).join('')}
+        }).join('')}
             </div>
             
             <h4>Session Duration Distribution</h4>
@@ -281,63 +291,63 @@ export class StatsPanel {
         `;
     }
 
-    getStreakBreakdown() {
-        const entries = this.storageService.getPracticeEntries();
-        const streaks = this.calculateAllStreaks(entries);
+    async getStreakBreakdown() {
+        const entries = await this.storageService.getPracticeEntries();
+        const streaks = await this.calculateAllStreaks(entries);
 
         return `
-            <h4>Streak History</h4>
-            <div class="stat-breakdown">
-                <div class="breakdown-item">
-                    <span class="breakdown-label">Current Streak:</span>
-                    <span class="breakdown-value">${this.stats.currentStreak || 0} days</span>
-                </div>
-                <div class="breakdown-item">
-                    <span class="breakdown-label">Longest Streak:</span>
-                    <span class="breakdown-value">${this.stats.longestStreak || 0} days</span>
-                </div>
-                <div class="breakdown-item">
-                    <span class="breakdown-label">Total Practice Days:</span>
-                    <span class="breakdown-value">${streaks.totalPracticeDays} days</span>
-                </div>
+        <h4>Streak History</h4>
+        <div class="stat-breakdown">
+            <div class="breakdown-item">
+                <span class="breakdown-label">Current Streak:</span>
+                <span class="breakdown-value">${this.stats.currentStreak || 0} days</span>
             </div>
-            
-            <h4>Consistency Score</h4>
-            <div class="consistency-meter">
-                <div class="meter-fill" style="width: ${streaks.consistencyScore}%"></div>
-                <span class="meter-label">${streaks.consistencyScore}%</span>
+            <div class="breakdown-item">
+                <span class="breakdown-label">Longest Streak:</span>
+                <span class="breakdown-value">${this.stats.longestStreak || 0} days</span>
             </div>
-            <p class="consistency-message">${this.getConsistencyMessage(streaks.consistencyScore)}</p>
-        `;
+            <div class="breakdown-item">
+                <span class="breakdown-label">Total Practice Days:</span>
+                <span class="breakdown-value">${streaks.totalPracticeDays} days</span>
+            </div>
+        </div>
+        
+        <h4>Consistency Score</h4>
+        <div class="consistency-meter">
+            <div class="meter-fill" style="width: ${streaks.consistencyScore}%"></div>
+            <span class="meter-label">${streaks.consistencyScore}%</span>
+        </div>
+        <p class="consistency-message">${this.getConsistencyMessage(streaks.consistencyScore)}</p>
+    `;
     }
 
-    getAverageBreakdown() {
-        const entries = this.storageService.getPracticeEntries();
-        const last7Days = this.getLastNDaysStats(7);
-        const last30Days = this.getLastNDaysStats(30);
+    async getAverageBreakdown() {
+        const entries = await this.storageService.getPracticeEntries();
+        const last7Days = await this.getLastNDaysStats(7);
+        const last30Days = await this.getLastNDaysStats(30);
 
         return `
-            <h4>Average Session Analysis</h4>
-            <div class="stat-breakdown">
-                <div class="breakdown-item">
-                    <span class="breakdown-label">Last 7 days avg:</span>
-                    <span class="breakdown-value">${this.formatDuration(last7Days.averageSession, true)}</span>
-                </div>
-                <div class="breakdown-item">
-                    <span class="breakdown-label">Last 30 days avg:</span>
-                    <span class="breakdown-value">${this.formatDuration(last30Days.averageSession, true)}</span>
-                </div>
-                <div class="breakdown-item">
-                    <span class="breakdown-label">All time avg:</span>
-                    <span class="breakdown-value">${this.formatDuration(this.stats.averageSession || 0, true)}</span>
-                </div>
+        <h4>Average Session Analysis</h4>
+        <div class="stat-breakdown">
+            <div class="breakdown-item">
+                <span class="breakdown-label">Last 7 days avg:</span>
+                <span class="breakdown-value">${this.formatDuration(last7Days.averageSession, true)}</span>
             </div>
-            
-            <h4>Recommended Session Length</h4>
-            <p class="recommendation">
-                ${this.getSessionRecommendation()}
-            </p>
-        `;
+            <div class="breakdown-item">
+                <span class="breakdown-label">Last 30 days avg:</span>
+                <span class="breakdown-value">${this.formatDuration(last30Days.averageSession, true)}</span>
+            </div>
+            <div class="breakdown-item">
+                <span class="breakdown-label">All time avg:</span>
+                <span class="breakdown-value">${this.formatDuration(this.stats.averageSession || 0, true)}</span>
+            </div>
+        </div>
+        
+        <h4>Recommended Session Length</h4>
+        <p class="recommendation">
+            ${this.getSessionRecommendation()}
+        </p>
+    `;
     }
 
     async getLastNDaysStats(days) {
@@ -422,16 +432,26 @@ export class StatsPanel {
         // Get unique practice days
         const practiceDays = new Set();
         entries.forEach(entry => {
-            const date = new Date(entry.date);
-            const dateStr = date.toISOString().split('T')[0];
-            practiceDays.add(dateStr);
+            if (entry && entry.date) {
+                const date = new Date(entry.date);
+                const dateStr = date.toISOString().split('T')[0];
+                practiceDays.add(dateStr);
+            }
         });
 
         // Calculate consistency score
-        const firstEntry = new Date(entries[entries.length - 1].date);
+        const sortedEntries = entries.filter(e => e && e.date).sort((a, b) => new Date(a.date) - new Date(b.date));
+        if (sortedEntries.length === 0) {
+            return {
+                totalPracticeDays: 0,
+                consistencyScore: 0
+            };
+        }
+
+        const firstEntry = new Date(sortedEntries[0].date);
         const today = new Date();
         const totalDays = Math.floor((today - firstEntry) / (1000 * 60 * 60 * 24)) + 1;
-        const consistencyScore = Math.round((practiceDays.size / totalDays) * 100);
+        const consistencyScore = totalDays > 0 ? Math.round((practiceDays.size / totalDays) * 100) : 0;
 
         return {
             totalPracticeDays: practiceDays.size,

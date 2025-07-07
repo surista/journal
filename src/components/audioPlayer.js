@@ -27,6 +27,26 @@ export class AudioPlayer {
         this.currentTime = 0;
     }
 
+    // Add this method after the constructor in audioPlayer.js:
+
+    ensureStorageService() {
+        // Try to get storage service from dashboard if not already set
+        if (!this.storageService) {
+            // Try multiple paths to find the storage service
+            if (window.app?.currentPage?.storageService) {
+                this.storageService = window.app.currentPage.storageService;
+                console.log('Storage service obtained from dashboard');
+            } else if (window.app?.storageService) {
+                this.storageService = window.app.storageService;
+                console.log('Storage service obtained from app');
+            } else {
+                console.error('Storage service not found in any expected location');
+                return false;
+            }
+        }
+        return true;
+    }
+
     init() {
         if (this.isInitialized) {
             console.log('Audio player already initialized');
@@ -306,16 +326,50 @@ export class AudioPlayer {
         console.log('Loading audio file:', file.name);
 
         try {
+            // Stop any playing audio and clear waveform animation first
+            if (this.audio) {
+                this.audio.pause();
+                this.isPlaying = false;
+                this.updatePlayPauseButton();
+
+                // Stop waveform animation if it exists
+                if (this.waveformVisualizer && this.waveformVisualizer.stopAnimation) {
+                    this.waveformVisualizer.stopAnimation();
+                }
+            }
+
             // Store filename
             this.currentFileName = file.name;
             document.getElementById('currentFileName').textContent = file.name;
 
             // Clear previous audio if exists
             if (this.audio) {
+                // Remove event listeners before clearing
+                this.audio.removeEventListener('timeupdate', this.handleTimeUpdate);
+                this.audio.removeEventListener('play', this.handlePlay);
+                this.audio.removeEventListener('pause', this.handlePause);
+                this.audio.removeEventListener('ended', this.handleEnded);
+
                 this.audio.pause();
                 this.audio.src = '';
                 this.audio = null;
             }
+
+            // IMPORTANT: Clear audioService references to prevent null access
+            if (this.audioService) {
+                this.audioService.audio = null;
+                this.audioService.pausedAt = 0;
+                this.audioService.currentTime = 0;
+
+                // Clear any existing timeupdate callback
+                this.audioService.onTimeUpdate = null;
+            }
+
+            // Clear any existing loops from previous file
+            this.clearLoop();
+
+            // Reset current time
+            this.currentTime = 0;
 
             // Create new audio element
             this.audio = new Audio();
@@ -351,6 +405,13 @@ export class AudioPlayer {
                 throw new Error('Invalid audio duration');
             }
 
+            // IMPORTANT: Update audioService with new audio element AFTER it's loaded
+            if (this.audioService) {
+                this.audioService.audio = this.audio;
+                this.audioService.pausedAt = 0;
+                this.audioService.currentTime = 0;
+            }
+
             // Show controls
             document.getElementById('audioControlsSection').style.display = 'block';
 
@@ -363,7 +424,7 @@ export class AudioPlayer {
 
             // Initialize playhead at start position
             this.currentTime = 0;
-            // Don't call updatePlayhead - let waveform handle it
+            document.getElementById('currentTime').textContent = this.formatTime(0);
 
             // Initialize waveform
             await this.initializeWaveform(file);
@@ -383,6 +444,13 @@ export class AudioPlayer {
                 this.audio = null;
             }
 
+            // Clean up audioService on error too
+            if (this.audioService) {
+                this.audioService.audio = null;
+                this.audioService.pausedAt = 0;
+                this.audioService.currentTime = 0;
+            }
+
             // Hide controls on error
             document.getElementById('audioControlsSection').style.display = 'none';
         }
@@ -391,15 +459,10 @@ export class AudioPlayer {
     setupAudioEventListeners() {
         if (!this.audio) return;
 
-        // Ensure time is synced when metadata loads
-        this.audio.addEventListener('loadedmetadata', () => {
-            this.audio.currentTime = 0;
-            this.currentTime = 0;
-            // this.updatePlayhead();
-        });
+        // Create bound event handlers so we can remove them later
+        this.handleTimeUpdate = () => {
+            if (!this.audio) return; // Safety check
 
-        // Update time display
-        this.audio.addEventListener('timeupdate', () => {
             this.currentTime = this.audio.currentTime;
             document.getElementById('currentTime').textContent = this.formatTime(this.currentTime);
 
@@ -416,11 +479,9 @@ export class AudioPlayer {
                     this.waveformVisualizer.updateProgress(this.loopStart || 0);
                 }
             }
-        });
+        };
 
-
-        // Handle play/pause state
-        this.audio.addEventListener('play', () => {
+        this.handlePlay = () => {
             this.isPlaying = true;
             this.updatePlayPauseButton();
 
@@ -434,16 +495,6 @@ export class AudioPlayer {
             } else if (window.app?.currentPage?.timer) {
                 timer = window.app.currentPage.timer;
                 console.log('Found timer via currentPage');
-            } else {
-                // Try to find timer in the current tab
-                const currentTab = document.querySelector('.tab-pane.active');
-                if (currentTab) {
-                    const timerWidget = currentTab.querySelector('.timer-widget');
-                    if (timerWidget && window.app?.currentPage?.components?.timer) {
-                        timer = window.app.currentPage.components.timer;
-                        console.log('Found timer via DOM search');
-                    }
-                }
             }
 
             console.log('Timer sync check:', {
@@ -453,7 +504,7 @@ export class AudioPlayer {
                 timerObject: timer
             });
 
-if (timer && timer.syncWithAudio) {
+            if (timer && timer.syncWithAudio) {
                 console.log('Timer state before start:', {
                     isRunning: timer.isRunning,
                     elapsedTime: timer.elapsedTime,
@@ -484,9 +535,9 @@ if (timer && timer.syncWithAudio) {
                     this.waveformVisualizer.startAnimation();
                 }
             }, 50);
-        });
+        };
 
-       this.audio.addEventListener('pause', () => {
+        this.handlePause = () => {
             this.isPlaying = false;
             this.updatePlayPauseButton();
 
@@ -509,10 +560,9 @@ if (timer && timer.syncWithAudio) {
             if (this.waveformVisualizer && this.waveformVisualizer.stopAnimation) {
                 this.waveformVisualizer.stopAnimation();
             }
-        });
+        };
 
-        // Handle ended
-        this.audio.addEventListener('ended', () => {
+        this.handleEnded = () => {
             if (!this.isLooping) {
                 this.isPlaying = false;
                 this.updatePlayPauseButton();
@@ -522,7 +572,21 @@ if (timer && timer.syncWithAudio) {
                     this.waveformVisualizer.stopAnimation();
                 }
             }
+        };
+
+        // Ensure time is synced when metadata loads
+        this.audio.addEventListener('loadedmetadata', () => {
+            if (this.audio) {
+                this.audio.currentTime = 0;
+                this.currentTime = 0;
+            }
         });
+
+        // Add event listeners
+        this.audio.addEventListener('timeupdate', this.handleTimeUpdate);
+        this.audio.addEventListener('play', this.handlePlay);
+        this.audio.addEventListener('pause', this.handlePause);
+        this.audio.addEventListener('ended', this.handleEnded);
     }
 
     async initializeWaveform(file) {
@@ -572,15 +636,27 @@ if (timer && timer.syncWithAudio) {
 
                     // Override the audioService pausedAt to sync with our audio element
                     Object.defineProperty(this.audioService, 'pausedAt', {
-                        get: () => this.audio.currentTime,
+                        get: () => {
+                            // Add null check
+                            if (!this.audio) return 0;
+                            return this.audio.currentTime || 0;
+                        },
                         set: (value) => {
+                            // Add null check
+                            if (!this.audio) {
+                                console.warn('Cannot set pausedAt - no audio element');
+                                return;
+                            }
                             this.audio.currentTime = value;
                             this.currentTime = value;
                             // Update waveform visualizer directly
                             if (this.waveformVisualizer) {
                                 this.waveformVisualizer.updateProgress(value);
                             }
-                            document.getElementById('currentTime').textContent = this.formatTime(value);
+                            const currentTimeEl = document.getElementById('currentTime');
+                            if (currentTimeEl) {
+                                currentTimeEl.textContent = this.formatTime(value);
+                            }
                         }
                     });
                 }
@@ -857,21 +933,48 @@ if (timer && timer.syncWithAudio) {
         }
 
         container.innerHTML = sessions.map((session, index) => `
-            <div class="saved-session-item">
-                <div class="session-info">
-                    <strong>${session.name || `Session ${index + 1}`}</strong>
-                    <span class="session-date">${new Date(session.timestamp).toLocaleDateString()}</span>
-                    <div class="session-details">
-                        Speed: ${session.speed}% | Pitch: ${session.pitch > 0 ? '+' : ''}${session.pitch} semitones
-                        ${session.loopStart !== null ? ` | Loop: ${this.formatTime(session.loopStart)} - ${this.formatTime(session.loopEnd)}` : ''}
+        <div class="saved-session-item" style="
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-md);
+            margin-bottom: var(--space-md);
+            transition: all var(--transition-fast);
+        ">
+            <div class="session-info">
+                <strong style="color: var(--text-primary); display: block; margin-bottom: var(--space-xs);">
+                    ${session.name || `Session ${index + 1}`}
+                </strong>
+                <span class="session-date" style="color: var(--text-secondary); font-size: var(--text-sm);">
+                    ${new Date(session.timestamp).toLocaleDateString()} ${new Date(session.timestamp).toLocaleTimeString()}
+                </span>
+                <div class="session-details" style="margin-top: var(--space-xs); font-size: var(--text-sm); color: var(--text-secondary);">
+                    Speed: ${session.speed}% | Pitch: ${session.pitch > 0 ? '+' : ''}${session.pitch} semitones
+                    ${session.loopStart !== null ? ` | Loop: ${this.formatTime(session.loopStart)} - ${this.formatTime(session.loopEnd)}` : ''}
+                </div>
+                ${session.notes ? `
+                    <div style="
+                        margin-top: var(--space-sm);
+                        padding-top: var(--space-sm);
+                        border-top: 1px solid var(--border);
+                        font-size: var(--text-sm);
+                        color: var(--text-primary);
+                        font-style: italic;
+                    ">
+                        📝 ${session.notes}
                     </div>
-                </div>
-                <div class="session-actions">
-                    <button class="btn btn-sm btn-primary" onclick="window.app.currentPage.components.audioPlayer.loadSession(${index})">Load</button>
-                    <button class="btn btn-sm btn-danger" onclick="window.app.currentPage.components.audioPlayer.deleteSession(${index})">Delete</button>
-                </div>
+                ` : ''}
             </div>
-        `).join('');
+            <div class="session-actions" style="display: flex; gap: var(--space-sm); margin-top: var(--space-md);">
+                <button class="btn btn-sm btn-primary" onclick="window.app.currentPage.components.audioPlayer.loadSession(${index})">
+                    Load
+                </button>
+                <button class="btn btn-sm btn-danger" onclick="window.app.currentPage.components.audioPlayer.deleteSession(${index})">
+                    Delete
+                </button>
+            </div>
+        </div>
+    `).join('');
     }
 
     saveCurrentSession() {
@@ -880,27 +983,158 @@ if (timer && timer.syncWithAudio) {
             return;
         }
 
-        const sessionName = prompt('Enter a name for this session:', `Session ${new Date().toLocaleDateString()}`);
-        if (!sessionName) return;
+        // Ensure storage service is available
+        if (!this.ensureStorageService()) {
+            this.showNotification('Storage service not available. Please refresh the page.', 'error');
+            return;
+        }
 
-        const session = {
-            name: sessionName,
-            timestamp: Date.now(),
-            fileName: this.currentFileName,
-            speed: this.playbackRate * 100,
-            pitch: this.pitchShift,
-            loopStart: this.loopStart,
-            loopEnd: this.loopEnd,
-            loopEnabled: document.getElementById('loopEnabled').checked
+        // Generate default session name with file name and loop timestamps
+        let defaultSessionName = this.currentFileName.replace(/\.[^/.]+$/, ''); // Remove file extension
+
+        // Add loop timestamps if they exist
+        if (this.loopStart !== null && this.loopEnd !== null) {
+            const startTime = this.formatTime(this.loopStart);
+            const endTime = this.formatTime(this.loopEnd);
+            defaultSessionName += ` (${startTime} - ${endTime})`;
+        }
+
+        // Create a modal dialog for session details
+        const modalHtml = `
+        <div class="session-save-modal" style="
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--bg-card);
+            padding: var(--space-xl);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-2xl);
+            z-index: 10001;
+            min-width: 400px;
+            max-width: 90vw;
+            border: 1px solid var(--border);
+        ">
+            <h3 style="margin-bottom: var(--space-lg); color: var(--text-primary);">Save Session</h3>
+            
+            <div style="margin-bottom: var(--space-lg);">
+                <label style="display: block; margin-bottom: var(--space-sm); color: var(--text-secondary); font-size: var(--text-sm);">
+                    Session Name:
+                </label>
+                <input type="text" id="sessionNameInput" value="${defaultSessionName}" style="
+                    width: 100%;
+                    padding: var(--space-sm) var(--space-md);
+                    background: var(--bg-input);
+                    border: 1px solid var(--border);
+                    border-radius: var(--radius-md);
+                    color: var(--text-primary);
+                    font-size: var(--text-base);
+                ">
+            </div>
+            
+            <div style="margin-bottom: var(--space-xl);">
+                <label style="display: block; margin-bottom: var(--space-sm); color: var(--text-secondary); font-size: var(--text-sm);">
+                    Notes (optional):
+                </label>
+                <textarea id="sessionNotesInput" placeholder="e.g., Worked on first solo section" style="
+                    width: 100%;
+                    min-height: 80px;
+                    padding: var(--space-sm) var(--space-md);
+                    background: var(--bg-input);
+                    border: 1px solid var(--border);
+                    border-radius: var(--radius-md);
+                    color: var(--text-primary);
+                    font-size: var(--text-base);
+                    resize: vertical;
+                "></textarea>
+            </div>
+            
+            <div style="display: flex; gap: var(--space-md); justify-content: flex-end;">
+                <button id="cancelSessionSave" class="btn btn-secondary">Cancel</button>
+                <button id="confirmSessionSave" class="btn btn-primary">Save Session</button>
+            </div>
+        </div>
+        <div class="modal-backdrop" style="
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+        "></div>
+    `;
+
+        // Add modal to body
+        const modalContainer = document.createElement('div');
+        modalContainer.innerHTML = modalHtml;
+        document.body.appendChild(modalContainer);
+
+        // Focus on the input
+        const nameInput = document.getElementById('sessionNameInput');
+        nameInput.focus();
+        nameInput.select();
+
+        // Handle save
+        const handleSave = () => {
+            const sessionName = document.getElementById('sessionNameInput').value.trim();
+            const sessionNotes = document.getElementById('sessionNotesInput').value.trim();
+
+            if (!sessionName) {
+                this.showNotification('Please enter a session name', 'error');
+                return;
+            }
+
+            const session = {
+                name: sessionName,
+                notes: sessionNotes,
+                timestamp: Date.now(),
+                fileName: this.currentFileName,
+                speed: this.playbackRate * 100,
+                pitch: this.pitchShift,
+                loopStart: this.loopStart,
+                loopEnd: this.loopEnd,
+                loopEnabled: document.getElementById('loopEnabled').checked
+            };
+
+            if (this.storageService && this.storageService.saveAudioSession) {
+                this.storageService.saveAudioSession(this.currentFileName, session);
+                this.loadSavedSessions();
+                this.showNotification('Session saved successfully', 'success');
+            } else {
+                this.showNotification('Storage service not available', 'error');
+            }
+
+            // Remove modal
+            document.body.removeChild(modalContainer);
         };
 
-        if (this.storageService && this.storageService.saveAudioSession) {
-            this.storageService.saveAudioSession(this.currentFileName, session);
-            this.loadSavedSessions();
-            this.showNotification('Session saved successfully', 'success');
-        } else {
-            this.showNotification('Storage service not available', 'error');
-        }
+        // Handle cancel
+        const handleCancel = () => {
+            document.body.removeChild(modalContainer);
+        };
+
+        // Add event listeners
+        document.getElementById('confirmSessionSave').addEventListener('click', handleSave);
+        document.getElementById('cancelSessionSave').addEventListener('click', handleCancel);
+        document.querySelector('.modal-backdrop').addEventListener('click', handleCancel);
+
+        // Handle Enter key for save
+        nameInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSave();
+            }
+        });
+
+        // Handle Escape key for cancel
+        const handleEscape = (e) => {
+            if (e.key === 'Escape') {
+                handleCancel();
+                document.removeEventListener('keydown', handleEscape);
+            }
+        };
+        document.addEventListener('keydown', handleEscape);
     }
 
     loadSession(index) {
