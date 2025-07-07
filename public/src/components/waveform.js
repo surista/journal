@@ -169,21 +169,9 @@ export class WaveformVisualizer {
         const duration = this.audioService.getDuration();
         const time = duration * percentage;
 
-        // Update the audio service's pausedAt property
-        if (this.audioService.audio) {
-            // Store the seek position
-            this.audioService.audio.currentTime = time;
-
-            // Immediately update the visual progress
-            this.updateProgress(time);
-
-            // Update the audioService state
-            this.audioService.pausedAt = time;
-
-            // If there's a time update callback, call it
-            if (this.audioService.onTimeUpdate) {
-                this.audioService.onTimeUpdate(time);
-            }
+        // Use audioService seek instead of direct audio element manipulation
+        if (this.audioService && this.audioService.seek) {
+            this.audioService.seek(time);
         }
     }
 
@@ -248,7 +236,7 @@ export class WaveformVisualizer {
         const duration = this.audioService.getDuration();
         if (!duration) return;
 
-        // Draw loop region on canvas
+        // Draw loop region overlay if both markers are set
         if (this.loopStartMarker !== null && this.loopEndMarker !== null) {
             const startX = (this.loopStartMarker / duration) * this.displayWidth;
             const endX = (this.loopEndMarker / duration) * this.displayWidth;
@@ -256,6 +244,11 @@ export class WaveformVisualizer {
             // Draw semi-transparent overlay
             this.ctx.fillStyle = 'rgba(99, 102, 241, 0.1)';
             this.ctx.fillRect(startX, 0, endX - startX, this.displayHeight);
+        }
+
+        // Draw start marker if set
+        if (this.loopStartMarker !== null) {
+            const startX = (this.loopStartMarker / duration) * this.displayWidth;
 
             // Draw start line
             this.ctx.strokeStyle = '#10b981';
@@ -266,20 +259,34 @@ export class WaveformVisualizer {
             this.ctx.lineTo(startX, this.displayHeight);
             this.ctx.stroke();
 
+            // Draw start label
+            this.ctx.fillStyle = '#10b981';
+            this.ctx.font = 'bold 12px sans-serif';
+            this.ctx.fillText('A', startX + 4, 16);
+        }
+
+        // Draw end marker if set
+        if (this.loopEndMarker !== null) {
+            const endX = (this.loopEndMarker / duration) * this.displayWidth;
+
             // Draw end line
             this.ctx.strokeStyle = '#ef4444';
+            this.ctx.lineWidth = 2;
+            this.ctx.setLineDash([5, 5]);
             this.ctx.beginPath();
             this.ctx.moveTo(endX, 0);
             this.ctx.lineTo(endX, this.displayHeight);
             this.ctx.stroke();
-            this.ctx.setLineDash([]);
+        }
 
-            // Draw loop labels
-            this.ctx.fillStyle = '#10b981';
-            this.ctx.font = 'bold 12px sans-serif';
-            this.ctx.fillText('A', startX + 4, 16);
+        // Reset line dash
+        this.ctx.setLineDash([]);
 
+        // Draw end label if end marker is set
+        if (this.loopEndMarker !== null) {
+            const endX = (this.loopEndMarker / duration) * this.displayWidth;
             this.ctx.fillStyle = '#ef4444';
+            this.ctx.font = 'bold 12px sans-serif';
             this.ctx.fillText('B', endX - 14, 16);
         }
     }
@@ -296,7 +303,7 @@ export class WaveformVisualizer {
         }
     }
 
-startAnimation() {
+    startAnimation() {
         const animate = () => {
             // Check if we should continue animating
             if (this.audioService &&
@@ -338,6 +345,7 @@ startAnimation() {
 }
 
 // Helper function to safely update loop markers in the DOM
+// Helper function to safely update loop markers in the DOM
 function updateLoopMarkersSafe(loopStart, loopEnd, duration) {
     const container = document.querySelector('.waveform-container');
     if (!container) return;
@@ -349,7 +357,7 @@ function updateLoopMarkersSafe(loopStart, loopEnd, duration) {
     existingStartMarkers.forEach(marker => marker.remove());
     existingEndMarkers.forEach(marker => marker.remove());
 
-    // Create new markers only if loop points exist
+    // Create start marker if it exists (independent of end marker)
     if (loopStart !== null && duration) {
         const startMarker = document.createElement('div');
         startMarker.className = 'waveform-loop-start';
@@ -363,6 +371,7 @@ function updateLoopMarkersSafe(loopStart, loopEnd, duration) {
         container.appendChild(startMarker);
     }
 
+    // Create end marker if it exists (independent of start marker)
     if (loopEnd !== null && duration) {
         const endMarker = document.createElement('div');
         endMarker.className = 'waveform-loop-end';

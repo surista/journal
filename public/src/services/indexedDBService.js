@@ -3,7 +3,7 @@ export class IndexedDBService {
     constructor(userId) {
         this.userId = userId;
         this.dbName = `guitarJournal_${userId}`;
-        this.version = 2; // Increment when schema changes
+        this.version = 3; // Increment when schema changes
         this.db = null;
         this.isInitialized = false;
         this.initPromise = null;
@@ -156,6 +156,14 @@ export class IndexedDBService {
                         });
 
                         console.log('Created settings store');
+                    }
+
+                    // Create backups store
+                    if (!db.objectStoreNames.contains('backups')) {
+                        db.createObjectStore('backups', {
+                            keyPath: 'key'
+                        });
+                        console.log('Created backups store');
                     }
 
                     console.log('IndexedDB schema upgrade completed');
@@ -504,6 +512,73 @@ export class IndexedDBService {
         } catch (error) {
             console.error(`Error counting ${storeName}:`, error);
             return 0;
+        }
+    }
+
+    // Clear all data from all stores
+    async clearAll() {
+        try {
+            const stores = Object.values(this.stores);
+
+            for (const storeName of stores) {
+                try {
+                    await this.clear(storeName);
+                    console.log(`Cleared store: ${storeName}`);
+                } catch (error) {
+                    console.error(`Error clearing ${storeName}:`, error);
+                }
+            }
+
+            console.log('All IndexedDB stores cleared');
+            return { success: true };
+        } catch (error) {
+            console.error('Error clearing all stores:', error);
+            return { success: false, error };
+        }
+    }
+
+    // Backup-related methods
+    async saveBackup(backupData) {
+        try {
+            // Create a backups store if it doesn't exist
+            const tx = await this.transaction('backups', 'readwrite');
+            const store = tx.objectStore('backups');
+
+            // Store with timestamp as key
+            const key = new Date().toISOString();
+            await store.put({ key, data: backupData, timestamp: Date.now() });
+
+            // Keep only last 5 backups
+            const allBackups = await store.getAllKeys();
+            if (allBackups.length > 5) {
+                // Delete oldest backups
+                const toDelete = allBackups.slice(0, allBackups.length - 5);
+                for (const key of toDelete) {
+                    await store.delete(key);
+                }
+            }
+
+            return { success: true };
+        } catch (error) {
+            console.error('IndexedDB backup save error:', error);
+            return { success: false, error };
+        }
+    }
+
+    async getLatestBackup() {
+        try {
+            const tx = await this.transaction('backups', 'readonly');
+            const store = tx.objectStore('backups');
+
+            const allBackups = await store.getAll();
+            if (allBackups.length === 0) return null;
+
+            // Sort by timestamp and return latest
+            allBackups.sort((a, b) => b.timestamp - a.timestamp);
+            return allBackups[0].data;
+        } catch (error) {
+            console.error('IndexedDB backup retrieve error:', error);
+            return null;
         }
     }
 

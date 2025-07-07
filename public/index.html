@@ -7,6 +7,11 @@
     <meta name="theme-color" content="#6366f1">
     <title>Guitar Practice Journal v7.7.1</title>
 
+    <!-- Add this before your app scripts -->
+    <script type="module">
+        // Initialize Firebase early
+        import './src/services/firebaseService.js';
+    </script>
     <!-- Simplified base path detection -->
     <script>
         // Simple version tracking
@@ -31,7 +36,7 @@
         window.__APP_BASE_PATH__ = basePath;
         console.log('📁 Base path detected:', basePath);
     </script>
-
+    <script src="https://unpkg.com/tone@14.8.49/build/Tone.js"></script>
     <!-- Load CSS -->
     <link rel="stylesheet" href="styles/main.css">
 

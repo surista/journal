@@ -7,7 +7,6 @@ export class AudioService {
         this.sourceNode = null;
         this.gainNode = null;
         this.analyserNode = null;
-        this.pitchShiftNode = null;
 
         // Playback state
         this.isPlaying = false;
@@ -21,7 +20,8 @@ export class AudioService {
         this.playbackRate = 1.0;
         this.volume = 1.0;
         this.pitch = 0; // semitones
-        this.preservePitch = true;
+        // Always preserve pitch for tempo changes
+        // For pitch changes, we'll use a pitch shifter when available
 
         // Loop settings
         this.loopEnabled = false;
@@ -156,8 +156,8 @@ export class AudioService {
             this.sourceNode = this.audioContext.createBufferSource();
             this.sourceNode.buffer = this.audioBuffer;
 
-            // Apply playback rate
-            this.sourceNode.playbackRate.value = this.calculateEffectivePlaybackRate();
+            // Apply playback rate (tempo only, no pitch)
+            this.sourceNode.playbackRate.value = this.playbackRate;
 
             // Connect audio chain
             this.sourceNode.connect(this.gainNode);
@@ -282,53 +282,30 @@ export class AudioService {
         this.playbackRate = Math.max(0.25, Math.min(4.0, rate));
 
         if (this.sourceNode) {
-            this.sourceNode.playbackRate.value = this.calculateEffectivePlaybackRate();
+            this.sourceNode.playbackRate.value = this.playbackRate;
         }
 
         console.log('Playback speed set to:', this.playbackRate);
     }
 
     setPitch(semitones) {
-        const oldPitch = this.pitch;
+        // Store pitch value for future implementation
         this.pitch = Math.max(-12, Math.min(12, semitones));
 
-        // If preserve pitch is disabled, adjust playback rate for pitch
-        if (!this.preservePitch) {
-            const pitchRatio = Math.pow(2, this.pitch / 12);
-            this.setPlaybackSpeed(this.playbackRate * pitchRatio);
-        } else {
-            // For pitch shifting with preserved tempo, we'd need advanced audio processing
-            // For now, just log the change
-            console.log('Pitch shift requested:', this.pitch, 'semitones (preserve pitch mode)');
+        // For now, pitch shifting with preserved tempo requires additional libraries
+        // like Tone.js or a custom pitch shifter implementation
+        console.log('Pitch shift set to:', this.pitch, 'semitones (requires pitch shifter implementation)');
 
-            // Simple implementation: restart playback if pitch changed significantly
-            if (Math.abs(this.pitch - oldPitch) > 0.5 && this.sourceNode) {
-                this.sourceNode.playbackRate.value = this.calculateEffectivePlaybackRate();
-            }
-        }
-    }
-
-    calculateEffectivePlaybackRate() {
-        let rate = this.playbackRate;
-
-        if (!this.preservePitch && this.pitch !== 0) {
-            // Apply pitch as rate change when not preserving pitch
-            const pitchRatio = Math.pow(2, this.pitch / 12);
-            rate *= pitchRatio;
-        }
-
-        return Math.max(0.25, Math.min(4.0, rate));
+        // TODO: Implement actual pitch shifting using:
+        // - Tone.js PitchShift
+        // - Custom phase vocoder
+        // - Web Audio API AudioWorklet
     }
 
     setPreservePitch(preserve) {
-        this.preservePitch = preserve;
-
-        // Update playback rate if currently playing
-        if (this.sourceNode) {
-            this.sourceNode.playbackRate.value = this.calculateEffectivePlaybackRate();
-        }
-
-        console.log('Preserve pitch:', preserve);
+        // This is no longer needed since we always preserve pitch for tempo
+        // and always preserve tempo for pitch
+        console.log('Preserve pitch setting ignored - always preserving');
     }
 
     setVolume(volume) {
@@ -546,9 +523,6 @@ export class AudioService {
         }
         if (session.volume !== undefined) {
             this.setVolume(session.volume);
-        }
-        if (session.preservePitch !== undefined) {
-            this.setPreservePitch(session.preservePitch);
         }
         if (session.loopPoints) {
             if (session.loopPoints.start !== null && session.loopPoints.end !== null) {

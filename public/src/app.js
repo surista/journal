@@ -3,7 +3,9 @@ console.log('🎸 Loading app.js...');
 
 // Import configuration and theme service first
 import appConfig from './config.js';
-import { ThemeService } from './services/themeService.js';
+import {ThemeService} from './services/themeService.js';
+import {cloudStorage} from './services/firebaseService.js';
+
 
 class App {
     constructor() {
@@ -20,6 +22,13 @@ class App {
 
     async init() {
         console.log('🚀 Starting app initialization...');
+        console.log('Current location:', window.location.href);
+
+        // Initialize cloud storage
+        window.cloudStorage = cloudStorage;
+
+        // Make storage service available globally for cloud sync
+        window.app = this;
 
         try {
             // Initialize theme service FIRST to apply saved theme immediately
@@ -30,11 +39,36 @@ class App {
             // Step 1: Load authentication service
             console.log('🔐 Loading authentication service...');
             const authModule = await import('./services/authService.js');
+            console.log('Auth module loaded:', authModule);
+
+            // Check if AuthService exists in the module
+            if (!authModule.AuthService) {
+                console.error('AuthService not found in module. Available exports:', Object.keys(authModule));
+                throw new Error('AuthService class not found in authService.js module');
+            }
+
             this.authService = new authModule.AuthService();
-            console.log('✅ Authentication service loaded');
+            console.log('✅ Authentication service instantiated');
+
+            // Verify authService has required methods
+            if (typeof this.authService.getCurrentUser !== 'function') {
+                console.error('AuthService instance methods:', Object.getOwnPropertyNames(Object.getPrototypeOf(this.authService)));
+                throw new Error('getCurrentUser method not found on AuthService instance');
+            }
 
             // Step 2: Check if user is logged in
-            const user = this.authService.getCurrentUser();
+            let user = null;
+            try {
+                if (this.authService && typeof this.authService.getCurrentUser === 'function') {
+                    user = this.authService.getCurrentUser();
+                } else {
+                    console.warn('getCurrentUser method not available, using demo mode');
+                    user = null;
+                }
+            } catch (e) {
+                console.error('Error calling getCurrentUser:', e);
+                user = null;
+            }
             console.log('👤 Current user:', user ? 'Logged in' : 'Not logged in');
 
             if (!user) {
@@ -262,10 +296,10 @@ class App {
         toast.innerHTML = `
             <div style="display: flex; align-items: center; gap: 0.75rem;">
                 <span style="font-size: 1.25rem;">${
-                    type === 'success' ? '✅' :
-                    type === 'error' ? '❌' :
+            type === 'success' ? '✅' :
+                type === 'error' ? '❌' :
                     type === 'warning' ? '⚠️' : 'ℹ️'
-                }</span>
+        }</span>
                 <span style="color: var(--text-primary);">${message}</span>
             </div>
         `;
@@ -399,4 +433,4 @@ class App {
 console.log('✅ App class defined successfully');
 
 // Export the App class
-export { App };
+export {App};

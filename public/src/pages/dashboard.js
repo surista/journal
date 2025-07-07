@@ -21,6 +21,131 @@ export class DashboardPage {
         this.isDestroyed = false;
     }
 
+    async updateCloudStatus() {
+        const statusEl = document.getElementById('cloudStatus');
+        const syncIcon = document.getElementById('syncIcon');
+        const syncText = document.getElementById('syncText');
+
+        if (!cloudStorage.currentUser) {
+            syncIcon.textContent = '❌';
+            syncText.textContent = 'Not signed in to cloud';
+            statusEl.className = 'cloud-status offline';
+            return;
+        }
+
+        syncIcon.textContent = '✅';
+        syncText.textContent = `Signed in as ${cloudStorage.currentUser.email}`;
+        statusEl.className = 'cloud-status online';
+
+        // Update last sync time
+        if (cloudStorage.lastSync) {
+            document.getElementById('lastSyncTime').textContent =
+                TimeUtils.getRelativeTime(cloudStorage.lastSync);
+        }
+    }
+
+    async performManualSync() {
+        const btn = document.getElementById('syncNowBtn');
+        const originalText = btn.innerHTML;
+
+        btn.innerHTML = '<i class="icon">⏳</i> Syncing...';
+        btn.disabled = true;
+
+        try {
+            await cloudStorage.performAutoSync();
+            this.showNotification('Data synced successfully', 'success');
+        } catch (error) {
+            this.showNotification('Sync failed: ' + error.message, 'error');
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            this.updateCloudStatus();
+        }
+    }
+
+    async downloadFromCloud() {
+        if (!confirm('This will replace your local data with cloud data. Continue?')) {
+            return;
+        }
+
+        try {
+            const cloudData = await cloudStorage.downloadCloudData();
+            if (cloudData) {
+                await this.storageService.importData(cloudData);
+                this.showNotification('Cloud data downloaded successfully', 'success');
+                location.reload(); // Reload to show new data
+            } else {
+                this.showNotification('No cloud data found', 'warning');
+            }
+        } catch (error) {
+            this.showNotification('Download failed: ' + error.message, 'error');
+        }
+    }
+
+    async uploadToCloud() {
+        if (!confirm('This will replace cloud data with your local data. Continue?')) {
+            return;
+        }
+
+        try {
+            const localData = await this.storageService.exportAllData();
+            await cloudStorage.syncAllData(localData);
+            this.showNotification('Data uploaded to cloud successfully', 'success');
+        } catch (error) {
+            this.showNotification('Upload failed: ' + error.message, 'error');
+        }
+    }
+
+    updateSyncStatus(detail) {
+        const statusEl = document.getElementById('syncStatus');
+        const iconEl = document.getElementById('syncIcon');
+
+        if (detail.status === 'success') {
+            statusEl.textContent = 'Synced';
+            statusEl.className = 'sync-success';
+            iconEl.textContent = '✅';
+        } else if (detail.status === 'error') {
+            statusEl.textContent = 'Sync error';
+            statusEl.className = 'sync-error';
+            iconEl.textContent = '❌';
+        } else if (detail.status === 'syncing') {
+            statusEl.textContent = 'Syncing...';
+            statusEl.className = 'sync-progress';
+            iconEl.textContent = '🔄';
+        }
+
+        if (detail.lastSync) {
+            document.getElementById('lastSyncTime').textContent =
+                TimeUtils.getRelativeTime(detail.lastSync);
+        }
+    }
+
+    async handleCloudDataChange(detail) {
+        console.log('Cloud data changed:', detail.type);
+
+        // Merge changes with local data
+        if (detail.type === 'settings' && detail.data) {
+            await this.storageService.mergeCloudData({settings: detail.data.settings});
+            this.loadUserSettings(); // Refresh UI
+        }
+    }
+
+    async handleUserLogin(user) {
+        console.log('User logged in, syncing data...');
+
+        // Download and merge cloud data
+        const cloudData = await cloudStorage.downloadCloudData();
+        if (cloudData) {
+            await this.storageService.mergeCloudData(cloudData);
+            await this.loadDashboardData(); // Refresh all data
+        }
+
+        // Upload any local data that's missing from cloud
+        await cloudStorage.performAutoSync();
+
+        this.updateCloudStatus();
+    }
+
     async render() {
         const app = document.getElementById('app');
 
@@ -275,12 +400,97 @@ export class DashboardPage {
                                <div class="settings-section">
                                    <h3>Data Management</h3>
                                    <div id="storageIndicator" class="storage-indicator"></div>
+                                   <div class="backup-status" id="backupStatus"></div>
+                                   
+                                   <!-- Backup Settings -->
+                                   <div class="backup-settings" style="background: var(--bg-input); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                                       <h4 style="margin-top: 0;">Backup Settings</h4>
+                                       
+                                       <label class="checkbox-label">
+                                           <input type="checkbox" id="autoBackupEnabled" checked>
+                                           <span>Enable automatic backups</span>
+                                       </label>
+                                       
+                                       <!-- Add this after backup settings in the settings tab -->
+<div class="settings-section">
+    <h3>☁️ Cloud Sync</h3>
+    <div class="cloud-status" id="cloudStatus">
+        <div class="sync-indicator">
+            <span class="sync-icon" id="syncIcon">🔄</span>
+            <span class="sync-text" id="syncText">Checking sync status...</span>
+        </div>
+    </div>
+    
+    <div class="sync-settings">
+        <label class="checkbox-label">
+            <input type="checkbox" id="enableCloudSync" checked>
+            <span>Enable automatic cloud sync</span>
+        </label>
+        
+        <div class="form-group" style="margin-top: 10px;">
+            <label>Conflict resolution:</label>
+            <select id="conflictResolution" class="form-control">
+                <option value="newest">Keep newest version</option>
+                <option value="local">Always keep local</option>
+                <option value="cloud">Always keep cloud</option>
+            </select>
+        </div>
+        
+        <div class="sync-actions" style="margin-top: 15px;">
+            <button class="btn btn-primary" id="syncNowBtn">
+                <i class="icon">🔄</i> Sync Now
+            </button>
+            <button class="btn btn-secondary" id="downloadFromCloudBtn">
+                <i class="icon">⬇️</i> Download from Cloud
+            </button>
+            <button class="btn btn-secondary" id="uploadToCloudBtn">
+                <i class="icon">⬆️</i> Upload to Cloud
+            </button>
+        </div>
+        
+        <div class="sync-info" style="margin-top: 15px;">
+            <p><strong>Last sync:</strong> <span id="lastSyncTime">Never</span></p>
+            <p><strong>Sync status:</strong> <span id="syncStatus">Unknown</span></p>
+            <p style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 10px;">
+                Your data automatically syncs every 5 minutes when you're signed in.
+                All devices using the same account will stay in sync.
+            </p>
+        </div>
+    </div>
+</div>
+                                       <div class="form-group" style="margin-top: 10px;">
+                                           <label>Backup frequency:</label>
+                                           <select id="backupFrequency" class="form-control">
+                                               <option value="onChange">After every change (recommended)</option>
+                                               <option value="daily">Once per day</option>
+                                               <option value="weekly">Once per week</option>
+                                           </select>
+                                       </div>
+                                       
+                                       <label class="checkbox-label">
+                                           <input type="checkbox" id="backupNotifications" checked>
+                                           <span>Show backup notifications</span>
+                                       </label>
+                                       
+                                       <div class="backup-info" style="margin-top: 10px; padding: 10px; background: var(--bg-card); border-radius: 6px; font-size: 0.875rem; color: var(--text-secondary);">
+                                           <strong>⚠️ Important:</strong> Browser storage can be lost if you clear cache or reset your browser. 
+                                           <strong style="color: var(--primary);">Always download backups regularly</strong> to protect your data permanently. 
+                                           Downloaded backup files can be stored on your computer or cloud storage and restored anytime.
+                                       </div>
+                                   </div>
+                                   
                                    <div class="settings-actions">
                                        <button class="btn btn-secondary" id="exportDataBtn">
-                                           <i class="icon">📥</i> Export Data
+                                           <i class="icon">📥</i> Export All Data
                                        </button>
                                        <button class="btn btn-secondary" id="importDataBtn">
                                            <i class="icon">📤</i> Import Data
+                                       </button>
+                                       <button class="btn btn-primary" id="downloadBackupBtn">
+                                           <i class="icon">💾</i> Download Backup Now
+                                       </button>
+                                       <button class="btn btn-secondary" id="restoreBackupBtn">
+                                           <i class="icon">🔄</i> Restore from File
                                        </button>
                                        <button class="btn btn-danger" id="clearDataBtn">
                                            <i class="icon">🗑️</i> Clear All Data
@@ -348,6 +558,43 @@ export class DashboardPage {
             this.toggleTheme();
         });
 
+        // Cloud sync listeners
+        document.getElementById('enableCloudSync')?.addEventListener('change', (e) => {
+            cloudStorage.setSyncEnabled(e.target.checked);
+            this.updateCloudStatus();
+        });
+
+        document.getElementById('conflictResolution')?.addEventListener('change', (e) => {
+            cloudStorage.setConflictResolution(e.target.value);
+        });
+
+        document.getElementById('syncNowBtn')?.addEventListener('click', () => {
+            this.performManualSync();
+        });
+
+        document.getElementById('downloadFromCloudBtn')?.addEventListener('click', () => {
+            this.downloadFromCloud();
+        });
+
+        document.getElementById('uploadToCloudBtn')?.addEventListener('click', () => {
+            this.uploadToCloud();
+        });
+
+        // Listen for sync status changes
+        window.addEventListener('syncStatusChanged', (e) => {
+            this.updateSyncStatus(e.detail);
+        });
+
+        // Listen for cloud data changes
+        window.addEventListener('cloudDataChanged', (e) => {
+            this.handleCloudDataChange(e.detail);
+        });
+
+        // Listen for user login
+        window.addEventListener('userLoggedIn', async (e) => {
+            await this.handleUserLogin(e.detail);
+        });
+
         // Logout
         document.getElementById('logoutBtn')?.addEventListener('click', () => {
             this.handleLogout();
@@ -385,6 +632,28 @@ export class DashboardPage {
         document.getElementById('importDataBtn')?.addEventListener('click', () => this.importData());
         document.getElementById('clearDataBtn')?.addEventListener('click', () => this.clearData());
         document.getElementById('changePasswordBtn')?.addEventListener('click', () => this.changePassword());
+
+        // Add new backup button listeners
+        document.getElementById('downloadBackupBtn')?.addEventListener('click', () => this.downloadBackup());
+        document.getElementById('restoreBackupBtn')?.addEventListener('click', () => this.restoreBackup());
+
+        // Backup settings listeners
+        document.getElementById('autoBackupEnabled')?.addEventListener('change', (e) => {
+            this.updateBackupSetting('autoBackup', e.target.checked);
+        });
+
+        document.getElementById('backupFrequency')?.addEventListener('change', (e) => {
+            this.updateBackupSetting('backupFrequency', e.target.value);
+        });
+
+        document.getElementById('backupNotifications')?.addEventListener('change', (e) => {
+            this.updateBackupSetting('showNotifications', e.target.checked);
+        });
+
+        // Listen for first backup event
+        window.addEventListener('firstBackupCreated', (e) => {
+            this.handleFirstBackup(e.detail);
+        });
 
         // Preferences checkboxes
         document.getElementById('notificationsEnabled')?.addEventListener('change', (e) => {
@@ -1141,6 +1410,12 @@ export class DashboardPage {
 
             // Update storage indicator
             await this.updateStorageIndicator();
+
+            // Update backup status
+            await this.updateBackupStatus();
+
+            // Load backup settings
+            await this.loadBackupSettings();
         } catch (error) {
             console.error('Error loading user settings:', error);
         }
@@ -1319,6 +1594,227 @@ export class DashboardPage {
     updatePreference(key, value) {
         this.storageService.saveUserSettings({[key]: value});
         console.log(`Preference updated: ${key} = ${value}`);
+    }
+
+    updateBackupSetting(key, value) {
+        const settings = {};
+        settings[key] = value;
+        this.storageService.saveBackupSettings(settings);
+
+        this.showNotification(`Backup ${key === 'autoBackup' ? (value ? 'enabled' : 'disabled') : 'settings updated'}`, 'success');
+    }
+
+    async handleFirstBackup(backupResult) {
+        if (!backupResult || !backupResult.data) return;
+
+        const settings = this.storageService.getBackupSettings();
+        if (!settings.showNotifications) return;
+
+        // Create notification modal
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            z-index: 10001;
+            max-width: 500px;
+            border: 1px solid var(--border);
+        `;
+
+        modal.innerHTML = `
+            <h3 style="margin-top: 0; color: var(--primary);">🎉 First Backup Created!</h3>
+            <p style="color: var(--text-primary); line-height: 1.6;">
+                Your practice data is being automatically backed up. Would you like to download 
+                the backup file to your computer for extra safety?
+            </p>
+            <p style="color: var(--text-secondary); font-size: 0.875rem;">
+                Backups include all your practice sessions, goals, achievements, and settings.
+            </p>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button id="downloadFirstBackup" class="btn btn-primary" style="flex: 1;">
+                    <i class="icon">💾</i> Download Backup
+                </button>
+                <button id="skipFirstBackup" class="btn btn-secondary" style="flex: 1;">
+                    Skip for Now
+                </button>
+            </div>
+            <label class="checkbox-label" style="margin-top: 15px; font-size: 0.875rem;">
+                <input type="checkbox" id="dontShowAgain">
+                <span>Don't show this message again</span>
+            </label>
+        `;
+
+        const backdrop = document.createElement('div');
+        backdrop.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+        `;
+
+        document.body.appendChild(backdrop);
+        document.body.appendChild(modal);
+
+        // Handle download button
+        document.getElementById('downloadFirstBackup').addEventListener('click', () => {
+            // Download the backup
+            const blob = new Blob([JSON.stringify(backupResult.data, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = backupResult.filename;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            // Check if don't show again is checked
+            if (document.getElementById('dontShowAgain').checked) {
+                this.updateBackupSetting('showNotifications', false);
+            }
+
+            document.body.removeChild(backdrop);
+            document.body.removeChild(modal);
+
+            this.showNotification('Backup downloaded! Your data is safe.', 'success');
+        });
+
+        // Handle skip button
+        document.getElementById('skipFirstBackup').addEventListener('click', () => {
+            if (document.getElementById('dontShowAgain').checked) {
+                this.updateBackupSetting('showNotifications', false);
+            }
+
+            document.body.removeChild(backdrop);
+            document.body.removeChild(modal);
+        });
+    }
+
+    async loadBackupSettings() {
+        const settings = this.storageService.getBackupSettings();
+
+        const autoBackupCheckbox = document.getElementById('autoBackupEnabled');
+        if (autoBackupCheckbox) {
+            autoBackupCheckbox.checked = settings.autoBackup !== false;
+        }
+
+        const frequencySelect = document.getElementById('backupFrequency');
+        if (frequencySelect) {
+            frequencySelect.value = settings.backupFrequency || 'onChange';
+        }
+
+        const notificationsCheckbox = document.getElementById('backupNotifications');
+        if (notificationsCheckbox) {
+            notificationsCheckbox.checked = settings.showNotifications !== false;
+        }
+    }
+
+    async downloadBackup() {
+        try {
+            // Force create a new backup for download
+            const result = await this.storageService.createBackup(true);
+            if (result.success) {
+                // Create download link
+                const blob = new Blob([JSON.stringify(result.data, null, 2)], {type: 'application/json'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = result.filename;
+                a.click();
+                URL.revokeObjectURL(url);
+
+                this.showNotification('Backup downloaded successfully', 'success');
+                this.updateBackupStatus();
+            } else {
+                this.showNotification('Failed to create backup', 'error');
+            }
+        } catch (error) {
+            console.error('Error downloading backup:', error);
+            this.showNotification('Error creating backup file', 'error');
+        }
+    }
+
+    async restoreBackup() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+
+        input.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            try {
+                const text = await file.text();
+                const backupData = JSON.parse(text);
+
+                // Verify it's a valid backup
+                if (!backupData.version || !backupData.data) {
+                    throw new Error('Invalid backup file format');
+                }
+
+                // Check if backup is for current user
+                const currentUser = this.authService.getCurrentUser();
+                if (backupData.email !== currentUser.email) {
+                    if (!confirm(`This backup is for ${backupData.email}. Are you sure you want to restore it to ${currentUser.email}?`)) {
+                        return;
+                    }
+                }
+
+                if (confirm('This will replace all current data with the backup. Continue?')) {
+                    const result = await this.storageService.restoreFromBackup(backupData);
+                    if (result.success) {
+                        this.showNotification('Data restored successfully from backup', 'success');
+                        // Reload the page to show restored data
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        this.showNotification('Failed to restore backup', 'error');
+                    }
+                }
+            } catch (error) {
+                console.error('Error restoring backup:', error);
+                this.showNotification('Error reading backup file. Please check the file format.', 'error');
+            }
+        });
+
+        input.click();
+    }
+
+    async updateBackupStatus() {
+        const statusEl = document.getElementById('backupStatus');
+        if (!statusEl) return;
+
+        try {
+            const backupKey = `${this.storageService.prefix}latest_backup`;
+            const backupData = localStorage.getItem(backupKey);
+            const backupFilename = localStorage.getItem(`${backupKey}_filename`);
+
+            if (backupData) {
+                const backup = JSON.parse(backupData);
+                const backupDate = new Date(backup.backupDate);
+                const timeAgo = TimeUtils.getRelativeTime(backupDate);
+
+                statusEl.innerHTML = `
+                    <div style="padding: 10px; background: var(--bg-input); border-radius: 8px; margin-bottom: 10px;">
+                        <strong>Last Backup:</strong> ${timeAgo}<br>
+                        <small style="color: var(--text-secondary);">${backupFilename || 'Auto-backup'}</small>
+                    </div>
+                `;
+            } else {
+                statusEl.innerHTML = `
+                    <div style="padding: 10px; background: var(--bg-input); border-radius: 8px; margin-bottom: 10px; color: var(--text-secondary);">
+                        No backup found. Backups are created automatically when you save data.
+                    </div>
+                `;
+            }
+        } catch (error) {
+            console.error('Error updating backup status:', error);
+        }
     }
 
     showQuickAddModal() {

@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="5f27d1ec-c487-41e1-b5ff-716c9eb2c02f" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CHANGELOG.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CONTRIBUTING.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/MAP.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/USAGE.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/login.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/manifest.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/service-worker.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/LazyImage.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/VirtualScrollList.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/achievementBadges.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/audioPlayer.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/goalsList.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/metronome.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/practiceForm.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/statsPanel.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/streakHeatMap.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/timer.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/waveform.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/config.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/auth.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/calendar.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/dashboard.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/audioService.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/authService.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/indexedDBService.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/notificationManager.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/notificationService.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/pushNotificationService.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/storageService.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/themeService.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/helpers.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/router.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles/base/animations.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles/base/reset.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles/base/typography.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles/base/variables.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles/components/achievements.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles/components/audio-player.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles/components/buttons.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles/components/cards.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles/components/forms.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles/components/goals.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles/components/heatmap.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles/components/loading.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles/components/metronome.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles/components/modals.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles/components/notifications.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles/components/stats.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles/components/timer.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles/components/waveform.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles/layout/grid.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles/layout/header.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles/layout/responsive.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles/layout/sidebar.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles/main.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles/pages/auth.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles/pages/calendar.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles/pages/dashboard.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles/themes/dark.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles/themes/light.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles/utilities/audio-player-fixes.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles/utilities/display.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles/utilities/helpers.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles/utilities/spacing.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles/utilities/text.css" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="CSS File" />
+        <option value="JavaScript File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;surista&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/surista/journal.git&quot;,
+    &quot;accountId&quot;: &quot;b4eeb10a-30cf-4ffa-82cc-2716a3b51184&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0
+}</component>
+  <component name="ProjectId" id="2zJBSoP6qQ9feoTQ2OubNyGXXQN" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Node.js.app.js.executor&quot;: &quot;Debug&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/suris/Documents/journal&quot;,
+    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-PY-241.19416.19" />
+        <option value="bundled-python-sdk-337b0a7a993a-2767605e8bc2-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-241.19416.19" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="5f27d1ec-c487-41e1-b5ff-716c9eb2c02f" name="Changes" comment="" />
+      <created>1751439298081</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1751439298081</updated>
+      <workItem from="1751439299138" duration="22598000" />
+      <workItem from="1751553856424" duration="14986000" />
+      <workItem from="1751599018096" duration="31683000" />
+      <workItem from="1751711414070" duration="138000" />
+      <workItem from="1751711668849" duration="78789000" />
+      <workItem from="1751926390272" duration="3187000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
