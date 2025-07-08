@@ -75,6 +75,11 @@ export class AudioPlayer {
                 feedback: 0
             }).toDestination();
 
+            // Create time stretcher for tempo changes without pitch changes
+            this.timeStretch = new Tone.GrainPlayer().toDestination();
+            this.timeStretch.playbackRate = 1;
+            this.timeStretch.overlap = 0.1; // For smoother stretching
+
             // Set high quality settings
             this.pitchShift.windowSize = 0.1; // Larger window for better quality
             this.pitchShift.wet.value = 1; // 100% wet signal
@@ -311,8 +316,11 @@ export class AudioPlayer {
                     console.log('Audio loaded in Tone.js');
                     this.duration = this.tonePlayer.buffer.duration;
 
-                    // Connect through pitch shift
+                    // Connect audio chain: Player -> PitchShift -> Destination
                     this.tonePlayer.connect(this.pitchShift);
+
+                    // Also load the buffer into the time stretcher for tempo changes
+                    this.timeStretch.buffer = this.tonePlayer.buffer;
 
                     // Show controls
                     document.getElementById('audioControlsSection').style.display = 'block';
@@ -341,20 +349,17 @@ export class AudioPlayer {
         // Create a loop to update time display
         const updateTime = () => {
             if (this.tonePlayer && this.tonePlayer.state === 'started') {
-                this.currentTime = this.tonePlayer.toSeconds(Tone.now()) - this.tonePlayer.toSeconds(this.startTime);
+                // Calculate elapsed real time since playback started
+                const realElapsed = Tone.now() - this.startTime;
 
-                // Adjust for playback rate
-                this.currentTime *= this.playbackRate;
-
-                // Add offset if we started from a specific position
-                if (this.startOffset) {
-                    this.currentTime += this.startOffset;
-                }
+                // Apply playback rate to get scaled time + starting offset
+                this.currentTime = (realElapsed * this.playbackRate) + (this.startOffset || 0);
 
                 // Handle looping
                 if (this.isLooping && this.loopEnd !== null && this.currentTime >= this.loopEnd) {
                     this.startOffset = this.loopStart || 0;
                     this.tonePlayer.stop();
+                    this.tonePlayer.playbackRate = 1.0; // Keep at 1.0
                     this.tonePlayer.start(undefined, this.startOffset);
                     this.startTime = Tone.now();
                     this.currentTime = this.startOffset;
@@ -416,6 +421,7 @@ export class AudioPlayer {
 
                     // Resume playback if we were playing
                     if (wasPlaying) {
+                        this.tonePlayer.playbackRate = 1.0; // Always keep at 1.0
                         this.tonePlayer.start(undefined, time);
                         this.startTime = Tone.now();
                         this.isPlaying = true;
@@ -462,6 +468,9 @@ export class AudioPlayer {
                 }
             }
 
+            // For tempo changes without pitch changes, we keep playbackRate at 1.0
+            // and handle tempo in our time calculations
+            this.tonePlayer.playbackRate = 1.0; // Always keep at normal speed
             this.tonePlayer.start(undefined, startPosition);
             this.startTime = Tone.now();
             this.startOffset = startPosition;
@@ -596,12 +605,22 @@ export class AudioPlayer {
 
     setSpeed(speed) {
         this.playbackRate = speed / 100;
-
-        if (this.tonePlayer) {
-            this.tonePlayer.playbackRate = this.playbackRate;
-        }
-
         document.getElementById('speedValue').textContent = speed + '%';
+
+        // If currently playing, restart with new speed calculation
+        if (this.isPlaying && this.tonePlayer) {
+            const currentPos = this.currentTime;
+            this.tonePlayer.stop();
+
+            // Restart playback - ALWAYS keep playbackRate at 1.0
+            this.tonePlayer.playbackRate = 1.0;
+            this.tonePlayer.start(undefined, currentPos);
+            this.startTime = Tone.now();
+            this.startOffset = currentPos;
+
+            // Restart time updates with new playback rate
+            this.setupTimeUpdate();
+        }
     }
 
     // Pitch control methods
