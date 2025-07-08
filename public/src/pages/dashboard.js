@@ -206,17 +206,20 @@ export class DashboardPage {
                <!-- Main Content Area -->
                <main class="main-content">
                    <!-- Header -->
-                   <header class="header">
-                       <button class="menu-toggle" id="menuToggle">
-                           <i class="icon">☰</i>
-                       </button>
-                       <h1 id="pageTitle">Practice Session</h1>
-                       <div class="header-actions">
-                           <button class="btn btn-icon theme-toggle" id="themeToggle" title="Toggle theme">
-                               <i class="icon">${themeIcon}</i>
-                           </button>
-                       </div>
-                   </header>
+<header class="header">
+    <button class="menu-toggle" id="menuToggle">
+        <i class="icon">☰</i>
+    </button>
+    <h1 id="pageTitle">Practice Session</h1>
+    <div class="header-actions">
+        <button class="btn btn-icon theme-toggle" id="themeToggle" title="Toggle theme">
+            <i class="icon">${themeIcon}</i>
+        </button>
+        <button class="btn btn-danger" id="headerLogoutBtn" title="Logout" style="margin-left: 10px; padding: 6px 12px; font-size: 14px;">
+            <i class="icon">🚪</i> Logout
+        </button>
+    </div>
+</header>
 
                    <!-- Tab Content -->
                    <div class="tab-content">
@@ -546,6 +549,14 @@ export class DashboardPage {
                 const tab = e.currentTarget.dataset.tab;
                 this.switchTab(tab);
             });
+        });
+
+        // Add this with the other event listeners
+        document.getElementById('headerLogoutBtn')?.addEventListener('click', () => {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.clear();
+                window.location.href = './login.html';
+            }
         });
 
         // Mobile menu toggle

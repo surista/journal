@@ -8,9 +8,17 @@
     <title>Guitar Practice Journal v7.7.2</title>
 
     <!-- Add this before your app scripts -->
-    <script type="module">
-        // Initialize Firebase early
-        import './src/services/firebaseService.js';
+  <script>
+        // Immediately redirect to login page if not logged in
+        (function() {
+            const currentPath = window.location.pathname;
+            const isIndexPage = currentPath === '/' || currentPath === '/index.html';
+            const hasUser = localStorage.getItem('currentUser');
+
+            if (isIndexPage && !hasUser) {
+                window.location.replace('./login.html');
+            }
+        })();
     </script>
     <!-- Simplified base path detection -->
     <script>

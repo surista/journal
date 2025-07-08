@@ -1,5 +1,5 @@
 // Firebase configuration and service
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
 import {
     getAuth,
     signInWithEmailAndPassword,
@@ -29,13 +29,13 @@ import {
 
 // REPLACE WITH YOUR FIREBASE CONFIG
 const firebaseConfig = {
-  apiKey: "AIzaSyACB5lnRzzgIKR1toEXVKGkBfadk6KB_g0",
-  authDomain: "guitar-practice-journal-9f064.firebaseapp.com",
-  projectId: "guitar-practice-journal-9f064",
-  storageBucket: "guitar-practice-journal-9f064.firebasestorage.app",
-  messagingSenderId: "657026172181",
-  appId: "1:657026172181:web:3a41e0793d0763e229d51c",
-  measurementId: "G-XRW7J1FY1M"
+    apiKey: "AIzaSyACB5lnRzzgIKR1toEXVKGkBfadk6KB_g0",
+    authDomain: "guitar-practice-journal-9f064.firebaseapp.com",
+    projectId: "guitar-practice-journal-9f064",
+    storageBucket: "guitar-practice-journal-9f064.firebasestorage.app",
+    messagingSenderId: "657026172181",
+    appId: "1:657026172181:web:3a41e0793d0763e229d51c",
+    measurementId: "G-XRW7J1FY1M"
 };
 
 // Check if config is still using placeholder values
@@ -49,7 +49,10 @@ let auth;
 let db;
 
 try {
-    if (firebaseConfig.apiKey === "YOUR_API_KEY") {
+    // Check if this is actually a real Firebase config
+    if (firebaseConfig.apiKey === "YOUR_API_KEY" ||
+        firebaseConfig.apiKey.length < 10 ||
+        !firebaseConfig.projectId) {
         throw new Error('Firebase not configured - using placeholder values');
     }
 
@@ -61,17 +64,24 @@ try {
 } catch (error) {
     console.error('❌ Firebase initialization error:', error);
     console.warn('⚠️ Running in demo mode without cloud sync');
+
+    // Set flags to disable Firebase features
+    auth = null;
+    db = null;
 }
+
+
 export class CloudStorageService {
     constructor() {
         this.auth = auth || null;
         this.db = db || null;
+        this.firestoreEnabled = !!(auth && db); // Set based on successful initialization
         this.currentUser = null;
         this.syncEnabled = true;
         this.lastSync = null;
         this.syncInProgress = false;
         this.listeners = new Map();
-        this.conflictResolution = 'newest'; // 'newest', 'local', 'cloud'
+        this.conflictResolution = 'newest';
 
         // Only set up auth listener if Firebase is initialized
         if (this.auth) {
@@ -96,7 +106,7 @@ export class CloudStorageService {
     // Authentication methods
     async signUp(email, password) {
         if (!this.auth) {
-            return { success: false, error: 'Firebase authentication not available' };
+            return {success: false, error: 'Firebase authentication not available'};
         }
 
         try {
@@ -105,54 +115,54 @@ export class CloudStorageService {
             // Initialize user data structure in Firestore
             await this.initializeUserData(userCredential.user.uid);
 
-            return { success: true, user: userCredential.user };
+            return {success: true, user: userCredential.user};
         } catch (error) {
             console.error('Sign up error:', error);
-            return { success: false, error: this.getErrorMessage(error) };
+            return {success: false, error: this.getErrorMessage(error)};
         }
     }
 
     async signIn(email, password) {
         if (!this.auth) {
-            return { success: false, error: 'Firebase authentication not available' };
+            return {success: false, error: 'Firebase authentication not available'};
         }
 
         try {
             const userCredential = await signInWithEmailAndPassword(this.auth, email, password);
-            return { success: true, user: userCredential.user };
+            return {success: true, user: userCredential.user};
         } catch (error) {
             console.error('Sign in error:', error);
-            return { success: false, error: this.getErrorMessage(error) };
+            return {success: false, error: this.getErrorMessage(error)};
         }
     }
 
     async signOut() {
         if (!this.auth) {
-            return { success: false, error: 'Firebase authentication not available' };
+            return {success: false, error: 'Firebase authentication not available'};
         }
 
         try {
             await signOut(this.auth);
-            return { success: true };
+            return {success: true};
         } catch (error) {
             console.error('Sign out error:', error);
-            return { success: false, error: error.message };
+            return {success: false, error: error.message};
         }
     }
 
     async resetPassword(email) {
         try {
             await sendPasswordResetEmail(this.auth, email);
-            return { success: true };
+            return {success: true};
         } catch (error) {
             console.error('Password reset error:', error);
-            return { success: false, error: this.getErrorMessage(error) };
+            return {success: false, error: this.getErrorMessage(error)};
         }
     }
 
     async changePassword(currentPassword, newPassword) {
         if (!this.currentUser) {
-            return { success: false, error: 'No user signed in' };
+            return {success: false, error: 'No user signed in'};
         }
 
         try {
@@ -165,10 +175,10 @@ export class CloudStorageService {
 
             // Update password
             await updatePassword(this.currentUser, newPassword);
-            return { success: true };
+            return {success: true};
         } catch (error) {
             console.error('Change password error:', error);
-            return { success: false, error: this.getErrorMessage(error) };
+            return {success: false, error: this.getErrorMessage(error)};
         }
     }
 
@@ -184,6 +194,7 @@ export class CloudStorageService {
 
     // Data sync methods
     async syncPracticeSession(session) {
+        if (!this.firestoreEnabled || !this.currentUser || !this.syncEnabled) return;
         if (!this.currentUser || !this.syncEnabled) return;
 
         try {
@@ -195,10 +206,10 @@ export class CloudStorageService {
             });
 
             console.log('🔥 Session synced to cloud:', session.id);
-            return { success: true };
+            return {success: true};
         } catch (error) {
             console.error('Sync error:', error);
-            return { success: false, error };
+            return {success: false, error};
         }
     }
 
@@ -218,10 +229,10 @@ export class CloudStorageService {
 
             await batch.commit();
             console.log(`🔥 Batch synced ${items.length} items to ${collection}`);
-            return { success: true };
+            return {success: true};
         } catch (error) {
             console.error('Batch sync error:', error);
-            return { success: false, error };
+            return {success: false, error};
         }
     }
 
@@ -235,7 +246,7 @@ export class CloudStorageService {
 
             const sessions = [];
             querySnapshot.forEach((doc) => {
-                sessions.push({ id: doc.id, ...doc.data() });
+                sessions.push({id: doc.id, ...doc.data()});
             });
 
             return sessions;
@@ -319,11 +330,11 @@ export class CloudStorageService {
             this.lastSync = new Date();
             this.updateSyncStatus('success');
             console.log('🔥 All data synced to cloud');
-            return { success: true };
+            return {success: true};
         } catch (error) {
             console.error('Full sync error:', error);
             this.updateSyncStatus('error', error.message);
-            return { success: false, error };
+            return {success: false, error};
         } finally {
             this.syncInProgress = false;
         }
@@ -471,7 +482,7 @@ export class CloudStorageService {
 
     notifyDataChange(type, data) {
         window.dispatchEvent(new CustomEvent('cloudDataChanged', {
-            detail: { type, data }
+            detail: {type, data}
         }));
     }
 
@@ -525,7 +536,7 @@ export class CloudStorageService {
     }
 
     mergeByTimestamp(localData, cloudData) {
-        const merged = { ...localData };
+        const merged = {...localData};
 
         // Merge practice entries
         if (cloudData.practiceEntries) {
