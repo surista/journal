@@ -8,7 +8,9 @@ export class Timer {
         this.interval = null;
         this.lastActiveTime = Date.now();
         this.keyboardHandler = null;
-        this.syncWithAudio = false;
+        // Load saved sync preference
+        const savedSyncPref = localStorage.getItem('timerSyncWithAudio');
+        this.syncWithAudio = savedSyncPref === 'true';
 
         // Bind methods to ensure correct context
         this.start = this.start.bind(this);
@@ -30,7 +32,8 @@ export class Timer {
         this.displayId = uniqueId;
 
         this.container.innerHTML = `
-            <div class="timer-widget">
+        <div class="timer-widget">
+            <div class="timer-main-row">
                 <h3 class="timer-title">
                     <i class="icon">⏱️</i> Practice Timer
                 </h3>
@@ -42,15 +45,17 @@ export class Timer {
                     <button id="timerResetBtn_${uniqueId}" class="btn btn-secondary">
                         <i class="icon">↻</i> Reset
                     </button>
-                    <label class="timer-sync-label">
-                        <input type="checkbox" id="timerSyncCheckbox" ${this.syncWithAudio ? 'checked' : ''} />
-                        <span>Start timer with audio/metronome</span>
-                    </label>
-                    
                 </div>
+            </div>
+            <div class="timer-footer">
+                <label class="timer-sync-label">
+                    <input type="checkbox" id="timerSyncCheckbox" ${this.syncWithAudio ? 'checked' : ''} />
+                    <span>Start timer with audio/metronome</span>
+                </label>
                 <div class="timer-hint">Press Space to start/stop</div>
             </div>
-        `;
+        </div>
+    `;
     }
 
     attachEventListeners() {

@@ -411,3 +411,117 @@
 .timer-sync-label:hover {
     color: var(--text-primary);
 }
+
+/* Compact Timer Widget - Horizontal Layout */
+.timer-widget {
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    padding: var(--space-lg) var(--space-xl);
+    box-shadow: var(--shadow-xl);
+    border: 1px solid var(--border);
+}
+
+.timer-main-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xl);
+    margin-bottom: var(--space-md);
+}
+
+.timer-widget .timer-title {
+    font-size: 1.25rem;
+    margin: 0;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    white-space: nowrap;
+}
+
+.timer-widget .timer-display {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
+    letter-spacing: 0.05em;
+    margin: 0;
+    flex: 1;
+    text-align: center;
+}
+
+.timer-widget .timer-controls {
+    display: flex;
+    gap: var(--space-sm);
+    margin-left: auto;
+    margin-bottom: 0;
+}
+
+.timer-widget .timer-controls .btn {
+    padding: var(--space-sm) var(--space-lg);
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    white-space: nowrap;
+    min-width: auto;
+}
+
+.timer-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 var(--space-sm);
+}
+
+.timer-widget .timer-sync-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    cursor: pointer;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-top: 0;
+}
+
+.timer-widget .timer-sync-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.timer-widget .timer-hint {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+/* Responsive adjustments for compact timer */
+@media (max-width: 768px) {
+    .timer-main-row {
+        flex-wrap: wrap;
+        gap: var(--space-md);
+    }
+
+    .timer-widget .timer-title {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .timer-widget .timer-display {
+        font-size: 2rem;
+        width: 100%;
+    }
+
+    .timer-widget .timer-controls {
+        width: 100%;
+        justify-content: center;
+        margin-left: 0;
+    }
+
+    .timer-footer {
+        flex-direction: column;
+        gap: var(--space-sm);
+        align-items: center;
+        text-align: center;
+    }
+}

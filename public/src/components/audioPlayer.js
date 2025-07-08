@@ -8,6 +8,14 @@ export class AudioPlayer {
         this.storageService = null;
         this.audio = null;
 
+        // YouTube player
+        this.youtubePlayer = null;
+        this.isYouTubeMode = false;
+        this.youtubeVideoId = null;
+        this.youtubeUpdateInterval = null;
+        this.youtubeVideoTitle = null;
+        this.youtubeVideoUrl = null;
+
         // Tone.js components for high-quality playback
         this.grainPlayer = null;
         this.pitchShift = null;
@@ -21,6 +29,17 @@ export class AudioPlayer {
         this.loopStart = null;
         this.loopEnd = null;
         this.isLooping = false;
+
+        // Tempo progression for loops
+        this.tempoProgression = {
+            enabled: false,
+            incrementType: 'percentage', // 'percentage' or 'bpm'
+            incrementValue: 1,
+            loopInterval: 1, // After every N loops
+            currentLoopCount: 0,
+            maxTempo: 200 // 200% max speed
+        };
+        this.loopCount = 0;
 
         // UI state
         this.isPlaying = false;
@@ -117,15 +136,47 @@ export class AudioPlayer {
                 
                 <!-- Content wrapper -->
                 <div style="position: relative; z-index: 1;">
-                    <!-- File Selection -->
-                    <div class="audio-file-section">
-                        <h3>Select Audio File</h3>
-                        <input type="file" id="audioFileInput" accept="audio/*" class="file-input" 
-                               style="padding: 12px; background: var(--bg-input); border: 1px solid var(--border); 
-                                      border-radius: 8px; color: var(--text-primary); width: 100%; margin-bottom: 16px;">
-                        <div id="currentFileName" class="current-file-name" 
-                             style="color: var(--text-secondary); font-size: 14px; margin-top: 8px;"></div>
-                    </div>
+<!-- Audio Source Selection -->
+<div class="audio-source-section">
+    <h3>Audio Source</h3>
+    
+    <!-- Source Type Tabs -->
+    <div class="source-tabs" style="display: flex; gap: 8px; margin-bottom: 16px;">
+        <button class="source-tab active" data-source="file" 
+                style="flex: 1; padding: 10px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+            📁 Local File
+        </button>
+        <button class="source-tab" data-source="youtube" 
+                style="flex: 1; padding: 10px; background: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+            🎬 YouTube
+        </button>
+    </div>
+    
+    <!-- File Input Section -->
+    <div id="fileInputSection" class="source-section">
+        <input type="file" id="audioFileInput" accept="audio/*" class="file-input" 
+               style="padding: 12px; background: var(--bg-input); border: 1px solid var(--border); 
+                      border-radius: 8px; color: var(--text-primary); width: 100%; margin-bottom: 16px;">
+    </div>
+    
+    <!-- YouTube Input Section -->
+    <div id="youtubeInputSection" class="source-section" style="display: none;">
+        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+            <input type="text" id="youtubeUrlInput" placeholder="Enter YouTube URL or Video ID" 
+                   style="flex: 1; padding: 12px; background: var(--bg-input); border: 1px solid var(--border); 
+                          border-radius: 8px; color: var(--text-primary);">
+            <button id="loadYoutubeBtn" class="btn btn-primary" style="padding: 12px 20px;">
+                Load Video
+            </button>
+        </div>
+        <div id="youtubePlayerContainer" style="display: none; margin-bottom: 16px;">
+            <div id="youtubePlayer" style="width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 8px;"></div>
+        </div>
+    </div>
+    
+    <div id="currentFileName" class="current-file-name" 
+         style="color: var(--text-secondary); font-size: 14px; margin-top: 8px;"></div>
+</div>
 
                     <!-- Audio Controls -->
                     <div id="audioControlsSection" class="audio-controls-section" style="display: none;">
@@ -166,61 +217,91 @@ export class AudioPlayer {
                                 </label>
                             </div>
                         </div>
+                        
+                        <!-- Tempo Progression for Loops -->
+<div class="tempo-progression-section" style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.1);">
+    <h4 style="margin-bottom: 16px;">Tempo Progression (Loop Mode)</h4>
+    <label class="checkbox-label" style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+        <input type="checkbox" id="progressionEnabled">
+        <span>Enable tempo increase after loops</span>
+    </label>
+    
+    <div class="progression-controls" id="progressionControls" style="display: none;">
+        <div class="progression-row" style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+            <label>Increase by:</label>
+            <input type="number" id="incrementValue" value="1" min="0.1" max="10" step="0.1" 
+                   style="width: 80px; padding: 6px 10px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary);">
+            <select id="incrementType" class="small-select" style="padding: 6px 10px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary);">
+                <option value="percentage">%</option>
+                <option value="bpm">BPM</option>
+            </select>
+        </div>
+        <div class="progression-row" style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+            <label>After every:</label>
+            <input type="number" id="loopInterval" value="1" min="1" max="10" 
+                   style="width: 80px; padding: 6px 10px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary);">
+            <span>loop(s)</span>
+        </div>
+        <div class="progression-status" id="progressionStatus" 
+             style="padding: 10px; background: var(--bg-dark); border-radius: 6px; font-size: 0.875rem; color: var(--text-secondary);">
+            Current: 100% | Loops: 0 | Next increase: +1% after 1 loop(s)
+        </div>
+    </div>
+</div>
 
-                        <!-- Speed Control -->
-                        <div class="speed-control" style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.1);">
-                            <h4 style="margin-bottom: 16px;">Playback Speed: <span id="speedValue">100%</span></h4>
-                            <div class="speed-info" style="margin-bottom: 16px;">
-                                <p class="speed-note" style="color: var(--text-secondary); font-size: 14px; margin: 0;">🎯 High-quality tempo adjustment with pitch preservation</p>
-                            </div>
-                            <div class="speed-buttons" style="display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; justify-content: center;">
-                                <button class="speed-btn" data-speed="-25" style="padding: 6px 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; cursor: pointer;">-25%</button>
-                                <button class="speed-btn" data-speed="-10" style="padding: 6px 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; cursor: pointer;">-10%</button>
-                                <button class="speed-btn" data-speed="-5" style="padding: 6px 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; cursor: pointer;">-5%</button>
-                                <button class="speed-btn" data-speed="-1" style="padding: 6px 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; cursor: pointer;">-1%</button>
-                                <button class="speed-btn" data-speed="+1" style="padding: 6px 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; cursor: pointer;">+1%</button>
-                                <button class="speed-btn" data-speed="+5" style="padding: 6px 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; cursor: pointer;">+5%</button>
-                                <button class="speed-btn" data-speed="+10" style="padding: 6px 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; cursor: pointer;">+10%</button>
-                                <button class="speed-btn" data-speed="+25" style="padding: 6px 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; cursor: pointer;">+25%</button>
-                            </div>
-                            <div style="margin-bottom: 16px;">
-                                <input type="range" id="speedSlider" min="50" max="150" value="100" step="1" class="slider" 
-                                       style="width: 100%; height: 8px; background: linear-gradient(to right, #374151 0%, #6366f1 50%, #374151 100%); border-radius: 4px; outline: none; -webkit-appearance: none; -moz-appearance: none; appearance: none;">
-                                <div style="display: flex; justify-content: space-between; margin-top: 4px; font-size: 12px; color: var(--text-secondary);">
-                                    <span>50%</span>
-                                    <span>100%</span>
-                                    <span>150%</span>
+                        <!-- Compact Audio Controls -->
+                        <div class="audio-controls-compact" style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                            <h4 style="margin-bottom: 16px; text-align: center;">Audio Controls</h4>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 16px;">
+                                <!-- Speed Control (Left) -->
+                                <div class="speed-control-compact">
+                                    <label style="display: block; margin-bottom: 8px; font-size: 14px; color: var(--text-secondary);">
+                                        Speed: <span id="speedValue" style="color: var(--primary); font-weight: 600;">100%</span>
+                                    </label>
+                                    <input type="range" id="speedSlider" min="50" max="150" value="100" step="1" class="slider" 
+                                           style="width: 100%; height: 8px; background: linear-gradient(to right, #374151 0%, #6366f1 50%, #374151 100%); border-radius: 4px; outline: none; -webkit-appearance: none; -moz-appearance: none; appearance: none;">
+                                    <div style="display: flex; justify-content: space-between; margin-top: 4px; font-size: 11px; color: var(--text-muted);">
+                                        <span>50%</span>
+                                        <span style="color: var(--text-secondary);">100%</span>
+                                        <span>150%</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Pitch Control (Right) -->
+                                <div class="pitch-control-compact">
+                                    <label style="display: block; margin-bottom: 8px; font-size: 14px; color: var(--text-secondary);">
+                                        Pitch: <span id="pitchValue" style="color: var(--primary); font-weight: 600;">0</span>
+                                    </label>
+                                    <div class="pitch-buttons" style="display: flex; gap: 6px; justify-content: center;">
+                                        <button class="pitch-btn" data-pitch="-1" style="flex: 1; padding: 8px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 14px;">-1</button>
+                                        <button class="pitch-btn" data-pitch="-0.5" style="flex: 1; padding: 8px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 14px;">-½</button>
+                                        <button class="pitch-btn" data-pitch="+0.5" style="flex: 1; padding: 8px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 14px;">+½</button>
+                                        <button class="pitch-btn" data-pitch="+1" style="flex: 1; padding: 8px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 14px;">+1</button>
+                                    </div>
                                 </div>
                             </div>
-                            <button id="resetSpeedBtn" class="btn btn-secondary" style="width: 100%; padding: 10px;">
-                                <i class="icon">↻</i> Reset to 100%
-                            </button>
-                        </div>
-
-                        <!-- Pitch Control -->
-                        <div class="pitch-control" style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.1);">
-                            <h4 style="margin-bottom: 16px;">Pitch Adjustment: <span id="pitchValue">0 semitones</span></h4>
-                            <div class="pitch-buttons" style="display: flex; gap: 8px; align-items: center; margin-bottom: 16px; justify-content: center;">
-                                <button class="pitch-btn" data-pitch="-1" style="padding: 8px 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; cursor: pointer;">-1</button>
-                                <button class="pitch-btn" data-pitch="-0.5" style="padding: 8px 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; cursor: pointer;">-½</button>
-                                <input type="range" id="pitchSlider" min="-12" max="12" value="0" step="0.5" class="slider" 
-                                       style="flex: 1; margin: 0 16px; height: 8px; background: linear-gradient(to right, #ef4444 0%, #6366f1 50%, #10b981 100%); border-radius: 4px; outline: none; -webkit-appearance: none; -moz-appearance: none; appearance: none;">
-                                <button class="pitch-btn" data-pitch="+0.5" style="padding: 8px 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; cursor: pointer;">+½</button>
-                                <button class="pitch-btn" data-pitch="+1" style="padding: 8px 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; cursor: pointer;">+1</button>
+                            
+                            <!-- Volume Control (Bottom) -->
+                            <div class="volume-control-compact">
+                                <label style="display: block; margin-bottom: 8px; font-size: 14px; color: var(--text-secondary);">
+                                    Volume: <span id="volumeValue" style="color: var(--primary); font-weight: 600;">100%</span>
+                                </label>
+                                <div class="volume-slider-container" style="display: flex; align-items: center; gap: 12px;">
+                                    <i class="icon" style="font-size: 18px;">🔊</i>
+                                    <input type="range" id="volumeSlider" min="0" max="100" value="100" class="slider" 
+                                           style="flex: 1; height: 8px; background: linear-gradient(to right, #374151 0%, #6366f1 100%); border-radius: 4px; outline: none; -webkit-appearance: none; -moz-appearance: none; appearance: none;">
+                                </div>
                             </div>
-                            <button id="resetPitchBtn" class="btn btn-secondary" style="width: 100%; padding: 10px;">
-                                <i class="icon">↻</i> Reset to Original Pitch
-                            </button>
-                        </div>
-
-                        <!-- Volume Control -->
-                        <div class="volume-control" style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.1);">
-                            <h4 style="margin-bottom: 16px;">Volume Control</h4>
-                            <div class="volume-slider-container" style="display: flex; align-items: center; gap: 12px;">
-                                <i class="icon">🔊</i>
-                                <input type="range" id="volumeSlider" min="0" max="100" value="100" class="slider" 
-                                       style="flex: 1; height: 8px; background: linear-gradient(to right, #374151 0%, #6366f1 100%); border-radius: 4px; outline: none; -webkit-appearance: none; -moz-appearance: none; appearance: none;">
-                                <span id="volumeValue" style="min-width: 40px; text-align: right;">100%</span>
+                            
+                            <!-- Reset buttons -->
+                            <div style="display: flex; gap: 10px; margin-top: 16px;">
+                                <button id="resetSpeedBtn" class="btn btn-sm btn-secondary" style="flex: 1; padding: 8px; font-size: 13px;">
+                                    <i class="icon">↻</i> Reset Speed
+                                </button>
+                                <button id="resetPitchBtn" class="btn btn-sm btn-secondary" style="flex: 1; padding: 8px; font-size: 13px;">
+                                    <i class="icon">↻</i> Reset Pitch
+                                </button>
                             </div>
                         </div>
 
@@ -325,6 +406,55 @@ export class AudioPlayer {
             console.error('File input element not found');
         }
 
+        // Source tab switching
+        document.querySelectorAll('.source-tab').forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                // Update active tab
+                document.querySelectorAll('.source-tab').forEach(t => {
+                    t.classList.remove('active');
+                    t.style.background = 'var(--bg-input)';
+                    t.style.color = 'var(--text-primary)';
+                    t.style.border = '1px solid var(--border)';
+                });
+
+                e.target.classList.add('active');
+                e.target.style.background = 'var(--primary)';
+                e.target.style.color = 'white';
+                e.target.style.border = 'none';
+
+                // Show/hide sections
+                const source = e.target.dataset.source;
+                document.getElementById('fileInputSection').style.display =
+                    source === 'file' ? 'block' : 'none';
+                document.getElementById('youtubeInputSection').style.display =
+                    source === 'youtube' ? 'block' : 'none';
+
+                // Show/hide waveform
+                const waveformCanvas = document.getElementById('waveformCanvas');
+                if (waveformCanvas) {
+                    waveformCanvas.style.display = source === 'file' ? 'block' : 'none';
+                }
+            });
+        });
+
+        // YouTube load button
+        document.getElementById('loadYoutubeBtn')?.addEventListener('click', () => {
+            const input = document.getElementById('youtubeUrlInput');
+            if (input && input.value.trim()) {
+                this.loadYouTubeVideo(input.value.trim());
+            }
+        });
+
+        // YouTube URL input enter key
+        document.getElementById('youtubeUrlInput')?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const input = e.target;
+                if (input.value.trim()) {
+                    this.loadYouTubeVideo(input.value.trim());
+                }
+            }
+        });
+
         // Playback controls
         const playPauseBtn = document.getElementById('playPauseBtn');
         const stopBtn = document.getElementById('stopBtn');
@@ -346,6 +476,30 @@ export class AudioPlayer {
 
         // Save session button
         document.getElementById('saveSessionBtn')?.addEventListener('click', () => this.saveCurrentSession());
+
+
+        // Tempo progression controls
+        document.getElementById('progressionEnabled')?.addEventListener('change', (e) => {
+            this.tempoProgression.enabled = e.target.checked;
+            document.getElementById('progressionControls').style.display =
+                e.target.checked ? 'block' : 'none';
+            this.updateProgressionStatus();
+        });
+
+        document.getElementById('incrementValue')?.addEventListener('change', (e) => {
+            this.tempoProgression.incrementValue = parseFloat(e.target.value);
+            this.updateProgressionStatus();
+        });
+
+        document.getElementById('incrementType')?.addEventListener('change', (e) => {
+            this.tempoProgression.incrementType = e.target.value;
+            this.updateProgressionStatus();
+        });
+
+        document.getElementById('loopInterval')?.addEventListener('change', (e) => {
+            this.tempoProgression.loopInterval = parseInt(e.target.value);
+            this.updateProgressionStatus();
+        });
 
         // Speed controls
         document.querySelectorAll('.speed-btn').forEach(btn => {
@@ -375,16 +529,8 @@ export class AudioPlayer {
             });
         });
 
-        const pitchSlider = document.getElementById('pitchSlider');
-        if (pitchSlider) {
-            pitchSlider.addEventListener('input', (e) => {
-                this.setPitch(parseFloat(e.target.value));
-            });
-        }
-
         document.getElementById('resetPitchBtn')?.addEventListener('click', () => {
             this.setPitch(0);
-            if (pitchSlider) pitchSlider.value = 0;
         });
 
         // Volume control
@@ -464,7 +610,7 @@ export class AudioPlayer {
 
                     // Dispatch event for practice form
                     window.dispatchEvent(new CustomEvent('audioFileLoaded', {
-                        detail: { fileName: file.name }
+                        detail: {fileName: file.name}
                     }));
 
                     console.log('Audio player setup complete');
@@ -485,6 +631,237 @@ export class AudioPlayer {
         }
     }
 
+    initializeYouTubePlayer() {
+        // Ensure YouTube API is loaded
+        if (!window.YT || !window.YT.Player) {
+            console.error('YouTube API not loaded');
+            setTimeout(() => this.initializeYouTubePlayer(), 1000);
+            return;
+        }
+
+        // Create YouTube player
+        this.youtubePlayer = new YT.Player('youtubePlayer', {
+            height: '100%',
+            width: '100%',
+            videoId: '',
+            playerVars: {
+                'controls': 1,
+                'rel': 0,
+                'modestbranding': 1,
+                'enablejsapi': 1,
+                'autoplay': 0,  // Prevent autoplay
+                'origin': window.location.origin
+            },
+            events: {
+                'onReady': this.onYouTubePlayerReady.bind(this),
+                'onStateChange': this.onYouTubeStateChange.bind(this)
+            }
+        });
+    }
+
+    onYouTubePlayerReady(event) {
+        console.log('YouTube player ready');
+
+        // Enable controls
+        const controlsSection = document.getElementById('audioControlsSection');
+        if (controlsSection) {
+            controlsSection.style.display = 'block';
+        }
+
+        // Fetch video title after a short delay
+        setTimeout(() => this.fetchYouTubeTitle(), 1000);
+    }
+
+    onYouTubeStateChange(event) {
+        if (event.data === YT.PlayerState.PLAYING) {
+            this.isPlaying = true;
+            this.startYouTubeTimeUpdates();
+
+            // Start timer if sync is enabled
+            this.syncTimerStart();
+        } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
+            this.isPlaying = false;
+            this.stopYouTubeTimeUpdates();
+
+            // Stop timer if sync is enabled
+            this.syncTimerStop();
+
+            // Handle loop if enabled
+            if (event.data === YT.PlayerState.ENDED && this.isLooping && this.loopStart !== null && this.loopEnd !== null) {
+                this.youtubePlayer.seekTo(this.loopStart);
+                this.youtubePlayer.playVideo();
+                this.handleLoopComplete();
+            }
+        }
+
+        this.updatePlayPauseButton();
+    }
+
+    loadYouTubeVideo(url) {
+        // Extract video ID from URL
+        const videoId = this.extractYouTubeVideoId(url);
+        if (!videoId) {
+            this.showNotification('Invalid YouTube URL', 'error');
+            return;
+        }
+
+        this.youtubeVideoId = videoId;
+        this.isYouTubeMode = true;
+
+        // Reset state
+        this.stop();
+        this.currentTime = 0;
+        this.loopCount = 0;
+        this.tempoProgression.currentLoopCount = 0;
+
+        // Show YouTube player
+        const container = document.getElementById('youtubePlayerContainer');
+        if (container) {
+            container.style.display = 'block';
+        }
+
+        // Initialize player if not already done
+        if (!this.youtubePlayer) {
+            this.initializeYouTubePlayer();
+            // Load video after player is ready (cue instead of load to prevent autoplay)
+            setTimeout(() => {
+                this.youtubePlayer.cueVideoById(videoId);
+                this.onVideoLoaded();
+            }, 1000);
+        } else {
+            this.youtubePlayer.cueVideoById(videoId);
+            this.onVideoLoaded();
+        }
+
+        // Store the URL
+        this.youtubeVideoUrl = url;
+
+        // Update UI
+        const fileNameEl = document.getElementById('currentFileName');
+        if (fileNameEl) {
+            fileNameEl.textContent = `YouTube: ${videoId}`;
+            fileNameEl.style.color = 'var(--success)';
+        }
+
+        // Dispatch event for practice form
+        window.dispatchEvent(new CustomEvent('youtubeVideoLoaded', {
+            detail: {
+                videoId: videoId,
+                url: url,
+                mode: 'youtube'
+            }
+        }));
+
+        // Hide waveform for YouTube mode
+        const waveformCanvas = document.getElementById('waveformCanvas');
+        if (waveformCanvas) {
+            waveformCanvas.style.display = 'none';
+        }
+
+        // Show controls
+        const controlsSection = document.getElementById('audioControlsSection');
+        if (controlsSection) {
+            controlsSection.style.display = 'block';
+        }
+
+        // Update duration when available
+        setTimeout(() => {
+            if (this.youtubePlayer && this.youtubePlayer.getDuration) {
+                this.duration = this.youtubePlayer.getDuration();
+                const durationEl = document.getElementById('duration');
+                if (durationEl) durationEl.textContent = this.formatTime(this.duration);
+            }
+        }, 2000);
+    }
+
+    onVideoLoaded() {
+        // Update duration
+        setTimeout(() => {
+            if (this.youtubePlayer && this.youtubePlayer.getDuration) {
+                this.duration = this.youtubePlayer.getDuration();
+                const durationEl = document.getElementById('duration');
+                if (durationEl) durationEl.textContent = this.formatTime(this.duration);
+
+                // Update current time to 0
+                const currentTimeEl = document.getElementById('currentTime');
+                if (currentTimeEl) currentTimeEl.textContent = this.formatTime(0);
+            }
+        }, 500);
+    }
+
+    async fetchYouTubeTitle() {
+        if (!this.youtubePlayer || !this.youtubeVideoId) return;
+
+        try {
+            // Get video data from player
+            const videoData = this.youtubePlayer.getVideoData();
+            if (videoData && videoData.title) {
+                this.youtubeVideoTitle = videoData.title;
+
+                // Update display
+                const fileNameEl = document.getElementById('currentFileName');
+                if (fileNameEl) {
+                    fileNameEl.textContent = `YouTube: ${this.youtubeVideoTitle}`;
+                }
+
+                // Update practice form
+                window.dispatchEvent(new CustomEvent('youtubeVideoLoaded', {
+                    detail: {
+                        videoId: this.youtubeVideoId,
+                        title: this.youtubeVideoTitle,
+                        url: this.youtubeVideoUrl,
+                        mode: 'youtube'
+                    }
+                }));
+            }
+        } catch (error) {
+            console.error('Error fetching YouTube title:', error);
+        }
+    }
+
+    extractYouTubeVideoId(url) {
+        const patterns = [
+            /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/)([^&\n?#]+)/,
+            /^([a-zA-Z0-9_-]{11})$/
+        ];
+
+        for (const pattern of patterns) {
+            const match = url.match(pattern);
+            if (match) return match[1];
+        }
+
+        return null;
+    }
+
+    startYouTubeTimeUpdates() {
+        this.stopYouTubeTimeUpdates();
+
+        this.youtubeUpdateInterval = setInterval(() => {
+            if (this.youtubePlayer && this.youtubePlayer.getCurrentTime) {
+                this.currentTime = this.youtubePlayer.getCurrentTime();
+
+                // Update time display
+                const currentTimeEl = document.getElementById('currentTime');
+                if (currentTimeEl) {
+                    currentTimeEl.textContent = this.formatTime(this.currentTime);
+                }
+
+                // Handle looping
+                if (this.isLooping && this.loopEnd !== null && this.currentTime >= this.loopEnd) {
+                    this.youtubePlayer.seekTo(this.loopStart || 0);
+                    this.handleLoopComplete();
+                }
+            }
+        }, 100);
+    }
+
+    stopYouTubeTimeUpdates() {
+        if (this.youtubeUpdateInterval) {
+            clearInterval(this.youtubeUpdateInterval);
+            this.youtubeUpdateInterval = null;
+        }
+    }
+
     setupTimeUpdate() {
         // Create a loop to update time display
         const updateTime = () => {
@@ -495,7 +872,7 @@ export class AudioPlayer {
                 // Apply playback rate to get scaled time + starting offset
                 this.currentTime = (realElapsed * this.playbackRate) + (this.startOffset || 0);
 
-                // Handle looping
+// Handle looping
                 if (this.isLooping && this.loopEnd !== null && this.currentTime >= this.loopEnd) {
                     this.startOffset = this.loopStart || 0;
                     this.grainPlayer.stop();
@@ -503,6 +880,9 @@ export class AudioPlayer {
                     this.grainPlayer.start(undefined, this.startOffset);
                     this.startTime = Tone.now();
                     this.currentTime = this.startOffset;
+
+                    // Handle loop completion for tempo progression
+                    this.handleLoopComplete();
                 }
 
                 const currentTimeEl = document.getElementById('currentTime');
@@ -599,11 +979,26 @@ export class AudioPlayer {
     }
 
     togglePlayPause() {
+        if (this.isYouTubeMode) {
+            if (this.youtubePlayer) {
+                if (this.isPlaying) {
+                    this.youtubePlayer.pauseVideo();
+                } else {
+                    this.youtubePlayer.playVideo();
+                }
+            }
+            return;
+        }
+
+        // Original file-based code
         if (!this.grainPlayer || !this.grainPlayer.loaded) return;
 
         if (this.isPlaying) {
             this.grainPlayer.stop();
             this.isPlaying = false;
+
+            // Stop timer if sync is enabled
+            this.syncTimerStop();
         } else {
             // Handle loop boundaries
             let startPosition = this.currentTime;
@@ -625,10 +1020,7 @@ export class AudioPlayer {
             this.setupTimeUpdate();
 
             // Start timer if sync is enabled
-            const timer = window.app?.currentPage?.components?.timer || window.app?.currentPage?.timer;
-            if (timer && timer.syncWithAudio && !timer.isRunning) {
-                timer.start();
-            }
+            this.syncTimerStart();
 
             // Start waveform animation
             if (this.waveformVisualizer) {
@@ -639,8 +1031,48 @@ export class AudioPlayer {
         this.updatePlayPauseButton();
     }
 
+    syncTimerStart() {
+        // Try multiple ways to find the timer
+        let timer = null;
+
+        // First try the dashboard's timer reference
+        if (window.app?.currentPage?.timer) {
+            timer = window.app.currentPage.timer;
+        } else if (window.app?.currentPage?.components?.timer) {
+            timer = window.app.currentPage.components.timer;
+        } else if (window.app?.currentPage?.sharedTimer) {
+            timer = window.app.currentPage.sharedTimer;
+        }
+
+        if (timer && timer.syncWithAudio && !timer.isRunning) {
+            console.log('Starting timer due to audio sync');
+            timer.start();
+        }
+    }
+
+    syncTimerStop() {
+        // Try multiple ways to find the timer
+        let timer = null;
+
+        if (window.app?.currentPage?.timer) {
+            timer = window.app.currentPage.timer;
+        } else if (window.app?.currentPage?.components?.timer) {
+            timer = window.app.currentPage.components.timer;
+        } else if (window.app?.currentPage?.sharedTimer) {
+            timer = window.app.currentPage.sharedTimer;
+        }
+
+        if (timer && timer.syncWithAudio && timer.isRunning) {
+            console.log('Pausing timer due to audio sync');
+            timer.pause();
+        }
+    }
+
     stop() {
-        if (this.grainPlayer) {
+        if (this.isYouTubeMode && this.youtubePlayer) {
+            this.youtubePlayer.stopVideo();
+            this.stopYouTubeTimeUpdates();
+        } else if (this.grainPlayer) {
             this.grainPlayer.stop();
         }
 
@@ -662,15 +1094,17 @@ export class AudioPlayer {
         this.updatePlayPauseButton();
 
         // Stop timer if sync is enabled
-        const timer = window.app?.currentPage?.components?.timer || window.app?.currentPage?.timer;
-        if (timer && timer.syncWithAudio && timer.isRunning) {
-            timer.pause();
-        }
+        this.syncTimerStop();
 
         // Stop waveform animation
         if (this.waveformVisualizer) {
             this.waveformVisualizer.stopAnimation();
         }
+
+        // Reset loop and tempo progression
+        this.loopCount = 0;
+        this.tempoProgression.currentLoopCount = 0;
+        this.updateProgressionStatus();
     }
 
     updatePlayPauseButton() {
@@ -684,16 +1118,21 @@ export class AudioPlayer {
 
     // Loop control methods
     setLoopStart() {
-        if (!this.grainPlayer) return;
+        if (this.isYouTubeMode && this.youtubePlayer) {
+            this.loopStart = this.youtubePlayer.getCurrentTime();
+        } else if (this.grainPlayer) {
+            this.loopStart = this.currentTime;
+        } else {
+            return;
+        }
 
-        this.loopStart = this.currentTime;
         const loopStartEl = document.getElementById('loopStart');
         if (loopStartEl) {
             loopStartEl.textContent = this.formatTime(this.loopStart);
         }
         this.updateLoopRegion();
 
-        if (this.waveformVisualizer) {
+        if (this.waveformVisualizer && !this.isYouTubeMode) {
             this.waveformVisualizer.updateLoopMarkers(this.loopStart, this.loopEnd);
         }
 
@@ -701,16 +1140,21 @@ export class AudioPlayer {
     }
 
     setLoopEnd() {
-        if (!this.grainPlayer) return;
+        if (this.isYouTubeMode && this.youtubePlayer) {
+            this.loopEnd = this.youtubePlayer.getCurrentTime();
+        } else if (this.grainPlayer) {
+            this.loopEnd = this.currentTime;
+        } else {
+            return;
+        }
 
-        this.loopEnd = this.currentTime;
         const loopEndEl = document.getElementById('loopEnd');
         if (loopEndEl) {
             loopEndEl.textContent = this.formatTime(this.loopEnd);
         }
         this.updateLoopRegion();
 
-        if (this.waveformVisualizer) {
+        if (this.waveformVisualizer && !this.isYouTubeMode) {
             this.waveformVisualizer.updateLoopMarkers(this.loopStart, this.loopEnd);
         }
 
@@ -733,20 +1177,32 @@ export class AudioPlayer {
 
         this.updateLoopRegion();
 
-        if (this.waveformVisualizer) {
+        if (this.waveformVisualizer && !this.isYouTubeMode) {
             this.waveformVisualizer.updateLoopMarkers(null, null);
         }
+
+        // Reset tempo progression
+        this.loopCount = 0;
+        this.tempoProgression.currentLoopCount = 0;
+        this.updateProgressionStatus();
 
         this.showNotification('Loop cleared', 'info');
     }
 
     updateLoopRegion() {
         const loopRegion = document.getElementById('loopRegion');
-        if (!loopRegion || !this.duration) return;
+        if (!loopRegion) return;
+
+        let duration = this.duration;
+        if (this.isYouTubeMode && this.youtubePlayer && this.youtubePlayer.getDuration) {
+            duration = this.youtubePlayer.getDuration();
+        }
+
+        if (!duration || duration === 0) return;
 
         if (this.loopStart !== null && this.loopEnd !== null) {
-            const startPercent = (this.loopStart / this.duration) * 100;
-            const endPercent = (this.loopEnd / this.duration) * 100;
+            const startPercent = (this.loopStart / duration) * 100;
+            const endPercent = (this.loopEnd / duration) * 100;
 
             loopRegion.style.left = startPercent + '%';
             loopRegion.style.width = (endPercent - startPercent) + '%';
@@ -772,8 +1228,11 @@ export class AudioPlayer {
             speedValueEl.textContent = speed + '%';
         }
 
-        // Apply tempo change to GrainPlayer (preserves pitch)
-        if (this.grainPlayer) {
+        if (this.isYouTubeMode && this.youtubePlayer) {
+            // YouTube player supports playback rates
+            this.youtubePlayer.setPlaybackRate(this.playbackRate);
+        } else if (this.grainPlayer) {
+            // Apply tempo change to GrainPlayer (preserves pitch)
             this.grainPlayer.playbackRate = this.playbackRate;
         }
     }
@@ -790,12 +1249,69 @@ export class AudioPlayer {
         this.pitchShiftAmount = pitch;
         const pitchValueEl = document.getElementById('pitchValue');
         if (pitchValueEl) {
-            pitchValueEl.textContent = pitch > 0 ? `+${pitch} semitones` : `${pitch} semitones`;
+            if (pitch === 0) {
+                pitchValueEl.textContent = '0';
+            } else if (pitch > 0) {
+                pitchValueEl.textContent = `+${pitch}`;
+            } else {
+                pitchValueEl.textContent = `${pitch}`;
+            }
         }
 
         // Apply pitch shift using Tone.js PitchShift
         if (this.pitchShift) {
             this.pitchShift.pitch = pitch;
+        }
+    }
+
+    handleLoopComplete() {
+        this.loopCount++;
+
+        if (!this.tempoProgression.enabled) return;
+
+        this.tempoProgression.currentLoopCount++;
+
+        if (this.tempoProgression.currentLoopCount % this.tempoProgression.loopInterval === 0) {
+            let newSpeed = this.playbackRate * 100; // Convert to percentage
+
+            if (this.tempoProgression.incrementType === 'percentage') {
+                newSpeed = newSpeed * (1 + this.tempoProgression.incrementValue / 100);
+            } else {
+                // For BPM mode, we need to calculate relative change
+                // Assuming 100% = original BPM
+                newSpeed = newSpeed + this.tempoProgression.incrementValue;
+            }
+
+            // Limit to max tempo
+            newSpeed = Math.min(newSpeed, this.tempoProgression.maxTempo);
+
+            if (newSpeed !== this.playbackRate * 100) {
+                this.setSpeed(Math.round(newSpeed));
+                const speedSlider = document.getElementById('speedSlider');
+                if (speedSlider) speedSlider.value = newSpeed;
+                this.showNotification(`Tempo increased to ${Math.round(newSpeed)}%`, 'info');
+            }
+        }
+
+        this.updateProgressionStatus();
+    }
+
+    updateProgressionStatus() {
+        const status = document.getElementById('progressionStatus');
+        if (!status) return;
+
+        if (this.tempoProgression.enabled) {
+            const currentSpeed = Math.round(this.playbackRate * 100);
+            const increment = this.tempoProgression.incrementType === 'percentage'
+                ? `${this.tempoProgression.incrementValue}%`
+                : `${this.tempoProgression.incrementValue} BPM`;
+
+            const loopsUntilNext = this.tempoProgression.loopInterval -
+                (this.tempoProgression.currentLoopCount % this.tempoProgression.loopInterval);
+
+            status.textContent = `Current: ${currentSpeed}% | Loops: ${this.tempoProgression.currentLoopCount} | Next increase: +${increment} after ${loopsUntilNext} loop(s)`;
+        } else {
+            status.textContent = '';
         }
     }
 

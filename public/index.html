@@ -8,9 +8,9 @@
     <title>Guitar Practice Journal v7.9</title>
 
     <!-- Add this before your app scripts -->
-  <script>
+    <script>
         // Immediately redirect to login page if not logged in
-        (function() {
+        (function () {
             const currentPath = window.location.pathname;
             const isIndexPage = currentPath === '/' || currentPath === '/index.html';
             const hasUser = localStorage.getItem('currentUser');
@@ -45,6 +45,9 @@
         console.log('📁 Base path detected:', basePath);
     </script>
     <script src="https://unpkg.com/tone@14.8.49/build/Tone.js"></script>
+    <!-- YouTube iframe API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+
     <!-- Load CSS -->
     <link rel="stylesheet" href="styles/main.css">
 

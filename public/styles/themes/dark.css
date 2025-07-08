@@ -21,8 +21,8 @@
     --text-inverse: #0a0a0a;
 
     /* Borders - Subtle */
-    --border: rgba(255, 255, 255, 0.08);
-    --border-hover: rgba(255, 255, 255, 0.12);
+    --border: rgba(255, 255, 255, 0.15);
+    --border-hover: rgba(255, 255, 255, 0.25);
 
     /* Shadows - Darker and deeper */
     --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
@@ -59,4 +59,22 @@
     transition: background-color var(--transition-base),
                 border-color var(--transition-base),
                 color var(--transition-base);
+}
+
+/* Enhanced component visibility for dark theme */
+[data-theme="dark"] .timer-widget,
+[data-theme="dark"] .log-practice-section,
+[data-theme="dark"] .metronome-container,
+[data-theme="dark"] .dashboard-widget,
+[data-theme="dark"] .practice-tips,
+[data-theme="dark"] .audio-player {
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06), /* Subtle outer glow */
+                var(--shadow-lg); /* Keep the existing shadow */
+}
+
+/* Make cards slightly lighter than background for better separation */
+[data-theme="dark"] .timer-widget,
+[data-theme="dark"] .log-practice-section,
+[data-theme="dark"] .metronome-container {
+    background: #161616; /* Slightly lighter than --bg-card (#141414) */
 }

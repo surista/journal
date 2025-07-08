@@ -953,6 +953,10 @@ export class DashboardPage {
                             this.components.metronome.render();
                             if (this.components.timer) {
                                 this.components.metronome.setTimer(this.components.timer);
+                                // Connect metronome to audio player if available
+                                if (this.components.audioPlayer) {
+                                    this.components.metronome.syncWithAudioLoop(this.components.audioPlayer);
+                                }
                             }
                         } catch (error) {
                             console.error('Error initializing Metronome:', error);
@@ -1071,7 +1075,7 @@ export class DashboardPage {
                 formContainerId = 'practiceFormContainer';
         }
 
-// Move timer
+        // Move timer
         const timerContainer = document.getElementById(timerContainerId);
         if (timerContainer && this.components.timer) {
             // Save the current sync state before moving
@@ -1095,6 +1099,11 @@ export class DashboardPage {
             }
 
             console.log('Timer moved to new tab, sync state:', currentSyncState);
+        }
+
+        // Ensure timer reference is maintained for audio sync
+        if (this.components.audioPlayer) {
+            this.components.audioPlayer.timer = this.components.timer;
         }
 
         // Move practice form - use this.components.practiceForm

@@ -12,6 +12,8 @@ export class PracticeForm {
         this.baseTempo = 120; // Default base tempo for percentage calculations
         this.tabSuffix = ''; // Will be set based on container
         this.currentAudioFileName = ''; // Track current audio file
+        this.currentYouTubeInfo = null; // Track YouTube video info
+        this.currentMediaType = 'file'; // 'file' or 'youtube'
 
         // Determine tab suffix from container
         if (container) {
@@ -386,6 +388,11 @@ export class PracticeForm {
             this.handleAudioFileLoaded(e);
         });
 
+        // Listen for YouTube video changes
+        window.addEventListener('youtubeVideoLoaded', (e) => {
+            this.handleYouTubeVideoLoaded(e);
+        });
+
         // Listen for form sync events from other tabs
         window.addEventListener('practiceFormSync', (e) => {
             if (e.detail.source !== this.tabSuffix) {
@@ -402,6 +409,7 @@ export class PracticeForm {
     handleAudioFileLoaded(e) {
         if (e.detail && e.detail.fileName) {
             this.currentAudioFileName = e.detail.fileName;
+            this.currentMediaType = 'file';
 
             // Only show audio file if we're in the Audio tab
             if (this.tabSuffix === 'Audio') {
@@ -413,20 +421,44 @@ export class PracticeForm {
         }
     }
 
-updateAudioFileDisplay() {
+    handleYouTubeVideoLoaded(e) {
+        if (e.detail) {
+            this.currentYouTubeInfo = e.detail;
+            this.currentMediaType = 'youtube';
+
+            // Only show in Audio tab
+            if (this.tabSuffix === 'Audio') {
+                this.updateAudioFileDisplay();
+            }
+
+            // Sync to other tabs
+            this.syncFormToOtherTabs();
+        }
+    }
+
+    updateAudioFileDisplay() {
         const fileNameInput = document.getElementById(`audioFileName${this.tabSuffix}`);
         const audioFileSection = document.getElementById(`audioFileSection${this.tabSuffix}`);
         const audioFileNameDisplay = document.getElementById(`audioFileNameDisplay${this.tabSuffix}`);
 
-        // Only show audio file if:
-        // 1. We're in the Audio tab
-        // 2. We have an audio file loaded
-        const shouldShowAudio = this.tabSuffix === 'Audio' && this.currentAudioFileName;
+        // Only show audio file if we're in the Audio tab and have media loaded
+        const shouldShowAudio = this.tabSuffix === 'Audio' && (this.currentAudioFileName || this.currentYouTubeInfo);
 
         if (shouldShowAudio) {
-            if (fileNameInput) fileNameInput.value = this.currentAudioFileName;
+            let displayText = '';
+            let hiddenValue = '';
+
+            if (this.currentMediaType === 'youtube' && this.currentYouTubeInfo) {
+                displayText = `YouTube: ${this.currentYouTubeInfo.title || this.currentYouTubeInfo.videoId}`;
+                hiddenValue = `youtube:${this.currentYouTubeInfo.url}|${this.currentYouTubeInfo.title || this.currentYouTubeInfo.videoId}`;
+            } else if (this.currentAudioFileName) {
+                displayText = this.currentAudioFileName;
+                hiddenValue = `file:${this.currentAudioFileName}`;
+            }
+
+            if (fileNameInput) fileNameInput.value = hiddenValue;
             if (audioFileSection) audioFileSection.style.display = 'block';
-            if (audioFileNameDisplay) audioFileNameDisplay.textContent = this.currentAudioFileName;
+            if (audioFileNameDisplay) audioFileNameDisplay.textContent = displayText;
         } else {
             if (fileNameInput) fileNameInput.value = '';
             if (audioFileSection) audioFileSection.style.display = 'none';
@@ -434,12 +466,12 @@ updateAudioFileDisplay() {
         }
     }
 
-
     handleTabChange() {
         // Clear audio file display when switching away from Audio tab
         const currentHash = window.location.hash.slice(1);
         if (currentHash !== 'audio' && this.tabSuffix !== 'Audio') {
             this.currentAudioFileName = '';
+            this.currentYouTubeInfo = null;
             this.updateAudioFileDisplay();
         }
     }
@@ -534,37 +566,6 @@ updateAudioFileDisplay() {
         }
     }
 
-    updateAudioFileName() {
-        const audioFileSection = document.getElementById(`audioFileSection${this.tabSuffix}`);
-        const audioFileNameElement = document.getElementById(`audioFileNameDisplay${this.tabSuffix}`);
-        const hiddenInput = document.getElementById(`audioFileName${this.tabSuffix}`);
-
-        // Check multiple possible sources for the audio file name
-        let fileName = '';
-
-        // First check the hidden input
-        if (hiddenInput && hiddenInput.value) {
-            fileName = hiddenInput.value;
-        }
-
-        // Then check the audio player display
-        const audioPlayerFileDisplay = document.querySelector('#audioFileName');
-        if (!fileName && audioPlayerFileDisplay && audioPlayerFileDisplay.textContent) {
-            const text = audioPlayerFileDisplay.textContent;
-            fileName = text.replace('Loaded: ', '').trim();
-        }
-
-        // Update the display
-        if (fileName && audioFileSection && audioFileNameElement) {
-            audioFileSection.style.display = 'block';
-            audioFileNameElement.textContent = fileName;
-            if (hiddenInput) {
-                hiddenInput.value = fileName;
-            }
-        } else if (audioFileSection) {
-            audioFileSection.style.display = 'none';
-        }
-    }
 
     toggleTempoMode() {
         this.isPercentageMode = !this.isPercentageMode;
@@ -578,7 +579,7 @@ updateAudioFileDisplay() {
         }
     }
 
-   updateTempoModeDisplay() {
+    updateTempoModeDisplay() {
         const tempoLabel = document.getElementById(`tempoLabel${this.tabSuffix}`);
         const tempoSuffix = document.getElementById(`tempoSuffix${this.tabSuffix}`);
         const hintText = document.getElementById(`hintText${this.tabSuffix}`);
@@ -592,18 +593,18 @@ updateAudioFileDisplay() {
             if (formGroup) formGroup.classList.add('percentage-mode');
             if (tempoInput) tempoInput.placeholder = 'Enter percentage';
         } else {
-            if (tempoLabel) tempoLabel.textContent = 'BPM';
+            if (tempoLabel) tempoLabel.textContent = 'BPM (TEMPO)';
             if (tempoSuffix) tempoSuffix.textContent = 'BPM';
             if (hintText) hintText.textContent = 'Range: 40-300 BPM';
             if (formGroup) formGroup.classList.remove('percentage-mode');
             if (tempoInput) tempoInput.placeholder = 'Enter BPM';
         }
 
-    // Clear the input value when switching modes
-    if (tempoInput) {
-        tempoInput.value = '';
+        // Clear the input value when switching modes
+        if (tempoInput) {
+            tempoInput.value = '';
+        }
     }
-}
 
     validateTempoInput(event) {
         const input = event.target;
@@ -668,17 +669,38 @@ updateAudioFileDisplay() {
         // Get values from form data
         let practiceArea = formData.get('practiceArea') || '';
         const customArea = formData.get('customArea') || '';
-        const audioFileName = formData.get('audioFileName') || '';
+        const audioFileValue = formData.get('audioFileName') || '';
         const tempoValue = formData.get('tempoValue') || '';
         const key = formData.get('key') || '';
         const notes = formData.get('notes') || '';
+
+        // Parse media info
+        let audioFile = null;
+        let youtubeUrl = null;
+        let youtubeTitle = null;
+
+        if (audioFileValue) {
+            if (audioFileValue.startsWith('youtube:')) {
+                // Parse YouTube info
+                const youtubeData = audioFileValue.substring(8); // Remove 'youtube:'
+                const [url, title] = youtubeData.split('|');
+                youtubeUrl = url;
+                youtubeTitle = title;
+            } else if (audioFileValue.startsWith('file:')) {
+                // Parse file info
+                audioFile = audioFileValue.substring(5); // Remove 'file:'
+            } else {
+                // Legacy format - assume it's a file
+                audioFile = audioFileValue;
+            }
+        }
 
         // Debug logging
         console.log('Form submit for tab:', this.tabSuffix);
         console.log('Form data:', {
             practiceArea,
             customArea,
-            audioFileName,
+            audioFileValue,
             tempoValue,
             key,
             notes
@@ -724,7 +746,7 @@ updateAudioFileDisplay() {
         if (duration <= 0) {
             notificationManager.error('Please use the timer to track your practice session!');
             // Highlight the timer
-            const timerDisplay = document.querySelector('.compact-timer-display');
+            const timerDisplay = document.querySelector('.timer-display');
             if (timerDisplay) {
                 timerDisplay.style.animation = 'pulse 1s ease-in-out 3';
                 setTimeout(() => {
@@ -782,7 +804,9 @@ updateAudioFileDisplay() {
             tempoPercentage: tempoPercentage,
             key: key || null,
             notes: notes || null,
-            audioFile: audioFileName || null
+            audioFile: audioFile || null,
+            youtubeUrl: youtubeUrl || null,
+            youtubeTitle: youtubeTitle || null
         };
 
         try {
@@ -933,8 +957,10 @@ updateAudioFileDisplay() {
             audioFileSection.style.display = 'none';
         }
 
-        // Clear current audio file name
+        // Clear current audio file name and YouTube info
         this.currentAudioFileName = '';
+        this.currentYouTubeInfo = null;
+        this.currentMediaType = 'file';
 
         // Clear audio file input
         const audioFileNameEl = document.getElementById(`audioFileName${this.tabSuffix}`);
@@ -1001,14 +1027,7 @@ updateAudioFileDisplay() {
         }
     }
 
-    // Helper method to attach listeners to input elements
-    attachInputListeners(input) {
-        input.addEventListener('input', () => {
-            this.debouncedSaveFormState();
-            this.updateAutoSaveStatus();
-            this.syncFormToOtherTabs();
-        });
-    }
+
 
     destroy() {
         // Clear any pending debounced saves

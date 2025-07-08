@@ -13,7 +13,7 @@ export class Metronome {
 
         // Metronome settings
         this.tempo = 120;
-        this.timeSignature = { beats: 4, noteValue: 4 };
+        this.timeSignature = {beats: 4, noteValue: 4};
         this.accentPattern = [true, false, false, false]; // Default: accent first beat
         this.volume = 0.7;
         this.soundType = 'click';
@@ -57,16 +57,16 @@ export class Metronome {
 
         // Define sound types with their frequencies and characteristics
         this.soundDefinitions = {
-            click: { high: 1000, low: 800, duration: 0.03 },
-            beep: { high: 880, low: 440, duration: 0.05 },
-            woodblock: { high: 1200, low: 600, duration: 0.02 },
-            cowbell: { high: 800, low: 400, duration: 0.04 },
-            rimshot: { high: 2000, low: 200, duration: 0.01 },
-            clave: { high: 1500, low: 750, duration: 0.015 },
-            tick: { high: 4000, low: 2000, duration: 0.005 },
-            pop: { high: 600, low: 300, duration: 0.02 },
-            blip: { high: 2400, low: 1200, duration: 0.01 },
-            ping: { high: 3000, low: 1500, duration: 0.08 }
+            click: {high: 1000, low: 800, duration: 0.03},
+            beep: {high: 880, low: 440, duration: 0.05},
+            woodblock: {high: 1200, low: 600, duration: 0.02},
+            cowbell: {high: 800, low: 400, duration: 0.04},
+            rimshot: {high: 2000, low: 200, duration: 0.01},
+            clave: {high: 1500, low: 750, duration: 0.015},
+            tick: {high: 4000, low: 2000, duration: 0.005},
+            pop: {high: 600, low: 300, duration: 0.02},
+            blip: {high: 2400, low: 1200, duration: 0.01},
+            ping: {high: 3000, low: 1500, duration: 0.08}
         };
     }
 
@@ -585,7 +585,7 @@ export class Metronome {
                 // Calculate average interval
                 let totalInterval = 0;
                 for (let i = 1; i < tapTimes.length; i++) {
-                    totalInterval += tapTimes[i] - tapTimes[i-1];
+                    totalInterval += tapTimes[i] - tapTimes[i - 1];
                 }
                 const avgInterval = totalInterval / (tapTimes.length - 1);
                 const bpm = Math.round(60000 / avgInterval);
@@ -639,7 +639,7 @@ export class Metronome {
     }
 
     setTimeSignature(beats, noteValue) {
-        this.timeSignature = { beats, noteValue };
+        this.timeSignature = {beats, noteValue};
 
         // Reset accent pattern
         this.accentPattern = new Array(beats).fill(false);
@@ -767,11 +767,16 @@ export class Metronome {
         const secondsPerBeat = 60.0 / this.tempo;
         this.nextNoteTime += secondsPerBeat;
 
-        // Advance beat number
+// Advance beat number
         this.currentBeat++;
 
         if (this.currentBeat === this.timeSignature.beats) {
             this.currentBeat = 0;
+
+            // Count measures for tempo progression
+            if (!this.isInPreCount && this.tempoProgression.enabled) {
+                this.onLoopComplete();
+            }
 
             // Handle pre-count
             if (this.isInPreCount) {
@@ -814,6 +819,8 @@ export class Metronome {
                 this.updateProgressionStatus();
             }
         }
+
+        this.updateProgressionStatus();
     }
 
     updateProgressionStatus() {
