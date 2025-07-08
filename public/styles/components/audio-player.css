@@ -440,3 +440,35 @@
     color: var(--danger);
     background: rgba(239, 68, 68, 0.1);
 }
+
+/* Mobile audio player optimizations */
+@media (max-width: 768px) {
+    .audio-player {
+        padding: var(--space-md);
+    }
+
+    .speed-control, .pitch-control, .loop-controls, .volume-control {
+        padding: var(--space-md);
+        margin-bottom: var(--space-md);
+    }
+
+    .audio-controls-row, .playback-controls {
+        flex-direction: column;
+        gap: var(--space-sm);
+    }
+
+    .audio-controls-row .btn, .playback-controls .btn {
+        width: 100%;
+        min-width: unset;
+    }
+
+    .speed-buttons, .pitch-buttons {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .waveform-container {
+        min-height: 120px;
+        padding: var(--space-sm);
+    }
+}

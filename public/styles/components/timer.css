@@ -364,6 +364,35 @@
     box-shadow: var(--shadow-sm);
 }
 
+/* Mobile timer optimizations */
+@media (max-width: 768px) {
+    .timer-display {
+        font-size: var(--text-3xl);
+        min-height: 60px;
+        margin: var(--space-md) 0;
+    }
+
+    .timer-controls {
+        flex-direction: column;
+        gap: var(--space-sm);
+    }
+
+    .timer-controls .btn {
+        width: 100%;
+        min-width: unset;
+        padding: var(--space-md);
+    }
+
+    .compact-timer-display {
+        font-size: var(--text-2xl);
+    }
+
+    .compact-timer-wrapper {
+        flex-direction: column;
+        gap: var(--space-md);
+    }
+}
+
 /* Timer sync checkbox */
 .timer-sync-label {
     display: flex;

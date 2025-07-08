@@ -52,19 +52,17 @@
    gap: var(--space-lg);
 }
 
-/* Practice tab specific layout */
 .practice-layout {
    max-width: 1200px;
    display: grid;
-   grid-template-columns: 1fr 380px;
+   grid-template-columns: 1fr;
    gap: var(--space-xl);
    align-items: start;
 }
 
-@media (max-width: 1024px) {
+@media (min-width: 1200px) {
    .practice-layout {
-       grid-template-columns: 1fr;
-       max-width: 800px;
+       grid-template-columns: 1fr 380px;
    }
 }
 

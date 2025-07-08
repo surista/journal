@@ -142,11 +142,13 @@
 @media (max-width: 768px) {
     .sidebar {
         transform: translateX(-100%);
+        width: 85vw;
+        max-width: 320px;
     }
 
     .sidebar.active {
         transform: translateX(0);
-        box-shadow: var(--shadow-2xl);
+        box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
     }
 
     /* Backdrop for mobile */
