@@ -777,8 +777,13 @@ export class DashboardPage {
                 const footer = new module.Footer();
                 const footerContainer = document.getElementById('appFooter');
                 if (footerContainer) {
-                    footerContainer.outerHTML = footer.render();
-                    footer.attachEventListeners();
+                    // Use innerHTML instead of outerHTML
+                    footerContainer.innerHTML = footer.render();
+
+                    // Wait for next frame to ensure DOM is ready
+                    requestAnimationFrame(() => {
+                        footer.attachEventListeners();
+                    });
                 }
             }).catch(error => {
                 console.error('Error loading footer:', error);

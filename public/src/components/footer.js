@@ -4,7 +4,142 @@ export class Footer {
         this.version = window.APP_VERSION || '7.6.2';
     }
 
-    // Add these methods to the Footer class
+    render() {
+        const currentYear = new Date().getFullYear();
+
+        return `
+            <footer class="app-footer">
+                <div class="footer-container">
+                    <div class="footer-left">
+                        <span class="footer-copyright">&copy; ${currentYear} Guitar Practice Journal</span>
+                        <span class="footer-version">Version ${this.version}</span>
+                    </div>
+                    
+                    <nav class="footer-nav">
+                        <div class="footer-dropdown">
+                            <button class="footer-dropdown-trigger">ABOUT</button>
+                            <div class="footer-dropdown-content">
+                                <a href="#" class="footer-link" data-action="about">About Guitar Journal</a>
+                                <a href="#" class="footer-link" data-action="features">Features</a>
+                                <a href="#" class="footer-link" data-action="whatsnew">What's New</a>
+                                <a href="#" class="footer-link" data-action="roadmap">Roadmap</a>
+                            </div>
+                        </div>
+                        
+                        <div class="footer-dropdown">
+                            <button class="footer-dropdown-trigger">SUPPORT</button>
+                            <div class="footer-dropdown-content">
+                                <a href="#" class="footer-link" data-action="help">Help & FAQ</a>
+                                <a href="#" class="footer-link" data-action="shortcuts">Keyboard Shortcuts</a>
+                                <a href="https://github.com/yourusername/guitar-practice-journal/issues" target="_blank" rel="noopener">Report an Issue</a>
+                                <a href="#" class="footer-link" data-action="contact">Contact Us</a>
+                            </div>
+                        </div>
+                        
+                        <div class="footer-dropdown">
+                            <button class="footer-dropdown-trigger">LEGAL</button>
+                            <div class="footer-dropdown-content">
+                                <a href="#" class="footer-link" data-action="privacy">Privacy Policy</a>
+                                <a href="#" class="footer-link" data-action="terms">Terms of Service</a>
+                                <a href="#" class="footer-link" data-action="cookies">Cookie Policy</a>
+                                <a href="#" class="footer-link" data-action="licenses">Open Source Licenses</a>
+                            </div>
+                        </div>
+                        
+                        <div class="footer-dropdown">
+                            <button class="footer-dropdown-trigger">CONNECT</button>
+                            <div class="footer-dropdown-content">
+                                <a href="https://github.com/yourusername/guitar-practice-journal" target="_blank" rel="noopener">
+                                    <i class="icon">📦</i> GitHub
+                                </a>
+                                <a href="#" class="footer-link" data-action="discord">
+                                    <i class="icon">💬</i> Discord Community
+                                </a>
+                                <a href="#" class="footer-link" data-action="newsletter">
+                                    <i class="icon">📧</i> Newsletter
+                                </a>
+                            </div>
+                        </div>
+                    </nav>
+                    
+                    <div class="footer-right">
+                        <button class="footer-logout-btn" id="footerLogoutBtn">
+                            <i class="icon">🚪</i> Logout
+                        </button>
+                    </div>
+                </div>
+            </footer>
+        `;
+    }
+
+    attachEventListeners() {
+        // Logout button
+        const logoutBtn = document.getElementById('footerLogoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+                if (confirm('Are you sure you want to logout?')) {
+                    localStorage.clear();
+                    window.location.href = './login.html';
+                }
+            });
+        }
+
+        // Footer links with data-action attributes
+        const footerLinks = document.querySelectorAll('.footer-link[data-action]');
+        footerLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const action = e.currentTarget.getAttribute('data-action');
+                this.handleFooterAction(action);
+            });
+        });
+    }
+
+    handleFooterAction(action) {
+        switch (action) {
+            case 'about':
+                this.showAboutModal();
+                break;
+            case 'features':
+                this.showFeaturesModal();
+                break;
+            case 'whatsnew':
+                this.showWhatsNewModal();
+                break;
+            case 'roadmap':
+                this.showRoadmapModal();
+                break;
+            case 'help':
+                this.showHelpModal();
+                break;
+            case 'shortcuts':
+                this.showShortcutsModal();
+                break;
+            case 'contact':
+                this.showContactModal();
+                break;
+            case 'privacy':
+                this.showPrivacyPolicy();
+                break;
+            case 'terms':
+                this.showTermsOfService();
+                break;
+            case 'cookies':
+                this.showCookiePolicy();
+                break;
+            case 'licenses':
+                this.showLicenses();
+                break;
+            case 'discord':
+                window.open('https://discord.gg/yourinvite', '_blank');
+                break;
+            case 'newsletter':
+                this.showNewsletterModal();
+                break;
+            default:
+                console.warn('Unknown footer action:', action);
+        }
+    }
 
     showAboutModal() {
         import('../pages/about.js').then(module => {
@@ -34,6 +169,85 @@ export class Footer {
         });
     }
 
+    showShortcutsModal() {
+        const content = `
+            <div class="shortcuts-modal">
+                <h3>Keyboard Shortcuts</h3>
+                <div class="shortcuts-list">
+                    <div class="shortcut-item">
+                        <span>Start/Stop Timer</span>
+                        <kbd>Space</kbd>
+                    </div>
+                    <div class="shortcut-item">
+                        <span>New Practice Session</span>
+                        <kbd>Ctrl + N</kbd>
+                    </div>
+                    <div class="shortcut-item">
+                        <span>Save Session</span>
+                        <kbd>Ctrl + S</kbd>
+                    </div>
+                    <div class="shortcut-item">
+                        <span>Open Audio Player</span>
+                        <kbd>Ctrl + A</kbd>
+                    </div>
+                    <div class="shortcut-item">
+                        <span>Open Metronome</span>
+                        <kbd>Ctrl + M</kbd>
+                    </div>
+                    <div class="shortcut-item">
+                        <span>Close Modal</span>
+                        <kbd>Esc</kbd>
+                    </div>
+                </div>
+            </div>
+        `;
+        this.showPageModal('Keyboard Shortcuts', content);
+    }
+
+    showPrivacyPolicy() {
+        const content = `
+            <div class="legal-content">
+                <h3>Privacy Policy</h3>
+                <p><strong>Last updated: ${new Date().toLocaleDateString()}</strong></p>
+                
+                <h4>Data Storage</h4>
+                <p>Guitar Practice Journal stores all your data locally on your device. We do not collect, transmit, or store any personal information on external servers.</p>
+                
+                <h4>Local Storage</h4>
+                <p>Your practice data, settings, and audio files are stored using browser local storage technologies. This data remains on your device and is never sent to any external servers.</p>
+                
+                <h4>Third-Party Services</h4>
+                <p>When using YouTube integration, you are subject to YouTube's privacy policy. We only access publicly available video data through their API.</p>
+                
+                <h4>Contact</h4>
+                <p>For privacy concerns, please contact us at privacy@guitarjournal.app</p>
+            </div>
+        `;
+        this.showPageModal('Privacy Policy', content);
+    }
+
+    showTermsOfService() {
+        const content = `
+            <div class="legal-content">
+                <h3>Terms of Service</h3>
+                <p><strong>Last updated: ${new Date().toLocaleDateString()}</strong></p>
+                
+                <h4>Acceptance of Terms</h4>
+                <p>By using Guitar Practice Journal, you agree to these terms of service.</p>
+                
+                <h4>Use License</h4>
+                <p>Guitar Practice Journal is provided free of charge for personal, non-commercial use.</p>
+                
+                <h4>Disclaimer</h4>
+                <p>This software is provided "as is" without warranty of any kind. We are not responsible for any data loss or damages.</p>
+                
+                <h4>Open Source</h4>
+                <p>Guitar Practice Journal is open source software. You are free to modify and distribute it according to the project license.</p>
+            </div>
+        `;
+        this.showPageModal('Terms of Service', content);
+    }
+
     showPageModal(title, content) {
         // Remove any existing modals first
         const existingModal = document.querySelector('.page-modal');
@@ -43,28 +257,28 @@ export class Footer {
 
         const modal = document.createElement('div');
         modal.className = 'modal page-modal';
-        modal.style.opacity = '0'; // Start invisible
-        modal.style.visibility = 'hidden'; // Ensure it's hidden
+        modal.style.opacity = '0';
+        modal.style.visibility = 'hidden';
         modal.innerHTML = `
-        <div class="modal-content page-modal-content">
-            <div class="modal-header">
-                <h2>${title}</h2>
-                <button class="modal-close">&times;</button>
-            </div>
-            <div class="modal-body page-modal-body">
-                <div class="info-page-wrapper">
-                    ${content}
+            <div class="modal-content page-modal-content">
+                <div class="modal-header">
+                    <h2>${title}</h2>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body page-modal-body">
+                    <div class="info-page-wrapper">
+                        ${content}
+                    </div>
                 </div>
             </div>
-        </div>
-    `;
+        `;
 
         document.body.appendChild(modal);
 
-        // Force a reflow to ensure the modal is properly positioned
+        // Force a reflow
         modal.offsetHeight;
 
-        // Now show the modal with a smooth transition
+        // Show the modal
         requestAnimationFrame(() => {
             modal.style.display = 'block';
             modal.style.transition = 'opacity 0.2s ease, visibility 0.2s ease';
@@ -101,124 +315,24 @@ export class Footer {
         document.addEventListener('keydown', escapeHandler);
     }
 
-    render() {
-        const currentYear = new Date().getFullYear();
-
-        return `
-            <footer class="app-footer">
-                <div class="footer-container">
-                    <div class="footer-left">
-                        <span class="footer-copyright">&copy; ${currentYear} Guitar Practice Journal</span>
-                        <span class="footer-version">Version ${this.version}</span>
-                    </div>
-                    
-                    <nav class="footer-nav">
-                        <div class="footer-dropdown">
-                            <button class="footer-dropdown-trigger">ABOUT</button>
-                            <div class="footer-dropdown-content">
-                                <a href="#" id="aboutLink">About Guitar Journal</a>
-                                <a href="#" id="featuresLink">Features</a>
-                                <a href="#" id="changelogLink">What's New</a>
-                                <a href="#" id="roadmapLink">Roadmap</a>
-                            </div>
-                        </div>
-                        
-                        <div class="footer-dropdown">
-                            <button class="footer-dropdown-trigger">SUPPORT</button>
-                            <div class="footer-dropdown-content">
-                                <a href="#" id="helpLink">Help & FAQ</a>
-                                <a href="#" id="shortcutsLink">Keyboard Shortcuts</a>
-                                <a href="https://github.com/yourusername/guitar-practice-journal/issues" target="_blank" rel="noopener">Report an Issue</a>
-                                <a href="#" id="contactLink">Contact Us</a>
-                            </div>
-                        </div>
-                        
-                        <div class="footer-dropdown">
-                            <button class="footer-dropdown-trigger">LEGAL</button>
-                            <div class="footer-dropdown-content">
-                                <a href="#" id="privacyLink">Privacy Policy</a>
-                                <a href="#" id="termsLink">Terms of Service</a>
-                                <a href="#" id="cookiesLink">Cookie Policy</a>
-                                <a href="#" id="licensesLink">Open Source Licenses</a>
-                            </div>
-                        </div>
-                        
-                        <div class="footer-dropdown">
-                            <button class="footer-dropdown-trigger">CONNECT</button>
-                            <div class="footer-dropdown-content">
-                                <a href="https://github.com/yourusername/guitar-practice-journal" target="_blank" rel="noopener">
-                                    <i class="icon">📦</i> GitHub
-                                </a>
-                                <a href="#" id="discordLink">
-                                    <i class="icon">💬</i> Discord Community
-                                </a>
-                                <a href="#" id="newsletterLink">
-                                    <i class="icon">📧</i> Newsletter
-                                </a>
-                            </div>
-                        </div>
-                    </nav>
-                    
-                    <div class="footer-right">
-                        <button class="footer-logout-btn" id="footerLogoutBtn">
-                            <i class="icon">🚪</i> Logout
-                        </button>
-                    </div>
-                </div>
-            </footer>
-        `;
+    // Placeholder methods for features not yet implemented
+    showHelpModal() {
+        this.showPageModal('Help & FAQ', '<p>Help content coming soon...</p>');
     }
 
-    attachEventListeners() {
-        // Logout button
-        document.getElementById('footerLogoutBtn')?.addEventListener('click', () => {
-            if (confirm('Are you sure you want to logout?')) {
-                localStorage.clear();
-                window.location.href = './login.html';
-            }
-        });
-
-        // Features link
-        document.getElementById('featuresLink')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            this.showFeaturesModal();
-        });
-
-        // What's New link
-        document.getElementById('changelogLink')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            this.showWhatsNewModal();
-        });
-
-        // Roadmap link
-        document.getElementById('roadmapLink')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            this.showRoadmapModal();
-        });
-
-        // About link
-        document.getElementById('aboutLink')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            this.showAboutModal();
-        });
-
-        // Keyboard shortcuts
-        document.getElementById('shortcutsLink')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            this.showShortcutsModal();
-        });
-
-        // Privacy Policy
-        document.getElementById('privacyLink')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            this.showPrivacyPolicy();
-        });
-
-        // Terms of Service
-        document.getElementById('termsLink')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            this.showTermsOfService();
-        });
+    showContactModal() {
+        this.showPageModal('Contact Us', '<p>Contact form coming soon...</p>');
     }
 
+    showCookiePolicy() {
+        this.showPageModal('Cookie Policy', '<p>This app uses local storage only. No tracking cookies are used.</p>');
+    }
+
+    showLicenses() {
+        this.showPageModal('Open Source Licenses', '<p>License information coming soon...</p>');
+    }
+
+    showNewsletterModal() {
+        this.showPageModal('Newsletter', '<p>Newsletter signup coming soon...</p>');
+    }
 }

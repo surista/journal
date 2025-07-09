@@ -1,6 +1,6 @@
 // Storage Service - Handles all data persistence
-import { CompressionUtils } from '../utils/helpers.js';
-import { AuthService } from './authService.js';
+import {CompressionUtils} from '../utils/helpers.js';
+import {AuthService} from './authService.js';
 
 export class StorageService {
     constructor(userId) {
@@ -60,7 +60,14 @@ export class StorageService {
             if (!stored) return [];
 
             if (this.useCompression) {
-                return CompressionUtils.decompressObject(stored) || [];
+                const decompressed = CompressionUtils.decompressObject(stored);
+                if (!decompressed) {
+                    console.warn('Failed to decompress practice entries, returning empty array');
+                    // Optionally, clear the corrupted data
+                    localStorage.removeItem(key);
+                    return [];
+                }
+                return decompressed;
             } else {
                 return JSON.parse(stored);
             }
@@ -81,7 +88,7 @@ export class StorageService {
 
             // Sync to cloud if available
             if (window.cloudStorage && window.cloudStorage.currentUser) {
-                const goalsRef = { goals, syncedAt: new Date().toISOString() };
+                const goalsRef = {goals, syncedAt: new Date().toISOString()};
                 await window.cloudStorage.syncBatch('goals', [goalsRef]);
             }
 
@@ -321,7 +328,7 @@ export class StorageService {
         try {
             const key = `${this.prefix}settings`;
             const currentSettings = await this.getUserSettings();
-            const updatedSettings = { ...currentSettings, ...settings };
+            const updatedSettings = {...currentSettings, ...settings};
             localStorage.setItem(key, JSON.stringify(updatedSettings));
 
             // Schedule backup
@@ -396,10 +403,10 @@ export class StorageService {
 
             console.log('Backup created successfully:', filename);
 
-            return { success: true, filename, data: backupData, shouldPromptDownload: false };
+            return {success: true, filename, data: backupData, shouldPromptDownload: false};
         } catch (error) {
             console.error('Error creating backup:', error);
-            return { success: false, error };
+            return {success: false, error};
         }
     }
 
@@ -440,19 +447,19 @@ export class StorageService {
         const now = new Date();
 
         if (!lastCheck) {
-            this.saveBackupSettings({ lastBackupCheck: now.toISOString() });
+            this.saveBackupSettings({lastBackupCheck: now.toISOString()});
             return true;
         }
 
         const daysSinceLastBackup = (now - lastCheck) / (1000 * 60 * 60 * 24);
 
         if (settings.backupFrequency === 'daily' && daysSinceLastBackup >= 1) {
-            this.saveBackupSettings({ lastBackupCheck: now.toISOString() });
+            this.saveBackupSettings({lastBackupCheck: now.toISOString()});
             return true;
         }
 
         if (settings.backupFrequency === 'weekly' && daysSinceLastBackup >= 7) {
-            this.saveBackupSettings({ lastBackupCheck: now.toISOString() });
+            this.saveBackupSettings({lastBackupCheck: now.toISOString()});
             return true;
         }
 
@@ -536,10 +543,10 @@ export class StorageService {
             }
 
             console.log('Data restored from backup successfully');
-            return { success: true };
+            return {success: true};
         } catch (error) {
             console.error('Error restoring from backup:', error);
-            return { success: false, error };
+            return {success: false, error};
         }
     }
 
@@ -568,7 +575,7 @@ export class StorageService {
     saveBackupSettings(settings) {
         try {
             const currentSettings = this.getBackupSettings();
-            const updatedSettings = { ...currentSettings, ...settings };
+            const updatedSettings = {...currentSettings, ...settings};
             localStorage.setItem(`${this.prefix}backup_settings`, JSON.stringify(updatedSettings));
 
             // Update auto backup enabled state
@@ -671,7 +678,7 @@ export class StorageService {
             console.log('Cloud data merged successfully');
 
             // Trigger UI update
-            window.dispatchEvent(new CustomEvent('dataUpdated', { detail: 'cloudSync' }));
+            window.dispatchEvent(new CustomEvent('dataUpdated', {detail: 'cloudSync'}));
 
         } catch (error) {
             console.error('Error merging cloud data:', error);
@@ -761,7 +768,7 @@ export class StorageService {
             };
         } catch (error) {
             console.error('Error calculating storage usage:', error);
-            return { used: 0, total: 0, percentage: 0 };
+            return {used: 0, total: 0, percentage: 0};
         }
     }
 

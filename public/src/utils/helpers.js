@@ -23,7 +23,7 @@ export function debounce(func, wait, immediate = false) {
     }
 
     // Add cancel method to the debounced function
-    executedFunction.cancel = function() {
+    executedFunction.cancel = function () {
         clearTimeout(timeout);
         timeout = null;
     };
@@ -38,7 +38,7 @@ export function debounce(func, wait, immediate = false) {
  */
 export function throttle(func, limit) {
     let inThrottle;
-    return function(...args) {
+    return function (...args) {
         if (!inThrottle) {
             func.apply(this, args);
             inThrottle = true;
@@ -164,8 +164,27 @@ export const CompressionUtils = {
      * @param {string} compressed - Compressed string
      */
     decompressObject(compressed) {
-        const decompressed = this.decompress(compressed);
-        return decompressed ? JSON.parse(decompressed) : null;
+        if (!compressed) return null;
+
+        try {
+            const decompressed = this.decompress(compressed);
+            if (!decompressed) {
+                console.error('Decompression returned null - data may be corrupted');
+                return null;
+            }
+
+            // Parse the JSON with error handling
+            try {
+                return JSON.parse(decompressed);
+            } catch (parseError) {
+                console.error('JSON parse error after decompression:', parseError);
+                console.error('Decompressed string preview:', decompressed.substring(0, 200));
+                return null;
+            }
+        } catch (error) {
+            console.error('Error in decompressObject:', error);
+            return null;
+        }
     },
 
     // Minimal LZ-String implementation
@@ -382,8 +401,7 @@ export const CompressionUtils = {
                 if (context_data_position == bitsPerChar - 1) {
                     context_data.push(String.fromCharCode(context_data_val));
                     break;
-                }
-                else context_data_position++;
+                } else context_data_position++;
             }
             return context_data.join('');
         },
@@ -399,7 +417,7 @@ export const CompressionUtils = {
             let w;
             let bits, resb, maxpower, power;
             let c;
-            const data = { val: getNextValue.charCodeAt(0), position: resetValue, index: 1 };
+            const data = {val: getNextValue.charCodeAt(0), position: resetValue, index: 1};
 
             for (i = 0; i < 3; i += 1) {
                 dictionary[i] = i;
@@ -701,7 +719,7 @@ export const PerformanceUtils = {
                     callback(entry);
                 }
             });
-            observer.observe({ entryTypes: ['measure', 'navigation'] });
+            observer.observe({entryTypes: ['measure', 'navigation']});
             return observer;
         }
         return null;
