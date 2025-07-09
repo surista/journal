@@ -20,7 +20,7 @@
 @import url('./components/modals.css');
 @import url('./components/timer.css');
 @import url('./components/audio-player.css');
-@import url('./components/metronome.css');
+/* @import url('./components/metronome.css'); */ /* DISABLED - conflicts with inline styles */
 @import url('./components/achievements.css');
 @import url('./components/goals.css');
 @import url('./components/stats.css');
@@ -291,3 +291,8 @@
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
+
+.streak-heatmap { padding: 1rem; }
+.heatmap-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 2px; max-width: 300px; }
+.heatmap-day { width: 10px; height: 10px; background: var(--text-muted); border-radius: 2px; opacity: 0.3; }
+.heatmap-day.has-practice { background: var(--success); opacity: 1; }

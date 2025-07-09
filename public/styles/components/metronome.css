@@ -1,292 +1,332 @@
 /* Metronome Component Styles */
-
-.metronome-container {
+.metronome-widget {
     background: var(--bg-card);
-    border-radius: var(--radius-xl);
-    padding: var(--space-xl);
-    box-shadow: var(--shadow-xl);
+    border-radius: 12px;
+    padding: 1.5rem;
     border: 1px solid var(--border);
-    width: 100%;  /* Add this */
-    max-width: none;  /* Add this */
+    box-shadow: var(--shadow-sm);
 }
 
-.metronome-title {
-    text-align: center;
-    margin-bottom: var(--space-xl);
+.metronome-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.metronome-header h3 {
+    margin: 0;
     color: var(--text-primary);
+    font-size: 1.25rem;
 }
 
-/* Metronome visual */
-.metronome-visual {
+.audio-status {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    margin-bottom: var(--space-xl);
+    gap: 0.5rem;
+    font-size: 0.875rem;
 }
 
-.pulsating-circle {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+.audio-status .status-indicator {
+    font-size: 1rem;
+}
+
+.audio-status .status-text {
+    color: var(--text-secondary);
+}
+
+.audio-status.ready .status-text {
+    color: var(--success);
+}
+
+.metronome-display {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
     align-items: center;
-    justify-content: center;
-    position: relative;
-    transition: transform 0.1s ease;
-    box-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
-}
-
-.pulsating-circle.pulse {
-    transform: scale(1.1);
-    box-shadow: 0 0 50px rgba(99, 102, 241, 0.8);
-}
-
-.tempo-display {
-    font-size: var(--text-4xl);
-    font-weight: bold;
-    color: white;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-.bpm-label {
-    font-size: var(--text-sm);
-    color: white;
-    opacity: 0.9;
-}
-
-/* Beat indicators */
-.beat-indicators {
-    display: flex;
-    gap: var(--space-sm);
-    margin-top: var(--space-xl);
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: var(--bg-input);
+    border-radius: 8px;
 }
 
 .beat-indicator {
-    width: 20px;
-    height: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.beat-lights {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.beat-light {
+    width: 16px;
+    height: 16px;
     border-radius: 50%;
-    background: var(--bg-input);
-    border: 2px solid var(--border);
-    transition: var(--transition-fast);
+    background: var(--text-muted);
+    transition: all 0.1s ease;
 }
 
-.beat-indicator.accent {
-    border-color: var(--primary);
+.beat-light.accent {
+    background: var(--warning);
 }
 
-.beat-indicator.active {
+.beat-light.active {
     background: var(--primary);
-    transform: scale(1.3);
-    box-shadow: 0 0 15px rgba(99, 102, 241, 0.6);
+    box-shadow: 0 0 8px var(--primary);
+    transform: scale(1.2);
 }
 
-.beat-indicator.active.accent {
-    background: var(--secondary);
-    box-shadow: 0 0 20px rgba(168, 85, 247, 0.8);
+.beat-light.accent.active {
+    background: var(--warning);
+    box-shadow: 0 0 8px var(--warning);
 }
 
-/* Tempo controls */
-.tempo-controls {
-    display: flex;
-    justify-content: center;
-    gap: var(--space-sm);
-    margin-bottom: var(--space-xl);
-    flex-wrap: wrap;
-}
-
-.play-btn {
-    padding: var(--space-md) var(--space-xl);
-    background: var(--success);
-    border: none;
-    border-radius: var(--radius-lg);
-    color: white;
-    font-size: var(--text-xl);
-    cursor: pointer;
-    transition: var(--transition-base);
-}
-
-.play-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
-}
-
-.play-btn.playing {
-    background: var(--danger);
-}
-
-/* Tempo slider */
-.tempo-slider-container {
-    margin-bottom: var(--space-xl);
-}
-
-.tempo-slider {
-    width: 100%;
-    margin-bottom: var(--space-sm);
-}
-
-.tempo-marks {
-    display: flex;
-    justify-content: space-between;
-    font-size: var(--text-xs);
+.beat-counter {
+    font-size: 0.875rem;
     color: var(--text-secondary);
+    font-weight: 500;
 }
 
-/* Time signature section */
-.time-signature-section,
-.sound-selection,
-.volume-control,
-.precount-section {
-    margin-bottom: var(--space-xl);
-}
-
-.metronome-select {
-    width: 100%;
-    padding: var(--space-sm) var(--space-md);
-    background: var(--bg-input);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    color: var(--text-primary);
-    cursor: pointer;
-}
-
-/* Accent pattern */
-.accent-pattern-section {
-    margin-bottom: var(--space-xl);
-}
-
-.accent-toggles {
-    display: flex;
-    gap: var(--space-sm);
-    margin-top: var(--space-sm);
-}
-
-.accent-toggle {
-    width: 40px;
-    height: 40px;
-    border: 2px solid var(--border);
-    border-radius: var(--radius-md);
-    background: var(--bg-input);
-    color: var(--text-primary);
-    cursor: pointer;
-    transition: var(--transition-base);
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.accent-toggle.accented {
-    background: var(--primary);
-    border-color: var(--primary);
-    color: white;
-}
-
-/* Volume control */
-.volume-slider {
-    width: calc(100% - 60px);
-    margin-right: var(--space-sm);
-}
-
-#volumeDisplay {
-    font-weight: 600;
-    color: var(--primary);
-}
-
-/* Tempo progression */
-.tempo-progression-section {
-    background: var(--bg-input);
-    padding: var(--space-xl);
-    border-radius: var(--radius-lg);
-    margin-bottom: var(--space-xl);
-}
-
-.tempo-progression-section h4 {
-    margin-bottom: var(--space-md);
-    color: var(--text-primary);
-}
-
-.progression-controls {
-    margin-top: var(--space-md);
-}
-
-.progression-row {
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
-    margin-bottom: var(--space-sm);
-}
-
-.progression-row input[type="number"] {
-    width: 80px;
-    padding: var(--space-xs) var(--space-sm);
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    color: var(--text-primary);
-}
-
-.small-select {
-    padding: var(--space-xs) var(--space-sm);
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    color: var(--text-primary);
-}
-
-.progression-status {
-    margin-top: var(--space-sm);
-    padding: var(--space-sm);
-    background: var(--bg-card);
-    border-radius: var(--radius-md);
-    font-size: var(--text-sm);
-    color: var(--text-secondary);
-}
-
-/* Tap tempo */
-.tap-tempo-section {
+.bpm-display {
     text-align: center;
 }
 
-.tap-tempo-btn {
-    padding: var(--space-md) var(--space-xl);
-    background: var(--primary);
-    border: none;
-    border-radius: var(--radius-lg);
-    color: white;
-    cursor: pointer;
-    transition: var(--transition-base);
-    font-weight: 600;
+.bpm-value {
+    font-size: 3rem;
+    font-weight: bold;
+    color: var(--text-primary);
+    line-height: 1;
 }
 
-.tap-tempo-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
-}
-
-.tap-tempo-btn:active {
-    transform: translateY(0);
-}
-
-.tap-tempo-hint {
-    display: block;
-    margin-top: var(--space-sm);
-    font-size: var(--text-sm);
+.bpm-label {
+    font-size: 0.875rem;
     color: var(--text-secondary);
+    margin-top: 0.25rem;
 }
 
-/* Responsive adjustments */
+.metronome-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.bpm-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.bpm-controls .btn {
+    padding: 0.5rem 0.75rem;
+    min-width: 40px;
+    font-weight: bold;
+}
+
+.bpm-slider {
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    outline: none;
+    appearance: none;
+}
+
+.bpm-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: var(--primary);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.bpm-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: var(--primary);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+}
+
+.playback-controls {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.playback-controls .btn {
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+}
+
+.metronome-settings {
+    display: flex;
+    gap: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+}
+
+.setting-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.setting-group label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.setting-group select {
+    padding: 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg-input);
+    color: var(--text-primary);
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--primary);
+}
+
+.audio-warning {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--warning);
+    color: var(--bg-card);
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    box-shadow: var(--shadow-lg);
+    z-index: 1000;
+    animation: fadeInOut 3s ease-in-out;
+}
+
+.warning-content {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.warning-icon {
+    font-size: 1.25rem;
+}
+
+.warning-text {
+    font-weight: 500;
+}
+
+@keyframes fadeInOut {
+    0%, 100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.9);
+    }
+    20%, 80% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+/* Responsive design */
 @media (max-width: 768px) {
-    .tempo-controls {
+    .metronome-display {
         flex-direction: column;
+        gap: 1rem;
     }
 
-    .accent-toggles {
-        flex-wrap: wrap;
+    .metronome-settings {
+        flex-direction: column;
+        gap: 1rem;
     }
 
-    .progression-row {
+    .bpm-controls {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .playback-controls {
         flex-wrap: wrap;
     }
+}
+
+.metronome-widget {
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: 2rem;
+    border: 1px solid var(--border);
+}
+
+.metronome-display {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 2rem 0;
+    padding: 1rem;
+    background: var(--bg-input);
+    border-radius: 8px;
+}
+
+.beat-lights {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.beat-light {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    transition: all 0.1s ease;
+}
+
+.beat-light.active {
+    background: var(--primary);
+    box-shadow: 0 0 8px var(--primary);
+    transform: scale(1.2);
+}
+
+.bpm-display {
+    text-align: center;
+}
+
+.bpm-value {
+    font-size: 3rem;
+    font-weight: bold;
+    color: var(--text-primary);
+}
+
+.metronome-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.bpm-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.playback-controls {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
 }

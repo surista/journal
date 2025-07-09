@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="Track your guitar practice sessions, set goals, and monitor your progress">
     <meta name="theme-color" content="#6366f1">
-    <title>Guitar Practice Journal v8.3</title>
+    <title>Guitar Practice Journal v8.51</title>
 
     <!-- Add this before your app scripts -->
     <script>
@@ -23,7 +23,7 @@
     <!-- Simplified base path detection -->
     <script>
         // Simple version tracking
-        window.APP_VERSION = '7.6.9';
+        window.APP_VERSION = '8.4';
         console.log('🎸 Loading Guitar Practice Journal version:', window.APP_VERSION);
 
         // Simplified base path detection
@@ -261,6 +261,11 @@
     }, 30000);
 
 </script>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
 <!-- Service Worker Registration -->
 <script>

@@ -32,6 +32,16 @@ const STATIC_CACHE_URLS = [
     './src/components/streakHeatMap.js',
     './src/components/achievementBadges.js',
     './src/components/waveform.js',
+    './src/components/tabs/StatsTab.js',
+    './src/components/tabs/HistoryTab.js',
+    './src/components/tabs/GoalsTab.js',
+    './src/components/tabs/CalendarTab.js',
+    './src/components/tabs/SettingsTab.js',
+    './src/services/cloudSyncHandler.js',
+    './src/components/tabs/AudioTab.js',
+    './src/components/tabs/PracticeTab.js',
+    './src/components/tabs/MetronomeTab.js',
+
 
     // Page files
     './src/pages/dashboard.js',
@@ -126,7 +136,7 @@ function isCriticalResource(pathname) {
     const criticalPaths = ['/', '/index.html', '/src/', '/styles/'];
 
     return criticalExtensions.some(ext => pathname.endsWith(ext)) ||
-           criticalPaths.some(path => pathname.startsWith(path));
+        criticalPaths.some(path => pathname.startsWith(path));
 }
 
 // Network-first strategy (for critical resources)

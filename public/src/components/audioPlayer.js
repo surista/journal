@@ -1162,11 +1162,16 @@ export class AudioPlayer {
     }
 
     syncTimerStart() {
+        console.log('Audio player: Attempting to sync timer start...');
+
         // Try multiple ways to find the timer
         let timer = null;
 
-        // First try the dashboard's timer reference
-        if (window.app?.currentPage?.timer) {
+        // First check the global reference
+        if (window.currentTimer) {
+            timer = window.currentTimer;
+            console.log('Found timer via window.currentTimer');
+        } else if (window.app?.currentPage?.timer) {
             timer = window.app.currentPage.timer;
         } else if (window.app?.currentPage?.components?.timer) {
             timer = window.app.currentPage.components.timer;
@@ -1174,29 +1179,69 @@ export class AudioPlayer {
             timer = window.app.currentPage.sharedTimer;
         }
 
-        if (timer && timer.syncWithAudio && !timer.isRunning) {
-            console.log('Starting timer due to audio sync');
-            timer.start();
+        if (timer) {
+            // Check if sync is enabled by reading the checkbox directly
+            const syncCheckbox = document.getElementById('timerSyncCheckbox');
+            const syncEnabled = syncCheckbox ? syncCheckbox.checked : timer.syncWithAudio;
+
+            console.log('Timer found, sync enabled:', syncEnabled, 'Timer running:', timer.isRunning);
+
+            if (syncEnabled && !timer.isRunning) {
+                console.log('Starting timer due to audio sync');
+                timer.start();
+            } else if (syncEnabled && timer.isRunning) {
+                console.log('Timer already running, no action needed');
+            } else if (!syncEnabled) {
+                console.log('Timer sync is disabled');
+            }
+        } else {
+            console.warn('Timer component not found for sync');
+            console.log('Available references:', {
+                'window.currentTimer': window.currentTimer,
+                'window.app': window.app,
+                'window.app.currentPage': window.app?.currentPage,
+                'window.app.currentPage.components': window.app?.currentPage?.components
+            });
         }
     }
 
     syncTimerStop() {
-        // Try multiple ways to find the timer
-        let timer = null;
+    console.log('Audio player: Attempting to sync timer stop...');
 
-        if (window.app?.currentPage?.timer) {
-            timer = window.app.currentPage.timer;
-        } else if (window.app?.currentPage?.components?.timer) {
-            timer = window.app.currentPage.components.timer;
-        } else if (window.app?.currentPage?.sharedTimer) {
-            timer = window.app.currentPage.sharedTimer;
-        }
+    // Try multiple ways to find the timer
+    let timer = null;
 
-        if (timer && timer.syncWithAudio && timer.isRunning) {
+    // First check the global reference
+    if (window.currentTimer) {
+        timer = window.currentTimer;
+        console.log('Found timer via window.currentTimer');
+    } else if (window.app?.currentPage?.timer) {
+        timer = window.app.currentPage.timer;
+    } else if (window.app?.currentPage?.components?.timer) {
+        timer = window.app.currentPage.components.timer;
+    } else if (window.app?.currentPage?.sharedTimer) {
+        timer = window.app.currentPage.sharedTimer;
+    }
+
+    if (timer) {
+        // Check if sync is enabled by reading the checkbox directly
+        const syncCheckbox = document.getElementById('timerSyncCheckbox');
+        const syncEnabled = syncCheckbox ? syncCheckbox.checked : timer.syncWithAudio;
+
+        console.log('Timer found for stop, sync enabled:', syncEnabled, 'Timer running:', timer.isRunning);
+
+        if (syncEnabled && timer.isRunning) {
             console.log('Pausing timer due to audio sync');
             timer.pause();
+        } else if (!syncEnabled) {
+            console.log('Timer sync is disabled, not stopping timer');
+        } else if (!timer.isRunning) {
+            console.log('Timer already stopped');
         }
+    } else {
+        console.warn('Timer component not found for sync stop');
     }
+}
 
     stop() {
         if (this.isYouTubeMode && this.youtubePlayer) {

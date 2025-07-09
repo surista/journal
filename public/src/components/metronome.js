@@ -1,891 +1,781 @@
-// Metronome Component - Updated with Timer Sync
+// Metronome Component - Modern UI Design
+
+// Add inline styles since CSS isn't loading
+const metronomeStyles = `
+.metronome-widget { 
+    max-width: 500px; 
+    margin: 0 auto; 
+    background: var(--bg-card); 
+    border-radius: 20px; 
+    padding: 2rem; 
+    border: 1px solid var(--border); 
+    position: relative;
+}
+
+.metronome-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.metronome-header h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.audio-status {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.bpm-display-container {
+    text-align: center;
+    margin: 2rem 0;
+}
+
+.bpm-circle {
+    width: 200px;
+    height: 200px;
+    margin: 0 auto;
+    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 32px rgba(99, 102, 241, 0.3);
+    position: relative;
+    transition: transform 0.2s ease;
+}
+
+.bpm-circle.pulse {
+    animation: pulse 0.2s ease-out;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.bpm-value {
+    font-size: 4rem;
+    font-weight: bold;
+    color: white;
+    line-height: 1;
+}
+
+.bpm-label {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-top: 0.25rem;
+}
+
+.beat-indicator {
+    margin: 2rem 0;
+}
+
+.beat-lights {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.beat-light {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    opacity: 0.3;
+    transition: all 0.1s ease;
+}
+
+.beat-light.active {
+    background: var(--primary);
+    opacity: 1;
+    transform: scale(1.2);
+}
+
+.beat-light.accent {
+    background: #fbbf24;
+}
+
+.beat-counter {
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.bpm-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 2rem 0;
+}
+
+.bpm-adjust-btn {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.bpm-adjust-btn:hover {
+    background: var(--bg-dark);
+    transform: translateY(-1px);
+}
+
+.bpm-adjust-btn.stop {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+}
+
+.bpm-adjust-btn.stop:hover {
+    background: #dc2626;
+}
+
+.bpm-slider-container {
+    margin: 2rem 0;
+    padding: 0 1rem;
+}
+
+.bpm-slider {
+    width: 100%;
+    height: 6px;
+    background: linear-gradient(to right, var(--bg-input) 0%, var(--bg-input) var(--progress, 50%), var(--border) var(--progress, 50%), var(--border) 100%);
+    border-radius: 3px;
+    outline: none;
+    appearance: none;
+    cursor: pointer;
+}
+
+.bpm-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    background: #6366f1;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+}
+
+.bpm-slider::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    background: #6366f1;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+}
+
+.bpm-range-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.playback-controls {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin: 2rem 0;
+}
+
+.play-pause-btn {
+    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    color: white;
+    border: none;
+    padding: 1rem 2.5rem;
+    border-radius: 12px;
+    font-size: 1.125rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+}
+
+.play-pause-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+}
+
+.stop-btn {
+    background: var(--bg-input);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-size: 1.125rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.stop-btn:hover {
+    background: var(--bg-dark);
+    transform: translateY(-2px);
+}
+
+.metronome-settings {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 2rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+}
+
+.setting-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.setting-group label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.setting-group select {
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-input);
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.accent-pattern {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.accent-beat-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg-input);
+    color: var(--text-primary);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.accent-beat-btn.accented {
+    background: #6366f1;
+    color: white;
+    border-color: #6366f1;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary);
+}
+
+.sound-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+`;
+
+if (!document.getElementById('metronome-styles')) {
+    const style = document.createElement('style');
+    style.id = 'metronome-styles';
+    style.textContent = metronomeStyles;
+    document.head.appendChild(style);
+}
+
 export class Metronome {
-    constructor(container) {
+    constructor(container, audioService) {
         this.container = container;
-        this.audioContext = null;
+        this.audioService = audioService;
         this.isPlaying = false;
+        this.bpm = 120;
         this.currentBeat = 0;
-        this.nextNoteTime = 0;
-        this.lookahead = 25.0; // How frequently to call scheduling function (in milliseconds)
-        this.scheduleAheadTime = 0.1; // How far ahead to schedule audio (sec)
-        this.timerID = null;
-        this.timer = null; // Reference to timer component
+        this.beatsPerMeasure = 4;
+        this.interval = null;
+        this.timer = null;
+        this.audioReady = false;
+        this.accentPattern = [true, false, false, false]; // Default accent on first beat
 
-        // Metronome settings
-        this.tempo = 120;
-        this.timeSignature = {beats: 4, noteValue: 4};
-        this.accentPattern = [true, false, false, false]; // Default: accent first beat
-        this.volume = 0.7;
-        this.soundType = 'click';
-        this.preCount = false;
-        this.preCountMeasures = 1;
-        this.isInPreCount = false;
-        this.preCountBeats = 0;
-
-        // Tempo progression for loops
-        this.tempoProgression = {
-            enabled: false,
-            incrementType: 'percentage', // 'percentage' or 'bpm'
-            incrementValue: 1,
-            loopInterval: 1, // After every N loops
-            currentLoopCount: 0,
-            maxTempo: 300
-        };
-
-        // Visual settings
-        this.visualElements = {};
-        this.beatIndicators = [];
-
-        // Sound buffers
-        this.soundBuffers = {};
-        this.loadSounds();
-
-        // Bind methods
-        this.scheduler = this.scheduler.bind(this);
-        this.draw = this.draw.bind(this);
+        this.init();
     }
 
-    setTimer(timer) {
-        this.timer = timer;
+    init() {
+        this.render();
+        this.attachEventListeners();
+        this.checkAudioReady();
     }
 
-    async loadSounds() {
-        // Initialize audio context
-        if (!this.audioContext) {
-            this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        }
-
-        // Define sound types with their frequencies and characteristics
-        this.soundDefinitions = {
-            click: {high: 1000, low: 800, duration: 0.03},
-            beep: {high: 880, low: 440, duration: 0.05},
-            woodblock: {high: 1200, low: 600, duration: 0.02},
-            cowbell: {high: 800, low: 400, duration: 0.04},
-            rimshot: {high: 2000, low: 200, duration: 0.01},
-            clave: {high: 1500, low: 750, duration: 0.015},
-            tick: {high: 4000, low: 2000, duration: 0.005},
-            pop: {high: 600, low: 300, duration: 0.02},
-            blip: {high: 2400, low: 1200, duration: 0.01},
-            ping: {high: 3000, low: 1500, duration: 0.08}
-        };
+    async checkAudioReady() {
+        // Check if audio is ready every 100ms
+        const checkInterval = setInterval(() => {
+            if (this.audioService && this.audioService.isReady && this.audioService.isReady()) {
+                this.audioReady = true;
+                this.updateUI();
+                clearInterval(checkInterval);
+            }
+        }, 100);
     }
 
     render() {
         this.container.innerHTML = `
-            <div class="metronome-container">
-                <h3 class="metronome-title">🎵 Metronome</h3>
+            <div class="metronome-widget">
+                <div class="audio-status" id="audioStatus">
+                    <span class="status-indicator">🔇</span>
+                    <span class="status-text">Click anywhere to enable audio</span>
+                </div>
                 
-                <!-- Visual Metronome -->
-                <div class="metronome-visual">
-                    <div class="pulsating-circle" id="metronomeCircle">
-                        <div class="tempo-display" id="tempoDisplay">${this.tempo}</div>
+                <div class="metronome-header">
+                    <h3>🎵 Metronome</h3>
+                </div>
+                
+                <!-- Beat indicator -->
+                <div class="beat-indicator">
+                    <div class="beat-lights">
+                        ${Array(this.beatsPerMeasure).fill(0).map((_, i) =>
+                            `<div class="beat-light ${this.accentPattern[i] ? 'accent' : ''}" data-beat="${i}"></div>`
+                        ).join('')}
+                    </div>
+                    <div class="beat-counter">
+                        <span id="currentBeat">1</span> / <span id="totalBeats">${this.beatsPerMeasure}</span>
+                    </div>
+                </div>
+                
+                <!-- BPM Display -->
+                <div class="bpm-display-container">
+                    <div class="bpm-circle" id="bpmCircle">
+                        <div class="bpm-value" id="bpmValue">${this.bpm}</div>
                         <div class="bpm-label">BPM</div>
                     </div>
-                    <div class="beat-indicators" id="beatIndicators"></div>
                 </div>
 
-                <!-- Tempo Controls -->
-                <div class="tempo-controls">
-                    <button class="tempo-btn" data-change="-10">-10</button>
-                    <button class="tempo-btn" data-change="-5">-5</button>
-                    <button class="tempo-btn" data-change="-1">-1</button>
-                    <button class="play-btn" id="metronomePlayBtn">▶️</button>
-                    <button class="tempo-btn" data-change="+1">+1</button>
-                    <button class="tempo-btn" data-change="+5">+5</button>
-                    <button class="tempo-btn" data-change="+10">+10</button>
+                <!-- BPM Controls -->
+                <div class="bpm-controls">
+                    <button class="bpm-adjust-btn" data-adjust="-10">-10</button>
+                    <button class="bpm-adjust-btn" data-adjust="-5">-5</button>
+                    <button class="bpm-adjust-btn" data-adjust="-1">-1</button>
+                    <button class="bpm-adjust-btn stop" id="tapTempo">TAP</button>
+                    <button class="bpm-adjust-btn" data-adjust="+1">+1</button>
+                    <button class="bpm-adjust-btn" data-adjust="+5">+5</button>
+                    <button class="bpm-adjust-btn" data-adjust="+10">+10</button>
                 </div>
-
-                <!-- Tempo Slider -->
-                <div class="tempo-slider-container">
-                    <input type="range" id="tempoSlider" min="30" max="300" value="${this.tempo}" class="tempo-slider">
-                    <div class="tempo-marks">
+                
+                <!-- BPM Slider -->
+                <div class="bpm-slider-container">
+                    <input type="range" id="bpmSlider" min="30" max="300" value="${this.bpm}" class="bpm-slider">
+                    <div class="bpm-range-labels">
                         <span>30</span>
                         <span>165</span>
                         <span>300</span>
                     </div>
                 </div>
-
-                <!-- Time Signature -->
-                <div class="time-signature-section">
-                    <label>Time Signature</label>
-                    <select id="timeSignature" class="metronome-select">
-                        <option value="2/4">2/4</option>
-                        <option value="3/4">3/4</option>
-                        <option value="4/4" selected>4/4</option>
-                        <option value="5/4">5/4</option>
-                        <option value="6/8">6/8</option>
-                        <option value="7/8">7/8</option>
-                    </select>
+                
+                <!-- Playback Controls -->
+                <div class="playback-controls">
+                    <button class="play-pause-btn" id="playPauseBtn">
+                        <i class="icon">▶️</i> <span>Start</span>
+                    </button>
+                    <button class="stop-btn" id="stopBtn">
+                        <i class="icon">⏹️</i> <span>Stop</span>
+                    </button>
                 </div>
 
-                <!-- Accent Pattern -->
-                <div class="accent-pattern-section">
-                    <label>Accent Pattern</label>
-                    <div class="accent-toggles" id="accentToggles"></div>
-                </div>
-
-                <!-- Sound Selection -->
-                <div class="sound-selection">
-                    <label>Sound</label>
-                    <select id="soundType" class="metronome-select">
-                        <option value="click">Click</option>
-                        <option value="beep">Beep</option>
-                        <option value="woodblock">Woodblock</option>
-                        <option value="cowbell">Cowbell</option>
-                        <option value="rimshot">Rimshot</option>
-                        <option value="clave">Clave</option>
-                        <option value="tick">Tick</option>
-                        <option value="pop">Pop</option>
-                        <option value="blip">Blip</option>
-                        <option value="ping">Ping</option>
-                    </select>
-                </div>
-
-                <!-- Volume Control -->
-                <div class="volume-control">
-                    <label>Volume</label>
-                    <input type="range" id="volumeSlider" min="0" max="100" value="${this.volume * 100}" class="volume-slider">
-                    <span id="volumeDisplay">${Math.round(this.volume * 100)}%</span>
-                </div>
-
-                <!-- Pre-count -->
-                <div class="precount-section">
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="preCountToggle">
-                        <span>Pre-count (1 measure)</span>
-                    </label>
-                </div>
-
-                <!-- Tempo Progression (for loops) -->
-                <div class="tempo-progression-section">
-                    <h4>Tempo Progression (Loop Mode)</h4>
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="progressionEnabled">
-                        <span>Enable tempo increase after loops</span>
-                    </label>
+                <!-- Settings -->
+                <div class="metronome-settings">
+                    <div class="setting-group">
+                        <label>Time Signature:</label>
+                        <select id="timeSignature">
+                            <option value="4">4/4</option>
+                            <option value="3">3/4</option>
+                            <option value="2">2/4</option>
+                            <option value="6">6/8</option>
+                        </select>
+                    </div>
                     
-                    <div class="progression-controls" id="progressionControls" style="display: none;">
-                        <div class="progression-row">
-                            <label>Increase by:</label>
-                            <input type="number" id="incrementValue" value="1" min="0.1" max="10" step="0.1">
-                            <select id="incrementType" class="small-select">
-                                <option value="percentage">%</option>
-                                <option value="bpm">BPM</option>
-                            </select>
+                    <div class="setting-group">
+                        <label>Accent Pattern:</label>
+                        <div class="accent-pattern" id="accentPattern">
+                            ${Array(this.beatsPerMeasure).fill(0).map((_, i) =>
+                                `<button class="accent-beat-btn ${this.accentPattern[i] ? 'accented' : ''}" data-beat="${i}">${i + 1}</button>`
+                            ).join('')}
                         </div>
-                        <div class="progression-row">
-                            <label>After every:</label>
-                            <input type="number" id="loopInterval" value="1" min="1" max="10">
-                            <span>loop(s)</span>
-                        </div>
-                        <div class="progression-status" id="progressionStatus"></div>
                     </div>
                 </div>
-
-                <!-- Tap Tempo -->
-                <div class="tap-tempo-section">
-                    <button class="tap-tempo-btn" id="tapTempoBtn">Tap Tempo</button>
-                    <span class="tap-tempo-hint">Tap 4+ times to set tempo</span>
+                
+                <div class="metronome-settings" style="grid-template-columns: 1fr;">
+                    <div class="setting-group">
+                        <label for="soundSelect">Sound:</label>
+                        <select id="soundSelect">
+                            <option value="click">Click</option>
+                            <option value="beep">Beep</option>
+                            <option value="tick">Tick</option>
+                            <option value="wood">Wood Block</option>
+                        </select>
+                    </div>
                 </div>
             </div>
-
-            <style>
-                .metronome-container {
-                    background: var(--bg-card);
-                    border-radius: var(--radius-xl);
-                    padding: var(--space-xl);
-                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-                    border: 1px solid var(--border);
-                }
-
-                .metronome-title {
-                    text-align: center;
-                    margin-bottom: var(--space-lg);
-                    color: var(--text-primary);
-                }
-
-                .metronome-visual {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    margin-bottom: var(--space-xl);
-                }
-
-                .pulsating-circle {
-                    width: 150px;
-                    height: 150px;
-                    border-radius: 50%;
-                    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    position: relative;
-                    transition: transform 0.1s ease;
-                    box-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
-                }
-
-                .pulsating-circle.pulse {
-                    transform: scale(1.1);
-                    box-shadow: 0 0 50px rgba(99, 102, 241, 0.8);
-                }
-
-                .tempo-display {
-                    font-size: 2.5rem;
-                    font-weight: bold;
-                    color: white;
-                    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-                }
-
-                .bpm-label {
-                    font-size: 0.875rem;
-                    color: white;
-                    opacity: 0.9;
-                }
-
-                .beat-indicators {
-                    display: flex;
-                    gap: 10px;
-                    margin-top: var(--space-lg);
-                }
-
-                .beat-indicator {
-                    width: 20px;
-                    height: 20px;
-                    border-radius: 50%;
-                    background: var(--bg-input);
-                    border: 2px solid var(--border);
-                    transition: all 0.1s ease;
-                }
-
-                .beat-indicator.accent {
-                    border-color: var(--primary);
-                }
-
-                .beat-indicator.active {
-                    background: var(--primary);
-                    transform: scale(1.3);
-                    box-shadow: 0 0 15px rgba(99, 102, 241, 0.6);
-                }
-
-                .beat-indicator.active.accent {
-                    background: var(--secondary);
-                    box-shadow: 0 0 20px rgba(168, 85, 247, 0.8);
-                }
-
-                .tempo-controls {
-                    display: flex;
-                    justify-content: center;
-                    gap: 10px;
-                    margin-bottom: var(--space-lg);
-                }
-
-                .tempo-btn {
-                    padding: 8px 12px;
-                    background: var(--bg-input);
-                    border: 1px solid var(--border);
-                    border-radius: var(--radius-md);
-                    color: var(--text-primary);
-                    cursor: pointer;
-                    transition: all 0.2s ease;
-                }
-
-                .tempo-btn:hover {
-                    background: var(--primary);
-                    border-color: var(--primary);
-                    transform: translateY(-2px);
-                }
-
-                .play-btn {
-                    padding: 12px 24px;
-                    background: var(--success);
-                    border: none;
-                    border-radius: var(--radius-lg);
-                    color: white;
-                    font-size: 1.2rem;
-                    cursor: pointer;
-                    transition: all 0.2s ease;
-                }
-
-                .play-btn:hover {
-                    transform: translateY(-2px);
-                    box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
-                }
-
-                .play-btn.playing {
-                    background: var(--danger);
-                }
-
-                .tempo-slider-container {
-                    margin-bottom: var(--space-lg);
-                }
-
-                .tempo-slider {
-                    width: 100%;
-                    margin-bottom: var(--space-sm);
-                }
-
-                .tempo-marks {
-                    display: flex;
-                    justify-content: space-between;
-                    font-size: 0.75rem;
-                    color: var(--text-secondary);
-                }
-
-                .time-signature-section,
-                .sound-selection,
-                .volume-control,
-                .precount-section {
-                    margin-bottom: var(--space-lg);
-                }
-
-                .metronome-select {
-                    width: 100%;
-                    padding: 8px 12px;
-                    background: var(--bg-input);
-                    border: 1px solid var(--border);
-                    border-radius: var(--radius-md);
-                    color: var(--text-primary);
-                    cursor: pointer;
-                }
-
-                .accent-toggles {
-                    display: flex;
-                    gap: 8px;
-                    margin-top: var(--space-sm);
-                }
-
-                .accent-toggle {
-                    width: 40px;
-                    height: 40px;
-                    border: 2px solid var(--border);
-                    border-radius: var(--radius-md);
-                    background: var(--bg-input);
-                    color: var(--text-primary);
-                    cursor: pointer;
-                    transition: all 0.2s ease;
-                    font-weight: bold;
-                }
-
-                .accent-toggle.accented {
-                    background: var(--primary);
-                    border-color: var(--primary);
-                    color: white;
-                }
-
-                .volume-slider {
-                    width: calc(100% - 60px);
-                    margin-right: 10px;
-                }
-
-                .checkbox-label {
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                    cursor: pointer;
-                }
-
-                .checkbox-label input[type="checkbox"] {
-                    width: 20px;
-                    height: 20px;
-                    cursor: pointer;
-                }
-
-                .tempo-progression-section {
-                    background: var(--bg-input);
-                    padding: var(--space-lg);
-                    border-radius: var(--radius-lg);
-                    margin-bottom: var(--space-lg);
-                }
-
-                .tempo-progression-section h4 {
-                    margin-bottom: var(--space-md);
-                    color: var(--text-primary);
-                }
-
-                .progression-controls {
-                    margin-top: var(--space-md);
-                }
-
-                .progression-row {
-                    display: flex;
-                    align-items: center;
-                    gap: 10px;
-                    margin-bottom: var(--space-sm);
-                }
-
-                .progression-row input[type="number"] {
-                    width: 80px;
-                    padding: 6px 10px;
-                    background: var(--bg-dark);
-                    border: 1px solid var(--border);
-                    border-radius: var(--radius-sm);
-                    color: var(--text-primary);
-                }
-
-                .small-select {
-                    padding: 6px 10px;
-                    background: var(--bg-dark);
-                    border: 1px solid var(--border);
-                    border-radius: var(--radius-sm);
-                    color: var(--text-primary);
-                }
-
-                .progression-status {
-                    margin-top: var(--space-sm);
-                    padding: var(--space-sm);
-                    background: var(--bg-dark);
-                    border-radius: var(--radius-md);
-                    font-size: 0.875rem;
-                    color: var(--text-secondary);
-                }
-
-                .tap-tempo-section {
-                    text-align: center;
-                }
-
-                .tap-tempo-btn {
-                    padding: 12px 24px;
-                    background: var(--primary);
-                    border: none;
-                    border-radius: var(--radius-lg);
-                    color: white;
-                    cursor: pointer;
-                    transition: all 0.2s ease;
-                    font-weight: 600;
-                }
-
-                .tap-tempo-btn:hover {
-                    transform: translateY(-2px);
-                    box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
-                }
-
-                .tap-tempo-btn:active {
-                    transform: translateY(0);
-                }
-
-                .tap-tempo-hint {
-                    display: block;
-                    margin-top: var(--space-sm);
-                    font-size: 0.875rem;
-                    color: var(--text-secondary);
-                }
-
-                @media (max-width: 768px) {
-                    .tempo-controls {
-                        flex-wrap: wrap;
-                    }
-
-                    .accent-toggles {
-                        flex-wrap: wrap;
-                    }
-
-                    .progression-row {
-                        flex-wrap: wrap;
-                    }
-                }
-            </style>
         `;
 
-        this.setupVisualElements();
-        this.attachEventListeners();
-        this.updateBeatIndicators();
-    }
-
-    setupVisualElements() {
-        this.visualElements = {
-            circle: document.getElementById('metronomeCircle'),
-            tempoDisplay: document.getElementById('tempoDisplay'),
-            playBtn: document.getElementById('metronomePlayBtn'),
-            beatIndicatorsContainer: document.getElementById('beatIndicators'),
-            accentTogglesContainer: document.getElementById('accentToggles')
-        };
+        this.updateSliderBackground();
     }
 
     attachEventListeners() {
-        // Play/Stop button
-        this.visualElements.playBtn.addEventListener('click', () => this.toggle());
+        // Play/Pause button
+        document.getElementById('playPauseBtn')?.addEventListener('click', () => {
+            this.togglePlayback();
+        });
 
-        // Tempo buttons
-        document.querySelectorAll('.tempo-btn').forEach(btn => {
+        // Stop button
+        document.getElementById('stopBtn')?.addEventListener('click', () => {
+            this.stop();
+        });
+
+        // BPM adjustment buttons
+        document.querySelectorAll('.bpm-adjust-btn[data-adjust]').forEach(btn => {
             btn.addEventListener('click', (e) => {
-                const change = parseInt(e.target.dataset.change);
-                this.setTempo(this.tempo + change);
+                const adjustment = parseInt(e.target.dataset.adjust);
+                this.setBpm(this.bpm + adjustment);
             });
         });
 
-        // Tempo slider
-        const tempoSlider = document.getElementById('tempoSlider');
-        tempoSlider.addEventListener('input', (e) => {
-            this.setTempo(parseInt(e.target.value));
+        // BPM slider
+        document.getElementById('bpmSlider')?.addEventListener('input', (e) => {
+            this.setBpm(parseInt(e.target.value));
         });
 
         // Time signature
-        document.getElementById('timeSignature').addEventListener('change', (e) => {
-            const [beats, noteValue] = e.target.value.split('/').map(n => parseInt(n));
-            this.setTimeSignature(beats, noteValue);
+        document.getElementById('timeSignature')?.addEventListener('change', (e) => {
+            this.setTimeSignature(parseInt(e.target.value));
         });
 
-        // Sound type
-        document.getElementById('soundType').addEventListener('change', (e) => {
-            this.soundType = e.target.value;
-        });
-
-        // Volume
-        const volumeSlider = document.getElementById('volumeSlider');
-        volumeSlider.addEventListener('input', (e) => {
-            this.volume = parseInt(e.target.value) / 100;
-            document.getElementById('volumeDisplay').textContent = `${e.target.value}%`;
-        });
-
-        // Pre-count
-        document.getElementById('preCountToggle').addEventListener('change', (e) => {
-            this.preCount = e.target.checked;
-        });
-
-        // Tempo progression
-        document.getElementById('progressionEnabled').addEventListener('change', (e) => {
-            this.tempoProgression.enabled = e.target.checked;
-            document.getElementById('progressionControls').style.display =
-                e.target.checked ? 'block' : 'none';
-            this.updateProgressionStatus();
-        });
-
-        document.getElementById('incrementValue').addEventListener('change', (e) => {
-            this.tempoProgression.incrementValue = parseFloat(e.target.value);
-            this.updateProgressionStatus();
-        });
-
-        document.getElementById('incrementType').addEventListener('change', (e) => {
-            this.tempoProgression.incrementType = e.target.value;
-            this.updateProgressionStatus();
-        });
-
-        document.getElementById('loopInterval').addEventListener('change', (e) => {
-            this.tempoProgression.loopInterval = parseInt(e.target.value);
-            this.updateProgressionStatus();
+        // Accent pattern buttons
+        document.querySelectorAll('.accent-beat-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const beat = parseInt(e.target.dataset.beat);
+                this.toggleAccent(beat);
+            });
         });
 
         // Tap tempo
-        this.setupTapTempo();
-    }
-
-    setupTapTempo() {
-        const tapBtn = document.getElementById('tapTempoBtn');
         let tapTimes = [];
-
-        tapBtn.addEventListener('click', () => {
+        document.getElementById('tapTempo')?.addEventListener('click', () => {
             const now = Date.now();
             tapTimes.push(now);
 
-            // Keep only recent taps (within 2 seconds)
-            tapTimes = tapTimes.filter(time => now - time < 2000);
+            // Keep only the last 8 taps
+            if (tapTimes.length > 8) {
+                tapTimes.shift();
+            }
 
-            if (tapTimes.length >= 4) {
-                // Calculate average interval
-                let totalInterval = 0;
+            // Calculate average interval
+            if (tapTimes.length >= 2) {
+                const intervals = [];
                 for (let i = 1; i < tapTimes.length; i++) {
-                    totalInterval += tapTimes[i] - tapTimes[i - 1];
+                    intervals.push(tapTimes[i] - tapTimes[i - 1]);
                 }
-                const avgInterval = totalInterval / (tapTimes.length - 1);
+                const avgInterval = intervals.reduce((a, b) => a + b) / intervals.length;
                 const bpm = Math.round(60000 / avgInterval);
+                this.setBpm(Math.max(30, Math.min(300, bpm)));
+            }
 
-                if (bpm >= 30 && bpm <= 300) {
-                    this.setTempo(bpm);
-                }
+            // Clear taps after 2 seconds of inactivity
+            clearTimeout(this.tapTimeout);
+            this.tapTimeout = setTimeout(() => {
+                tapTimes = [];
+            }, 2000);
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+            if (e.code === 'Space') {
+                e.preventDefault();
+                this.togglePlayback();
+            } else if (e.code === 'ArrowUp') {
+                e.preventDefault();
+                this.setBpm(this.bpm + 1);
+            } else if (e.code === 'ArrowDown') {
+                e.preventDefault();
+                this.setBpm(this.bpm - 1);
             }
         });
+
+        // Listen for audio service ready
+        document.addEventListener('click', () => {
+            setTimeout(() => {
+                if (this.audioService && this.audioService.isReady && this.audioService.isReady()) {
+                    this.audioReady = true;
+                    this.updateUI();
+                }
+            }, 100);
+        }, {once: true});
     }
 
-    updateBeatIndicators() {
-        const container = this.visualElements.beatIndicatorsContainer;
-        const accentContainer = this.visualElements.accentTogglesContainer;
-
-        container.innerHTML = '';
-        accentContainer.innerHTML = '';
-        this.beatIndicators = [];
-
-        // Create beat indicators and accent toggles
-        for (let i = 0; i < this.timeSignature.beats; i++) {
-            // Beat indicator
-            const indicator = document.createElement('div');
-            indicator.className = 'beat-indicator';
-            if (this.accentPattern[i]) {
-                indicator.classList.add('accent');
-            }
-            container.appendChild(indicator);
-            this.beatIndicators.push(indicator);
-
-            // Accent toggle
-            const toggle = document.createElement('button');
-            toggle.className = 'accent-toggle';
-            toggle.textContent = i + 1;
-            if (this.accentPattern[i]) {
-                toggle.classList.add('accented');
-            }
-            toggle.addEventListener('click', () => {
-                this.accentPattern[i] = !this.accentPattern[i];
-                this.updateBeatIndicators();
-            });
-            accentContainer.appendChild(toggle);
+    async togglePlayback() {
+        if (!this.audioReady) {
+            this.showAudioWarning();
+            return;
         }
-    }
 
-    setTempo(bpm) {
-        this.tempo = Math.max(30, Math.min(300, bpm));
-        document.getElementById('tempoSlider').value = this.tempo;
-        this.visualElements.tempoDisplay.textContent = this.tempo;
-        this.updateProgressionStatus();
-    }
-
-    setTimeSignature(beats, noteValue) {
-        this.timeSignature = {beats, noteValue};
-
-        // Reset accent pattern
-        this.accentPattern = new Array(beats).fill(false);
-        this.accentPattern[0] = true; // Default: accent first beat
-
-        this.updateBeatIndicators();
-    }
-
-    toggle() {
         if (this.isPlaying) {
-            this.stop();
+            this.pause();
         } else {
-            this.start();
+            await this.start();
         }
     }
 
-    start() {
-        if (this.audioContext.state === 'suspended') {
-            this.audioContext.resume();
+    async start() {
+        if (!this.audioReady) {
+            this.showAudioWarning();
+            return;
         }
 
         this.isPlaying = true;
-        // Start timer if sync is enabled
-        const timer = window.app?.currentPage?.components?.timer || window.app?.currentPage?.timer;
-        if (timer && timer.syncWithAudio && !timer.isRunning) {
-            console.log('Starting timer from metronome');
-            timer.start();
-        }
         this.currentBeat = 0;
-        this.nextNoteTime = this.audioContext.currentTime;
 
-        // Reset tempo progression
-        this.tempoProgression.currentLoopCount = 0;
+        // Calculate interval in milliseconds
+        const interval = 60000 / this.bpm;
 
-        // Handle pre-count
-        if (this.preCount) {
-            this.isInPreCount = true;
-            this.preCountBeats = 0;
+        // Start immediately with first beat
+        await this.playBeat();
+
+        // Set up interval for subsequent beats
+        this.interval = setInterval(async () => {
+            await this.playBeat();
+        }, interval);
+
+        this.updateUI();
+
+        // Notify timer if sync is enabled
+        if (window.currentTimer?.syncWithAudio) {
+            window.currentTimer.syncStart('metronome');
+        }
+    }
+
+    pause() {
+        this.isPlaying = false;
+
+        if (this.interval) {
+            clearInterval(this.interval);
+            this.interval = null;
         }
 
-        // Update UI
-        this.visualElements.playBtn.textContent = '⏹️';
-        this.visualElements.playBtn.classList.add('playing');
+        this.updateUI();
 
-        // Notify timer to start sync
-        if (this.timer) {
-            this.timer.syncStart('Metronome');
+        // Notify timer if sync is enabled
+        if (window.currentTimer?.syncWithAudio) {
+            window.currentTimer.syncStop('metronome');
         }
-
-        // Start scheduling
-        this.scheduler();
-        requestAnimationFrame(this.draw);
     }
 
     stop() {
-        this.isPlaying = false;
-        // Stop timer if sync is enabled
-        const timer = window.app?.currentPage?.components?.timer || window.app?.currentPage?.timer;
-        if (timer && timer.syncWithAudio && timer.isRunning) {
-            console.log('Stopping timer from metronome');
-            timer.pause();
-        }
-        this.isInPreCount = false;
+        this.pause();
+        this.currentBeat = 0;
+        this.updateBeatDisplay();
+    }
 
-        if (this.timerID) {
-            clearTimeout(this.timerID);
-            this.timerID = null;
+    async playBeat() {
+        if (!this.audioReady) return;
+
+        const isAccent = this.accentPattern[this.currentBeat];
+
+        // Pulse the BPM circle
+        const bpmCircle = document.getElementById('bpmCircle');
+        if (bpmCircle) {
+            bpmCircle.classList.add('pulse');
+            setTimeout(() => {
+                bpmCircle.classList.remove('pulse');
+            }, 100);
         }
+
+        try {
+            const sound = document.getElementById('soundSelect')?.value || 'click';
+            const frequency = this.getFrequencyForSound(sound, isAccent);
+            await this.audioService.playTone(frequency, 0.1);
+        } catch (error) {
+            console.warn('Audio playback failed:', error);
+        }
+
+        this.currentBeat = (this.currentBeat + 1) % this.beatsPerMeasure;
+        this.updateBeatDisplay();
+    }
+
+    getFrequencyForSound(sound, isAccent) {
+        const sounds = {
+            click: { normal: 800, accent: 1000 },
+            beep: { normal: 600, accent: 800 },
+            tick: { normal: 1200, accent: 1500 },
+            wood: { normal: 400, accent: 500 }
+        };
+
+        const selectedSound = sounds[sound] || sounds.click;
+        return isAccent ? selectedSound.accent : selectedSound.normal;
+    }
+
+    setBpm(newBpm) {
+        this.bpm = Math.max(30, Math.min(300, newBpm));
 
         // Update UI
-        this.visualElements.playBtn.textContent = '▶️';
-        this.visualElements.playBtn.classList.remove('playing');
+        document.getElementById('bpmValue').textContent = this.bpm;
+        document.getElementById('bpmSlider').value = this.bpm;
+        this.updateSliderBackground();
 
-        // Reset visual
-        this.visualElements.circle.classList.remove('pulse');
-        this.beatIndicators.forEach(indicator => indicator.classList.remove('active'));
-
-        // Notify timer to stop sync
-        if (this.timer) {
-            this.timer.syncStop('Metronome');
-        }
-    }
-
-    scheduler() {
-        while (this.nextNoteTime < this.audioContext.currentTime + this.scheduleAheadTime) {
-            this.scheduleNote(this.currentBeat, this.nextNoteTime);
-            this.nextNote();
-        }
-
+        // Restart if currently playing
         if (this.isPlaying) {
-            this.timerID = setTimeout(this.scheduler, this.lookahead);
+            this.pause();
+            setTimeout(() => this.start(), 50);
         }
     }
 
-    scheduleNote(beatNumber, time) {
-        // Create sound
-        const soundDef = this.soundDefinitions[this.soundType];
-        const isAccent = this.accentPattern[beatNumber % this.timeSignature.beats];
-
-        // Use oscillator for metronome sounds
-        const osc = this.audioContext.createOscillator();
-        const gainNode = this.audioContext.createGain();
-
-        osc.connect(gainNode);
-        gainNode.connect(this.audioContext.destination);
-
-        // Set frequency based on accent
-        osc.frequency.value = isAccent ? soundDef.high : soundDef.low;
-
-        // Set volume
-        const baseVolume = this.volume * (isAccent ? 1.0 : 0.7);
-        gainNode.gain.value = this.isInPreCount ? baseVolume * 0.5 : baseVolume;
-
-        // Envelope
-        gainNode.gain.setValueAtTime(baseVolume, time);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, time + soundDef.duration);
-
-        // Play
-        osc.start(time);
-        osc.stop(time + soundDef.duration);
-    }
-
-    nextNote() {
-        // Calculate next note time
-        const secondsPerBeat = 60.0 / this.tempo;
-        this.nextNoteTime += secondsPerBeat;
-
-// Advance beat number
-        this.currentBeat++;
-
-        if (this.currentBeat === this.timeSignature.beats) {
-            this.currentBeat = 0;
-
-            // Count measures for tempo progression
-            if (!this.isInPreCount && this.tempoProgression.enabled) {
-                this.onLoopComplete();
-            }
-
-            // Handle pre-count
-            if (this.isInPreCount) {
-                this.preCountBeats += this.timeSignature.beats;
-                if (this.preCountBeats >= this.preCountMeasures * this.timeSignature.beats) {
-                    this.isInPreCount = false;
-                }
-            }
-
-            // Handle tempo progression
-            if (!this.isInPreCount && this.tempoProgression.enabled) {
-                this.handleTempoProgression();
-            }
+    updateSliderBackground() {
+        const slider = document.getElementById('bpmSlider');
+        if (slider) {
+            const percentage = ((this.bpm - 30) / (300 - 30)) * 100;
+            slider.style.setProperty('--progress', percentage + '%');
         }
     }
 
-    handleTempoProgression() {
-        // This will be called by the audio player when a loop completes
+    setTimeSignature(beats) {
+        this.beatsPerMeasure = beats;
+        this.currentBeat = 0;
+
+        // Reset accent pattern
+        this.accentPattern = new Array(beats).fill(false);
+        this.accentPattern[0] = true; // Default accent on first beat
+
+        // Re-render beat lights and accent pattern
+        this.render();
+        this.attachEventListeners();
+        this.updateBeatDisplay();
     }
 
-    onLoopComplete() {
-        if (!this.tempoProgression.enabled || this.isInPreCount) return;
+    toggleAccent(beat) {
+        this.accentPattern[beat] = !this.accentPattern[beat];
 
-        this.tempoProgression.currentLoopCount++;
+        // Update UI
+        const btn = document.querySelector(`.accent-beat-btn[data-beat="${beat}"]`);
+        if (btn) {
+            btn.classList.toggle('accented', this.accentPattern[beat]);
+        }
 
-        if (this.tempoProgression.currentLoopCount % this.tempoProgression.loopInterval === 0) {
-            let newTempo = this.tempo;
+        // Update beat lights
+        const beatLight = document.querySelector(`.beat-light[data-beat="${beat}"]`);
+        if (beatLight) {
+            beatLight.classList.toggle('accent', this.accentPattern[beat]);
+        }
+    }
 
-            if (this.tempoProgression.incrementType === 'percentage') {
-                newTempo = this.tempo * (1 + this.tempoProgression.incrementValue / 100);
+    updateBeatDisplay() {
+        // Update beat counter
+        document.getElementById('currentBeat').textContent = this.currentBeat + 1;
+
+        // Update beat lights
+        document.querySelectorAll('.beat-light').forEach((light, index) => {
+            light.classList.toggle('active', index === this.currentBeat);
+        });
+    }
+
+    updateUI() {
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const audioStatus = document.getElementById('audioStatus');
+
+        if (playPauseBtn) {
+            if (this.isPlaying) {
+                playPauseBtn.innerHTML = '<i class="icon">⏸️</i> <span>Pause</span>';
+                playPauseBtn.style.background = 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)';
             } else {
-                newTempo = this.tempo + this.tempoProgression.incrementValue;
-            }
-
-            // Limit to max tempo
-            newTempo = Math.min(newTempo, this.tempoProgression.maxTempo);
-
-            if (newTempo !== this.tempo) {
-                this.setTempo(Math.round(newTempo));
-                this.updateProgressionStatus();
+                playPauseBtn.innerHTML = '<i class="icon">▶️</i> <span>Start</span>';
+                playPauseBtn.style.background = 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)';
             }
         }
 
-        this.updateProgressionStatus();
-    }
-
-    updateProgressionStatus() {
-        const status = document.getElementById('progressionStatus');
-        if (!status) return;
-
-        if (this.tempoProgression.enabled) {
-            const increment = this.tempoProgression.incrementType === 'percentage'
-                ? `${this.tempoProgression.incrementValue}%`
-                : `${this.tempoProgression.incrementValue} BPM`;
-
-            status.textContent = `Current: ${this.tempo} BPM | Loops: ${this.tempoProgression.currentLoopCount} | Next increase: +${increment} after ${this.tempoProgression.loopInterval - (this.tempoProgression.currentLoopCount % this.tempoProgression.loopInterval)} loop(s)`;
-        } else {
-            status.textContent = '';
+        if (audioStatus) {
+            if (this.audioReady) {
+                audioStatus.innerHTML = `
+                    <span class="status-indicator">🔊</span>
+                    <span class="status-text">Audio ready</span>
+                `;
+                audioStatus.classList.add('ready');
+            } else {
+                audioStatus.innerHTML = `
+                    <span class="status-indicator">🔇</span>
+                    <span class="status-text">Click anywhere to enable audio</span>
+                `;
+                audioStatus.classList.remove('ready');
+            }
         }
     }
 
-    draw() {
-        if (!this.isPlaying) return;
+    showAudioWarning() {
+        const warning = document.createElement('div');
+        warning.className = 'audio-warning';
+        warning.innerHTML = `
+            <div class="warning-content">
+                <span class="warning-icon">⚠️</span>
+                <span class="warning-text">Click anywhere first to enable audio</span>
+            </div>
+        `;
 
-        const currentTime = this.audioContext.currentTime;
-        const currentBeat = this.currentBeat;
+        this.container.appendChild(warning);
 
-        // Visual pulse on beat
-        let drawBeat = Math.floor((currentTime - this.nextNoteTime + (60.0 / this.tempo)) * this.tempo / 60.0);
-
-        if (drawBeat !== this.lastDrawnBeat) {
-            this.lastDrawnBeat = drawBeat;
-
-            // Pulse circle
-            this.visualElements.circle.classList.add('pulse');
-            setTimeout(() => {
-                this.visualElements.circle.classList.remove('pulse');
-            }, 100);
-
-            // Update beat indicators
-            this.beatIndicators.forEach((indicator, i) => {
-                indicator.classList.toggle('active', i === (currentBeat % this.timeSignature.beats));
-            });
-        }
-
-        requestAnimationFrame(this.draw);
+        setTimeout(() => {
+            warning.remove();
+        }, 3000);
     }
 
-    // Integration with audio player loops
-    syncWithAudioLoop(audioPlayer) {
-        this.audioPlayer = audioPlayer;
-
-        // Listen for loop completions
-        const originalOnLoopCountUpdate = audioPlayer.onLoopCountUpdate;
-        audioPlayer.onLoopCountUpdate = (count) => {
-            if (originalOnLoopCountUpdate) {
-                originalOnLoopCountUpdate(count);
-            }
-
-            if (count > 0) {
-                this.onLoopComplete();
-            }
-        };
+    setTimer(timer) {
+        this.timer = timer;
+        console.log('Timer connected to metronome');
     }
 
     destroy() {
-        this.stop();
-        if (this.audioContext) {
-            this.audioContext.close();
+        if (this.interval) {
+            clearInterval(this.interval);
         }
+        this.isPlaying = false;
     }
 }
