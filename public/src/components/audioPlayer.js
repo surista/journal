@@ -752,10 +752,110 @@ export class AudioPlayer {
             }
         }));
 
-        // Hide waveform for YouTube mode
-        const waveformCanvas = document.getElementById('waveformCanvas');
-        if (waveformCanvas) {
-            waveformCanvas.style.display = 'none';
+        // Replace waveform with YouTube progress bar that supports loop markers
+        const waveformContainer = document.querySelector('.waveform-container');
+        if (waveformContainer) {
+            waveformContainer.innerHTML = `
+        <div style="
+            width: 100%; 
+            height: 100%; 
+            position: relative;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            overflow: hidden;
+        ">
+            <!-- YouTube label -->
+            <div style="
+                position: absolute;
+                top: 10px;
+                left: 10px;
+                z-index: 10;
+                background: rgba(0, 0, 0, 0.7);
+                padding: 4px 12px;
+                border-radius: 4px;
+                font-size: 12px;
+                color: var(--text-secondary);
+            ">
+                🎬 YouTube Mode
+            </div>
+            
+            <!-- Progress bar background -->
+            <div id="youtubeProgressBar" style="
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 60%;
+                background: rgba(255, 255, 255, 0.1);
+                cursor: pointer;
+            ">
+                <!-- Progress fill -->
+                <div id="youtubeProgressFill" style="
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    bottom: 0;
+                    width: 0%;
+                    background: var(--primary);
+                    opacity: 0.5;
+                    transition: none;
+                "></div>
+                
+                <!-- Current position indicator -->
+                <div id="youtubePositionIndicator" style="
+                    position: absolute;
+                    top: 0;
+                    bottom: 0;
+                    width: 2px;
+                    background: var(--primary);
+                    left: 0%;
+                    box-shadow: 0 0 4px rgba(99, 102, 241, 0.5);
+                "></div>
+            </div>
+            
+            <!-- Loop region overlay (reuse existing ID) -->
+            <div class="loop-region" id="loopRegion" style="
+                position: absolute;
+                bottom: 0;
+                height: 60%;
+                background: rgba(99, 102, 241, 0.2);
+                pointer-events: none;
+                display: none;
+                border-left: 2px solid var(--success);
+                border-right: 2px solid var(--danger);
+            "></div>
+            
+            <!-- Time display -->
+            <div style="
+                position: absolute;
+                bottom: 10px;
+                right: 10px;
+                background: rgba(0, 0, 0, 0.7);
+                padding: 4px 12px;
+                border-radius: 4px;
+                font-size: 13px;
+                color: var(--text-primary);
+                font-family: monospace;
+            ">
+                <span id="youtubeCurrentTime">0:00</span> / <span id="youtubeDuration">0:00</span>
+            </div>
+        </div>
+    `;
+
+            // Add click handler for seeking
+            const progressBar = document.getElementById('youtubeProgressBar');
+            if (progressBar) {
+                progressBar.addEventListener('click', (e) => {
+                    const rect = progressBar.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const percentage = x / rect.width;
+                    const seekTime = percentage * this.duration;
+
+                    if (this.youtubePlayer && this.youtubePlayer.seekTo) {
+                        this.youtubePlayer.seekTo(seekTime, true);
+                    }
+                });
+            }
         }
 
         // Show controls
@@ -846,6 +946,36 @@ export class AudioPlayer {
                     currentTimeEl.textContent = this.formatTime(this.currentTime);
                 }
 
+                // Update YouTube progress bar
+                const progressFill = document.getElementById('youtubeProgressFill');
+                const positionIndicator = document.getElementById('youtubePositionIndicator');
+                const youtubeCurrentTimeEl = document.getElementById('youtubeCurrentTime');
+                const youtubeDurationEl = document.getElementById('youtubeDuration');
+
+                if (this.duration > 0) {
+                    const percentage = (this.currentTime / this.duration) * 100;
+
+                    if (progressFill) {
+                        progressFill.style.width = percentage + '%';
+                    }
+                    if (positionIndicator) {
+                        positionIndicator.style.left = percentage + '%';
+                    }
+                }
+
+                if (youtubeCurrentTimeEl) {
+                    youtubeCurrentTimeEl.textContent = this.formatTime(this.currentTime);
+                }
+                if (youtubeDurationEl && this.duration) {
+                    youtubeDurationEl.textContent = this.formatTime(this.duration);
+                }
+
+                // Update loop region position (it will use the existing updateLoopRegion method)
+                this.updateLoopRegion();
+
+                // Update YouTube loop markers
+                this.updateYouTubeLoopMarkers();
+
                 // Handle looping
                 if (this.isLooping && this.loopEnd !== null && this.currentTime >= this.loopEnd) {
                     this.youtubePlayer.seekTo(this.loopStart || 0);
@@ -872,7 +1002,7 @@ export class AudioPlayer {
                 // Apply playback rate to get scaled time + starting offset
                 this.currentTime = (realElapsed * this.playbackRate) + (this.startOffset || 0);
 
-// Handle looping
+                // Handle looping
                 if (this.isLooping && this.loopEnd !== null && this.currentTime >= this.loopEnd) {
                     this.startOffset = this.loopStart || 0;
                     this.grainPlayer.stop();
@@ -1091,6 +1221,23 @@ export class AudioPlayer {
             currentTimeEl.textContent = this.formatTime(this.currentTime);
         }
 
+        // Reset YouTube progress display
+        if (this.isYouTubeMode) {
+            const progressFill = document.getElementById('youtubeProgressFill');
+            const positionIndicator = document.getElementById('youtubePositionIndicator');
+            const youtubeCurrentTimeEl = document.getElementById('youtubeCurrentTime');
+
+            if (progressFill) {
+                progressFill.style.width = '0%';
+            }
+            if (positionIndicator) {
+                positionIndicator.style.left = '0%';
+            }
+            if (youtubeCurrentTimeEl) {
+                youtubeCurrentTimeEl.textContent = this.formatTime(0);
+            }
+        }
+
         this.updatePlayPauseButton();
 
         // Stop timer if sync is enabled
@@ -1118,47 +1265,92 @@ export class AudioPlayer {
 
     // Loop control methods
     setLoopStart() {
+        let newStartTime;
+
         if (this.isYouTubeMode && this.youtubePlayer) {
-            this.loopStart = this.youtubePlayer.getCurrentTime();
+            newStartTime = this.youtubePlayer.getCurrentTime();
         } else if (this.grainPlayer) {
-            this.loopStart = this.currentTime;
+            newStartTime = this.currentTime;
         } else {
             return;
         }
+
+        // Check if new start point is after existing end point
+        if (this.loopEnd !== null && newStartTime > this.loopEnd) {
+            // Clear the loop and set this as new start point
+            this.loopEnd = null;
+            const loopEndEl = document.getElementById('loopEnd');
+            if (loopEndEl) loopEndEl.textContent = '--:--';
+
+            this.showNotification('Loop cleared - new start point set', 'info');
+        }
+
+        this.loopStart = newStartTime;
 
         const loopStartEl = document.getElementById('loopStart');
         if (loopStartEl) {
             loopStartEl.textContent = this.formatTime(this.loopStart);
         }
+
         this.updateLoopRegion();
 
         if (this.waveformVisualizer && !this.isYouTubeMode) {
             this.waveformVisualizer.updateLoopMarkers(this.loopStart, this.loopEnd);
+        }
+
+        // Show loop start marker immediately for YouTube mode
+        if (this.isYouTubeMode) {
+            this.updateYouTubeLoopMarkers();
         }
 
         this.showNotification('Loop start set', 'success');
     }
 
     setLoopEnd() {
+        let newEndTime;
+
         if (this.isYouTubeMode && this.youtubePlayer) {
-            this.loopEnd = this.youtubePlayer.getCurrentTime();
+            newEndTime = this.youtubePlayer.getCurrentTime();
         } else if (this.grainPlayer) {
-            this.loopEnd = this.currentTime;
+            newEndTime = this.currentTime;
         } else {
             return;
         }
 
-        const loopEndEl = document.getElementById('loopEnd');
-        if (loopEndEl) {
-            loopEndEl.textContent = this.formatTime(this.loopEnd);
+        // Check if new end point is before existing start point
+        if (this.loopStart !== null && newEndTime < this.loopStart) {
+            // Clear the loop and set this as new start point
+            this.loopStart = newEndTime;
+            this.loopEnd = null;
+
+            const loopStartEl = document.getElementById('loopStart');
+            const loopEndEl = document.getElementById('loopEnd');
+            if (loopStartEl) loopStartEl.textContent = this.formatTime(this.loopStart);
+            if (loopEndEl) loopEndEl.textContent = '--:--';
+
+            this.showNotification('Loop cleared - point set as new start', 'info');
+        } else {
+            // Normal case - set as end point
+            this.loopEnd = newEndTime;
+
+            const loopEndEl = document.getElementById('loopEnd');
+            if (loopEndEl) {
+                loopEndEl.textContent = this.formatTime(this.loopEnd);
+            }
+
+            this.showNotification('Loop end set', 'success');
         }
+
         this.updateLoopRegion();
 
         if (this.waveformVisualizer && !this.isYouTubeMode) {
             this.waveformVisualizer.updateLoopMarkers(this.loopStart, this.loopEnd);
         }
 
-        this.showNotification('Loop end set', 'success');
+        // Show loop markers immediately for YouTube mode
+        if (this.isYouTubeMode) {
+            this.updateYouTubeLoopMarkers();
+        }
     }
 
     clearLoop() {
@@ -1181,6 +1373,11 @@ export class AudioPlayer {
             this.waveformVisualizer.updateLoopMarkers(null, null);
         }
 
+        // Clear YouTube loop markers
+        if (this.isYouTubeMode) {
+            this.updateYouTubeLoopMarkers();
+        }
+
         // Reset tempo progression
         this.loopCount = 0;
         this.tempoProgression.currentLoopCount = 0;
@@ -1193,12 +1390,18 @@ export class AudioPlayer {
         const loopRegion = document.getElementById('loopRegion');
         if (!loopRegion) return;
 
-        let duration = this.duration;
-        if (this.isYouTubeMode && this.youtubePlayer && this.youtubePlayer.getDuration) {
-            duration = this.youtubePlayer.getDuration();
+        // For YouTube mode, we handle markers separately
+        if (this.isYouTubeMode) {
+            // Hide the standard loop region for YouTube
+            loopRegion.style.display = 'none';
+            return;
         }
 
-        if (!duration || duration === 0) return;
+        let duration = this.duration;
+        if (!duration || duration === 0) {
+            loopRegion.style.display = 'none';
+            return;
+        }
 
         if (this.loopStart !== null && this.loopEnd !== null) {
             const startPercent = (this.loopStart / duration) * 100;
@@ -1209,6 +1412,85 @@ export class AudioPlayer {
             loopRegion.style.display = 'block';
         } else {
             loopRegion.style.display = 'none';
+        }
+    }
+
+    updateYouTubeLoopMarkers() {
+        const container = document.querySelector('.waveform-container');
+        if (!container || !this.isYouTubeMode) return;
+
+        // Remove ALL loop-related elements first
+        const existingMarkers = container.querySelectorAll('.youtube-loop-marker, .loop-start-marker, .loop-end-marker, .youtube-loop-region');
+        existingMarkers.forEach(marker => marker.remove());
+
+        // Also ensure the standard loop region is hidden
+        const standardLoopRegion = document.getElementById('loopRegion');
+        if (standardLoopRegion) {
+            standardLoopRegion.style.display = 'none';
+        }
+
+        // Get duration
+        let duration = this.duration;
+        if (this.isYouTubeMode && this.youtubePlayer && this.youtubePlayer.getDuration) {
+            duration = this.youtubePlayer.getDuration();
+        }
+
+        if (!duration || duration === 0) return;
+
+        // Add shaded region if both markers are set
+        if (this.loopStart !== null && this.loopEnd !== null) {
+            const startPercent = Math.max(0, Math.min(100, (this.loopStart / duration) * 100));
+            const endPercent = Math.max(0, Math.min(100, (this.loopEnd / duration) * 100));
+
+            const loopRegion = document.createElement('div');
+            loopRegion.className = 'youtube-loop-region';
+            loopRegion.style.cssText = `
+            position: absolute;
+            bottom: 0;
+            height: 60%;
+            background: rgba(99, 102, 241, 0.2);
+            left: ${startPercent}%;
+            width: ${endPercent - startPercent}%;
+            pointer-events: none;
+            z-index: 5;
+        `;
+            container.appendChild(loopRegion);
+        }
+
+        // Add start marker if set
+        if (this.loopStart !== null) {
+            const startPercent = Math.max(0, Math.min(100, (this.loopStart / duration) * 100));
+            const startMarker = document.createElement('div');
+            startMarker.className = 'youtube-loop-marker youtube-loop-start';
+            startMarker.style.cssText = `
+            position: absolute;
+            bottom: 0;
+            height: 60%;
+            width: 3px;
+            background: #22c55e;
+            left: ${startPercent}%;
+            z-index: 10;
+            box-shadow: 0 0 4px rgba(34, 197, 94, 0.5);
+        `;
+            container.appendChild(startMarker);
+        }
+
+        // Add end marker if set
+        if (this.loopEnd !== null) {
+            const endPercent = Math.max(0, Math.min(100, (this.loopEnd / duration) * 100));
+            const endMarker = document.createElement('div');
+            endMarker.className = 'youtube-loop-marker youtube-loop-end';
+            endMarker.style.cssText = `
+            position: absolute;
+            bottom: 0;
+            height: 60%;
+            width: 3px;
+            background: #ef4444;
+            left: ${endPercent}%;
+            z-index: 10;
+            box-shadow: 0 0 4px rgba(239, 68, 68, 0.5);
+        `;
+            container.appendChild(endMarker);
         }
     }
 

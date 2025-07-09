@@ -1,0 +1,200 @@
+/* Footer Styles - Compact with Hover Dropdowns */
+.app-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(26, 26, 46, 0.95);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid var(--border);
+    z-index: 1000;
+    height: 48px;
+}
+
+.footer-container {
+    max-width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+
+.footer-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+
+.footer-copyright {
+    font-weight: 500;
+}
+
+.footer-version {
+    opacity: 0.7;
+}
+
+/* Footer Navigation */
+.footer-nav {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    height: 100%;
+}
+
+/* Dropdown Styles */
+.footer-dropdown {
+    position: relative;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.footer-dropdown-trigger {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0 10px;
+    height: 100%;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.footer-dropdown:hover .footer-dropdown-trigger {
+    color: var(--primary);
+}
+
+.footer-dropdown-content {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 0;
+    min-width: 180px;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    margin-bottom: 8px;
+}
+
+.footer-dropdown:hover .footer-dropdown-content {
+    opacity: 1;
+    visibility: visible;
+}
+
+.footer-dropdown-content a {
+    display: block;
+    padding: 8px 16px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 13px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.footer-dropdown-content a:hover {
+    background: var(--bg-hover);
+    color: var(--primary);
+}
+
+.footer-dropdown-content a i {
+    margin-right: 6px;
+}
+
+/* Footer Right */
+.footer-right {
+    display: flex;
+    align-items: center;
+}
+
+.footer-logout-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    padding: 6px 16px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.footer-logout-btn:hover {
+    background: var(--danger);
+    color: white;
+    border-color: var(--danger);
+}
+
+/* Add space at bottom of main content for fixed footer */
+.main-content {
+    padding-bottom: 60px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .footer-container {
+        padding: 0 10px;
+    }
+
+    .footer-left {
+        font-size: 11px;
+        gap: 10px;
+    }
+
+    .footer-nav {
+        gap: 20px;
+    }
+
+    .footer-dropdown-trigger {
+        font-size: 10px;
+        padding: 0 6px;
+    }
+
+    .footer-dropdown-content {
+        left: 0;
+        transform: none;
+        min-width: 150px;
+    }
+
+    .footer-version {
+        display: none;
+    }
+}
+
+/* Keyboard shortcuts modal styles (keep existing) */
+.shortcuts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.shortcut-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    background: var(--bg-input);
+    border-radius: var(--radius-sm);
+}
+
+.shortcut-item kbd {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.875rem;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+}

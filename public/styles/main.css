@@ -28,6 +28,8 @@
 @import url('./components/waveform.css');
 @import url('./components/notifications.css');
 @import url('./components/loading.css');
+@import url('./components/footer.css');
+
 
 /* Page-specific styles */
 @import url('./pages/auth.css');

@@ -248,3 +248,23 @@
         width: 100vw;
     }
 }
+
+/* Page Modals */
+.page-modal .modal-content {
+    max-width: 1000px;
+    width: 95%;
+    max-height: 90vh;
+}
+
+.page-modal-body {
+    max-height: calc(90vh - 100px);
+    overflow-y: auto;
+    padding: 0;
+}
+
+.page-modal-body > div {
+    padding: 2rem;
+}
+
+/* Import info pages styles */
+@import url('../pages/info-pages.css');

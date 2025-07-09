@@ -154,387 +154,387 @@ export class DashboardPage {
         const themeIcon = currentTheme === 'dark' ? '🌙' : '☀️';
 
         app.innerHTML = `
-           <div class="modern-dashboard">
-               <!-- Sidebar Navigation -->
-               <nav class="sidebar">
-                   <div class="sidebar-header">
-                       <h2>🎸 Guitar Journal</h2>
-                   </div>
-                   
-                   <ul class="nav-menu">
-                       <li class="nav-item active" data-tab="practice">
-                           <i class="icon">📝</i>
-                           <span>Practice</span>
-                       </li>
-                       <li class="nav-item" data-tab="audio">
-                           <i class="icon">🎵</i>
-                           <span>Audio Tool</span>
-                       </li>
-                       <li class="nav-item" data-tab="metronome">
-                           <i class="icon">⏱️</i>
-                           <span>Metronome</span>
-                       </li>
-                       <li class="nav-item" data-tab="goals">
-                           <i class="icon">🎯</i>
-                           <span>Goals</span>
-                       </li>
-                       <li class="nav-item" data-tab="stats">
-                           <i class="icon">📊</i>
-                           <span>Statistics</span>
-                       </li>
-                       <li class="nav-item" data-tab="history">
-                           <i class="icon">📅</i>
-                           <span>History</span>
-                       </li>
-                       <li class="nav-item" data-tab="calendar">
-                           <i class="icon">📅</i>
-                           <span>Calendar</span>
-                       </li>
-                       <li class="nav-item" data-tab="settings">
-                           <i class="icon">⚙️</i>
-                           <span>Settings</span>
-                       </li>
-                   </ul>
+        <div class="modern-dashboard">
+            <!-- Sidebar Navigation -->
+            <nav class="sidebar">
+                <div class="sidebar-header">
+                    <h2>🎸 Guitar Journal</h2>
+                </div>
+                
+                <ul class="nav-menu">
+                    <li class="nav-item active" data-tab="practice">
+                        <i class="icon">📝</i>
+                        <span>Practice</span>
+                    </li>
+                    <li class="nav-item" data-tab="audio">
+                        <i class="icon">🎵</i>
+                        <span>Audio Tool</span>
+                    </li>
+                    <li class="nav-item" data-tab="metronome">
+                        <i class="icon">⏱️</i>
+                        <span>Metronome</span>
+                    </li>
+                    <li class="nav-item" data-tab="goals">
+                        <i class="icon">🎯</i>
+                        <span>Goals</span>
+                    </li>
+                    <li class="nav-item" data-tab="stats">
+                        <i class="icon">📊</i>
+                        <span>Statistics</span>
+                    </li>
+                    <li class="nav-item" data-tab="history">
+                        <i class="icon">📅</i>
+                        <span>History</span>
+                    </li>
+                    <li class="nav-item" data-tab="calendar">
+                        <i class="icon">📅</i>
+                        <span>Calendar</span>
+                    </li>
+                    <li class="nav-item" data-tab="settings">
+                        <i class="icon">⚙️</i>
+                        <span>Settings</span>
+                    </li>
+                </ul>
 
-                   <div class="sidebar-footer">
-                       <button class="btn btn-secondary logout-btn" id="logoutBtn">
-                           <i class="icon">🚪</i> Logout
-                       </button>
-                   </div>
-               </nav>
+                <div class="sidebar-footer">
+                    <button class="btn btn-secondary logout-btn" id="logoutBtn">
+                        <i class="icon">🚪</i> Logout
+                    </button>
+                </div>
+            </nav>
 
-               <!-- Main Content Area -->
-               <main class="main-content">
-                   <!-- Header -->
-<header class="header">
-    <button class="menu-toggle" id="menuToggle">
-        <i class="icon">☰</i>
-    </button>
-    <h1 id="pageTitle">Practice Session</h1>
-    <div class="header-actions">
-        <button class="btn btn-icon theme-toggle" id="themeToggle" title="Toggle theme">
-            <i class="icon">${themeIcon}</i>
+            <!-- Main Content Area -->
+            <main class="main-content">
+                <!-- Header -->
+                <header class="header">
+                    <button class="menu-toggle" id="menuToggle">
+                        <i class="icon">☰</i>
+                    </button>
+                    <h1 id="pageTitle">Practice Session</h1>
+        <div class="header-actions">
+            <button class="btn btn-icon theme-toggle" id="themeToggle" title="Toggle theme">
+        <i class="icon">${themeIcon}</i>
+            </button>
+        </div>
+                </header>
+
+                <!-- Tab Content -->
+                <div class="tab-content">
+                    <!-- Practice Tab -->
+                    <div class="tab-pane active" id="practiceTab" data-tab="practice">
+                        <div class="practice-layout">
+                            <div class="practice-main">
+                                <!-- Timer (Always visible, non-collapsible) -->
+                                <div id="timerContainer" class="timer-section"></div>
+
+                                <!-- Log Practice Section -->
+                                <div class="log-practice-section collapsed">
+                                    <div class="log-practice-header">
+                                        <div class="log-practice-title">
+                                            <i class="icon">📝</i>
+                                            <h3>Log Practice Session</h3>
+                                        </div>
+                                        <i class="icon collapse-icon">▶</i>
+                                    </div>
+                                    <div class="log-practice-content">
+                                        <div class="log-practice-form-wrapper">
+                                            <div id="practiceFormContainer"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Recent Sessions -->
+                                <div class="dashboard-widget">
+                                    <div class="widget-header">
+                                        <h3 class="widget-title">Recent Sessions</h3>
+                                        <button class="widget-action" id="viewAllSessions">View All</button>
+                                    </div>
+                                    <div id="recentSessionsList" class="recent-sessions-widget"></div>
+                                </div>
+                            </div>
+
+                            <aside class="practice-sidebar">
+                                <!-- Practice Tips -->
+                                <div class="practice-tips" id="practiceTips">
+                                    <div class="practice-tip">
+                                        <span class="tip-icon">💡</span>
+                                        <div class="tip-text">
+                                            <div class="tip-title">Today's Tip</div>
+                                            <div class="tip-description" id="dailyTip">
+                                                Focus on playing slowly and accurately before increasing speed.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Quick Stats -->
+                                <div class="dashboard-widget">
+                                    <h3 class="widget-title">Quick Stats</h3>
+                                    <div id="quickStats"></div>
+                                </div>
+
+                                <!-- Streak Calendar -->
+                                <div class="dashboard-widget">
+                                    <h3 class="widget-title">Practice Streak</h3>
+                                    <div id="streakCalendar"></div>
+                                </div>
+                            </aside>
+                        </div>
+                    </div>
+
+                    <!-- Audio Practice Tool Tab -->
+                    <div class="tab-pane" id="audioTab" data-tab="audio">
+                        <div class="audio-layout">
+                            <!-- Timer (Always visible) -->
+                            <div id="timerContainerAudio" class="timer-section"></div>
+                            
+                            <!-- Log Practice Section -->
+                            <div class="log-practice-section collapsed">
+                                <div class="log-practice-header">
+                                    <div class="log-practice-title">
+                                        <i class="icon">📝</i>
+                                        <h3>Log Practice Session</h3>
+                                    </div>
+                                    <i class="icon collapse-icon">▶</i>
+                                </div>
+                                <div class="log-practice-content">
+                                    <div class="log-practice-form-wrapper">
+                                        <div id="practiceFormContainerAudio"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Audio Player -->
+                            <div id="audioPlayerContainer" class="audio-player-wrapper"></div>
+                        </div>
+                    </div>
+
+                    <!-- Metronome Tab -->
+                    <div class="tab-pane" id="metronomeTab" data-tab="metronome">
+                        <div class="metronome-layout">
+                            <!-- Timer (Always visible) -->
+                            <div id="timerContainerMetronome" class="timer-section"></div>
+                            
+                            <!-- Log Practice Section -->
+                            <div class="log-practice-section collapsed">
+                                <div class="log-practice-header">
+                                    <div class="log-practice-title">
+                                        <i class="icon">📝</i>
+                                        <h3>Log Practice Session</h3>
+                                    </div>
+                                    <i class="icon collapse-icon">▶</i>
+                                </div>
+                                <div class="log-practice-content">
+                                    <div class="log-practice-form-wrapper">
+                                        <div id="practiceFormContainerMetronome"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Metronome -->
+                            <div id="metronomeContainer" class="metronome-wrapper"></div>
+                        </div>
+                    </div>
+
+                    <!-- Goals Tab -->
+                    <div class="tab-pane" id="goalsTab" data-tab="goals">
+                        <div class="goals-layout">
+                            <div class="goals-main">
+                                <div id="goalsListContainer"></div>
+                            </div>
+                            <div class="goals-sidebar">
+                                <div id="achievementsContainer"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stats Tab -->
+                    <div class="tab-pane" id="statsTab" data-tab="stats">
+                        <div class="stats-layout">
+                            <div id="statsContainer"></div>
+                        </div>
+                    </div>
+
+                    <!-- History Tab -->
+                    <div class="tab-pane" id="historyTab" data-tab="history">
+                        <div class="history-layout">
+                            <div class="history-header">
+                                <h2>Practice History</h2>
+                                <div class="history-filters">
+                                    <select class="filter-select" id="historyFilter">
+                                        <option value="all">All Sessions</option>
+                                        <option value="week">This Week</option>
+                                        <option value="month">This Month</option>
+                                        <option value="year">This Year</option>
+                                    </select>
+                                    <button class="btn btn-secondary" id="exportHistoryBtn">
+                                        Export History
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="historyList" class="history-list"></div>
+                        </div>
+                    </div>
+
+                    <!-- Calendar Tab -->
+                    <div class="tab-pane" id="calendarTab" data-tab="calendar">
+                        <div class="calendar-layout">
+                            <div id="calendarContainer"></div>
+                        </div>
+                    </div>
+
+                    <!-- Settings Tab -->
+                    <div class="tab-pane" id="settingsTab" data-tab="settings">
+                        <div class="settings-layout">
+                            <div class="settings-section">
+                                <h3>Account Settings</h3>
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    <input type="email" id="settingsEmail" class="form-control" disabled>
+                                </div>
+                                <button class="btn btn-primary" id="changePasswordBtn">
+                                    Change Password
+                                </button>
+                            </div>
+
+                            <div class="settings-section">
+                                <h3>Data Management</h3>
+                                <div id="storageIndicator" class="storage-indicator"></div>
+                                <div class="backup-status" id="backupStatus"></div>
+                                
+                                <!-- Backup Settings -->
+                                <div class="backup-settings" style="background: var(--bg-input); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                                    <h4 style="margin-top: 0;">Backup Settings</h4>
+                                    
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="autoBackupEnabled" checked>
+                                        <span>Enable automatic backups</span>
+                                    </label>
+                                    
+                                    <!-- Add this after backup settings in the settings tab -->
+                                    <div class="settings-section">
+                                        <h3>☁️ Cloud Sync</h3>
+                                        <div class="cloud-status" id="cloudStatus">
+                                            <div class="sync-indicator">
+                                                <span class="sync-icon" id="syncIcon">🔄</span>
+                                                <span class="sync-text" id="syncText">Checking sync status...</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="sync-settings">
+                                            <label class="checkbox-label">
+                                                <input type="checkbox" id="enableCloudSync" checked>
+                                                <span>Enable automatic cloud sync</span>
+                                            </label>
+                                            
+                                            <div class="form-group" style="margin-top: 10px;">
+                                                <label>Conflict resolution:</label>
+                                                <select id="conflictResolution" class="form-control">
+                                                    <option value="newest">Keep newest version</option>
+                                                    <option value="local">Always keep local</option>
+                                                    <option value="cloud">Always keep cloud</option>
+                                                </select>
+                                            </div>
+                                            
+                                            <div class="sync-actions" style="margin-top: 15px;">
+                                                <button class="btn btn-primary" id="syncNowBtn">
+                                                    <i class="icon">🔄</i> Sync Now
+                                                </button>
+                                                <button class="btn btn-secondary" id="downloadFromCloudBtn">
+                                                    <i class="icon">⬇️</i> Download from Cloud
+                                                </button>
+                                                <button class="btn btn-secondary" id="uploadToCloudBtn">
+                                                    <i class="icon">⬆️</i> Upload to Cloud
+                                                </button>
+                                            </div>
+                                            
+                                            <div class="sync-info" style="margin-top: 15px;">
+                                                <p><strong>Last sync:</strong> <span id="lastSyncTime">Never</span></p>
+                                                <p><strong>Sync status:</strong> <span id="syncStatus">Unknown</span></p>
+                                                <p style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 10px;">
+                                                    Your data automatically syncs every 5 minutes when you're signed in.
+                                                    All devices using the same account will stay in sync.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style="margin-top: 10px;">
+                                        <label>Backup frequency:</label>
+                                        <select id="backupFrequency" class="form-control">
+                                            <option value="onChange">After every change (recommended)</option>
+                                            <option value="daily">Once per day</option>
+                                            <option value="weekly">Once per week</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="backupNotifications" checked>
+                                        <span>Show backup notifications</span>
+                                    </label>
+                                    
+                                    <div class="backup-info" style="margin-top: 10px; padding: 10px; background: var(--bg-card); border-radius: 6px; font-size: 0.875rem; color: var(--text-secondary);">
+                                        <strong>⚠️ Important:</strong> Browser storage can be lost if you clear cache or reset your browser. 
+                                        <strong style="color: var(--primary);">Always download backups regularly</strong> to protect your data permanently. 
+                                        Downloaded backup files can be stored on your computer or cloud storage and restored anytime.
+                                    </div>
+                                </div>
+                                
+                                <div class="settings-actions">
+                                    <button class="btn btn-secondary" id="exportDataBtn">
+                                        <i class="icon">📥</i> Export All Data
+                                    </button>
+                                    <button class="btn btn-secondary" id="importDataBtn">
+                                        <i class="icon">📤</i> Import Data
+                                    </button>
+                                    <button class="btn btn-primary" id="downloadBackupBtn">
+                                        <i class="icon">💾</i> Download Backup Now
+                                    </button>
+                                    <button class="btn btn-secondary" id="restoreBackupBtn">
+                                        <i class="icon">🔄</i> Restore from File
+                                    </button>
+                                    <button class="btn btn-danger" id="clearDataBtn">
+                                        <i class="icon">🗑️</i> Clear All Data
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="settings-section">
+                                <h3>Preferences</h3>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="notificationsEnabled">
+                                    <span>Enable practice reminders</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="darkModeEnabled">
+                                    <span>Dark mode</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="soundEnabled" checked>
+                                    <span>Enable sound effects</span>
+                                </label>
+                            </div>
+
+                            <div class="settings-section">
+                                <h3>About</h3>
+                                <div class="about-info">
+                                    <p>Guitar Practice Journal v${window.APP_VERSION || '7.6.2'}</p>
+                                    <p class="text-muted">Created with ❤️ for musicians</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Footer -->
+            <footer id="appFooter"></footer>
+        </div>
+
+        <!-- Mobile FAB -->
+        <button class="fab" id="fabBtn" title="Quick add practice session">
+            <i class="icon">➕</i>
         </button>
-        <button class="btn btn-danger" id="headerLogoutBtn" title="Logout" style="margin-left: 10px; padding: 6px 12px; font-size: 14px;">
-            <i class="icon">🚪</i> Logout
-        </button>
-    </div>
-</header>
-
-                   <!-- Tab Content -->
-                   <div class="tab-content">
-                       <!-- Practice Tab -->
-                       <div class="tab-pane active" id="practiceTab" data-tab="practice">
-                           <div class="practice-layout">
-                               <div class="practice-main">
-                                   <!-- Timer (Always visible, non-collapsible) -->
-                                   <div id="timerContainer" class="timer-section"></div>
-
-                                   <!-- Log Practice Section -->
-                                   <div class="log-practice-section collapsed">
-                                       <div class="log-practice-header">
-                                           <div class="log-practice-title">
-                                               <i class="icon">📝</i>
-                                               <h3>Log Practice Session</h3>
-                                           </div>
-                                           <i class="icon collapse-icon">▶</i>
-                                       </div>
-                                       <div class="log-practice-content">
-                                           <div class="log-practice-form-wrapper">
-                                               <div id="practiceFormContainer"></div>
-                                           </div>
-                                       </div>
-                                   </div>
-
-                                   <!-- Recent Sessions -->
-                                   <div class="dashboard-widget">
-                                       <div class="widget-header">
-                                           <h3 class="widget-title">Recent Sessions</h3>
-                                           <button class="widget-action" id="viewAllSessions">View All</button>
-                                       </div>
-                                       <div id="recentSessionsList" class="recent-sessions-widget"></div>
-                                   </div>
-                               </div>
-
-                               <aside class="practice-sidebar">
-                                   <!-- Practice Tips -->
-                                   <div class="practice-tips" id="practiceTips">
-                                       <div class="practice-tip">
-                                           <span class="tip-icon">💡</span>
-                                           <div class="tip-text">
-                                               <div class="tip-title">Today's Tip</div>
-                                               <div class="tip-description" id="dailyTip">
-                                                   Focus on playing slowly and accurately before increasing speed.
-                                               </div>
-                                           </div>
-                                       </div>
-                                   </div>
-
-                                   <!-- Quick Stats -->
-                                   <div class="dashboard-widget">
-                                       <h3 class="widget-title">Quick Stats</h3>
-                                       <div id="quickStats"></div>
-                                   </div>
-
-                                   <!-- Streak Calendar -->
-                                   <div class="dashboard-widget">
-                                       <h3 class="widget-title">Practice Streak</h3>
-                                       <div id="streakCalendar"></div>
-                                   </div>
-                               </aside>
-                           </div>
-                       </div>
-
-                       <!-- Audio Practice Tool Tab -->
-                       <div class="tab-pane" id="audioTab" data-tab="audio">
-                           <div class="audio-layout">
-                               <!-- Timer (Always visible) -->
-                               <div id="timerContainerAudio" class="timer-section"></div>
-                               
-                               <!-- Log Practice Section -->
-                               <div class="log-practice-section collapsed">
-                                   <div class="log-practice-header">
-                                       <div class="log-practice-title">
-                                           <i class="icon">📝</i>
-                                           <h3>Log Practice Session</h3>
-                                       </div>
-                                       <i class="icon collapse-icon">▶</i>
-                                   </div>
-                                   <div class="log-practice-content">
-                                       <div class="log-practice-form-wrapper">
-                                           <div id="practiceFormContainerAudio"></div>
-                                       </div>
-                                   </div>
-                               </div>
-                               
-                               <!-- Audio Player -->
-                               <div id="audioPlayerContainer" class="audio-player-wrapper"></div>
-                           </div>
-                       </div>
-
-                       <!-- Metronome Tab -->
-                       <div class="tab-pane" id="metronomeTab" data-tab="metronome">
-                           <div class="metronome-layout">
-                               <!-- Timer (Always visible) -->
-                               <div id="timerContainerMetronome" class="timer-section"></div>
-                               
-                               <!-- Log Practice Section -->
-                               <div class="log-practice-section collapsed">
-                                   <div class="log-practice-header">
-                                       <div class="log-practice-title">
-                                           <i class="icon">📝</i>
-                                           <h3>Log Practice Session</h3>
-                                       </div>
-                                       <i class="icon collapse-icon">▶</i>
-                                   </div>
-                                   <div class="log-practice-content">
-                                       <div class="log-practice-form-wrapper">
-                                           <div id="practiceFormContainerMetronome"></div>
-                                       </div>
-                                   </div>
-                               </div>
-                               
-                               <!-- Metronome -->
-                               <div id="metronomeContainer" class="metronome-wrapper"></div>
-                           </div>
-                       </div>
-
-                       <!-- Goals Tab -->
-                       <div class="tab-pane" id="goalsTab" data-tab="goals">
-                           <div class="goals-layout">
-                               <div class="goals-main">
-                                   <div id="goalsListContainer"></div>
-                               </div>
-                               <div class="goals-sidebar">
-                                   <div id="achievementsContainer"></div>
-                               </div>
-                           </div>
-                       </div>
-
-                       <!-- Stats Tab -->
-                       <div class="tab-pane" id="statsTab" data-tab="stats">
-                           <div class="stats-layout">
-                               <div id="statsContainer"></div>
-                           </div>
-                       </div>
-
-                       <!-- History Tab -->
-                       <div class="tab-pane" id="historyTab" data-tab="history">
-                           <div class="history-layout">
-                               <div class="history-header">
-                                   <h2>Practice History</h2>
-                                   <div class="history-filters">
-                                       <select class="filter-select" id="historyFilter">
-                                           <option value="all">All Sessions</option>
-                                           <option value="week">This Week</option>
-                                           <option value="month">This Month</option>
-                                           <option value="year">This Year</option>
-                                       </select>
-                                       <button class="btn btn-secondary" id="exportHistoryBtn">
-                                           Export History
-                                       </button>
-                                   </div>
-                               </div>
-                               <div id="historyList" class="history-list"></div>
-                           </div>
-                       </div>
-
-                       <!-- Calendar Tab -->
-                       <div class="tab-pane" id="calendarTab" data-tab="calendar">
-                           <div class="calendar-layout">
-                               <div id="calendarContainer"></div>
-                           </div>
-                       </div>
-
-                       <!-- Settings Tab -->
-                       <div class="tab-pane" id="settingsTab" data-tab="settings">
-                           <div class="settings-layout">
-                               <div class="settings-section">
-                                   <h3>Account Settings</h3>
-                                   <div class="form-group">
-                                       <label>Email</label>
-                                       <input type="email" id="settingsEmail" class="form-control" disabled>
-                                   </div>
-                                   <button class="btn btn-primary" id="changePasswordBtn">
-                                       Change Password
-                                   </button>
-                               </div>
-
-                               <div class="settings-section">
-                                   <h3>Data Management</h3>
-                                   <div id="storageIndicator" class="storage-indicator"></div>
-                                   <div class="backup-status" id="backupStatus"></div>
-                                   
-                                   <!-- Backup Settings -->
-                                   <div class="backup-settings" style="background: var(--bg-input); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
-                                       <h4 style="margin-top: 0;">Backup Settings</h4>
-                                       
-                                       <label class="checkbox-label">
-                                           <input type="checkbox" id="autoBackupEnabled" checked>
-                                           <span>Enable automatic backups</span>
-                                       </label>
-                                       
-                                       <!-- Add this after backup settings in the settings tab -->
-<div class="settings-section">
-    <h3>☁️ Cloud Sync</h3>
-    <div class="cloud-status" id="cloudStatus">
-        <div class="sync-indicator">
-            <span class="sync-icon" id="syncIcon">🔄</span>
-            <span class="sync-text" id="syncText">Checking sync status...</span>
-        </div>
-    </div>
-    
-    <div class="sync-settings">
-        <label class="checkbox-label">
-            <input type="checkbox" id="enableCloudSync" checked>
-            <span>Enable automatic cloud sync</span>
-        </label>
-        
-        <div class="form-group" style="margin-top: 10px;">
-            <label>Conflict resolution:</label>
-            <select id="conflictResolution" class="form-control">
-                <option value="newest">Keep newest version</option>
-                <option value="local">Always keep local</option>
-                <option value="cloud">Always keep cloud</option>
-            </select>
-        </div>
-        
-        <div class="sync-actions" style="margin-top: 15px;">
-            <button class="btn btn-primary" id="syncNowBtn">
-                <i class="icon">🔄</i> Sync Now
-            </button>
-            <button class="btn btn-secondary" id="downloadFromCloudBtn">
-                <i class="icon">⬇️</i> Download from Cloud
-            </button>
-            <button class="btn btn-secondary" id="uploadToCloudBtn">
-                <i class="icon">⬆️</i> Upload to Cloud
-            </button>
-        </div>
-        
-        <div class="sync-info" style="margin-top: 15px;">
-            <p><strong>Last sync:</strong> <span id="lastSyncTime">Never</span></p>
-            <p><strong>Sync status:</strong> <span id="syncStatus">Unknown</span></p>
-            <p style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 10px;">
-                Your data automatically syncs every 5 minutes when you're signed in.
-                All devices using the same account will stay in sync.
-            </p>
-        </div>
-    </div>
-</div>
-                                       <div class="form-group" style="margin-top: 10px;">
-                                           <label>Backup frequency:</label>
-                                           <select id="backupFrequency" class="form-control">
-                                               <option value="onChange">After every change (recommended)</option>
-                                               <option value="daily">Once per day</option>
-                                               <option value="weekly">Once per week</option>
-                                           </select>
-                                       </div>
-                                       
-                                       <label class="checkbox-label">
-                                           <input type="checkbox" id="backupNotifications" checked>
-                                           <span>Show backup notifications</span>
-                                       </label>
-                                       
-                                       <div class="backup-info" style="margin-top: 10px; padding: 10px; background: var(--bg-card); border-radius: 6px; font-size: 0.875rem; color: var(--text-secondary);">
-                                           <strong>⚠️ Important:</strong> Browser storage can be lost if you clear cache or reset your browser. 
-                                           <strong style="color: var(--primary);">Always download backups regularly</strong> to protect your data permanently. 
-                                           Downloaded backup files can be stored on your computer or cloud storage and restored anytime.
-                                       </div>
-                                   </div>
-                                   
-                                   <div class="settings-actions">
-                                       <button class="btn btn-secondary" id="exportDataBtn">
-                                           <i class="icon">📥</i> Export All Data
-                                       </button>
-                                       <button class="btn btn-secondary" id="importDataBtn">
-                                           <i class="icon">📤</i> Import Data
-                                       </button>
-                                       <button class="btn btn-primary" id="downloadBackupBtn">
-                                           <i class="icon">💾</i> Download Backup Now
-                                       </button>
-                                       <button class="btn btn-secondary" id="restoreBackupBtn">
-                                           <i class="icon">🔄</i> Restore from File
-                                       </button>
-                                       <button class="btn btn-danger" id="clearDataBtn">
-                                           <i class="icon">🗑️</i> Clear All Data
-                                       </button>
-                                   </div>
-                               </div>
-
-                               <div class="settings-section">
-                                   <h3>Preferences</h3>
-                                   <label class="checkbox-label">
-                                       <input type="checkbox" id="notificationsEnabled">
-                                       <span>Enable practice reminders</span>
-                                   </label>
-                                   <label class="checkbox-label">
-                                       <input type="checkbox" id="darkModeEnabled">
-                                       <span>Dark mode</span>
-                                   </label>
-                                   <label class="checkbox-label">
-                                       <input type="checkbox" id="soundEnabled" checked>
-                                       <span>Enable sound effects</span>
-                                   </label>
-                               </div>
-
-                               <div class="settings-section">
-                                   <h3>About</h3>
-                                   <div class="about-info">
-                                       <p>Guitar Practice Journal v${window.APP_VERSION || '7.6.2'}</p>
-                                       <p class="text-muted">Created with ❤️ for musicians</p>
-                                   </div>
-                               </div>
-                           </div>
-                       </div>
-                   </div>
-               </main>
-           </div>
-
-           <!-- Mobile FAB -->
-           <button class="fab" id="fabBtn" title="Quick add practice session">
-               <i class="icon">➕</i>
-           </button>
-       `;
+    `;
 
         this.attachEventListeners();
         this.initializeComponents();
@@ -551,13 +551,6 @@ export class DashboardPage {
             });
         });
 
-        // Add this with the other event listeners
-        document.getElementById('headerLogoutBtn')?.addEventListener('click', () => {
-            if (confirm('Are you sure you want to logout?')) {
-                localStorage.clear();
-                window.location.href = './login.html';
-            }
-        });
 
         // Mobile menu toggle
         document.getElementById('menuToggle')?.addEventListener('click', () => {
@@ -756,13 +749,13 @@ export class DashboardPage {
                 } catch (formError) {
                     console.error('Error initializing Practice Form:', formError);
                     practiceFormContainer.innerHTML = `
-                       <div class="error-state" style="padding: 2rem; text-align: center;">
-                           <p style="color: var(--text-secondary);">Unable to load practice form</p>
-                           <button class="btn btn-primary" style="margin-top: 1rem;" onclick="location.reload()">
-                               Reload Page
-                           </button>
-                       </div>
-                   `;
+                    <div class="error-state" style="padding: 2rem; text-align: center;">
+                        <p style="color: var(--text-secondary);">Unable to load practice form</p>
+                        <button class="btn btn-primary" style="margin-top: 1rem;" onclick="location.reload()">
+                            Reload Page
+                        </button>
+                    </div>
+                `;
                 }
             }
 
@@ -778,6 +771,18 @@ export class DashboardPage {
                     streakContainer.innerHTML = '<div class="empty-state">Calendar unavailable</div>';
                 }
             }
+
+            // Initialize Footer
+            import('../components/footer.js').then(module => {
+                const footer = new module.Footer();
+                const footerContainer = document.getElementById('appFooter');
+                if (footerContainer) {
+                    footerContainer.outerHTML = footer.render();
+                    footer.attachEventListeners();
+                }
+            }).catch(error => {
+                console.error('Error loading footer:', error);
+            });
 
             // Initialize shared timer and form for other tabs
             this.initializeSharedComponents();
