@@ -35,28 +35,70 @@ export class Footer {
     }
 
     showPageModal(title, content) {
+        // Remove any existing modals first
+        const existingModal = document.querySelector('.page-modal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+
         const modal = document.createElement('div');
         modal.className = 'modal page-modal';
+        modal.style.opacity = '0'; // Start invisible
+        modal.style.visibility = 'hidden'; // Ensure it's hidden
         modal.innerHTML = `
         <div class="modal-content page-modal-content">
             <div class="modal-header">
                 <h2>${title}</h2>
-                <button class="modal-close" onclick="this.closest('.modal').remove()">×</button>
+                <button class="modal-close">&times;</button>
             </div>
             <div class="modal-body page-modal-body">
-                ${content}
+                <div class="info-page-wrapper">
+                    ${content}
+                </div>
             </div>
         </div>
     `;
+
         document.body.appendChild(modal);
-        modal.style.display = 'block';
+
+        // Force a reflow to ensure the modal is properly positioned
+        modal.offsetHeight;
+
+        // Now show the modal with a smooth transition
+        requestAnimationFrame(() => {
+            modal.style.display = 'block';
+            modal.style.transition = 'opacity 0.2s ease, visibility 0.2s ease';
+            modal.style.opacity = '1';
+            modal.style.visibility = 'visible';
+        });
+
+        // Add close button functionality
+        const closeBtn = modal.querySelector('.modal-close');
+        closeBtn.addEventListener('click', () => {
+            modal.style.opacity = '0';
+            modal.style.visibility = 'hidden';
+            setTimeout(() => modal.remove(), 200);
+        });
 
         // Add close on background click
         modal.addEventListener('click', (e) => {
             if (e.target === modal) {
-                modal.remove();
+                modal.style.opacity = '0';
+                modal.style.visibility = 'hidden';
+                setTimeout(() => modal.remove(), 200);
             }
         });
+
+        // Add escape key to close
+        const escapeHandler = (e) => {
+            if (e.key === 'Escape') {
+                modal.style.opacity = '0';
+                modal.style.visibility = 'hidden';
+                setTimeout(() => modal.remove(), 200);
+                document.removeEventListener('keydown', escapeHandler);
+            }
+        };
+        document.addEventListener('keydown', escapeHandler);
     }
 
     render() {

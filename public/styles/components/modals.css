@@ -1,270 +1,501 @@
-/* Modal Component Styles */
+/* ============================================
+   Modal Component Styles
+   ============================================ */
 
-/* Modal backdrop */
+/* Base Modal Styles */
 .modal {
-    display: none;
     position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.75);
-    z-index: var(--z-modal-backdrop);
-    animation: fadeIn 0.2s ease;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
 }
 
-/* Modal content */
+/* When modal is shown */
+.modal[style*="display: block"] {
+    display: flex !important;
+}
+
+/* Modal Content Container */
 .modal-content {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    position: relative;
     background: var(--bg-card);
-    border: 1px solid var(--border);
     border-radius: var(--radius-xl);
-    padding: var(--space-xl);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    max-width: 600px;
     width: 90%;
-    max-width: 500px;
     max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: var(--shadow-2xl);
-    z-index: var(--z-modal);
-    animation: scaleIn 0.3s ease;
+    overflow: hidden;
+    transform: scale(0.95);
+    transition: transform 0.2s ease;
 }
 
-/* Modal header */
+/* Modal visible state */
+.modal[style*="opacity: 1"] .modal-content {
+    transform: scale(1);
+}
+
+/* Modal Header */
 .modal-header {
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    margin-bottom: var(--space-lg);
-    padding-bottom: var(--space-lg);
+    align-items: center;
+    padding: 1.5rem 2rem;
     border-bottom: 1px solid var(--border);
+    background: var(--bg-input);
 }
 
-.modal-header h3 {
+.modal-header h2 {
     margin: 0;
-    font-size: var(--text-xl);
+    font-size: 1.25rem;
+    color: var(--text-primary);
     font-weight: 600;
 }
 
-/* Modal close button */
+/* Modal Close Button */
 .modal-close {
-    width: 32px;
-    height: 32px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0;
+    width: 2rem;
+    height: 2rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--bg-input);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    transition: var(--transition-base);
-    font-size: var(--text-lg);
+    border-radius: var(--radius-sm);
+    transition: all 0.2s ease;
     line-height: 1;
 }
 
 .modal-close:hover {
-    background: var(--danger);
-    border-color: var(--danger);
-    color: white;
+    background: var(--bg-hover);
+    color: var(--text-primary);
+    transform: rotate(90deg);
 }
 
-/* Modal body */
+/* Modal Body */
 .modal-body {
-    margin-bottom: var(--space-lg);
+    padding: 2rem;
+    overflow-y: auto;
+    max-height: calc(90vh - 5rem);
 }
 
-/* Modal footer/actions */
-.modal-actions {
+/* Modal Footer */
+.modal-footer {
+    padding: 1rem 2rem;
+    border-top: 1px solid var(--border);
     display: flex;
     justify-content: flex-end;
-    gap: var(--space-md);
-    margin-top: var(--space-xl);
-}
-
-/* Responsive modal */
-@media (max-width: 768px) {
-    .modal-content {
-        width: 95%;
-        margin: var(--space-md);
-        padding: var(--space-lg);
-    }
-}
-
-/* Practice day modal specific */
-.practice-day-modal .modal-content {
-    max-width: 600px;
-}
-
-.practice-day-summary {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: var(--space-xl);
-    padding: var(--space-lg);
+    gap: 1rem;
     background: var(--bg-input);
-    border-radius: var(--radius-lg);
 }
 
-.day-stat {
-    text-align: center;
+/* ============================================
+   Page Modal Specific Styles
+   ============================================ */
+
+.page-modal {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
 }
 
-.day-stat .stat-value {
-    font-size: var(--text-2xl);
-    font-weight: 700;
-    color: var(--primary);
-    margin-bottom: var(--space-xs);
-}
-
-.day-stat .stat-label {
-    font-size: var(--text-sm);
-    color: var(--text-secondary);
-}
-
-.practice-day-sessions {
+.page-modal .modal-content {
+    max-width: 900px;
+    width: 90%;
+    max-height: 90vh;
     display: flex;
     flex-direction: column;
-    gap: var(--space-md);
 }
 
-.day-session {
-    background: var(--bg-input);
-    padding: var(--space-md);
-    border-radius: var(--radius-md);
-    border: 1px solid var(--border);
-}
-
-.session-time {
-    font-size: var(--text-sm);
-    color: var(--text-secondary);
-    margin-bottom: var(--space-xs);
-}
-
-.session-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.session-area {
-    font-weight: 500;
-}
-
-.session-duration {
-    color: var(--primary);
-    font-weight: 600;
-}
-
-/* Stats detail modal */
-.stats-detail-modal .modal-content {
-    max-width: 700px;
-}
-
-.stat-breakdown {
-    background: var(--bg-input);
-    padding: var(--space-lg);
-    border-radius: var(--radius-lg);
-    margin-bottom: var(--space-xl);
-}
-
-.breakdown-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--space-sm) 0;
+.page-modal .modal-header {
+    flex-shrink: 0;
+    padding: 1.5rem 2rem;
     border-bottom: 1px solid var(--border);
+    background: transparent;
 }
 
-.breakdown-item:last-child {
-    border-bottom: none;
-}
-
-.breakdown-label {
-    color: var(--text-secondary);
-}
-
-.breakdown-value {
-    font-weight: 600;
-    color: var(--primary);
-}
-
-/* Alert/Confirm modals */
-.modal-alert,
-.modal-confirm {
-    text-align: center;
-}
-
-.modal-alert .modal-icon,
-.modal-confirm .modal-icon {
-    font-size: var(--text-5xl);
-    margin-bottom: var(--space-lg);
-}
-
-.modal-alert.success .modal-icon {
-    color: var(--success);
-}
-
-.modal-alert.warning .modal-icon {
-    color: var(--warning);
-}
-
-.modal-alert.danger .modal-icon {
-    color: var(--danger);
-}
-
-.modal-message {
-    font-size: var(--text-lg);
-    color: var(--text-secondary);
-    margin-bottom: var(--space-xl);
-}
-
-/* Fullscreen modal */
-.modal-fullscreen .modal-content {
-    width: 100vw;
-    height: 100vh;
-    max-width: none;
-    max-height: none;
+.page-modal .modal-header h2 {
     margin: 0;
-    border-radius: 0;
-    transform: none;
-    top: 0;
-    left: 0;
+    color: var(--text-primary);
+    font-size: 1.5rem;
 }
 
-/* Slide-in modal */
-.modal-slide-in .modal-content {
-    position: fixed;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    width: 400px;
-    max-width: 90vw;
-    transform: none;
-    border-radius: 0;
-    animation: slideInRight 0.3s ease;
-}
-
-@media (max-width: 768px) {
-    .modal-slide-in .modal-content {
-        width: 100vw;
-    }
-}
-
-/* Page Modals */
-.page-modal .modal-content {
-    max-width: 1000px;
-    width: 95%;
-    max-height: 90vh;
-}
-
-.page-modal-body {
-    max-height: calc(90vh - 100px);
+.page-modal .modal-body {
+    flex: 1;
     overflow-y: auto;
     padding: 0;
 }
 
-.page-modal-body > div {
+.page-modal .info-page-wrapper {
     padding: 2rem;
 }
 
-/* Import info pages styles */
-@import url('../pages/info-pages.css');
+/* Hide duplicate headers in page modals */
+.page-modal .page-header {
+    display: none;
+}
+
+/* Ensure all info page types work in modal */
+.page-modal .about-page,
+.page-modal .features-page,
+.page-modal .whats-new-page,
+.page-modal .roadmap-page {
+    max-width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+/* Generic section styling for page modals */
+.page-modal .content-section,
+.page-modal .features-grid,
+.page-modal .roadmap-timeline {
+    margin-top: 0;
+}
+
+/* Section backgrounds in modals */
+.page-modal .hero-section,
+.page-modal .philosophy-section,
+.page-modal .story-section,
+.page-modal .mission-section,
+.page-modal .team-section,
+.page-modal .support-section,
+.page-modal .release-section,
+.page-modal .roadmap-section {
+    background: var(--bg-input);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border-radius: var(--radius-lg);
+}
+
+/* Badges in modals */
+.page-modal .version-badge,
+.page-modal .status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-full);
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.page-modal .version-badge {
+    background: var(--primary);
+    color: white;
+}
+
+.page-modal .status-badge.in-progress {
+    background: var(--success);
+    color: white;
+}
+
+.page-modal .status-badge.planned {
+    background: var(--info);
+    color: white;
+}
+
+.page-modal .status-badge.future {
+    background: var(--warning);
+    color: white;
+}
+
+/* Card layouts in modals */
+.page-modal .philosophy-card,
+.page-modal .highlight-card,
+.page-modal .feature-item,
+.page-modal .roadmap-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+}
+
+/* Lists in modals */
+.page-modal ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.page-modal li {
+    padding: 0.5rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.page-modal li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: var(--primary);
+}
+
+/* Feature-specific list styling */
+.page-modal .feature-item li::before {
+    content: "✓";
+    color: var(--success);
+}
+
+/* CTA sections in modals */
+.page-modal .cta-section,
+.page-modal .feedback-section,
+.page-modal .commitment-section,
+.page-modal .contact-section {
+    text-align: center;
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: var(--bg-input);
+    border-radius: var(--radius-lg);
+}
+
+/* Buttons in page modals */
+.page-modal .btn {
+    margin: 0.5rem;
+}
+
+/* ============================================
+   Confirmation Modal Styles
+   ============================================ */
+
+.confirm-modal .modal-content {
+    max-width: 400px;
+}
+
+.confirm-modal .modal-body {
+    text-align: center;
+    padding: 2rem;
+}
+
+.confirm-modal .modal-body p {
+    margin-bottom: 1.5rem;
+    color: var(--text-secondary);
+}
+
+/* ============================================
+   Settings Modal Styles
+   ============================================ */
+
+.settings-modal .modal-content {
+    max-width: 700px;
+}
+
+.settings-section {
+    margin-bottom: 2rem;
+}
+
+.settings-section h3 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.setting-item:last-child {
+    border-bottom: none;
+}
+
+.setting-label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.setting-label strong {
+    color: var(--text-primary);
+}
+
+.setting-label small {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+/* ============================================
+   Scrollbar Styling for Modals
+   ============================================ */
+
+.modal-body::-webkit-scrollbar,
+.page-modal .modal-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-body::-webkit-scrollbar-track,
+.page-modal .modal-body::-webkit-scrollbar-track {
+    background: var(--bg-input);
+    border-radius: 4px;
+}
+
+.modal-body::-webkit-scrollbar-thumb,
+.page-modal .modal-body::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover,
+.page-modal .modal-body::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+}
+
+/* ============================================
+   Modal Animations
+   ============================================ */
+
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+        margin: 1rem;
+    }
+
+    .page-modal .modal-content {
+        width: 100%;
+        height: 100%;
+        max-width: 100%;
+        max-height: 100%;
+        border-radius: 0;
+        margin: 0;
+    }
+
+    .modal-header {
+        padding: 1rem 1.5rem;
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+    }
+
+    .page-modal .modal-header {
+        padding: 1rem 1.5rem;
+        position: sticky;
+        top: 0;
+        background: var(--bg-card);
+        z-index: 10;
+    }
+
+    .page-modal .info-page-wrapper {
+        padding: 1rem;
+    }
+
+    .page-modal .philosophy-grid,
+    .page-modal .release-highlights,
+    .page-modal .commitments,
+    .page-modal .features-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .settings-modal .modal-content {
+        width: 100%;
+        height: 100%;
+        max-height: 100%;
+        border-radius: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .modal-header h2 {
+        font-size: 1.125rem;
+    }
+
+    .modal-footer {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .modal-footer .btn {
+        width: 100%;
+    }
+}
+
+/* ============================================
+   Dark Mode Overrides
+   ============================================ */
+
+.dark-mode .modal {
+    background: rgba(0, 0, 0, 0.9);
+}
+
+.dark-mode .modal-content {
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+}
+
+/* ============================================
+   Accessibility
+   ============================================ */
+
+.modal:focus-within {
+    outline: none;
+}
+
+.modal-content:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+/* Ensure modal is announced to screen readers */
+.modal[role="dialog"] {
+    aria-modal: true;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .modal-content {
+        border: 2px solid var(--text-primary);
+    }
+
+    .modal-header,
+    .modal-footer {
+        border-width: 2px;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .modal,
+    .modal-content {
+        transition: none;
+    }
+
+    .modal-close:hover {
+        transform: none;
+    }
+}
