@@ -560,6 +560,9 @@ export class AudioPlayer {
 
             // Store filename
             this.currentFileName = file.name;
+            if (this.practiceForm) {
+                this.practiceForm.setAudioContext(file.name);
+            }
             const fileNameEl = document.getElementById('currentFileName');
             if (fileNameEl) {
                 fileNameEl.textContent = `Loaded: ${file.name}`;
@@ -1206,42 +1209,42 @@ export class AudioPlayer {
     }
 
     syncTimerStop() {
-    console.log('Audio player: Attempting to sync timer stop...');
+        console.log('Audio player: Attempting to sync timer stop...');
 
-    // Try multiple ways to find the timer
-    let timer = null;
+        // Try multiple ways to find the timer
+        let timer = null;
 
-    // First check the global reference
-    if (window.currentTimer) {
-        timer = window.currentTimer;
-        console.log('Found timer via window.currentTimer');
-    } else if (window.app?.currentPage?.timer) {
-        timer = window.app.currentPage.timer;
-    } else if (window.app?.currentPage?.components?.timer) {
-        timer = window.app.currentPage.components.timer;
-    } else if (window.app?.currentPage?.sharedTimer) {
-        timer = window.app.currentPage.sharedTimer;
-    }
-
-    if (timer) {
-        // Check if sync is enabled by reading the checkbox directly
-        const syncCheckbox = document.getElementById('timerSyncCheckbox');
-        const syncEnabled = syncCheckbox ? syncCheckbox.checked : timer.syncWithAudio;
-
-        console.log('Timer found for stop, sync enabled:', syncEnabled, 'Timer running:', timer.isRunning);
-
-        if (syncEnabled && timer.isRunning) {
-            console.log('Pausing timer due to audio sync');
-            timer.pause();
-        } else if (!syncEnabled) {
-            console.log('Timer sync is disabled, not stopping timer');
-        } else if (!timer.isRunning) {
-            console.log('Timer already stopped');
+        // First check the global reference
+        if (window.currentTimer) {
+            timer = window.currentTimer;
+            console.log('Found timer via window.currentTimer');
+        } else if (window.app?.currentPage?.timer) {
+            timer = window.app.currentPage.timer;
+        } else if (window.app?.currentPage?.components?.timer) {
+            timer = window.app.currentPage.components.timer;
+        } else if (window.app?.currentPage?.sharedTimer) {
+            timer = window.app.currentPage.sharedTimer;
         }
-    } else {
-        console.warn('Timer component not found for sync stop');
+
+        if (timer) {
+            // Check if sync is enabled by reading the checkbox directly
+            const syncCheckbox = document.getElementById('timerSyncCheckbox');
+            const syncEnabled = syncCheckbox ? syncCheckbox.checked : timer.syncWithAudio;
+
+            console.log('Timer found for stop, sync enabled:', syncEnabled, 'Timer running:', timer.isRunning);
+
+            if (syncEnabled && timer.isRunning) {
+                console.log('Pausing timer due to audio sync');
+                timer.pause();
+            } else if (!syncEnabled) {
+                console.log('Timer sync is disabled, not stopping timer');
+            } else if (!timer.isRunning) {
+                console.log('Timer already stopped');
+            }
+        } else {
+            console.warn('Timer component not found for sync stop');
+        }
     }
-}
 
     stop() {
         if (this.isYouTubeMode && this.youtubePlayer) {

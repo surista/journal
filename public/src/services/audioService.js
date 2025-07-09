@@ -87,14 +87,14 @@ export class AudioService {
         oscillator.type = type;
         gainNode.gain.value = 0.1;
 
-        return { oscillator, gainNode };
+        return {oscillator, gainNode};
     }
 
     async playTone(frequency = 440, duration = 0.1) {
         const nodes = await this.createOscillator(frequency);
         if (!nodes) return;
 
-        const { oscillator, gainNode } = nodes;
+        const {oscillator, gainNode} = nodes;
         const now = this.audioContext.currentTime;
 
         oscillator.start(now);
@@ -139,5 +139,41 @@ export class AudioService {
             this.audioContext = null;
             this.isInitialized = false;
         }
+    }
+
+    async loadAudioFile(file) {
+        const context = await this.getAudioContext();
+        if (!context) {
+            throw new Error('AudioContext not available');
+        }
+
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const arrayBuffer = e.target.result;
+                    this.audioBuffer = await context.decodeAudioData(arrayBuffer);
+                    resolve(this.audioBuffer);
+                } catch (error) {
+                    reject(new Error('Failed to decode audio file'));
+                }
+            };
+            reader.onerror = () => reject(new Error('Failed to read file'));
+            reader.readAsArrayBuffer(file);
+        });
+    }
+
+    seek(time) {
+        // This will be overridden by the audio player
+        // The audio player sets audioService.seek in initializeWaveform()
+        console.warn('Seek method not implemented by audio player');
+    }
+
+    getDuration() {
+        return this.audioBuffer ? this.audioBuffer.duration : 0;
+    }
+
+    getCurrentTime() {
+        return 0; // Will be overridden by audio player
     }
 }

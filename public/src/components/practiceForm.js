@@ -1,6 +1,6 @@
 // Practice Form Component - Fixed with proper form synchronization
-import { debounce, TimeUtils } from '../utils/helpers.js';
-import { notificationManager } from '../services/notificationManager.js';
+import {debounce, TimeUtils} from '../utils/helpers.js';
+import {notificationManager} from '../services/notificationManager.js';
 
 export class PracticeForm {
     constructor(container, storageService) {
@@ -318,6 +318,38 @@ export class PracticeForm {
         const form = this.container.querySelector(`#practiceForm${this.tabSuffix}`);
         if (form) {
             form.addEventListener('submit', (e) => this.handleSubmit(e));
+        }
+
+        // Collapsible header with audio check
+        const header = this.container.querySelector('.log-practice-header');
+        if (header) {
+            header.addEventListener('click', () => {
+                const section = header.closest('.log-practice-section');
+                const icon = header.querySelector('.collapse-icon');
+
+                if (section && icon) {
+                    // Check if any audio is playing globally
+                    let isAudioPlaying = false;
+
+                    // Check via audio player
+                    if (window.app?.currentPage?.components?.audioPlayer?.isPlaying) {
+                        isAudioPlaying = true;
+                    }
+
+                    // Check via metronome
+                    if (window.app?.currentPage?.components?.metronome?.isPlaying) {
+                        isAudioPlaying = true;
+                    }
+
+                    if (isAudioPlaying) {
+                        alert("Can't save while audio is playing");
+                        return;
+                    }
+
+                    section.classList.toggle('collapsed');
+                    icon.textContent = section.classList.contains('collapsed') ? '▶' : '▼';
+                }
+            });
         }
 
         // Handle practice area selection
@@ -820,9 +852,12 @@ export class PracticeForm {
             }
 
             // Clear saved form state
+            // Clear saved form state
             this.clearFormState();
 
-            notificationManager.success('Practice session saved! Great job! 🎸✨');
+            const minutes = Math.floor(duration / 60);
+            notificationManager.success(`Saved ${minutes} minute${minutes !== 1 ? 's' : ''} practice session - rock on! 🎸✨`);
+
 
             // Emit event for other components to update
             window.dispatchEvent(new CustomEvent('practiceSessionSaved', {
@@ -908,23 +943,12 @@ export class PracticeForm {
 
         // Set up timer callback for duration display
         if (this.timer) {
-            // Store the original callback if it exists
-            const originalCallback = this.timer.onTimeUpdate;
-
             this.timer.onTimeUpdate = (elapsedTime) => {
-                // Call original callback if it exists
-                if (originalCallback) {
-                    originalCallback(elapsedTime);
-                }
-
                 const seconds = Math.floor(elapsedTime / 1000);
                 const durationEl = document.getElementById(`sessionDuration${this.tabSuffix}`);
                 if (durationEl) {
                     durationEl.textContent = TimeUtils.formatDuration(seconds, true);
                 }
-
-                // Update audio file display based on timer
-                this.updateAudioFileDisplay();
             };
         }
     }
@@ -1028,6 +1052,18 @@ export class PracticeForm {
     }
 
 
+    destroy() {
+        // Clear any pending debounced saves
+        if (this.debouncedSaveFormState) {
+            this.debouncedSaveFormState.cancel && this.debouncedSaveFormState.cancel();
+        }
+
+        // Clear form state reference
+        this.formState = null;
+
+        // Clear timer reference
+        this.timer = null;
+    }
 
     destroy() {
         // Clear any pending debounced saves
@@ -1040,5 +1076,27 @@ export class PracticeForm {
 
         // Clear timer reference
         this.timer = null;
+    }
+
+    setAudioContext(audioInfo) {
+        if (this.tabSuffix === 'Audio') {
+            if (audioInfo) {
+                // Determine if it's a file or YouTube
+                if (audioInfo.includes('youtube:') || audioInfo.includes('YouTube:')) {
+                    this.currentYouTubeInfo = {title: audioInfo};
+                    this.currentMediaType = 'youtube';
+                    this.currentAudioFileName = '';
+                } else {
+                    this.currentAudioFileName = audioInfo;
+                    this.currentMediaType = 'file';
+                    this.currentYouTubeInfo = null;
+                }
+            } else {
+                this.currentAudioFileName = '';
+                this.currentYouTubeInfo = null;
+            }
+
+            this.updateAudioFileDisplay();
+        }
     }
 }

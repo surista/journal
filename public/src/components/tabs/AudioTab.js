@@ -18,7 +18,8 @@ export class AudioTab {
                 <div id="timerContainerAudio" class="timer-section"></div>
                 
                 <!-- Log Practice Section -->
-                <div class="log-practice-section collapsed">
+                <div class="log-practice-section collapsed" id="logPracticeSection">
+
                     <div class="log-practice-header">
                         <div class="log-practice-title">
                             <i class="icon">📝</i>
@@ -38,24 +39,9 @@ export class AudioTab {
             </div>
         `;
 
-        this.attachEventListeners();
         this.initializeComponents();
     }
 
-    attachEventListeners() {
-        // Collapsible log practice section
-        const header = this.container.querySelector('.log-practice-header');
-        if (header) {
-            header.addEventListener('click', () => {
-                const section = header.closest('.log-practice-section');
-                const icon = header.querySelector('.collapse-icon');
-                if (section && icon) {
-                    section.classList.toggle('collapsed');
-                    icon.textContent = section.classList.contains('collapsed') ? '▶' : '▼';
-                }
-            });
-        }
-    }
 
     async initializeComponents() {
         // Get shared timer and practice form from dashboard
@@ -80,6 +66,40 @@ export class AudioTab {
                     formContainer.innerHTML = '';
                     this.practiceForm.container = formContainer;
                     this.practiceForm.render();
+
+                    if (formContainer) {
+                        formContainer.innerHTML = '';
+                        this.practiceForm.container = formContainer;
+                        this.practiceForm.render();
+
+                        // Listen for audio file loaded events to update practice form context
+                        window.addEventListener('audioFileLoaded', (event) => {
+                            if (this.practiceForm) {
+                                this.practiceForm.setAudioContext(event.detail.fileName);
+                            }
+                        });
+
+                        window.addEventListener('youtubeVideoLoaded', (event) => {
+                            if (this.practiceForm) {
+                                const context = event.detail.title || event.detail.url || `YouTube: ${event.detail.videoId}`;
+                                this.practiceForm.setAudioContext(context);
+                            }
+                        });
+                    }
+
+                    // Listen for audio file loaded events to update practice form context
+                    window.addEventListener('audioFileLoaded', (event) => {
+                        if (this.practiceForm) {
+                            this.practiceForm.setAudioContext(event.detail.fileName);
+                        }
+                    });
+
+                    window.addEventListener('youtubeVideoLoaded', (event) => {
+                        if (this.practiceForm) {
+                            const context = event.detail.title || event.detail.url || `YouTube: ${event.detail.videoId}`;
+                            this.practiceForm.setAudioContext(context);
+                        }
+                    });
                 }
             }
         }
@@ -88,7 +108,7 @@ export class AudioTab {
         const audioPlayerContainer = document.getElementById('audioPlayerContainer');
         if (audioPlayerContainer) {
             try {
-                const { AudioPlayer } = await import('../audioPlayer.js');
+                const {AudioPlayer} = await import('../audioPlayer.js');
                 this.audioPlayer = new AudioPlayer(audioPlayerContainer, this.audioService);
 
                 // Pass storage service
