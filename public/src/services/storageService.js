@@ -1,4 +1,4 @@
-// Quick fix for storageService.js - Remove problematic cloud calls
+// src/services/storageService.js - Complete fixed version with all goal methods
 import {CompressionUtils} from '../utils/helpers.js';
 import {AuthService} from './authService.js';
 import {cloudStorage} from './firebaseService.js';
@@ -12,11 +12,9 @@ export class StorageService {
         this.backupDebounceTimer = null;
         this.backupDebounceDelay = 5000;
         this.cloudSyncEnabled = true;
-
-        // REMOVED: this.initializeCloudSync() to prevent errors
     }
 
-    // NEW: Error recovery method
+    // Error recovery method
     async recoverCorruptedData() {
         console.warn('Attempting to recover from corrupted data...');
 
@@ -60,10 +58,261 @@ export class StorageService {
         }
     }
 
-    // Practice Entries
+    // ===================
+    // GOAL MANAGEMENT METHODS - COMPLETE IMPLEMENTATION
+    // ===================
+
+    async saveGoal(goal) {
+        try {
+            const goals = await this.getGoals();
+
+            // Ensure goal has required properties
+            if (!goal.id) {
+                goal.id = Date.now() + Math.random();
+            }
+
+            if (!goal.createdAt) {
+                goal.createdAt = new Date().toISOString();
+            }
+
+            // Add new goal to the beginning of the array
+            goals.unshift(goal);
+
+            // Save back to storage
+            const success = await this.saveGoals(goals);
+
+            if (success) {
+                console.log('Goal saved successfully:', goal);
+                return true;
+            } else {
+                throw new Error('Failed to save goals to storage');
+            }
+        } catch (error) {
+            console.error('Error saving goal:', error);
+            return false;
+        }
+    }
+
+    async updateGoal(goalId, updates) {
+        try {
+            const goals = await this.getGoals();
+            const goalIndex = goals.findIndex(g => g.id === goalId);
+
+            if (goalIndex === -1) {
+                throw new Error(`Goal with ID ${goalId} not found`);
+            }
+
+            // Update the goal with new properties
+            goals[goalIndex] = { ...goals[goalIndex], ...updates };
+
+            // Add updatedAt timestamp
+            goals[goalIndex].updatedAt = new Date().toISOString();
+
+            // Save back to storage
+            const success = await this.saveGoals(goals);
+
+            if (success) {
+                console.log('Goal updated successfully:', goals[goalIndex]);
+                return true;
+            } else {
+                throw new Error('Failed to save updated goals to storage');
+            }
+        } catch (error) {
+            console.error('Error updating goal:', error);
+            return false;
+        }
+    }
+
+    async deleteGoal(goalId) {
+        try {
+            const goals = await this.getGoals();
+            const initialLength = goals.length;
+            const filteredGoals = goals.filter(g => g.id !== goalId);
+
+            if (filteredGoals.length === initialLength) {
+                console.warn(`Goal with ID ${goalId} not found for deletion`);
+                return false;
+            }
+
+            // Save filtered goals back to storage
+            const success = await this.saveGoals(filteredGoals);
+
+            if (success) {
+                console.log('Goal deleted successfully:', goalId);
+                return true;
+            } else {
+                throw new Error('Failed to save goals after deletion');
+            }
+        } catch (error) {
+            console.error('Error deleting goal:', error);
+            return false;
+        }
+    }
+
+    // Core goals storage methods
+    async saveGoals(goals) {
+        try {
+            // Validate goals array
+            if (!Array.isArray(goals)) {
+                throw new Error('Goals must be an array');
+            }
+
+            const key = `${this.prefix}goals`;
+            const goalsJson = JSON.stringify(goals);
+
+            // Save to localStorage
+            localStorage.setItem(key, goalsJson);
+
+            // Schedule backup
+            this.scheduleBackup();
+
+            // Simple cloud sync
+            if (cloudStorage && cloudStorage.currentUser) {
+                try {
+                    await cloudStorage.saveData('goals', goals);
+                    console.log('Goals synced to cloud');
+                } catch (error) {
+                    console.warn('Cloud goal sync failed:', error);
+                    // Don't fail the entire operation if cloud sync fails
+                }
+            }
+
+            console.log(`Successfully saved ${goals.length} goals`);
+            return true;
+        } catch (error) {
+            console.error('Error saving goals:', error);
+            return false;
+        }
+    }
+
+    async getGoals() {
+        try {
+            const key = `${this.prefix}goals`;
+            const stored = localStorage.getItem(key);
+
+            if (!stored) {
+                console.log('No goals found, returning empty array');
+                return [];
+            }
+
+            const goals = JSON.parse(stored);
+
+            // Validate that it's an array
+            if (!Array.isArray(goals)) {
+                console.warn('Goals data is not an array, resetting to empty array');
+                await this.saveGoals([]);
+                return [];
+            }
+
+            console.log(`Loaded ${goals.length} goals from storage`);
+            return goals;
+        } catch (error) {
+            console.error('Error loading goals:', error);
+
+            // Try to recover from corruption
+            if (error.message.includes('JSON parse error') ||
+                error.message.includes('SyntaxError') ||
+                error.message.includes('Unexpected token')) {
+
+                console.warn('Goals data corrupted, clearing and starting fresh');
+                const key = `${this.prefix}goals`;
+                localStorage.removeItem(key);
+                return [];
+            }
+
+            return [];
+        }
+    }
+
+    // Additional goal utility methods
+    async getGoalById(goalId) {
+        try {
+            const goals = await this.getGoals();
+            return goals.find(g => g.id === goalId) || null;
+        } catch (error) {
+            console.error('Error getting goal by ID:', error);
+            return null;
+        }
+    }
+
+    async getGoalsByType(type) {
+        try {
+            const goals = await this.getGoals();
+            return goals.filter(g => g.type === type);
+        } catch (error) {
+            console.error('Error getting goals by type:', error);
+            return [];
+        }
+    }
+
+    async getActiveGoals() {
+        try {
+            const goals = await this.getGoals();
+            return goals.filter(g => !g.completed);
+        } catch (error) {
+            console.error('Error getting active goals:', error);
+            return [];
+        }
+    }
+
+    async getCompletedGoals() {
+        try {
+            const goals = await this.getGoals();
+            return goals.filter(g => g.completed);
+        } catch (error) {
+            console.error('Error getting completed goals:', error);
+            return [];
+        }
+    }
+
+    async markGoalComplete(goalId) {
+        try {
+            const updates = {
+                completed: true,
+                completedAt: new Date().toISOString()
+            };
+            return await this.updateGoal(goalId, updates);
+        } catch (error) {
+            console.error('Error marking goal complete:', error);
+            return false;
+        }
+    }
+
+    async markGoalIncomplete(goalId) {
+        try {
+            const updates = {
+                completed: false
+            };
+
+            const goal = await this.getGoalById(goalId);
+            if (goal && goal.completedAt) {
+                updates.completedAt = null;
+            }
+
+            return await this.updateGoal(goalId, updates);
+        } catch (error) {
+            console.error('Error marking goal incomplete:', error);
+            return false;
+        }
+    }
+
+    // ===================
+    // PRACTICE ENTRIES
+    // ===================
+
     async savePracticeEntry(entry) {
         try {
             const entries = await this.getPracticeEntries();
+
+            // Ensure entry has required properties
+            if (!entry.id) {
+                entry.id = Date.now() + Math.random();
+            }
+
+            if (!entry.date) {
+                entry.date = new Date().toISOString();
+            }
+
             entries.unshift(entry);
 
             if (entries.length > 1000) {
@@ -72,11 +321,11 @@ export class StorageService {
 
             const key = `${this.prefix}practice_entries`;
 
-            // IMPROVED: Save backup before compression
+            // Save backup before compression
             if (entries.length % 10 === 0) {
                 try {
                     localStorage.setItem(`${this.prefix}practice_entries_backup`, JSON.stringify(entries));
-                    console.log('Backup saved');
+                    console.log('Practice entries backup saved');
                 } catch (backupError) {
                     console.warn('Failed to save backup:', backupError);
                 }
@@ -101,6 +350,7 @@ export class StorageService {
                 }
             }
 
+            console.log('Practice entry saved successfully:', entry);
             return true;
         } catch (error) {
             console.error('Error saving practice entry:', error);
@@ -108,7 +358,6 @@ export class StorageService {
         }
     }
 
-    // FIXED: Better error handling for corrupted data
     async getPracticeEntries() {
         try {
             const key = `${this.prefix}practice_entries`;
@@ -130,7 +379,7 @@ export class StorageService {
         } catch (error) {
             console.error('Error loading practice entries:', error);
 
-            // IMPROVED: Try to recover from corruption
+            // Try to recover from corruption
             if (error.message.includes('JSON parse error') ||
                 error.message.includes('SyntaxError') ||
                 error.message.includes('Unterminated string')) {
@@ -149,41 +398,10 @@ export class StorageService {
         }
     }
 
-    // Goals
-    async saveGoals(goals) {
-        try {
-            const key = `${this.prefix}goals`;
-            localStorage.setItem(key, JSON.stringify(goals));
-            this.scheduleBackup();
+    // ===================
+    // STATS
+    // ===================
 
-            // Simple cloud sync
-            if (cloudStorage && cloudStorage.currentUser) {
-                try {
-                    await cloudStorage.saveData('goals', goals);
-                } catch (error) {
-                    console.warn('Cloud goal sync failed:', error);
-                }
-            }
-
-            return true;
-        } catch (error) {
-            console.error('Error saving goals:', error);
-            return false;
-        }
-    }
-
-    async getGoals() {
-        try {
-            const key = `${this.prefix}goals`;
-            const stored = localStorage.getItem(key);
-            return stored ? JSON.parse(stored) : [];
-        } catch (error) {
-            console.error('Error loading goals:', error);
-            return [];
-        }
-    }
-
-    // Stats
     async updateStats(entry) {
         try {
             const stats = await this.getStats();
@@ -312,7 +530,10 @@ export class StorageService {
         }
     }
 
-    // Audio Sessions
+    // ===================
+    // AUDIO SESSIONS
+    // ===================
+
     saveAudioSession(fileName, session) {
         try {
             const key = `${this.prefix}audio_sessions_${fileName}`;
@@ -365,7 +586,10 @@ export class StorageService {
         }
     }
 
-    // User Settings
+    // ===================
+    // USER SETTINGS
+    // ===================
+
     async getUserSettings() {
         try {
             const key = `${this.prefix}settings`;
@@ -389,7 +613,7 @@ export class StorageService {
         try {
             const key = `${this.prefix}settings`;
             const currentSettings = await this.getUserSettings();
-            const updatedSettings = {...currentSettings, ...settings};
+            const updatedSettings = { ...currentSettings, ...settings };
             localStorage.setItem(key, JSON.stringify(updatedSettings));
             this.scheduleBackup();
             return true;
@@ -399,7 +623,10 @@ export class StorageService {
         }
     }
 
-    // Backup functionality
+    // ===================
+    // BACKUP FUNCTIONALITY
+    // ===================
+
     async createBackup(forceDownload = false) {
         if (!this.autoBackupEnabled) return;
 
@@ -436,10 +663,10 @@ export class StorageService {
                 console.warn('Could not store backup in localStorage:', e);
             }
 
-            return {success: true, filename, data: backupData};
+            return { success: true, filename, data: backupData };
         } catch (error) {
             console.error('Error creating backup:', error);
-            return {success: false, error};
+            return { success: false, error };
         }
     }
 
@@ -455,7 +682,10 @@ export class StorageService {
         }, this.backupDebounceDelay);
     }
 
-    // Export/Import
+    // ===================
+    // EXPORT/IMPORT
+    // ===================
+
     async exportAllData() {
         try {
             return {
@@ -516,6 +746,7 @@ export class StorageService {
                     localStorage.removeItem(key);
                 }
             });
+            console.log('All user data cleared successfully');
             return true;
         } catch (error) {
             console.error('Error clearing data:', error);
@@ -523,7 +754,10 @@ export class StorageService {
         }
     }
 
-    // Simplified cloud sync methods
+    // ===================
+    // CLOUD SYNC METHODS
+    // ===================
+
     async syncFromCloud() {
         if (!cloudStorage || !cloudStorage.userId) return;
 
@@ -565,6 +799,51 @@ export class StorageService {
             localStorage.setItem(key, compressed);
         } else {
             localStorage.setItem(key, JSON.stringify(mergedSessions));
+        }
+    }
+
+    // ===================
+    // DEBUG/UTILITY METHODS
+    // ===================
+
+    async getDataSummary() {
+        try {
+            const entries = await this.getPracticeEntries();
+            const goals = await this.getGoals();
+            const stats = await this.getStats();
+            const audioSessions = this.getAllAudioSessions();
+
+            const totalAudioSessions = Object.values(audioSessions).reduce((total, sessions) => {
+                return total + (Array.isArray(sessions) ? sessions.length : 0);
+            }, 0);
+
+            return {
+                practiceEntries: Array.isArray(entries) ? entries.length : 0,
+                goals: Array.isArray(goals) ? goals.length : 0,
+                audioSessions: totalAudioSessions,
+                totalTime: stats.totalSeconds || 0,
+                totalTimeFormatted: this.formatDuration(stats.totalSeconds || 0)
+            };
+        } catch (error) {
+            console.error('Error getting data summary:', error);
+            return {
+                practiceEntries: 0,
+                goals: 0,
+                audioSessions: 0,
+                totalTime: 0,
+                totalTimeFormatted: '0m'
+            };
+        }
+    }
+
+    formatDuration(seconds) {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+
+        if (hours > 0) {
+            return `${hours}h ${minutes}m`;
+        } else {
+            return `${minutes}m`;
         }
     }
 }

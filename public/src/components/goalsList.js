@@ -1,6 +1,6 @@
 // Goals List Component - Fixed to handle async storage properly
-import { debounce, TimeUtils } from '../utils/helpers.js';
-import { notificationManager } from '../services/notificationManager.js';
+import {debounce, TimeUtils} from '../utils/helpers.js';
+import {notificationManager} from '../services/notificationManager.js';
 
 export class GoalsList {
     constructor(container, storageService) {
@@ -110,12 +110,21 @@ export class GoalsList {
             const goalCurrent = document.getElementById('goalCurrent')?.value;
 
             if (!goalText) {
-                notificationManager.error('Please enter a goal!');
+                // Use console.error instead of notificationManager if it's not available
+                if (typeof notificationManager !== 'undefined') {
+                    notificationManager.error('Please enter a goal!');
+                } else {
+                    alert('Please enter a goal!');
+                }
                 return;
             }
 
             if (goalType && !goalTarget) {
-                notificationManager.error('Please enter a target value!');
+                if (typeof notificationManager !== 'undefined') {
+                    notificationManager.error('Please enter a target value!');
+                } else {
+                    alert('Please enter a target value!');
+                }
                 return;
             }
 
@@ -131,7 +140,12 @@ export class GoalsList {
                 priority: this.calculatePriority(goalText, goalType)
             };
 
-            await this.storageService.saveGoal(newGoal);
+            // Use the fixed saveGoal method
+            const success = await this.storageService.saveGoal(newGoal);
+
+            if (!success) {
+                throw new Error('Failed to save goal to storage');
+            }
 
             // Reset form
             if (input) input.value = '';
@@ -143,10 +157,19 @@ export class GoalsList {
             if (currentInput) currentInput.value = '';
 
             await this.loadGoals();
-            notificationManager.success('Goal added! You got this! 🎯');
+
+            if (typeof notificationManager !== 'undefined') {
+                notificationManager.success('Goal added! You got this! 🎯');
+            } else {
+                console.log('Goal added successfully!');
+            }
         } catch (error) {
             console.error('Error adding goal:', error);
-            notificationManager.error('Failed to add goal. Please try again.');
+            if (typeof notificationManager !== 'undefined') {
+                notificationManager.error('Failed to add goal. Please try again.');
+            } else {
+                alert('Failed to add goal: ' + error.message);
+            }
         }
     }
 
@@ -451,7 +474,7 @@ export class GoalsList {
                         this.celebrateCompletion();
                     }
 
-                    await this.storageService.updateGoal(goalId, { current, completed });
+                    await this.storageService.updateGoal(goalId, {current, completed});
                     await this.loadGoals();
                     notificationManager.info('Progress updated! Keep going! 💪');
                 }

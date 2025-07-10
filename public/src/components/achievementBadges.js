@@ -1,6 +1,6 @@
 // Achievement Badges Component - Fixed to handle async storage properly
-import { notificationManager } from '../services/notificationManager.js';
-import { TimeUtils } from '../utils/helpers.js';
+import {notificationManager} from '../services/notificationManager.js';
+import {TimeUtils} from '../utils/helpers.js';
 
 export class AchievementBadges {
     constructor(container, storageService) {
@@ -13,40 +13,172 @@ export class AchievementBadges {
     defineAchievements() {
         return [
             // Practice Streaks
-            { id: 'first-day', name: 'First Steps', icon: '🎸', description: 'Complete your first practice session', check: (stats) => stats.totalSessions >= 1 },
-            { id: 'week-warrior', name: 'Week Warrior', icon: '🗓️', description: '7 day practice streak', check: (stats) => stats.currentStreak >= 7 || stats.longestStreak >= 7 },
-            { id: 'fortnight-hero', name: 'Fortnight Hero', icon: '💪', description: '14 day practice streak', check: (stats) => stats.currentStreak >= 14 || stats.longestStreak >= 14 },
-            { id: 'monthly-master', name: 'Monthly Master', icon: '📅', description: '30 day practice streak', check: (stats) => stats.currentStreak >= 30 || stats.longestStreak >= 30 },
-            { id: 'quarterly-legend', name: 'Quarterly Legend', icon: '🏆', description: '90 day practice streak', check: (stats) => stats.currentStreak >= 90 || stats.longestStreak >= 90 },
+            {
+                id: 'first-day',
+                name: 'First Steps',
+                icon: '🎸',
+                description: 'Complete your first practice session',
+                check: (stats) => stats.totalSessions >= 1
+            },
+            {
+                id: 'week-warrior',
+                name: 'Week Warrior',
+                icon: '🗓️',
+                description: '7 day practice streak',
+                check: (stats) => stats.currentStreak >= 7 || stats.longestStreak >= 7
+            },
+            {
+                id: 'fortnight-hero',
+                name: 'Fortnight Hero',
+                icon: '💪',
+                description: '14 day practice streak',
+                check: (stats) => stats.currentStreak >= 14 || stats.longestStreak >= 14
+            },
+            {
+                id: 'monthly-master',
+                name: 'Monthly Master',
+                icon: '📅',
+                description: '30 day practice streak',
+                check: (stats) => stats.currentStreak >= 30 || stats.longestStreak >= 30
+            },
+            {
+                id: 'quarterly-legend',
+                name: 'Quarterly Legend',
+                icon: '🏆',
+                description: '90 day practice streak',
+                check: (stats) => stats.currentStreak >= 90 || stats.longestStreak >= 90
+            },
 
             // Total Sessions
-            { id: 'getting-started', name: 'Getting Started', icon: '🌱', description: 'Complete 10 practice sessions', check: (stats) => stats.totalSessions >= 10 },
-            { id: 'committed', name: 'Committed', icon: '🎯', description: 'Complete 25 practice sessions', check: (stats) => stats.totalSessions >= 25 },
-            { id: 'dedicated', name: 'Dedicated', icon: '⭐', description: 'Complete 50 practice sessions', check: (stats) => stats.totalSessions >= 50 },
-            { id: 'century-club', name: 'Century Club', icon: '💯', description: 'Complete 100 practice sessions', check: (stats) => stats.totalSessions >= 100 },
+            {
+                id: 'getting-started',
+                name: 'Getting Started',
+                icon: '🌱',
+                description: 'Complete 10 practice sessions',
+                check: (stats) => stats.totalSessions >= 10
+            },
+            {
+                id: 'committed',
+                name: 'Committed',
+                icon: '🎯',
+                description: 'Complete 25 practice sessions',
+                check: (stats) => stats.totalSessions >= 25
+            },
+            {
+                id: 'dedicated',
+                name: 'Dedicated',
+                icon: '⭐',
+                description: 'Complete 50 practice sessions',
+                check: (stats) => stats.totalSessions >= 50
+            },
+            {
+                id: 'century-club',
+                name: 'Century Club',
+                icon: '💯',
+                description: 'Complete 100 practice sessions',
+                check: (stats) => stats.totalSessions >= 100
+            },
 
             // Total Practice Time
-            { id: 'hour-hero', name: 'Hour Hero', icon: '⏰', description: 'Practice for 1 total hour', check: (stats) => stats.totalTime >= 3600 },
-            { id: 'five-hour-fighter', name: 'Five Hour Fighter', icon: '⚡', description: 'Practice for 5 total hours', check: (stats) => stats.totalTime >= 18000 },
-            { id: 'ten-hour-champion', name: 'Ten Hour Champion', icon: '🔥', description: 'Practice for 10 total hours', check: (stats) => stats.totalTime >= 36000 },
-            { id: 'day-devotee', name: 'Day Devotee', icon: '☀️', description: 'Practice for 24 total hours', check: (stats) => stats.totalTime >= 86400 },
+            {
+                id: 'hour-hero',
+                name: 'Hour Hero',
+                icon: '⏰',
+                description: 'Practice for 1 total hour',
+                check: (stats) => stats.totalTime >= 3600
+            },
+            {
+                id: 'five-hour-fighter',
+                name: 'Five Hour Fighter',
+                icon: '⚡',
+                description: 'Practice for 5 total hours',
+                check: (stats) => stats.totalTime >= 18000
+            },
+            {
+                id: 'ten-hour-champion',
+                name: 'Ten Hour Champion',
+                icon: '🔥',
+                description: 'Practice for 10 total hours',
+                check: (stats) => stats.totalTime >= 36000
+            },
+            {
+                id: 'day-devotee',
+                name: 'Day Devotee',
+                icon: '☀️',
+                description: 'Practice for 24 total hours',
+                check: (stats) => stats.totalTime >= 86400
+            },
 
             // Session Length
-            { id: 'marathon-session', name: 'Marathon Session', icon: '🏃', description: 'Practice for 2 hours in one session', check: (stats, entries) => Array.isArray(entries) && entries.some(e => e.duration >= 7200) },
-            { id: 'quick-practice', name: 'Quick Practice', icon: '⚡', description: 'Complete 10 sessions under 15 minutes', check: (stats, entries) => Array.isArray(entries) && entries.filter(e => e.duration < 900 && e.duration >= 60).length >= 10 },
+            {
+                id: 'marathon-session',
+                name: 'Marathon Session',
+                icon: '🏃',
+                description: 'Practice for 2 hours in one session',
+                check: (stats, entries) => Array.isArray(entries) && entries.some(e => e.duration >= 7200)
+            },
+            {
+                id: 'quick-practice',
+                name: 'Quick Practice',
+                icon: '⚡',
+                description: 'Complete 10 sessions under 15 minutes',
+                check: (stats, entries) => Array.isArray(entries) && entries.filter(e => e.duration < 900 && e.duration >= 60).length >= 10
+            },
 
             // Practice Areas
-            { id: 'well-rounded', name: 'Well Rounded', icon: '🎨', description: 'Practice 5 different areas', check: (stats, entries) => Array.isArray(entries) && new Set(entries.map(e => e.practiceArea)).size >= 5 },
-            { id: 'scale-specialist', name: 'Scale Specialist', icon: '🎼', description: '25 scale practice sessions', check: (stats, entries) => Array.isArray(entries) && entries.filter(e => e.practiceArea === 'Scales').length >= 25 },
-            { id: 'chord-champion', name: 'Chord Champion', icon: '🎵', description: '25 chord practice sessions', check: (stats, entries) => Array.isArray(entries) && entries.filter(e => e.practiceArea === 'Chords').length >= 25 },
+            {
+                id: 'well-rounded',
+                name: 'Well Rounded',
+                icon: '🎨',
+                description: 'Practice 5 different areas',
+                check: (stats, entries) => Array.isArray(entries) && new Set(entries.map(e => e.practiceArea)).size >= 5
+            },
+            {
+                id: 'scale-specialist',
+                name: 'Scale Specialist',
+                icon: '🎼',
+                description: '25 scale practice sessions',
+                check: (stats, entries) => Array.isArray(entries) && entries.filter(e => e.practiceArea === 'Scales').length >= 25
+            },
+            {
+                id: 'chord-champion',
+                name: 'Chord Champion',
+                icon: '🎵',
+                description: '25 chord practice sessions',
+                check: (stats, entries) => Array.isArray(entries) && entries.filter(e => e.practiceArea === 'Chords').length >= 25
+            },
 
             // Goals
-            { id: 'goal-setter', name: 'Goal Setter', icon: '🎯', description: 'Create your first goal', check: (stats, entries, goals) => Array.isArray(goals) && goals.length >= 1 },
-            { id: 'goal-achiever', name: 'Goal Achiever', icon: '✅', description: 'Complete 5 goals', check: (stats, entries, goals) => Array.isArray(goals) && goals.filter(g => g.completed).length >= 5 },
+            {
+                id: 'goal-setter',
+                name: 'Goal Setter',
+                icon: '🎯',
+                description: 'Create your first goal',
+                check: (stats, entries, goals) => Array.isArray(goals) && goals.length >= 1
+            },
+            {
+                id: 'goal-achiever',
+                name: 'Goal Achiever',
+                icon: '✅',
+                description: 'Complete 5 goals',
+                check: (stats, entries, goals) => Array.isArray(goals) && goals.filter(g => g.completed).length >= 5
+            },
 
             // Special
-            { id: 'early-bird', name: 'Early Bird', icon: '🌅', description: 'Practice before 7 AM', check: (stats, entries) => Array.isArray(entries) && entries.some(e => new Date(e.date).getHours() < 7) },
-            { id: 'night-owl', name: 'Night Owl', icon: '🦉', description: 'Practice after 10 PM', check: (stats, entries) => Array.isArray(entries) && entries.some(e => new Date(e.date).getHours() >= 22) }
+            {
+                id: 'early-bird',
+                name: 'Early Bird',
+                icon: '🌅',
+                description: 'Practice before 7 AM',
+                check: (stats, entries) => Array.isArray(entries) && entries.some(e => new Date(e.date).getHours() < 7)
+            },
+            {
+                id: 'night-owl',
+                name: 'Night Owl',
+                icon: '🦉',
+                description: 'Practice after 10 PM',
+                check: (stats, entries) => Array.isArray(entries) && entries.some(e => new Date(e.date).getHours() >= 22)
+            }
         ];
     }
 
@@ -69,7 +201,7 @@ export class AchievementBadges {
             const entries = await this.storageService.getPracticeEntries();
             const goals = await this.storageService.getGoals();
 
-            console.log('Achievement data loaded:', { stats, entriesCount: entries.length, goalsCount: goals.length });
+            console.log('Achievement data loaded:', {stats, entriesCount: entries.length, goalsCount: goals.length});
 
             this.earnedAchievements = await this.getEarnedAchievements(stats, entries, goals);
             const totalEarned = this.earnedAchievements.length;
@@ -192,20 +324,25 @@ export class AchievementBadges {
 
     async getEarnedAchievements(stats, entries, goals) {
         try {
-            console.log('Checking achievements with data:', { stats, entriesCount: entries?.length, goalsCount: goals?.length });
+            console.log('Checking achievements with data:', {
+                stats,
+                entriesCount: entries?.length,
+                goalsCount: goals?.length
+            });
 
             const earned = JSON.parse(localStorage.getItem('guitarJournalAchievements') || '[]');
             const newlyEarned = [];
 
             // Ensure all data is valid
-            if (!stats) stats = { totalTime: 0, totalSessions: 0, currentStreak: 0, longestStreak: 0 };
+            if (!stats) stats = {totalTime: 0, totalSessions: 0, currentStreak: 0, longestStreak: 0};
             if (!Array.isArray(entries)) entries = [];
             if (!Array.isArray(goals)) goals = [];
 
             for (const achievement of this.achievements) {
                 if (!earned.includes(achievement.id)) {
                     try {
-                        const isEarned = await achievement.check(stats, entries, goals);
+                        // Call the check function with proper error handling
+                        const isEarned = achievement.check(stats, entries, goals);
                         if (isEarned) {
                             earned.push(achievement.id);
                             newlyEarned.push(achievement);
@@ -213,6 +350,8 @@ export class AchievementBadges {
                         }
                     } catch (error) {
                         console.error(`Error checking achievement ${achievement.id}:`, error);
+                        // Continue to next achievement instead of breaking
+                        continue;
                     }
                 }
             }
