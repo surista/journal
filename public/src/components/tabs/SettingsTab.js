@@ -1,597 +1,721 @@
-// SettingsTab Component - Handles all settings
+// src/components/tabs/SettingsTab.js - Complete Settings Tab with Data Management
 import { TimeUtils } from '../../utils/helpers.js';
+import { notificationManager } from '../../services/notificationManager.js';
 
 export class SettingsTab {
-    constructor(storageService, authService, cloudStorage) {
+    constructor(container, storageService, authService) {
+        this.container = container;
         this.storageService = storageService;
         this.authService = authService;
-        this.cloudStorage = cloudStorage;
-        this.container = null;
+        this.themeService = null;
+        this.cloudSyncHandler = null;
     }
 
-    render(container) {
-        this.container = container;
+    setThemeService(themeService) {
+        this.themeService = themeService;
+    }
+
+    setCloudSyncHandler(cloudSyncHandler) {
+        this.cloudSyncHandler = cloudSyncHandler;
+    }
+
+    async render() {
+        const user = this.authService.getCurrentUser();
+        const settings = await this.storageService.getUserSettings();
 
         this.container.innerHTML = `
-            <div class="settings-layout">
-                <!-- Account Settings -->
-                <div class="settings-section">
-                    <h3>Account Settings</h3>
-                    <div class="form-group">
-                        <label>Email</label>
-                        <input type="email" id="settingsEmail" class="form-control" disabled>
-                    </div>
-                    <button class="btn btn-primary" id="changePasswordBtn">
-                        Change Password
-                    </button>
+            <div class="settings-tab">
+                <div class="settings-header">
+                    <h2>Settings</h2>
+                    <p class="settings-subtitle">Customize your practice experience</p>
                 </div>
 
-                <!-- Data Management -->
+                <!-- User Account Section -->
+                <div class="settings-section">
+                    <h3>Account</h3>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <label>Signed in as</label>
+                            <p class="setting-description">${user ? user.email : 'Not signed in'}</p>
+                        </div>
+                        <div class="setting-control">
+                            ${user ? `
+                                <button id="signOutBtn" class="btn btn-secondary">
+                                    Sign Out
+                                </button>
+                            ` : `
+                                <button id="signInBtn" class="btn btn-primary">
+                                    Sign In
+                                </button>
+                            `}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Appearance Section -->
+                <div class="settings-section">
+                    <h3>Appearance</h3>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <label for="darkModeToggle">Dark Mode</label>
+                            <p class="setting-description">Toggle between light and dark themes</p>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="darkModeToggle" ${settings.darkMode !== false ? 'checked' : ''}>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notifications Section -->
+                <div class="settings-section">
+                    <h3>Notifications</h3>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <label for="notificationsToggle">Enable Notifications</label>
+                            <p class="setting-description">Show practice reminders and achievements</p>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="notificationsToggle" ${settings.notificationsEnabled !== false ? 'checked' : ''}>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <label for="soundToggle">Sound Effects</label>
+                            <p class="setting-description">Play sounds for notifications and interactions</p>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="soundToggle" ${settings.soundEnabled !== false ? 'checked' : ''}>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <label for="practiceRemindersToggle">Practice Reminders</label>
+                            <p class="setting-description">Daily reminders to practice</p>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="practiceRemindersToggle" ${settings.practiceReminders?.enabled ? 'checked' : ''}>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="setting-item" id="reminderTimeSection" style="${settings.practiceReminders?.enabled ? '' : 'display: none;'}">
+                        <div class="setting-info">
+                            <label for="reminderTime">Reminder Time</label>
+                            <p class="setting-description">When to send practice reminders</p>
+                        </div>
+                        <div class="setting-control">
+                            <input type="time" id="reminderTime" value="${settings.practiceReminders?.time || '19:00'}" 
+                                   class="form-control" style="width: auto;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cloud Sync Section -->
+                <div class="settings-section">
+                    <h3>Cloud Sync</h3>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <label>Cloud Status</label>
+                            <p class="setting-description" id="cloudStatusText">
+                                ${user?.isCloudEnabled ? 'Connected and syncing' : 'Not connected'}
+                            </p>
+                        </div>
+                        <div class="setting-control">
+                            <div class="cloud-status ${user?.isCloudEnabled ? 'online' : 'offline'}" id="cloudStatus">
+                                <span class="status-icon" id="syncIcon">${user?.isCloudEnabled ? '✅' : '❌'}</span>
+                                <span class="status-text" id="syncText">
+                                    ${user?.isCloudEnabled ? `Synced as ${user.email}` : 'Not synced'}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    ${user?.isCloudEnabled ? `
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <label>Sync Actions</label>
+                                <p class="setting-description">Manual sync operations</p>
+                            </div>
+                            <div class="setting-control">
+                                <div class="sync-buttons">
+                                    <button id="syncNowBtn" class="btn btn-primary">
+                                        <i class="icon">🔄</i> Sync Now
+                                    </button>
+                                    <button id="downloadFromCloudBtn" class="btn btn-secondary">
+                                        <i class="icon">⬇️</i> Download from Cloud
+                                    </button>
+                                    <button id="uploadToCloudBtn" class="btn btn-secondary">
+                                        <i class="icon">⬆️</i> Upload to Cloud
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+
+                <!-- Data Management Section -->
                 <div class="settings-section">
                     <h3>Data Management</h3>
-                    <div id="storageIndicator" class="storage-indicator"></div>
-                    <div class="backup-status" id="backupStatus"></div>
-                    
-                    <!-- Backup Settings -->
-                    <div class="backup-settings" style="background: var(--bg-input); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
-                        <h4 style="margin-top: 0;">Backup Settings</h4>
-                        
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="autoBackupEnabled" checked>
-                            <span>Enable automatic backups</span>
-                        </label>
-                        
-                        <div class="form-group" style="margin-top: 10px;">
-                            <label>Backup frequency:</label>
-                            <select id="backupFrequency" class="form-control">
-                                <option value="onChange">After every change (recommended)</option>
-                                <option value="daily">Once per day</option>
-                                <option value="weekly">Once per week</option>
-                            </select>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <label>Data Summary</label>
+                            <p class="setting-description">Current data stored in your account</p>
                         </div>
-                        
-                        <label class="checkbox-label">
-                            <input type="checkbox" id="backupNotifications" checked>
-                            <span>Show backup notifications</span>
-                        </label>
-                        
-                        <div class="backup-info" style="margin-top: 10px; padding: 10px; background: var(--bg-card); border-radius: 6px; font-size: 0.875rem; color: var(--text-secondary);">
-                            <strong>⚠️ Important:</strong> Browser storage can be lost if you clear cache or reset your browser. 
-                            <strong style="color: var(--primary);">Always download backups regularly</strong> to protect your data permanently. 
-                            Downloaded backup files can be stored on your computer or cloud storage and restored anytime.
-                        </div>
-                    </div>
-                    
-                    <!-- Cloud Sync Settings -->
-                    <div class="settings-section">
-                        <h3>☁️ Cloud Sync</h3>
-                        <div class="cloud-status" id="cloudStatus">
-                            <div class="sync-indicator">
-                                <span class="sync-icon" id="syncIcon">🔄</span>
-                                <span class="sync-text" id="syncText">Checking sync status...</span>
-                            </div>
-                        </div>
-                        
-                        <div class="sync-settings">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="enableCloudSync" checked>
-                                <span>Enable automatic cloud sync</span>
-                            </label>
-                            
-                            <div class="form-group" style="margin-top: 10px;">
-                                <label>Conflict resolution:</label>
-                                <select id="conflictResolution" class="form-control">
-                                    <option value="newest">Keep newest version</option>
-                                    <option value="local">Always keep local</option>
-                                    <option value="cloud">Always keep cloud</option>
-                                </select>
-                            </div>
-                            
-                            <div class="sync-actions" style="margin-top: 15px;">
-                                <button class="btn btn-primary" id="syncNowBtn">
-                                    <i class="icon">🔄</i> Sync Now
-                                </button>
-                                <button class="btn btn-secondary" id="downloadFromCloudBtn">
-                                    <i class="icon">⬇️</i> Download from Cloud
-                                </button>
-                                <button class="btn btn-secondary" id="uploadToCloudBtn">
-                                    <i class="icon">⬆️</i> Upload to Cloud
-                                </button>
-                            </div>
-                            
-                            <div class="sync-info" style="margin-top: 15px;">
-                                <p><strong>Last sync:</strong> <span id="lastSyncTime">Never</span></p>
-                                <p><strong>Sync status:</strong> <span id="syncStatusText">Unknown</span></p>
-                                <p style="font-size: 0.875rem; color: var(--text-secondary); margin-top: 10px;">
-                                    Your data automatically syncs every 5 minutes when you're signed in.
-                                    All devices using the same account will stay in sync.
-                                </p>
+                        <div class="setting-control">
+                            <div id="dataSummary" class="data-summary">
+                                Loading...
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="settings-actions">
-                        <button class="btn btn-secondary" id="exportDataBtn">
-                            <i class="icon">📥</i> Export All Data
-                        </button>
-                        <button class="btn btn-secondary" id="importDataBtn">
-                            <i class="icon">📤</i> Import Data
-                        </button>
-                        <button class="btn btn-primary" id="downloadBackupBtn">
-                            <i class="icon">💾</i> Download Backup Now
-                        </button>
-                        <button class="btn btn-secondary" id="restoreBackupBtn">
-                            <i class="icon">🔄</i> Restore from File
-                        </button>
-                        <button class="btn btn-danger" id="clearDataBtn">
-                            <i class="icon">🗑️</i> Clear All Data
-                        </button>
+
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <label>Export Data</label>
+                            <p class="setting-description">Download your practice data as a backup</p>
+                        </div>
+                        <div class="setting-control">
+                            <button id="exportDataBtn" class="btn btn-secondary">
+                                📥 Export Data
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <label>Import Data</label>
+                            <p class="setting-description">Restore data from a backup file</p>
+                        </div>
+                        <div class="setting-control">
+                            <input type="file" id="importDataFile" accept=".json" style="display: none;">
+                            <button id="importDataBtn" class="btn btn-secondary">
+                                📤 Import Data
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <label>Clear Local Cache</label>
+                            <p class="setting-description">Clear browser cache and reload (fixes display issues)</p>
+                        </div>
+                        <div class="setting-control">
+                            <button id="clearCacheBtn" class="btn btn-secondary">
+                                🔄 Clear Cache
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="setting-item danger-zone">
+                        <div class="setting-info">
+                            <label>Reset All Data</label>
+                            <p class="setting-description">⚠️ Permanently delete all practice sessions, goals, stats, and settings. This cannot be undone.</p>
+                        </div>
+                        <div class="setting-control">
+                            <button id="purgeDataBtn" class="btn btn-danger">
+                                🗑️ Purge All Data
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Preferences -->
-                <div class="settings-section">
-                    <h3>Preferences</h3>
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="notificationsEnabled">
-                        <span>Enable practice reminders</span>
-                    </label>
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="darkModeEnabled">
-                        <span>Dark mode</span>
-                    </label>
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="soundEnabled" checked>
-                        <span>Enable sound effects</span>
-                    </label>
-                </div>
-
-                <!-- About -->
+                <!-- App Info Section -->
                 <div class="settings-section">
                     <h3>About</h3>
-                    <div class="about-info">
-                        <p>Guitar Practice Journal v${window.APP_VERSION || '8.4'}</p>
-                        <p class="text-muted">Created with ❤️ for musicians</p>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <label>App Version</label>
+                            <p class="setting-description">Guitar Practice Journal v${window.APP_VERSION || '8.8'}</p>
+                        </div>
+                        <div class="setting-control">
+                            <span class="version-info">Build ${window.BUILD_NUMBER || 'dev'}</span>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <label>Last Updated</label>
+                            <p class="setting-description">${window.BUILD_DATE ? new Date(window.BUILD_DATE).toLocaleDateString() : 'Unknown'}</p>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <label>Storage Used</label>
+                            <p class="setting-description">Local browser storage usage</p>
+                        </div>
+                        <div class="setting-control">
+                            <span id="storageUsage" class="storage-info">Calculating...</span>
+                        </div>
                     </div>
                 </div>
             </div>
         `;
 
         this.attachEventListeners();
-        this.loadSettings();
+        await this.updateDataSummary();
+        this.calculateStorageUsage();
     }
 
     attachEventListeners() {
-        // Account settings
-        document.getElementById('changePasswordBtn')?.addEventListener('click', () => this.changePassword());
+        // Dark mode toggle
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        if (darkModeToggle && this.themeService) {
+            darkModeToggle.addEventListener('change', (e) => {
+                this.themeService.setTheme(e.target.checked ? 'dark' : 'light');
+                this.saveUserSettings({ darkMode: e.target.checked });
+            });
+        }
 
-        // Data management
-        document.getElementById('exportDataBtn')?.addEventListener('click', () => this.exportData());
-        document.getElementById('importDataBtn')?.addEventListener('click', () => this.importData());
-        document.getElementById('clearDataBtn')?.addEventListener('click', () => this.clearData());
-        document.getElementById('downloadBackupBtn')?.addEventListener('click', () => this.downloadBackup());
-        document.getElementById('restoreBackupBtn')?.addEventListener('click', () => this.restoreBackup());
+        // Notifications toggle
+        const notificationsToggle = document.getElementById('notificationsToggle');
+        if (notificationsToggle) {
+            notificationsToggle.addEventListener('change', (e) => {
+                this.saveUserSettings({ notificationsEnabled: e.target.checked });
+                if (e.target.checked) {
+                    this.requestNotificationPermission();
+                }
+            });
+        }
 
-        // Backup settings
-        document.getElementById('autoBackupEnabled')?.addEventListener('change', (e) => {
-            this.updateBackupSetting('autoBackup', e.target.checked);
-        });
+        // Sound toggle
+        const soundToggle = document.getElementById('soundToggle');
+        if (soundToggle) {
+            soundToggle.addEventListener('change', (e) => {
+                this.saveUserSettings({ soundEnabled: e.target.checked });
+            });
+        }
 
-        document.getElementById('backupFrequency')?.addEventListener('change', (e) => {
-            this.updateBackupSetting('backupFrequency', e.target.value);
-        });
+        // Practice reminders toggle
+        const practiceRemindersToggle = document.getElementById('practiceRemindersToggle');
+        if (practiceRemindersToggle) {
+            practiceRemindersToggle.addEventListener('change', (e) => {
+                const reminderTimeSection = document.getElementById('reminderTimeSection');
+                if (reminderTimeSection) {
+                    reminderTimeSection.style.display = e.target.checked ? 'flex' : 'none';
+                }
+                this.savePracticeReminderSettings();
+            });
+        }
 
-        document.getElementById('backupNotifications')?.addEventListener('change', (e) => {
-            this.updateBackupSetting('showNotifications', e.target.checked);
-        });
+        // Reminder time
+        const reminderTime = document.getElementById('reminderTime');
+        if (reminderTime) {
+            reminderTime.addEventListener('change', () => {
+                this.savePracticeReminderSettings();
+            });
+        }
 
-        // Cloud sync settings
-        document.getElementById('enableCloudSync')?.addEventListener('change', (e) => {
-            this.cloudStorage.setSyncEnabled(e.target.checked);
-            this.updateCloudStatus();
-        });
+        // Sign out button
+        const signOutBtn = document.getElementById('signOutBtn');
+        if (signOutBtn) {
+            signOutBtn.addEventListener('click', () => this.handleSignOut());
+        }
 
-        document.getElementById('conflictResolution')?.addEventListener('change', (e) => {
-            this.cloudStorage.setConflictResolution(e.target.value);
-        });
+        // Sign in button
+        const signInBtn = document.getElementById('signInBtn');
+        if (signInBtn) {
+            signInBtn.addEventListener('click', () => {
+                window.location.href = './login.html';
+            });
+        }
 
-        document.getElementById('syncNowBtn')?.addEventListener('click', () => this.performManualSync());
-        document.getElementById('downloadFromCloudBtn')?.addEventListener('click', () => this.downloadFromCloud());
-        document.getElementById('uploadToCloudBtn')?.addEventListener('click', () => this.uploadToCloud());
+        // Data management listeners
+        this.attachDataManagementListeners();
 
-        // Preferences
-        document.getElementById('notificationsEnabled')?.addEventListener('change', (e) => {
-            this.updatePreference('notificationsEnabled', e.target.checked);
-        });
-
-        document.getElementById('darkModeEnabled')?.addEventListener('change', (e) => {
-            this.handleDarkModeToggle(e.target.checked);
-        });
-
-        document.getElementById('soundEnabled')?.addEventListener('change', (e) => {
-            this.updatePreference('soundEnabled', e.target.checked);
-        });
+        // Cloud sync listeners
+        this.attachCloudSyncListeners();
     }
 
-    async loadSettings() {
+    async attachDataManagementListeners() {
+        // Export data button
+        const exportBtn = document.getElementById('exportDataBtn');
+        if (exportBtn) {
+            exportBtn.addEventListener('click', async () => {
+                await this.handleExportData();
+            });
+        }
+
+        // Import data button
+        const importBtn = document.getElementById('importDataBtn');
+        const importFile = document.getElementById('importDataFile');
+        if (importBtn && importFile) {
+            importBtn.addEventListener('click', () => {
+                importFile.click();
+            });
+
+            importFile.addEventListener('change', async (e) => {
+                await this.handleImportData(e);
+            });
+        }
+
+        // Purge all data button
+        const purgeBtn = document.getElementById('purgeDataBtn');
+        if (purgeBtn) {
+            purgeBtn.addEventListener('click', async () => {
+                await this.handlePurgeData();
+            });
+        }
+
+        // Clear cache button
+        const clearCacheBtn = document.getElementById('clearCacheBtn');
+        if (clearCacheBtn) {
+            clearCacheBtn.addEventListener('click', () => {
+                this.handleClearCache();
+            });
+        }
+    }
+
+    attachCloudSyncListeners() {
+        if (!this.cloudSyncHandler) return;
+
+        // Manual sync button
+        const syncNowBtn = document.getElementById('syncNowBtn');
+        if (syncNowBtn) {
+            syncNowBtn.addEventListener('click', async () => {
+                await this.cloudSyncHandler.performManualSync();
+            });
+        }
+
+        // Download from cloud button
+        const downloadBtn = document.getElementById('downloadFromCloudBtn');
+        if (downloadBtn) {
+            downloadBtn.addEventListener('click', async () => {
+                await this.cloudSyncHandler.downloadFromCloud();
+            });
+        }
+
+        // Upload to cloud button
+        const uploadBtn = document.getElementById('uploadToCloudBtn');
+        if (uploadBtn) {
+            uploadBtn.addEventListener('click', async () => {
+                await this.cloudSyncHandler.uploadToCloud();
+            });
+        }
+    }
+
+    async handleExportData() {
         try {
-            // Load user info
-            const user = this.authService.getCurrentUser();
-            const emailInput = document.getElementById('settingsEmail');
-            if (emailInput && user) {
-                emailInput.value = user.email;
+            const exportBtn = document.getElementById('exportDataBtn');
+            if (exportBtn) {
+                exportBtn.innerHTML = '⏳ Exporting...';
+                exportBtn.disabled = true;
             }
 
-            // Load preferences
-            const settings = await this.storageService.getUserSettings();
-
-            const notificationsCheckbox = document.getElementById('notificationsEnabled');
-            if (notificationsCheckbox) {
-                notificationsCheckbox.checked = settings?.notificationsEnabled || false;
-            }
-
-            const darkModeCheckbox = document.getElementById('darkModeEnabled');
-            if (darkModeCheckbox && window.app?.themeService) {
-                const currentTheme = window.app.themeService.getTheme();
-                darkModeCheckbox.checked = currentTheme === 'dark';
-            }
-
-            const soundCheckbox = document.getElementById('soundEnabled');
-            if (soundCheckbox) {
-                soundCheckbox.checked = settings?.soundEnabled !== false;
-            }
-
-            // Update storage indicator
-            await this.updateStorageIndicator();
-
-            // Update backup status
-            await this.updateBackupStatus();
-
-            // Load backup settings
-            await this.loadBackupSettings();
-
-            // Update cloud status
-            this.updateCloudStatus();
-
-        } catch (error) {
-            console.error('Error loading settings:', error);
-        }
-    }
-
-async updateStorageIndicator() {
-        const indicator = document.getElementById('storageIndicator');
-        if (!indicator) return;
-
-        try {
-            const usage = await this.storageService.getStorageUsage();
-            const percentage = Math.min((usage.used / usage.total) * 100, 100);
-            const usedMB = (usage.used / 1024 / 1024).toFixed(2);
-            const totalMB = (usage.total / 1024 / 1024).toFixed(2);
-
-            indicator.innerHTML = `
-                <div class="storage-info">
-                    <span>Storage Used: ${usedMB} MB / ${totalMB} MB</span>
-                    <span class="storage-percentage ${percentage > 80 ? 'text-warning' : ''}">${percentage.toFixed(1)}%</span>
-                </div>
-                <div class="storage-bar">
-                    <div class="storage-bar-fill" style="width: ${percentage}%; background: ${percentage > 80 ? 'var(--warning)' : 'var(--primary)'}"></div>
-                </div>
-                ${percentage > 80 ? '<p class="text-warning text-sm mt-2">⚠️ Storage space is running low</p>' : ''}
-            `;
-        } catch (error) {
-            indicator.innerHTML = '<p class="text-muted">Storage information unavailable</p>';
-        }
-    }
-
-    async updateBackupStatus() {
-        const statusEl = document.getElementById('backupStatus');
-        if (!statusEl) return;
-
-        try {
-            const backupKey = `${this.storageService.prefix}latest_backup`;
-            const backupData = localStorage.getItem(backupKey);
-            const backupFilename = localStorage.getItem(`${backupKey}_filename`);
-
-            if (backupData) {
-                const backup = JSON.parse(backupData);
-                const backupDate = new Date(backup.backupDate);
-                const timeAgo = TimeUtils.getRelativeTime(backupDate);
-
-                statusEl.innerHTML = `
-                    <div style="padding: 10px; background: var(--bg-input); border-radius: 8px; margin-bottom: 10px;">
-                        <strong>Last Backup:</strong> ${timeAgo}<br>
-                        <small style="color: var(--text-secondary);">${backupFilename || 'Auto-backup'}</small>
-                    </div>
-                `;
-            } else {
-                statusEl.innerHTML = `
-                    <div style="padding: 10px; background: var(--bg-input); border-radius: 8px; margin-bottom: 10px; color: var(--text-secondary);">
-                        No backup found. Backups are created automatically when you save data.
-                    </div>
-                `;
-            }
-        } catch (error) {
-            console.error('Error updating backup status:', error);
-        }
-    }
-
-    async loadBackupSettings() {
-        const settings = this.storageService.getBackupSettings();
-
-        const autoBackupCheckbox = document.getElementById('autoBackupEnabled');
-        if (autoBackupCheckbox) {
-            autoBackupCheckbox.checked = settings.autoBackup !== false;
-        }
-
-        const frequencySelect = document.getElementById('backupFrequency');
-        if (frequencySelect) {
-            frequencySelect.value = settings.backupFrequency || 'onChange';
-        }
-
-        const notificationsCheckbox = document.getElementById('backupNotifications');
-        if (notificationsCheckbox) {
-            notificationsCheckbox.checked = settings.showNotifications !== false;
-        }
-    }
-
-    async updateCloudStatus() {
-        const statusEl = document.getElementById('cloudStatus');
-        const syncIcon = document.getElementById('syncIcon');
-        const syncText = document.getElementById('syncText');
-
-        if (!this.cloudStorage.currentUser) {
-            syncIcon.textContent = '❌';
-            syncText.textContent = 'Not signed in to cloud';
-            statusEl.className = 'cloud-status offline';
-            return;
-        }
-
-        syncIcon.textContent = '✅';
-        syncText.textContent = `Signed in as ${this.cloudStorage.currentUser.email}`;
-        statusEl.className = 'cloud-status online';
-
-        // Update last sync time
-        if (this.cloudStorage.lastSync) {
-            document.getElementById('lastSyncTime').textContent =
-                TimeUtils.getRelativeTime(this.cloudStorage.lastSync);
-        }
-    }
-
-    updateBackupSetting(key, value) {
-        const settings = {};
-        settings[key] = value;
-        this.storageService.saveBackupSettings(settings);
-        this.showNotification(`Backup ${key === 'autoBackup' ? (value ? 'enabled' : 'disabled') : 'settings updated'}`, 'success');
-    }
-
-    updatePreference(key, value) {
-        this.storageService.saveUserSettings({ [key]: value });
-        console.log(`Preference updated: ${key} = ${value}`);
-    }
-
-    handleDarkModeToggle(shouldBeDark) {
-        if (!window.app?.themeService) return;
-
-        const currentTheme = window.app.themeService.getTheme();
-
-        // Only toggle if the desired state is different from current
-        if ((shouldBeDark && currentTheme === 'light') || (!shouldBeDark && currentTheme === 'dark')) {
-            window.app.themeService.toggleTheme();
-
-            // Update the icon in the header
-            const themeToggle = document.getElementById('themeToggle');
-            if (themeToggle) {
-                const newTheme = window.app.themeService.getTheme();
-                themeToggle.innerHTML = `<i class="icon">${newTheme === 'dark' ? '🌙' : '☀️'}</i>`;
-            }
-        }
-    }
-
-    async exportData() {
-        try {
             const data = await this.storageService.exportAllData();
+
+            // Create filename with timestamp
+            const user = this.authService.getCurrentUser();
+            const safeEmail = user?.email ? user.email.replace(/[^a-z0-9]/gi, '_') : 'user';
+            const timestamp = new Date().toISOString().split('T')[0];
+            const filename = `guitar_practice_export_${safeEmail}_${timestamp}.json`;
+
+            // Create download
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
-
             const a = document.createElement('a');
             a.href = url;
-            a.download = `guitar-practice-export-${new Date().toISOString().split('T')[0]}.json`;
+            a.download = filename;
+            document.body.appendChild(a);
             a.click();
-
+            document.body.removeChild(a);
             URL.revokeObjectURL(url);
-            this.showNotification('Data exported successfully', 'success');
+
+            notificationManager.success('Data exported successfully! 📥');
         } catch (error) {
-            console.error('Error exporting data:', error);
-            this.showNotification('Error exporting data', 'error');
-        }
-    }
-
-    async importData() {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = '.json';
-
-        input.addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            try {
-                const text = await file.text();
-                const data = JSON.parse(text);
-
-                if (confirm('This will merge the imported data with your existing data. Continue?')) {
-                    await this.storageService.importData(data);
-                    this.showNotification('Data imported successfully', 'success');
-                    window.location.reload(); // Reload to show new data
-                }
-            } catch (error) {
-                console.error('Error importing data:', error);
-                this.showNotification('Error importing data. Please check the file format.', 'error');
-            }
-        });
-
-        input.click();
-    }
-
-    async clearData() {
-        if (!confirm('Are you sure you want to clear all data? This cannot be undone.')) {
-            return;
-        }
-
-        if (!confirm('This will permanently delete all your practice sessions, goals, and settings. Are you absolutely sure?')) {
-            return;
-        }
-
-        try {
-            await this.storageService.clearAllData();
-            this.showNotification('All data cleared', 'success');
-            window.location.reload();
-        } catch (error) {
-            console.error('Error clearing data:', error);
-            this.showNotification('Error clearing data', 'error');
-        }
-    }
-
-    async downloadBackup() {
-        try {
-            const result = await this.storageService.createBackup(true);
-            if (result.success) {
-                const blob = new Blob([JSON.stringify(result.data, null, 2)], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = result.filename;
-                a.click();
-                URL.revokeObjectURL(url);
-
-                this.showNotification('Backup downloaded successfully', 'success');
-                this.updateBackupStatus();
-            } else {
-                this.showNotification('Failed to create backup', 'error');
-            }
-        } catch (error) {
-            console.error('Error downloading backup:', error);
-            this.showNotification('Error creating backup file', 'error');
-        }
-    }
-
-    async restoreBackup() {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = '.json';
-
-        input.addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            try {
-                const text = await file.text();
-                const backupData = JSON.parse(text);
-
-                if (!backupData.version || !backupData.data) {
-                    throw new Error('Invalid backup file format');
-                }
-
-                const currentUser = this.authService.getCurrentUser();
-                if (backupData.email !== currentUser.email) {
-                    if (!confirm(`This backup is for ${backupData.email}. Are you sure you want to restore it to ${currentUser.email}?`)) {
-                        return;
-                    }
-                }
-
-                if (confirm('This will replace all current data with the backup. Continue?')) {
-                    const result = await this.storageService.restoreFromBackup(backupData);
-                    if (result.success) {
-                        this.showNotification('Data restored successfully from backup', 'success');
-                        setTimeout(() => location.reload(), 1500);
-                    } else {
-                        this.showNotification('Failed to restore backup', 'error');
-                    }
-                }
-            } catch (error) {
-                console.error('Error restoring backup:', error);
-                this.showNotification('Error reading backup file. Please check the file format.', 'error');
-            }
-        });
-
-        input.click();
-    }
-
-    async performManualSync() {
-        const btn = document.getElementById('syncNowBtn');
-        const originalText = btn.innerHTML;
-
-        btn.innerHTML = '<i class="icon">⏳</i> Syncing...';
-        btn.disabled = true;
-
-        try {
-            await this.cloudStorage.performAutoSync();
-            this.showNotification('Data synced successfully', 'success');
-        } catch (error) {
-            this.showNotification('Sync failed: ' + error.message, 'error');
+            console.error('Export error:', error);
+            notificationManager.error('Failed to export data: ' + error.message);
         } finally {
-            btn.innerHTML = originalText;
-            btn.disabled = false;
-            this.updateCloudStatus();
+            const exportBtn = document.getElementById('exportDataBtn');
+            if (exportBtn) {
+                exportBtn.innerHTML = '📥 Export Data';
+                exportBtn.disabled = false;
+            }
         }
     }
 
-    async downloadFromCloud() {
-        if (!confirm('This will replace your local data with cloud data. Continue?')) {
+    async handleImportData(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        try {
+            const importBtn = document.getElementById('importDataBtn');
+            if (importBtn) {
+                importBtn.innerHTML = '⏳ Importing...';
+                importBtn.disabled = true;
+            }
+
+            const text = await file.text();
+            const data = JSON.parse(text);
+
+            // Validate data structure
+            if (!data.version) {
+                throw new Error('Invalid backup file format');
+            }
+
+            // Confirm import
+            const confirm1 = confirm(`Import data from ${file.name}? This will replace your current data.`);
+            if (!confirm1) return;
+
+            await this.storageService.importData(data);
+
+            notificationManager.success('Data imported successfully! The page will reload.');
+
+            // Reload to refresh all components
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
+
+        } catch (error) {
+            console.error('Import error:', error);
+            notificationManager.error('Failed to import data: ' + error.message);
+        } finally {
+            const importBtn = document.getElementById('importDataBtn');
+            if (importBtn) {
+                importBtn.innerHTML = '📤 Import Data';
+                importBtn.disabled = false;
+            }
+            // Clear file input
+            event.target.value = '';
+        }
+    }
+
+    async handlePurgeData() {
+        // Multiple confirmation to prevent accidents
+        const confirm1 = confirm('⚠️ WARNING: This will delete ALL your practice data, goals, and settings permanently. Are you absolutely sure?');
+        if (!confirm1) return;
+
+        const confirm2 = confirm('🚨 FINAL WARNING: This action cannot be undone. All your practice history will be lost forever. Continue?');
+        if (!confirm2) return;
+
+        const confirm3 = prompt('Type "DELETE ALL DATA" to confirm (case sensitive):');
+        if (confirm3 !== 'DELETE ALL DATA') {
+            alert('Confirmation text did not match. Data purge cancelled.');
             return;
         }
 
         try {
-            const cloudData = await this.cloudStorage.downloadCloudData();
-            if (cloudData) {
-                await this.storageService.importData(cloudData);
-                this.showNotification('Cloud data downloaded successfully', 'success');
-                location.reload();
-            } else {
-                this.showNotification('No cloud data found', 'warning');
+            // Show loading state
+            const purgeBtn = document.getElementById('purgeDataBtn');
+            if (purgeBtn) {
+                purgeBtn.innerHTML = '⏳ Purging...';
+                purgeBtn.disabled = true;
+            }
+
+            // Clear local storage
+            await this.storageService.clearAllData();
+
+            // Clear additional local storage items
+            const keysToRemove = [
+                'currentUser',
+                'authToken',
+                'practiceFormState',
+                'customPracticeAreas',
+                'guitarJournalAchievements',
+                'theme'
+            ];
+
+            keysToRemove.forEach(key => {
+                localStorage.removeItem(key);
+            });
+
+            // Clear session storage
+            sessionStorage.clear();
+
+            // Clear cloud data if signed in
+            if (window.cloudStorage && window.cloudStorage.currentUser) {
+                try {
+                    // Note: This would require additional Firebase functions to delete cloud data
+                    console.log('User is signed in to cloud - local data cleared, cloud data remains');
+                } catch (error) {
+                    console.warn('Could not clear cloud data:', error);
+                }
+            }
+
+            // Show success message
+            alert('✅ All data has been purged successfully. The page will now reload.');
+
+            // Reload the page to reset everything
+            window.location.reload();
+
+        } catch (error) {
+            console.error('Error purging data:', error);
+            alert('❌ Error purging data: ' + error.message);
+
+            // Reset button
+            const purgeBtn = document.getElementById('purgeDataBtn');
+            if (purgeBtn) {
+                purgeBtn.innerHTML = '🗑️ Purge All Data';
+                purgeBtn.disabled = false;
+            }
+        }
+    }
+
+    handleClearCache() {
+        if (confirm('Clear browser cache and reload the page?')) {
+            // Clear service worker cache
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(registrations => {
+                    registrations.forEach(registration => {
+                        registration.unregister();
+                    });
+                });
+            }
+
+            // Clear browser caches
+            if ('caches' in window) {
+                caches.keys().then(cacheNames => {
+                    cacheNames.forEach(cacheName => {
+                        caches.delete(cacheName);
+                    });
+                });
+            }
+
+            // Clear session storage
+            sessionStorage.clear();
+
+            // Reload with cache bypass
+            window.location.reload(true);
+        }
+    }
+
+    async updateDataSummary() {
+        try {
+            const summaryEl = document.getElementById('dataSummary');
+            if (!summaryEl) return;
+
+            // Get data counts
+            const entries = await this.storageService.getPracticeEntries();
+            const goals = await this.storageService.getGoals();
+            const stats = await this.storageService.getStats();
+            const audioSessions = this.storageService.getAllAudioSessions();
+
+            // Calculate total audio sessions
+            const totalAudioSessions = Object.values(audioSessions).reduce((total, sessions) => {
+                return total + (Array.isArray(sessions) ? sessions.length : 0);
+            }, 0);
+
+            summaryEl.innerHTML = `
+                <div class="data-summary-grid">
+                    <div class="summary-item">
+                        <span class="summary-label">Practice Sessions:</span>
+                        <span class="summary-value">${Array.isArray(entries) ? entries.length : 0}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Goals:</span>
+                        <span class="summary-value">${Array.isArray(goals) ? goals.length : 0}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Audio Sessions:</span>
+                        <span class="summary-value">${totalAudioSessions}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Total Time:</span>
+                        <span class="summary-value">${Math.floor((stats.totalSeconds || 0) / 60)}m</span>
+                    </div>
+                </div>
+            `;
+        } catch (error) {
+            console.error('Error updating data summary:', error);
+            const summaryEl = document.getElementById('dataSummary');
+            if (summaryEl) {
+                summaryEl.innerHTML = '<span style="color: var(--danger);">Error loading data summary</span>';
+            }
+        }
+    }
+
+    calculateStorageUsage() {
+        try {
+            let totalSize = 0;
+            for (let key in localStorage) {
+                if (localStorage.hasOwnProperty(key)) {
+                    totalSize += localStorage[key].length + key.length;
+                }
+            }
+
+            // Convert to human readable format
+            const sizeInKB = (totalSize / 1024).toFixed(2);
+            const sizeInMB = (totalSize / (1024 * 1024)).toFixed(2);
+
+            const storageEl = document.getElementById('storageUsage');
+            if (storageEl) {
+                if (totalSize > 1024 * 1024) {
+                    storageEl.textContent = `${sizeInMB} MB`;
+                } else {
+                    storageEl.textContent = `${sizeInKB} KB`;
+                }
             }
         } catch (error) {
-            this.showNotification('Download failed: ' + error.message, 'error');
+            console.error('Error calculating storage usage:', error);
+            const storageEl = document.getElementById('storageUsage');
+            if (storageEl) {
+                storageEl.textContent = 'Unknown';
+            }
         }
     }
 
-    async uploadToCloud() {
-        if (!confirm('This will replace cloud data with your local data. Continue?')) {
-            return;
+    async requestNotificationPermission() {
+        if ('Notification' in window) {
+            const permission = await Notification.requestPermission();
+            if (permission === 'granted') {
+                notificationManager.success('Notifications enabled! 🔔');
+            } else {
+                notificationManager.warning('Notifications permission denied');
+            }
         }
+    }
 
+    async saveUserSettings(newSettings) {
         try {
-            const localData = await this.storageService.exportAllData();
-            await this.cloudStorage.syncAllData(localData);
-            this.showNotification('Data uploaded to cloud successfully', 'success');
+            await this.storageService.saveUserSettings(newSettings);
         } catch (error) {
-            this.showNotification('Upload failed: ' + error.message, 'error');
+            console.error('Error saving settings:', error);
+            notificationManager.error('Failed to save settings');
         }
     }
 
-    changePassword() {
-        this.showNotification('Password change feature coming soon!', 'info');
-    }
+    async savePracticeReminderSettings() {
+        const enabled = document.getElementById('practiceRemindersToggle')?.checked || false;
+        const time = document.getElementById('reminderTime')?.value || '19:00';
 
-    showNotification(message, type = 'info') {
-        if (window.app?.currentPage?.showNotification) {
-            window.app.currentPage.showNotification(message, type);
-        } else {
-            console.log(`[${type}] ${message}`);
+        await this.saveUserSettings({
+            practiceReminders: {
+                enabled,
+                time
+            }
+        });
+
+        if (enabled) {
+            notificationManager.info(`Practice reminders set for ${time}`);
         }
     }
 
-    onActivate() {
-        // Refresh data when tab becomes active
-        this.loadSettings();
-    }
-
-    onDeactivate() {
-        // Clean up when leaving tab
+    async handleSignOut() {
+        if (confirm('Sign out of your account?')) {
+            try {
+                await this.authService.logout();
+                notificationManager.success('Signed out successfully');
+                window.location.href = './login.html';
+            } catch (error) {
+                console.error('Sign out error:', error);
+                notificationManager.error('Failed to sign out');
+            }
+        }
     }
 
     destroy() {
-        this.container = null;
+        // Clean up any listeners or resources
     }
-
 }

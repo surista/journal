@@ -299,3 +299,40 @@
 .heatmap-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 2px; max-width: 300px; }
 .heatmap-day { width: 10px; height: 10px; background: var(--text-muted); border-radius: 2px; opacity: 0.3; }
 .heatmap-day.has-practice { background: var(--success); opacity: 1; }
+
+.data-summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: var(--bg-input);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.summary-label {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.summary-value {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.btn-danger {
+    background: var(--danger);
+    color: white;
+    border: 1px solid var(--danger);
+}
+
+.btn-danger:hover {
+    background: #dc2626;
+    border-color: #dc2626;
+}
