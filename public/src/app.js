@@ -1,6 +1,10 @@
 // src/app.js - Optimized Application Entry Point with Theme Support
 console.log('🎸 Loading app.js...');
 
+// Import at the top of the file
+import {APP_VERSION, APP_CONFIG, BUILD_DATE, BUILD_NUMBER} from './config/version.js';
+
+
 // Import configuration and theme service first
 import appConfig from './config.js';
 import {ThemeService} from './services/themeService.js';
@@ -16,7 +20,16 @@ class App {
         this.themeService = null;
         this.currentPage = null;
         this.isInitialized = false;
+        this.version = APP_VERSION;
+        this.buildDate = BUILD_DATE;
+        this.buildNumber = BUILD_NUMBER;
 
+
+        // Make version info globally available
+        window.APP_VERSION = APP_VERSION;
+        window.APP_CONFIG = APP_CONFIG;
+        window.BUILD_DATE = BUILD_DATE;
+        window.BUILD_NUMBER = BUILD_NUMBER;
         console.log('✅ App instance created with base path:', this.config.basePath);
     }
 

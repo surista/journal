@@ -1,0 +1,13 @@
+{
+  "name": "guitar-practice-journal",
+  "version": "8.7",
+  "description": "A comprehensive guitar practice tracking application",
+  "author": "S. Urista",
+  "license": "MIT",
+  "scripts": {
+    "update-version": "node build.js",
+    "bump-patch": "npm version patch && npm run update-version",
+    "bump-minor": "npm version minor && npm run update-version",
+    "bump-major": "npm version major && npm run update-version"
+  }
+}

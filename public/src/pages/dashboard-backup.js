@@ -523,7 +523,7 @@ export class DashboardPage {
                             <div class="settings-section">
                                 <h3>About</h3>
                                 <div class="about-info">
-                                    <p>Guitar Practice Journal v${window.APP_VERSION || '7.6.2'}</p>
+                                    <p>Guitar Practice Journal v${window.APP_VERSION || '8.6'}</p>
                                     <p class="text-muted">Created with ❤️ for musicians</p>
                                 </div>
                             </div>

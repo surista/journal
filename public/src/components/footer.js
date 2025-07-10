@@ -1,18 +1,29 @@
-// Footer Component - Compact with Hover Dropdowns
+// Footer Component - Always-visible copyright and version
 export class Footer {
     constructor() {
-        this.version = window.APP_VERSION || '7.6.2';
+        // Don't set these here - check them in render() method
     }
 
     render() {
         const currentYear = new Date().getFullYear();
 
+        // Get version info at render time (when globals should be available)
+        const version = window.APP_VERSION || '8.6';
+        const buildNumber = window.BUILD_NUMBER || 'unknown';
+        const buildDate = window.BUILD_DATE || new Date().toISOString();
+
+        console.log('Footer render - version info:', { version, buildNumber, buildDate });
+
         return `
             <footer class="app-footer">
                 <div class="footer-container">
                     <div class="footer-left">
-                        <span class="footer-copyright">&copy; ${currentYear} Guitar Practice Journal</span>
-                        <span class="footer-version">Version ${this.version}</span>
+                        <div class="footer-branding">
+                            <span class="footer-copyright">© ${currentYear} Guitar Practice Journal</span>
+                            <span class="footer-version-badge" title="Build ${buildNumber} - ${new Date(buildDate).toLocaleDateString()}">
+                                v${version}
+                            </span>
+                        </div>
                     </div>
                     
                     <nav class="footer-nav">
@@ -62,27 +73,14 @@ export class Footer {
                         </div>
                     </nav>
                     
-                    <div class="footer-right">
-                        <button class="footer-logout-btn" id="footerLogoutBtn">
-                            <i class="icon">🚪</i> Logout
-                        </button>
-                    </div>
+                    <!-- REMOVED THE LOGOUT BUTTON FROM FOOTER -->
                 </div>
             </footer>
         `;
     }
 
     attachEventListeners() {
-        // Logout button
-        const logoutBtn = document.getElementById('footerLogoutBtn');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', () => {
-                if (confirm('Are you sure you want to logout?')) {
-                    localStorage.clear();
-                    window.location.href = './login.html';
-                }
-            });
-        }
+        // Remove logout button code since we removed it from the footer
 
         // Footer links with data-action attributes
         const footerLinks = document.querySelectorAll('.footer-link[data-action]');

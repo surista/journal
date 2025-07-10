@@ -9,7 +9,7 @@ export class WhatsNewPage {
                 </div>
 
                 <div class="release-section">
-                    <div class="version-badge">v7.6.2</div>
+                    <div class="version-badge">v8.6</div>
                     <h2>Latest Release - January 2025</h2>
                     
                     <div class="release-highlights">
@@ -71,7 +71,7 @@ export class WhatsNewPage {
                 </div>
 
                 <div class="release-section">
-                    <div class="version-badge">v7.6.0</div>
+                    <div class="version-badge">v8.6</div>
                     <h2>Previous Release - December 2024</h2>
                     
                     <div class="detailed-changes">
