@@ -16,23 +16,7 @@ export class AudioTab {
             <div class="audio-layout">
                 <!-- Timer (Always visible) -->
                 <div id="timerContainerAudio" class="timer-section"></div>
-                
-                <!-- Log Practice Section -->
-                <div class="log-practice-section collapsed" id="logPracticeSection">
 
-                    <div class="log-practice-header">
-                        <div class="log-practice-title">
-                            <i class="icon">📝</i>
-                            <h3>Log Practice Session</h3>
-                        </div>
-                        <i class="icon collapse-icon">▶</i>
-                    </div>
-                    <div class="log-practice-content">
-                        <div class="log-practice-form-wrapper">
-                            <div id="practiceFormContainerAudio"></div>
-                        </div>
-                    </div>
-                </div>
                 
                 <!-- Audio Player -->
                 <div id="audioPlayerContainer" class="audio-player-wrapper"></div>

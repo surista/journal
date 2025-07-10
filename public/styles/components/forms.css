@@ -260,3 +260,9 @@ input[type="range"]::-moz-range-thumb {
         gap: var(--space-md);
     }
 }
+
+/* Practice Form Specific */
+.practice-form {
+    /* Ensure proper padding and prevent cutoff */
+    padding-bottom: 20px;
+}

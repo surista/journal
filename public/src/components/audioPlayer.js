@@ -199,52 +199,55 @@ export class AudioPlayer {
                             </div>
                         </div>
 
-                        <!-- Loop Controls -->
-                        <div class="loop-controls" style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.1);">
-                            <h4 style="margin-bottom: 16px;">Loop Section</h4>
-                            <div class="loop-content">
-                                <div class="loop-main-controls" style="display: flex; gap: 12px; align-items: center; margin-bottom: 12px; flex-wrap: wrap;">
-                                    <button id="setLoopStartBtn" class="btn btn-sm btn-secondary" style="padding: 8px 16px;">Set Start</button>
-                                    <button id="setLoopEndBtn" class="btn btn-sm btn-secondary" style="padding: 8px 16px;">Set End</button>
-                                    <button id="clearLoopBtn" class="btn btn-sm btn-secondary" style="padding: 8px 16px;">Clear</button>
-                                    <div class="loop-info" style="margin-left: 16px; font-family: monospace;">
-                                        <span id="loopStart">--:--</span> - <span id="loopEnd">--:--</span>
-                                    </div>
-                                </div>
-                                <label class="checkbox-label loop-enable" style="display: flex; align-items: center; gap: 8px;">
-                                    <input type="checkbox" id="loopEnabled">
-                                    <span>Enable Loop</span>
-                                </label>
-                            </div>
-                        </div>
-                        
-                        <!-- Tempo Progression for Loops -->
-<div class="tempo-progression-section" style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.1);">
-    <h4 style="margin-bottom: 16px;">Tempo Progression (Loop Mode)</h4>
-    <label class="checkbox-label" style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
-        <input type="checkbox" id="progressionEnabled">
-        <span>Enable tempo increase after loops</span>
-    </label>
+                        <!-- Unified Loop Controls Section -->
+<div class="loop-controls-unified" style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.1);">
+    <h4 style="margin-bottom: 16px;">Loop Controls</h4>
     
-    <div class="progression-controls" id="progressionControls" style="display: none;">
-        <div class="progression-row" style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
-            <label>Increase by:</label>
+    <!-- Main Loop Controls Row -->
+    <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 12px; flex-wrap: wrap;">
+        <button id="setLoopStartBtn" class="btn btn-sm btn-secondary" style="padding: 6px 14px; font-size: 13px;">Start</button>
+        <button id="setLoopEndBtn" class="btn btn-sm btn-secondary" style="padding: 6px 14px; font-size: 13px;">End</button>
+        <button id="clearLoopBtn" class="btn btn-sm btn-secondary" style="padding: 6px 14px; font-size: 13px;">Clear</button>
+        <div class="loop-info" style="font-family: monospace; font-size: 13px; padding: 0 10px;">
+            <span id="loopStart">--:--</span> - <span id="loopEnd">--:--</span>
+        </div>
+        <label class="checkbox-label" style="display: flex; align-items: center; gap: 6px; margin-left: auto; font-size: 13px;">
+            <input type="checkbox" id="loopEnabled">
+            <span>Loop</span>
+        </label>
+    </div>
+    
+    <!-- Tempo Progression Row -->
+    <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 12px; flex-wrap: wrap;">
+        <label class="checkbox-label" style="display: flex; align-items: center; gap: 6px; font-size: 13px;">
+            <input type="checkbox" id="progressionEnabled">
+            <span>Auto +</span>
+        </label>
+        <div class="progression-controls-inline" id="progressionControls" style="display: none; flex: 1; display: flex; gap: 6px; align-items: center;">
             <input type="number" id="incrementValue" value="1" min="0.1" max="10" step="0.1" 
-                   style="width: 80px; padding: 6px 10px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary);">
-            <select id="incrementType" class="small-select" style="padding: 6px 10px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary);">
+                   style="width: 50px; padding: 4px 6px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 4px; font-size: 13px;">
+            <select id="incrementType" style="padding: 4px 6px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 4px; font-size: 13px;">
                 <option value="percentage">%</option>
                 <option value="bpm">BPM</option>
             </select>
-        </div>
-        <div class="progression-row" style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
-            <label>After every:</label>
+            <span style="font-size: 13px;">every</span>
             <input type="number" id="loopInterval" value="1" min="1" max="10" 
-                   style="width: 80px; padding: 6px 10px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary);">
-            <span>loop(s)</span>
+                   style="width: 40px; padding: 4px 6px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 4px; font-size: 13px;">
+            <span style="font-size: 13px;">loops</span>
         </div>
-        <div class="progression-status" id="progressionStatus" 
-             style="padding: 10px; background: var(--bg-dark); border-radius: 6px; font-size: 0.875rem; color: var(--text-secondary);">
-            Current: 100% | Loops: 0 | Next increase: +1% after 1 loop(s)
+        <div class="progression-status" id="progressionStatus" style="margin-left: auto; font-size: 12px; color: var(--text-secondary);"></div>
+    </div>
+    
+    <!-- Saved Sessions Row -->
+    <div style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 12px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="font-size: 13px; color: var(--text-secondary);">Saved Loops:</span>
+            <button id="saveSessionBtn" class="btn btn-sm btn-primary" style="padding: 4px 10px; font-size: 12px;">
+                💾 Save
+            </button>
+        </div>
+        <div id="savedSessionsList" class="saved-sessions-list" style="max-height: 100px; overflow-y: auto;">
+            <p class="empty-state" style="color: var(--text-secondary); text-align: center; font-size: 13px; margin: 0; padding: 10px;">No saved loops</p>
         </div>
     </div>
 </div>
@@ -304,17 +307,7 @@ export class AudioPlayer {
                                 </button>
                             </div>
                         </div>
-
-                        <!-- Saved Sessions -->
-                        <div class="saved-sessions-section" id="savedSessionsSection" style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.1);">
-                            <h4 style="margin-bottom: 16px;">Saved Sessions</h4>
-                            <div id="savedSessionsList" class="saved-sessions-list" style="margin-bottom: 16px;">
-                                <p class="empty-state" style="color: var(--text-secondary); text-align: center; padding: 20px;">No saved sessions for this file</p>
-                            </div>
-                            <button id="saveSessionBtn" class="btn btn-primary" style="width: 100%; padding: 12px;">
-                                <i class="icon">💾</i> Save Current Session
-                            </button>
-                        </div>
+               
 
                         <!-- Info Text -->
                         <div class="save-info" style="background: rgba(99, 102, 241, 0.1); padding: 16px; border-radius: 8px; border-left: 4px solid var(--primary);">
@@ -429,10 +422,54 @@ export class AudioPlayer {
                 document.getElementById('youtubeInputSection').style.display =
                     source === 'youtube' ? 'block' : 'none';
 
-                // Show/hide waveform
-                const waveformCanvas = document.getElementById('waveformCanvas');
-                if (waveformCanvas) {
-                    waveformCanvas.style.display = source === 'file' ? 'block' : 'none';
+                // Reset when switching from YouTube to Local File
+                if (this.isYouTubeMode && source === 'file') {
+                    // Stop YouTube player
+                    if (this.youtubePlayer) {
+                        this.youtubePlayer.stopVideo();
+                    }
+
+                    // Clear YouTube state
+                    this.isYouTubeMode = false;
+                    this.youtubeVideoId = null;
+                    this.youtubeVideoTitle = null;
+                    this.youtubeVideoUrl = null;
+
+                    // Hide YouTube player container
+                    const youtubeContainer = document.getElementById('youtubePlayerContainer');
+                    if (youtubeContainer) {
+                        youtubeContainer.style.display = 'none';
+                    }
+
+                    // Reset waveform container
+                    const waveformContainer = document.querySelector('.waveform-container');
+                    if (waveformContainer) {
+                        waveformContainer.innerHTML = '<canvas id="waveformCanvas" style="width: 100%; height: 100%; display: block;"></canvas>';
+                    }
+
+                    // Clear file name display
+                    const fileNameEl = document.getElementById('currentFileName');
+                    if (fileNameEl) {
+                        fileNameEl.textContent = '';
+                        fileNameEl.style.color = 'var(--text-secondary)';
+                    }
+
+                    // Hide audio controls if no local file is loaded
+                    if (!this.currentFileName) {
+                        const controlsSection = document.getElementById('audioControlsSection');
+                        if (controlsSection) {
+                            controlsSection.style.display = 'none';
+                        }
+                    }
+
+                    // Clear duration display
+                    const durationEl = document.getElementById('duration');
+                    const currentTimeEl = document.getElementById('currentTime');
+                    if (durationEl) durationEl.textContent = '0:00';
+                    if (currentTimeEl) currentTimeEl.textContent = '0:00';
+
+                    // Reset playback state
+                    this.stop();
                 }
             });
         });
@@ -1294,6 +1331,8 @@ export class AudioPlayer {
         // Stop waveform animation
         if (this.waveformVisualizer) {
             this.waveformVisualizer.stopAnimation();
+            // Update waveform progress to reflect the reset position
+            this.waveformVisualizer.updateProgress(this.currentTime);
         }
 
         // Reset loop and tempo progression

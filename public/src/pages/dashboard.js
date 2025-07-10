@@ -124,27 +124,7 @@ export class DashboardPage {
                                     </div>
                                 </div>
 
-                                <!-- Log Practice Section -->
-                                <div class="log-practice-section collapsed">
-                                    <div class="log-practice-header">
-                                        <div class="log-practice-title">
-                                            <i class="icon">📝</i>
-                                            <h3>Log Practice Session</h3>
-                                        </div>
-                                        <i class="icon collapse-icon">▶</i>
-                                    </div>
-                                    <div class="log-practice-content">
-                                        <div class="log-practice-form-wrapper">
-                                            <div id="practiceFormContainer">
-                                                <div class="loading-placeholder">
-                                                    <div class="loading-spinner"></div>
-                                                    <p>Loading practice form...</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
+                    
                                 <!-- Recent Sessions -->
                                 <div class="dashboard-widget">
                                     <div class="widget-header">
@@ -298,8 +278,7 @@ export class DashboardPage {
             this.handleLogout();
         });
 
-        // Collapsible log practice sections
-        this.setupCollapsibleSections();
+
 
         // Mobile FAB
         document.getElementById('fabBtn')?.addEventListener('click', () => {
@@ -319,29 +298,7 @@ export class DashboardPage {
         });
     }
 
-    setupCollapsibleSections() {
-        const setupCollapsible = () => {
-            document.querySelectorAll('.log-practice-header').forEach(header => {
-                // Remove existing listeners to prevent duplicates
-                const newHeader = header.cloneNode(true);
-                header.parentNode.replaceChild(newHeader, header);
 
-                newHeader.addEventListener('click', () => {
-                    const section = newHeader.closest('.log-practice-section');
-                    const icon = newHeader.querySelector('.collapse-icon');
-                    if (section && icon) {
-                        section.classList.toggle('collapsed');
-                        icon.textContent = section.classList.contains('collapsed') ? '▶' : '▼';
-                    }
-                });
-            });
-        };
-
-        setupCollapsible();
-
-        // Re-setup after tab switches
-        document.addEventListener('tabSwitched', setupCollapsible);
-    }
 
     setupKeyboardShortcuts() {
         document.addEventListener('keydown', (e) => {

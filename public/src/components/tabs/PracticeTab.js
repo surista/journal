@@ -20,21 +20,6 @@ export class PracticeTab {
                     <!-- Timer (Always visible, non-collapsible) -->
                     <div id="timerContainer" class="timer-section"></div>
 
-                    <!-- Log Practice Section -->
-                    <div class="log-practice-section collapsed">
-                        <div class="log-practice-header">
-                            <div class="log-practice-title">
-                                <i class="icon">📝</i>
-                                <h3>Log Practice Session</h3>
-                            </div>
-                            <i class="icon collapse-icon">▶</i>
-                        </div>
-                        <div class="log-practice-content">
-                            <div class="log-practice-form-wrapper">
-                                <div id="practiceFormContainer"></div>
-                            </div>
-                        </div>
-                    </div>
 
                     <!-- Recent Sessions -->
                     <div class="dashboard-widget">

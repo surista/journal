@@ -29,6 +29,9 @@
 @import url('./components/notifications.css');
 @import url('./components/loading.css');
 @import url('./components/footer.css');
+@import './components/practice-form.css';
+@import './components/practice-log-modal.css';
+
 
 
 /* Page-specific styles */
