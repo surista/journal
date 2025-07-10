@@ -10,9 +10,10 @@ export class Timer {
         this.keyboardHandler = null;
         this.isDestroyed = false;
 
-        // Load saved sync preference with fallback
+        // Load saved sync preference with fallback to true (checked by default)
         const savedSyncPref = localStorage.getItem('timerSyncWithAudio');
-        this.syncWithAudio = savedSyncPref === 'true';
+        this.syncWithAudio = savedSyncPref !== 'false'; // Default to true unless explicitly set to false
+
 
         // Bind methods to ensure correct context
         this.start = this.start.bind(this);

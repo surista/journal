@@ -16,6 +16,36 @@ export class StorageService {
         // REMOVED: this.initializeCloudSync() to prevent errors
     }
 
+    // NEW: Error recovery method
+    async recoverCorruptedData() {
+        console.warn('Attempting to recover from corrupted data...');
+
+        const backupKeys = [
+            'practiceEntries_backup',
+            'practiceEntries_v1',
+            'practiceEntries_uncompressed',
+            `${this.prefix}practice_entries_backup`
+        ];
+
+        for (const key of backupKeys) {
+            try {
+                const backup = localStorage.getItem(key);
+                if (backup) {
+                    const data = JSON.parse(backup);
+                    if (Array.isArray(data)) {
+                        console.log(`Recovered ${data.length} entries from ${key}`);
+                        return data;
+                    }
+                }
+            } catch (e) {
+                console.warn(`Backup ${key} also corrupted`);
+            }
+        }
+
+        console.log('No recoverable data found, starting fresh');
+        return [];
+    }
+
     // Simplified cloud sync without subscription
     async initializeCloudSync() {
         if (!this.cloudSyncEnabled) return;
@@ -41,6 +71,16 @@ export class StorageService {
             }
 
             const key = `${this.prefix}practice_entries`;
+
+            // IMPROVED: Save backup before compression
+            if (entries.length % 10 === 0) {
+                try {
+                    localStorage.setItem(`${this.prefix}practice_entries_backup`, JSON.stringify(entries));
+                    console.log('Backup saved');
+                } catch (backupError) {
+                    console.warn('Failed to save backup:', backupError);
+                }
+            }
 
             if (this.useCompression) {
                 const compressed = CompressionUtils.compressObject(entries);
@@ -68,6 +108,7 @@ export class StorageService {
         }
     }
 
+    // FIXED: Better error handling for corrupted data
     async getPracticeEntries() {
         try {
             const key = `${this.prefix}practice_entries`;
@@ -88,6 +129,22 @@ export class StorageService {
             }
         } catch (error) {
             console.error('Error loading practice entries:', error);
+
+            // IMPROVED: Try to recover from corruption
+            if (error.message.includes('JSON parse error') ||
+                error.message.includes('SyntaxError') ||
+                error.message.includes('Unterminated string')) {
+
+                console.warn('Data corruption detected, attempting recovery...');
+
+                // Clear the corrupted data
+                const key = `${this.prefix}practice_entries`;
+                localStorage.removeItem(key);
+
+                // Try to recover from backup
+                return await this.recoverCorruptedData();
+            }
+
             return [];
         }
     }
