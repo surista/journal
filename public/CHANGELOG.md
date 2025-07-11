@@ -20,7 +20,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Advanced music theory tools
 - Plugin architecture for extensions
 
-## [5.4.0] - 2025-01-15
+## [9.4.0] - 2025-07-12
+
+### Fixed
+- **Repertoire Modal**: Resolved "Add Song" button functionality
+  - Fixed modal visibility and z-index conflicts
+  - Enhanced event delegation for better button detection
+  - Improved modal styling for consistent appearance
+- **Modal System**: Enhanced modal CSS for universal compatibility
+  - Applied aggressive styling patterns across all modals
+  - Better support for modals created dynamically
+- 
+## [5.4.0] - 2025-07-10
 
 ### Added
 - **Enhanced Calendar Navigation**: Completely redesigned calendar page navigation system
@@ -79,7 +90,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Documentation**: Updated architecture documentation
 - **Code Organization**: Better separation of concerns in navigation logic
 
-## [4.9.0] - 2024-01-15
+## [4.9.0] - 2025-07-09
 
 ### Added
 - **Modern Dashboard Layout**: Complete redesign with tabbed interface
@@ -116,7 +127,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Faster Load Times**: Lazy loading for components and images
 - **Better Caching**: Smarter cache strategies for improved responsiveness
 
-## [4.8.0] - 2024-01-10
+## [4.8.0] - 2025-07-06
 
 ### Added
 - **IndexedDB Integration**: Hybrid storage system with localStorage fallback
@@ -152,7 +163,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Data Validation**: Enhanced input sanitization and validation
 - **Storage Security**: Improved data integrity checks
 
-## [4.7.0] - 2024-01-01
+## [4.7.0] - 2025-07-01
 
 ### Added
 - **Pitch Shifting Engine**: Complete rewrite of audio processing
@@ -180,7 +191,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Memory Management**: Better cleanup of audio resources
 - **Browser Compatibility**: Improved Web Audio API compatibility across browsers
 
-## [4.6.0] - 2023-12-15
+## [4.6.0] - 2025-06-29
 
 ### Added
 - **Practice Calendar**: Visual practice tracking with heat map
@@ -207,7 +218,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Calendar Display**: Fixed month navigation and date calculations
 - **Statistics Accuracy**: Corrected streak calculation algorithms
 
-## [4.5.0] - 2023-12-01
+## [4.5.0] - 2025-06-21
 
 ### Added
 - **PWA Support**: Full Progressive Web App implementation
@@ -234,7 +245,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Form Validation**: Better input validation and error messages
 - **Storage Quota**: Handled storage quota exceeded scenarios
 
-## [4.4.0] - 2023-11-15
+## [4.4.0] - 2025-06-15
 
 ### Added
 - **Audio Player**: Complete audio processing system
@@ -256,7 +267,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Cross-browser Compatibility**: Better support for Firefox and Safari
 - **Mobile Layout**: Improved responsive design for mobile devices
 
-## [4.3.0] - 2023-11-01
+## [4.3.0] - 2025-06-01
 
 ### Added
 - **User Authentication**: Local authentication system
@@ -277,7 +288,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Data Loss Prevention**: Multiple backup mechanisms
 - **Authentication Flow**: Smoother login/logout experience
 
-## [4.2.0] - 2023-10-15
+## [4.2.0] - 2025-05-15
 
 ### Added
 - **Statistics Tracking**: Basic practice statistics
@@ -301,7 +312,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Data Validation**: Better input validation
 - **Error Handling**: Improved error messages and recovery
 
-## [4.1.0] - 2023-10-01
+## [4.1.0] - 2025-05-21
 
 ### Added
 - **Practice Timer**: Core timing functionality
@@ -322,7 +333,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Timer Accuracy**: Improved timing precision
 - **Browser Compatibility**: Basic cross-browser support
 
-## [4.0.0] - 2023-09-15
+## [4.0.0] - 2025-05-15
 
 ### Added
 - **Initial Release**: Core application foundation

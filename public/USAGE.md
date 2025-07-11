@@ -7,6 +7,7 @@ This comprehensive guide will help you get the most out of Guitar Practice Journ
 - [Navigation System](#-navigation-system)
 - [Practice Timer](#-practice-timer)
 - [Audio Tools](#-audio-tools)
+- [Repertoire Management](#-repertoire-management)
 - [Practice Logging](#-practice-logging)
 - [Goals & Achievements](#-goals--achievements)
 - [Statistics & Analytics](#-statistics--analytics)
@@ -49,6 +50,7 @@ The Dashboard uses a tabbed interface accessible via the sidebar:
 - **Practice**: Timer, logging, and quick stats
 - **Audio Tools**: Audio file processing and effects
 - **Metronome**: Digital metronome with timer sync
+- **Repertoire**: Song collection management
 - **Goals**: Set and track practice goals
 - **Statistics**: Detailed analytics and insights
 - **History**: Browse all practice sessions
@@ -173,6 +175,55 @@ The Dashboard uses a tabbed interface accessible via the sidebar:
    - Quick recall for future practice
    - Organized by audio file
 
+## 🎸 Repertoire Management
+
+### Adding Songs
+1. **Navigate to Repertoire Tab**
+2. **Click "Add Song" Button**
+3. **Fill Song Details**:
+   - **Title and Artist** (title required)
+   - **Difficulty**: Beginner, Intermediate, Advanced
+   - **Status**: Learning, Polishing, Performance Ready, Inactive
+   - **Musical Info**: Key and tempo (BPM)
+   - **Notes**: Practice notes and observations
+   - **Links**: YouTube videos and sheet music
+
+### Song Collection Overview
+- **Statistics Cards**: Total songs, performance ready count, learning count
+- **Search and Filter**: Find songs by title, artist, difficulty, or status
+- **Visual Organization**: Card-based layout with color-coded status indicators
+
+### Managing Your Collection
+1. **Song Cards Display**:
+   - Song title and artist
+   - Difficulty level with color coding
+   - Current status badge
+   - Last practiced date
+   - Practice statistics (sessions and total time)
+
+2. **Song Actions**:
+   - **Log Practice**: Quick practice session logging
+   - **Edit**: Modify song details
+   - **Delete**: Remove song from collection
+   - **Video Link**: Direct access to instructional videos
+
+### Status Management
+- **Learning**: Currently working on the song
+- **Polishing**: Song learned, refining technique
+- **Performance Ready**: Ready to play for others
+- **Inactive**: Not currently practicing
+
+### Practice Integration
+- **Quick Practice Logging**: Start timer and log practice directly from song cards
+- **Pre-filled Notes**: Practice form automatically includes song information
+- **Progress Tracking**: Track practice time and session count per song
+
+### Best Practices
+- Add songs as soon as you start learning them
+- Update status regularly as you progress
+- Use notes field for technical challenges and progress markers
+- Include YouTube links for easy reference during practice
+
 ## 📝 Practice Logging
 
 ### Accessing Practice Forms
@@ -180,6 +231,7 @@ Practice logging forms are available on multiple tabs for convenience:
 - **Practice Tab**: Primary location with expanded form
 - **Audio Tools Tab**: For logging audio-based practice
 - **Metronome Tab**: For rhythm-focused practice sessions
+- **Repertoire Tab**: Quick logging from song cards
 
 ### Logging a Practice Session
 1. **Required Information**
@@ -421,6 +473,11 @@ Since data is stored locally:
    - Musical goals: Learn complete songs
    - Theory goals: Understand concepts thoroughly
 
+3. **Repertoire Organization**
+   - Add songs immediately when starting to learn
+   - Update status regularly as you progress
+   - Use notes for technical challenges and breakthroughs
+
 ## 🔧 Troubleshooting
 
 ### Navigation Issues
@@ -441,6 +498,24 @@ Since data is stored locally:
 - Refresh page if navigation seems stuck
 - Check if timer is still running (it should persist)
 - Clear browser cache if problems persist
+
+### Repertoire Issues
+
+#### Add Song Button Not Working
+**Symptoms**: Clicking "Add Song" doesn't open modal
+**Solutions**:
+- Refresh the page and try again
+- Check browser console for JavaScript errors
+- Clear browser cache and reload
+- Try clicking directly on the button text
+
+#### Modal Not Appearing
+**Symptoms**: Button responds but modal doesn't show
+**Solutions**:
+- Check if modal is behind other content (scroll or zoom out)
+- Disable browser extensions that might interfere
+- Try different browser
+- Clear cache and hard refresh (Ctrl+F5)
 
 ### Common Issues
 
@@ -528,6 +603,6 @@ If the app becomes unresponsive:
 
 ---
 
-This guide covers the comprehensive functionality of Guitar Practice Journal including the enhanced navigation system. For technical details, see the [MAP.md](MAP.md). For contributing, see [CONTRIBUTING.md](CONTRIBUTING.md).
+This guide covers the comprehensive functionality of Guitar Practice Journal v9.4 including repertoire management and enhanced navigation system. For technical details, see the [MAP.md](MAP.md). For contributing, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 Happy practicing! 🎸✨

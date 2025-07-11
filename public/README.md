@@ -2,9 +2,28 @@
 
 A comprehensive web application for tracking guitar practice sessions, managing goals, and improving your musical journey. Built as a Progressive Web App (PWA) with offline capabilities and advanced audio processing features.
 
-![Version](https://img.shields.io/badge/version-5.4-blue)
+![Version](https://img.shields.io/badge/version-9.4-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![PWA](https://img.shields.io/badge/PWA-enabled-purple)
+
+## 🔧 Recent Improvements (v9.4)
+
+### Repertoire Management System
+- **Song Library**: Complete repertoire management with status tracking
+- **Enhanced Modals**: Improved modal system with better visibility
+- **Practice Integration**: Seamless connection between repertoire and practice logging
+
+### Enhanced Navigation System
+- **Robust Calendar Access**: Fixed critical navigation issues to Calendar page
+- **Multiple Fallback Strategies**: Ensures navigation works even if primary methods fail
+- **Better Error Handling**: User-friendly error messages with technical details
+- **Improved URL Management**: Better support for subdirectory deployments
+
+### Component Reliability
+- **Enhanced Error Recovery**: Graceful handling of component loading failures
+- **Better State Management**: Improved component synchronization across tabs
+- **Memory Management**: More efficient cleanup during page transitions
+- **Performance Optimizations**: Faster navigation and component loading
 
 ## ✨ Features
 
