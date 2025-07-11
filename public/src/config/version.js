@@ -1,7 +1,7 @@
 // src/config/version.js - Version and build information
-export const APP_VERSION = '8.9';
-export const BUILD_DATE = '2025-07-10T07:56:59.520Z';
-export const BUILD_NUMBER = 1752134219;
+export const APP_VERSION = '9.2';
+export const BUILD_DATE = '2025-07-11T08:00:47.470Z';
+export const BUILD_NUMBER = 1752220847;
 
 export const APP_CONFIG = {
     version: APP_VERSION,

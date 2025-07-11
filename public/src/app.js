@@ -96,15 +96,15 @@ class App {
             this.storageService = new storageModule.StorageService(user.id);
             console.log('✅ Storage service loaded');
 
-            // Step 4: Load notification service
+            // // Step 4: Load notification service
             try {
                 console.log('🔔 Loading notification service...');
                 const notificationModule = await import('./services/notificationManager.js');
                 this.notificationManager = new notificationModule.NotificationManager();
+                window.notificationManager = this.notificationManager; // Make globally accessible
                 console.log('✅ Notification service loaded');
             } catch (error) {
                 console.warn('⚠️ Notification service failed to load:', error);
-                // Continue without notifications
             }
 
             // Step 5: Load main dashboard

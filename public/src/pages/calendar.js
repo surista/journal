@@ -1,5 +1,5 @@
-// Calendar Page Component
-import { TimeUtils } from '../utils/helpers.js';
+// Calendar Page Component - Complete and Optimized
+import {TimeUtils} from '../utils/helpers.js';
 
 export class CalendarPage {
     constructor(storageService) {
@@ -10,22 +10,14 @@ export class CalendarPage {
         this.practiceData = [];
         this.dailyGoals = [];
         this.practiceAreas = [
-            'Scales',
-            'Chords',
-            'Arpeggios',
-            'Songs',
-            'Technique',
-            'Theory',
-            'Improvisation',
-            'Sight Reading',
-            'Ear Training',
-            'Rhythm'
+            'Scales', 'Chords', 'Arpeggios', 'Songs', 'Technique',
+            'Theory', 'Improvisation', 'Sight Reading', 'Ear Training', 'Rhythm'
         ];
+        this.windowClickHandler = null;
     }
 
     async init(container = null) {
         this.render(container);
-        this.attachEventListeners();
         await this.loadPracticeData();
     }
 
@@ -108,40 +100,67 @@ export class CalendarPage {
                     <!-- Streak badges will be displayed here -->
                 </div>
             </div>
+        `;
 
-            <!-- Day Detail Modal -->
-            <div class="modal" id="dayDetailModal">
-                <div class="modal-content">
-                    <span class="close-btn" id="closeModalBtn">&times;</span>
-                    <h3 id="modalDate"></h3>
-                    <div id="modalContent"></div>
-                </div>
-            </div>
+        this.renderCalendarDays();
+        this.updateStreakDisplay();
+        this.ensureModalsExist();
+        this.attachEventListeners();
+    }
 
-            <!-- Goal Setting Modal -->
-            <div class="modal" id="goalModal">
+    ensureModalsExist() {
+        // Remove existing modal if it exists to avoid conflicts
+        const existingModal = document.getElementById('goalModal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+
+        // Create the goal modal with better structure
+        const modalHTML = `
+            <div class="modal" id="goalModal" style="display: none;">
                 <div class="modal-content">
                     <span class="close-btn" id="closeGoalModalBtn">&times;</span>
                     <h3>Set Daily Practice Goals</h3>
+                    <p>Set up to 4 practice area goals. Each completed goal will fill one quadrant of the calendar day.</p>
+                    
                     <div id="goalForm">
                         <div class="goal-inputs" id="goalInputs">
                             <!-- Goal inputs will be generated here -->
                         </div>
-                        <button class="btn btn-secondary" id="addGoalAreaBtn">
-                            <i class="icon">➕</i> Add Practice Area
-                        </button>
+                        
+                        <div class="goal-form-actions">
+                            <button class="btn btn-secondary" id="addGoalAreaBtn" type="button">
+                                <i class="icon">➕</i> Add Practice Area
+                            </button>
+                        </div>
+                        
                         <div class="modal-actions">
-                            <button class="btn btn-primary" id="saveGoalsBtn">Save Goals</button>
-                            <button class="btn btn-secondary" id="cancelGoalsBtn">Cancel</button>
+                            <button class="btn btn-primary" id="saveGoalsBtn" type="button">Save Goals</button>
+                            <button class="btn btn-secondary" id="cancelGoalsBtn" type="button">Cancel</button>
                         </div>
                     </div>
                 </div>
             </div>
         `;
 
-        // Render calendar days after setting HTML
-        this.renderCalendarDays();
-        this.updateStreakDisplay();
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+        // Ensure day detail modal exists too
+        if (!document.getElementById('dayDetailModal')) {
+            const dayModalHTML = `
+                <div class="modal" id="dayDetailModal" style="display: none;">
+                    <div class="modal-content">
+                        <span class="close-btn" id="closeModalBtn">&times;</span>
+                        <h3 id="modalDate"></h3>
+                        <div id="modalContent"></div>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', dayModalHTML);
+        }
+
+        // Reattach modal event listeners after creating new modal
+        this.attachModalEventListeners();
     }
 
     renderCalendarDays() {
@@ -186,43 +205,65 @@ export class CalendarPage {
                 dayElement.classList.add('today');
             }
 
+            // Add day number
             const dayNumber = document.createElement('div');
-            dayNumber.className = 'day-number';
+            dayNumber.className = 'calendar-day-number';
             dayNumber.textContent = day;
             dayElement.appendChild(dayNumber);
 
-            // Add practice indicators if data exists
+            // Get practice info for this date
             const practiceInfo = this.getPracticeInfoForDate(dateStr);
+
             if (practiceInfo.practiced) {
-                dayElement.classList.add('practiced');
+                dayElement.classList.add('has-practice');
 
                 // Add time indicator
                 const timeIndicator = document.createElement('div');
                 timeIndicator.className = 'time-indicator';
                 timeIndicator.textContent = this.formatShortDuration(practiceInfo.totalTime);
+                timeIndicator.style.cssText = `
+                    position: absolute;
+                    top: 4px;
+                    left: 6px;
+                    font-size: 0.7rem;
+                    color: var(--primary);
+                    background: rgba(255, 255, 255, 0.9);
+                    padding: 2px 4px;
+                    border-radius: 2px;
+                    z-index: 2;
+                `;
                 dayElement.appendChild(timeIndicator);
 
-                // Add goal quadrants
-                if (this.dailyGoals.length > 0 && practiceInfo.areas) {
+                // Add goal quadrants if goals exist
+                if (this.dailyGoals.length > 0 && practiceInfo.goalCompletions) {
                     const quadrants = document.createElement('div');
-                    quadrants.className = 'goal-quadrants';
+                    quadrants.className = 'calendar-quadrants';
 
-                    this.dailyGoals.slice(0, 4).forEach(goal => {
+                    // Create up to 4 quadrants
+                    for (let i = 0; i < 4; i++) {
                         const quadrant = document.createElement('div');
-                        quadrant.className = 'goal-quadrant';
+                        quadrant.className = 'calendar-quadrant';
 
-                        const areaTime = practiceInfo.areas[goal.area] || 0;
-                        const percentage = Math.min((areaTime / (goal.minutes * 60)) * 100, 100);
+                        // Find goal completion for this quadrant
+                        const completion = practiceInfo.goalCompletions.find(gc => gc.quadrant === i);
 
-                        if (percentage >= 100) {
-                            quadrant.classList.add('complete');
-                        } else if (percentage > 0) {
-                            quadrant.classList.add('partial');
-                            quadrant.style.background = `linear-gradient(to top, var(--primary-light) ${percentage}%, transparent ${percentage}%)`;
+                        if (completion) {
+                            if (completion.completed) {
+                                quadrant.classList.add('completed');
+                                quadrant.style.background = 'var(--primary)';
+                                quadrant.style.opacity = '0.8';
+                            } else if (completion.percentage > 0) {
+                                quadrant.classList.add('partial');
+                                quadrant.style.background = `linear-gradient(to top, var(--primary) ${completion.percentage}%, var(--bg-input) ${completion.percentage}%)`;
+                                quadrant.style.opacity = '0.6';
+                            }
+
+                            // Add tooltip
+                            quadrant.title = `${completion.area}: ${Math.round(completion.percentage)}% (${Math.floor(completion.practiceTime / 60)}/${completion.goalMinutes}min)`;
                         }
 
                         quadrants.appendChild(quadrant);
-                    });
+                    }
 
                     dayElement.appendChild(quadrants);
                 }
@@ -236,10 +277,32 @@ export class CalendarPage {
     }
 
     attachEventListeners() {
-        // Back button - handle embedded context
+        console.log('attachEventListeners called');
+
+        // Goal setting with detailed debugging
+        const addGoalBtn = document.getElementById('addGoalBtn');
+        console.log('addGoalBtn element:', addGoalBtn);
+        console.log('addGoalBtn exists:', !!addGoalBtn);
+
+        if (addGoalBtn) {
+            console.log('Adding click listener to addGoalBtn');
+            addGoalBtn.addEventListener('click', (e) => {
+                console.log('addGoalBtn CLICKED!');
+                e.preventDefault();
+                e.stopPropagation();
+                this.showGoalModal();
+            });
+
+            // Test if the button is clickable
+            console.log('Button style display:', addGoalBtn.style.display);
+            console.log('Button computed style:', window.getComputedStyle(addGoalBtn).display);
+        } else {
+            console.error('addGoalBtn not found!');
+        }
+
+        // Back button
         const backBtn = document.getElementById('backBtn');
         if (backBtn) {
-            // Hide back button if embedded in dashboard
             const isEmbedded = !document.getElementById('app').contains(backBtn);
             if (isEmbedded) {
                 backBtn.style.display = 'none';
@@ -267,23 +330,71 @@ export class CalendarPage {
             this.updateCalendar();
         });
 
-        // Goal setting
-        document.getElementById('addGoalBtn')?.addEventListener('click', () => this.showGoalModal());
-        document.getElementById('addGoalAreaBtn')?.addEventListener('click', () => this.addGoalInput());
-        document.getElementById('saveGoalsBtn')?.addEventListener('click', () => this.saveGoals());
-        document.getElementById('cancelGoalsBtn')?.addEventListener('click', () => this.hideGoalModal());
-        document.getElementById('closeGoalModalBtn')?.addEventListener('click', () => this.hideGoalModal());
+        // Attach modal event listeners
+        this.attachModalEventListeners();
 
-        // Modal close
-        document.getElementById('closeModalBtn')?.addEventListener('click', () => this.hideDayModal());
-
-        // Click outside modals to close
-        window.addEventListener('click', (e) => {
+        // Window click handler for modal closing
+        this.windowClickHandler = (e) => {
             const dayModal = document.getElementById('dayDetailModal');
             const goalModal = document.getElementById('goalModal');
             if (e.target === dayModal) this.hideDayModal();
             if (e.target === goalModal) this.hideGoalModal();
-        });
+        };
+        window.addEventListener('click', this.windowClickHandler);
+    }
+
+    attachModalEventListeners() {
+        // Remove existing listeners to avoid duplicates
+        const addBtn = document.getElementById('addGoalAreaBtn');
+        const saveBtn = document.getElementById('saveGoalsBtn');
+        const cancelBtn = document.getElementById('cancelGoalsBtn');
+        const closeBtn = document.getElementById('closeGoalModalBtn');
+        const dayCloseBtn = document.getElementById('closeModalBtn');
+
+        // Add goal area button
+        if (addBtn) {
+            addBtn.replaceWith(addBtn.cloneNode(true));
+            document.getElementById('addGoalAreaBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                this.addGoalInput();
+            });
+        }
+
+        // Save goals button
+        if (saveBtn) {
+            saveBtn.replaceWith(saveBtn.cloneNode(true));
+            document.getElementById('saveGoalsBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                this.saveGoals();
+            });
+        }
+
+        // Cancel button
+        if (cancelBtn) {
+            cancelBtn.replaceWith(cancelBtn.cloneNode(true));
+            document.getElementById('cancelGoalsBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                this.hideGoalModal();
+            });
+        }
+
+        // Close button
+        if (closeBtn) {
+            closeBtn.replaceWith(closeBtn.cloneNode(true));
+            document.getElementById('closeGoalModalBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                this.hideGoalModal();
+            });
+        }
+
+        // Day modal close button
+        if (dayCloseBtn) {
+            dayCloseBtn.replaceWith(dayCloseBtn.cloneNode(true));
+            document.getElementById('closeModalBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                this.hideDayModal();
+            });
+        }
     }
 
     async loadPracticeData() {
@@ -303,6 +414,7 @@ export class CalendarPage {
         }
     }
 
+
     updateCalendar() {
         // Update month display
         const monthDisplay = document.getElementById('currentMonth');
@@ -318,11 +430,15 @@ export class CalendarPage {
     }
 
     updateStats() {
+        // Skip if we're in a tab container without stat elements
+        if (!document.getElementById('monthPracticeDays')) {
+            return;
+        }
+
         // Calculate stats for current month
         const monthStart = new Date(this.currentYear, this.currentMonth, 1);
         const monthEnd = new Date(this.currentYear, this.currentMonth + 1, 0);
 
-        let monthDays = 0;
         let monthTime = 0;
         let allTimeDays = new Set();
         let allTimeTotal = 0;
@@ -349,17 +465,22 @@ export class CalendarPage {
                 monthDaysSet.add(sessionDate.toISOString().split('T')[0]);
             }
         });
-        monthDays = monthDaysSet.size;
 
-        // Update display
-        document.getElementById('monthPracticeDays').textContent = `${monthDays} days`;
-        document.getElementById('monthTotalTime').textContent = this.formatDuration(monthTime);
-        document.getElementById('totalPracticeDays').textContent = `${allTimeDays.size} days`;
-        document.getElementById('totalPracticeTime').textContent = this.formatDuration(allTimeTotal);
+        // Update display with null checks
+        const monthPracticeDaysEl = document.getElementById('monthPracticeDays');
+        const monthTotalTimeEl = document.getElementById('monthTotalTime');
+        const totalPracticeDaysEl = document.getElementById('totalPracticeDays');
+        const totalPracticeTimeEl = document.getElementById('totalPracticeTime');
+        const longestStreakEl = document.getElementById('longestStreak');
+
+        if (monthPracticeDaysEl) monthPracticeDaysEl.textContent = `${monthDaysSet.size} days`;
+        if (monthTotalTimeEl) monthTotalTimeEl.textContent = this.formatDuration(monthTime);
+        if (totalPracticeDaysEl) totalPracticeDaysEl.textContent = `${allTimeDays.size} days`;
+        if (totalPracticeTimeEl) totalPracticeTimeEl.textContent = this.formatDuration(allTimeTotal);
 
         // Calculate longest streak
         const streak = this.calculateLongestStreak();
-        document.getElementById('longestStreak').textContent = `${streak} days`;
+        if (longestStreakEl) longestStreakEl.textContent = `${streak} days`;
     }
 
     calculateLongestStreak() {
@@ -450,12 +571,12 @@ export class CalendarPage {
 
     getStreakBadges(currentStreak) {
         const badges = [
-            { days: 5, icon: '🔥', label: '5 Day Streak' },
-            { days: 10, icon: '⚡', label: '10 Day Streak' },
-            { days: 15, icon: '💎', label: '15 Day Streak' },
-            { days: 30, icon: '🏆', label: '30 Day Streak' },
-            { days: 60, icon: '👑', label: '60 Day Streak' },
-            { days: 90, icon: '🌟', label: '90 Day Streak' }
+            {days: 5, icon: '🔥', label: '5 Day Streak'},
+            {days: 10, icon: '⚡', label: '10 Day Streak'},
+            {days: 15, icon: '💎', label: '15 Day Streak'},
+            {days: 30, icon: '🏆', label: '30 Day Streak'},
+            {days: 60, icon: '👑', label: '60 Day Streak'},
+            {days: 90, icon: '🌟', label: '90 Day Streak'}
         ];
 
         return badges.map(badge => ({
@@ -471,24 +592,50 @@ export class CalendarPage {
         });
 
         if (sessions.length === 0) {
-            return { practiced: false };
+            return {practiced: false};
         }
 
         const totalTime = sessions.reduce((sum, session) => sum + (session.duration || 0), 0);
         const areas = {};
 
+        // Calculate total time per practice area
         sessions.forEach(session => {
             if (session.practiceArea) {
                 areas[session.practiceArea] = (areas[session.practiceArea] || 0) + (session.duration || 0);
             }
         });
 
+        // Calculate goal completion for quadrants
+        const goalCompletions = this.calculateGoalCompletions(areas);
+
         return {
             practiced: true,
             totalTime,
             areas,
-            sessions
+            sessions,
+            goalCompletions
         };
+    }
+
+    calculateGoalCompletions(practiceAreas) {
+        if (!this.dailyGoals || this.dailyGoals.length === 0) {
+            return [];
+        }
+
+        return this.dailyGoals.map(goal => {
+            const practiceTime = practiceAreas[goal.area] || 0;
+            const goalTime = goal.minutes * 60; // Convert to seconds
+            const percentage = Math.min((practiceTime / goalTime) * 100, 100);
+
+            return {
+                area: goal.area,
+                goalMinutes: goal.minutes,
+                practiceTime,
+                percentage,
+                completed: percentage >= 100,
+                quadrant: goal.quadrant || 0
+            };
+        });
     }
 
     formatDuration(seconds) {
@@ -512,6 +659,11 @@ export class CalendarPage {
         const modalDate = document.getElementById('modalDate');
         const modalContent = document.getElementById('modalContent');
 
+        if (!modal || !modalDate || !modalContent) {
+            console.error('Day detail modal elements not found');
+            return;
+        }
+
         const date = new Date(dateStr + 'T00:00:00');
         modalDate.textContent = date.toLocaleDateString('en-US', {
             weekday: 'long',
@@ -523,8 +675,49 @@ export class CalendarPage {
         const practiceInfo = this.getPracticeInfoForDate(dateStr);
 
         if (!practiceInfo.practiced) {
-            modalContent.innerHTML = '<p class="empty-state">No practice recorded for this day</p>';
+            modalContent.innerHTML = `
+                <div class="empty-state">
+                    <p>No practice recorded for this day</p>
+                    ${this.dailyGoals.length > 0 ? `
+                        <div class="daily-goals-preview">
+                            <h4>Daily Goals:</h4>
+                            <ul>
+                                ${this.dailyGoals.map(goal =>
+                `<li>${goal.area}: ${goal.minutes} minutes</li>`
+            ).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
         } else {
+            // Goal progress section
+            let goalProgressHTML = '';
+            if (this.dailyGoals.length > 0 && practiceInfo.goalCompletions) {
+                goalProgressHTML = `
+                    <div class="goal-progress-section">
+                        <h4>Daily Goal Progress</h4>
+                        <div class="goal-progress-grid">
+                            ${practiceInfo.goalCompletions.map(completion => `
+                                <div class="goal-progress-item ${completion.completed ? 'completed' : ''}">
+                                    <div class="goal-progress-header">
+                                        <span class="goal-area">${completion.area}</span>
+                                        <span class="goal-percentage">${Math.round(completion.percentage)}%</span>
+                                    </div>
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar" style="width: ${completion.percentage}%"></div>
+                                    </div>
+                                    <div class="goal-progress-text">
+                                        ${Math.floor(completion.practiceTime / 60)} / ${completion.goalMinutes} minutes
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Sessions section
             const sessionsHTML = practiceInfo.sessions.map(session => `
                 <div class="session-detail">
                     <div class="session-header">
@@ -548,8 +741,13 @@ export class CalendarPage {
                         <span class="stat-value">${practiceInfo.sessions.length}</span>
                     </div>
                 </div>
-                <h4>Sessions</h4>
-                ${sessionsHTML}
+                
+                ${goalProgressHTML}
+                
+                <h4>Practice Sessions</h4>
+                <div class="sessions-list">
+                    ${sessionsHTML}
+                </div>
             `;
         }
 
@@ -557,105 +755,191 @@ export class CalendarPage {
     }
 
     hideDayModal() {
-        document.getElementById('dayDetailModal').style.display = 'none';
+        const modal = document.getElementById('dayDetailModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
     }
 
     showGoalModal() {
-        const modal = document.getElementById('goalModal');
-        const container = document.getElementById('goalInputs');
+        console.log('showGoalModal CALLED - REAL MODE');
 
-        // Clear existing inputs
+        // First ensure the modal exists
+        this.ensureModalsExist();
+
+        const modal = document.getElementById('goalModal');
+
+
+        if (!modal) {
+            console.error('Modal not found after ensuring it exists');
+            return;
+        }
+
+        const container = document.getElementById('goalInputs');
+        if (!container) {
+            console.error('Goal inputs container not found');
+            return;
+        }
+
+        // Clear existing content
         container.innerHTML = '';
 
-        // Add inputs for existing goals or default
+        // Add goal inputs
         if (this.dailyGoals.length > 0) {
             this.dailyGoals.forEach(goal => this.addGoalInput(goal));
         } else {
-            this.addGoalInput();
+            // Add exactly 4 empty goal inputs
+            for (let i = 0; i < 4; i++) {
+                this.addGoalInput();
+            }
         }
 
-        modal.style.display = 'block';
+        // Always hide add button since 4 is max
+        setTimeout(() => {
+            const addBtn = document.getElementById('addGoalAreaBtn');
+            if (addBtn) addBtn.style.display = 'none';
+        }, 100);
+
+        // Force modal to display with proper styling
+        modal.style.cssText = `
+            display: flex !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            background-color: rgba(0, 0, 0, 0.5) !important;
+            z-index: 999999 !important;
+            align-items: center !important;
+            justify-content: center !important;
+        `;
+
+        // Ensure modal content is visible
+        const modalContent = modal.querySelector('.modal-content');
+        if (modalContent) {
+            modalContent.style.cssText = `
+                background-color: var(--bg-card) !important;
+                padding: 2rem !important;
+                border-radius: var(--radius-lg) !important;
+                max-width: 650px !important;
+                width: 90% !important;
+                max-height: 90vh !important;
+                min-height: 750px !important;
+                overflow-y: auto !important;
+                position: relative !important;
+                border: 1px solid var(--border) !important;
+                z-index: 1000000 !important;
+            `;
+        }
     }
 
     hideGoalModal() {
-        document.getElementById('goalModal').style.display = 'none';
+        const modal = document.getElementById('goalModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
     }
 
     addGoalInput(existingGoal = null) {
         const container = document.getElementById('goalInputs');
+        if (!container) {
+            console.error('Goal inputs container not found');
+            return;
+        }
+
+        // Limit to 4 goals maximum
+        const existingInputs = container.querySelectorAll('.goal-input-row');
+        if (existingInputs.length >= 4) {
+            this.showNotification('Maximum of 4 daily goals allowed', 'warning');
+            return;
+        }
+
         const goalDiv = document.createElement('div');
         goalDiv.className = 'goal-input-row';
 
-        const areaSelect = document.createElement('select');
-        areaSelect.className = 'goal-area-select';
+        // Generate unique IDs
+        const selectId = `goalArea_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        const inputId = `goalMinutes_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-        // Add placeholder option
-        const placeholder = document.createElement('option');
-        placeholder.value = '';
-        placeholder.textContent = 'Select practice area';
-        areaSelect.appendChild(placeholder);
+        goalDiv.innerHTML = `
+            <select class="goal-area-select" id="${selectId}" name="${selectId}">
+                <option value="">Select practice area</option>
+                ${this.practiceAreas.map(area =>
+            `<option value="${area}" ${existingGoal && existingGoal.area === area ? 'selected' : ''}>${area}</option>`
+        ).join('')}
+            </select>
+            <input type="number" 
+                   class="goal-minutes-input" 
+                   id="${inputId}" 
+                   name="${inputId}"
+                   placeholder="Minutes" 
+                   min="1" 
+                   max="180" 
+                   value="${existingGoal ? existingGoal.minutes : ''}" />
+            <button class="btn btn-sm btn-danger remove-goal-btn" type="button">✕</button>
+        `;
 
-        // Add practice areas
-        this.practiceAreas.forEach(area => {
-            const option = document.createElement('option');
-            option.value = area;
-            option.textContent = area;
-            if (existingGoal && existingGoal.area === area) {
-                option.selected = true;
+        // Add remove functionality
+        const removeBtn = goalDiv.querySelector('.remove-goal-btn');
+        removeBtn.addEventListener('click', () => {
+            goalDiv.remove();
+            // Show add button if under limit
+            const addBtn = document.getElementById('addGoalAreaBtn');
+            if (addBtn && container.querySelectorAll('.goal-input-row').length < 4) {
+                addBtn.style.display = 'block';
             }
-            areaSelect.appendChild(option);
         });
 
-        const minutesInput = document.createElement('input');
-        minutesInput.type = 'number';
-        minutesInput.className = 'goal-minutes-input';
-        minutesInput.placeholder = 'Minutes';
-        minutesInput.min = '1';
-        minutesInput.max = '180';
-        if (existingGoal) {
-            minutesInput.value = existingGoal.minutes;
-        }
-
-        const removeBtn = document.createElement('button');
-        removeBtn.className = 'btn btn-sm btn-danger';
-        removeBtn.innerHTML = '✕';
-        removeBtn.onclick = () => goalDiv.remove();
-
-        goalDiv.appendChild(areaSelect);
-        goalDiv.appendChild(minutesInput);
-        goalDiv.appendChild(removeBtn);
         container.appendChild(goalDiv);
+
+        // Hide add button if at limit
+        const addBtn = document.getElementById('addGoalAreaBtn');
+        if (addBtn && container.querySelectorAll('.goal-input-row').length >= 4) {
+            addBtn.style.display = 'none';
+        }
     }
 
     async saveGoals() {
         const goalRows = document.querySelectorAll('.goal-input-row');
         const newGoals = [];
 
-        goalRows.forEach(row => {
+        goalRows.forEach((row, index) => {
             const area = row.querySelector('.goal-area-select').value;
             const minutes = parseInt(row.querySelector('.goal-minutes-input').value);
 
             if (area && minutes > 0) {
                 newGoals.push({
-                    id: Date.now() + Math.random(),
+                    id: Date.now() + Math.random() + index,
                     type: 'daily',
                     area,
                     minutes,
+                    quadrant: index, // Track which quadrant this goal represents (0-3)
                     createdAt: new Date().toISOString()
                 });
             }
         });
 
-        // Remove old daily goals and add new ones
-        const otherGoals = (await this.storageService.getGoals()).filter(g => g.type !== 'daily');
-        const allGoals = [...otherGoals, ...newGoals];
+        if (newGoals.length === 0) {
+            this.showNotification('Please add at least one goal', 'warning');
+            return;
+        }
 
-        await this.storageService.saveGoals(allGoals);
-        this.dailyGoals = newGoals;
+        try {
+            // Remove old daily goals and add new ones
+            const allGoals = await this.storageService.getGoals();
+            const otherGoals = allGoals.filter(g => g.type !== 'daily');
+            const updatedGoals = [...otherGoals, ...newGoals];
 
-        this.hideGoalModal();
-        this.renderCalendarDays();
-        this.showNotification('Daily goals saved successfully', 'success');
+            await this.storageService.saveGoals(updatedGoals);
+            this.dailyGoals = newGoals;
+
+            this.hideGoalModal();
+            this.renderCalendarDays();
+            this.showNotification(`${newGoals.length} daily goals saved successfully`, 'success');
+        } catch (error) {
+            console.error('Error saving goals:', error);
+            this.showNotification('Error saving goals', 'error');
+        }
     }
 
     showNotification(message, type = 'info') {
@@ -676,6 +960,7 @@ export class CalendarPage {
                 border: 1px solid var(--border);
                 border-radius: 8px;
                 z-index: 9999;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
             `;
             document.body.appendChild(notification);
             setTimeout(() => notification.remove(), 3000);
@@ -693,8 +978,20 @@ export class CalendarPage {
         }
     }
 
+    refresh() {
+        this.loadPracticeData();
+    }
+
     destroy() {
         // Clean up event listeners and resources
-        window.removeEventListener('click', this.windowClickHandler);
+        if (this.windowClickHandler) {
+            window.removeEventListener('click', this.windowClickHandler);
+        }
+
+        // Remove modals created by this instance
+        const goalModal = document.getElementById('goalModal');
+        const dayModal = document.getElementById('dayDetailModal');
+        if (goalModal) goalModal.remove();
+        if (dayModal) dayModal.remove();
     }
 }

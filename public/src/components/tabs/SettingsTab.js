@@ -3,12 +3,39 @@ import { TimeUtils } from '../../utils/helpers.js';
 import { notificationManager } from '../../services/notificationManager.js';
 
 export class SettingsTab {
-    constructor(container, storageService, authService) {
-        this.container = container;
+    constructor(storageService, authService) {
         this.storageService = storageService;
         this.authService = authService;
         this.themeService = null;
         this.cloudSyncHandler = null;
+        this.container = null;
+
+        // Store bound event handlers for cleanup
+        this.eventHandlers = {
+            darkModeChange: null,
+            notificationsChange: null,
+            soundChange: null,
+            practiceRemindersChange: null,
+            reminderTimeChange: null,
+            signOut: null,
+            signIn: null,
+            exportData: null,
+            importData: null,
+            importFileChange: null,
+            purgeData: null,
+            clearCache: null,
+            syncNow: null,
+            downloadFromCloud: null,
+            uploadToCloud: null
+        };
+
+        // Validate required services
+        if (!storageService) {
+            console.error('SettingsTab: StorageService is required');
+        }
+        if (!authService) {
+            console.error('SettingsTab: AuthService is required');
+        }
     }
 
     setThemeService(themeService) {
@@ -19,8 +46,34 @@ export class SettingsTab {
         this.cloudSyncHandler = cloudSyncHandler;
     }
 
-    async render() {
-        const user = this.authService.getCurrentUser();
+    async render(container) {
+        // Set the container if provided
+        if (container) {
+            this.container = container;
+        }
+
+        // Check if container exists
+        if (!this.container) {
+            console.error('SettingsTab: No container element provided');
+            return;
+        }
+
+        // Check if authService exists and has the required method
+        if (!this.authService || typeof this.authService.getCurrentUser !== 'function') {
+            console.error('SettingsTab: AuthService not properly initialized or missing getCurrentUser method');
+            this.container.innerHTML = '<div class="error-state">Settings unavailable. AuthService not properly initialized.</div>';
+            return;
+        }
+
+        let user = null;
+        try {
+            user = this.authService.getCurrentUser();
+        } catch (error) {
+            console.error('SettingsTab: Error getting current user:', error);
+            this.container.innerHTML = '<div class="error-state">Settings unavailable. Error accessing user data.</div>';
+            return;
+        }
+
         const settings = await this.storageService.getUserSettings();
 
         this.container.innerHTML = `
@@ -716,6 +769,77 @@ export class SettingsTab {
     }
 
     destroy() {
-        // Clean up any listeners or resources
+        // Remove event listeners
+        if (this.eventHandlers.darkModeChange) {
+            document.getElementById('darkModeToggle')?.removeEventListener('change', this.eventHandlers.darkModeChange);
+        }
+
+        if (this.eventHandlers.notificationsChange) {
+            document.getElementById('notificationsToggle')?.removeEventListener('change', this.eventHandlers.notificationsChange);
+        }
+
+        if (this.eventHandlers.soundChange) {
+            document.getElementById('soundToggle')?.removeEventListener('change', this.eventHandlers.soundChange);
+        }
+
+        if (this.eventHandlers.practiceRemindersChange) {
+            document.getElementById('practiceRemindersToggle')?.removeEventListener('change', this.eventHandlers.practiceRemindersChange);
+        }
+
+        if (this.eventHandlers.reminderTimeChange) {
+            document.getElementById('reminderTime')?.removeEventListener('change', this.eventHandlers.reminderTimeChange);
+        }
+
+        if (this.eventHandlers.signOut) {
+            document.getElementById('signOutBtn')?.removeEventListener('click', this.eventHandlers.signOut);
+        }
+
+        if (this.eventHandlers.signIn) {
+            document.getElementById('signInBtn')?.removeEventListener('click', this.eventHandlers.signIn);
+        }
+
+        if (this.eventHandlers.exportData) {
+            document.getElementById('exportDataBtn')?.removeEventListener('click', this.eventHandlers.exportData);
+        }
+
+        if (this.eventHandlers.importData) {
+            document.getElementById('importDataBtn')?.removeEventListener('click', this.eventHandlers.importData);
+        }
+
+        if (this.eventHandlers.importFileChange) {
+            document.getElementById('importDataFile')?.removeEventListener('change', this.eventHandlers.importFileChange);
+        }
+
+        if (this.eventHandlers.purgeData) {
+            document.getElementById('purgeDataBtn')?.removeEventListener('click', this.eventHandlers.purgeData);
+        }
+
+        if (this.eventHandlers.clearCache) {
+            document.getElementById('clearCacheBtn')?.removeEventListener('click', this.eventHandlers.clearCache);
+        }
+
+        // Cloud sync listeners
+        if (this.eventHandlers.syncNow) {
+            document.getElementById('syncNowBtn')?.removeEventListener('click', this.eventHandlers.syncNow);
+        }
+
+        if (this.eventHandlers.downloadFromCloud) {
+            document.getElementById('downloadFromCloudBtn')?.removeEventListener('click', this.eventHandlers.downloadFromCloud);
+        }
+
+        if (this.eventHandlers.uploadToCloud) {
+            document.getElementById('uploadToCloudBtn')?.removeEventListener('click', this.eventHandlers.uploadToCloud);
+        }
+
+        // Clear container content
+        if (this.container) {
+            this.container.innerHTML = '';
+        }
+
+        // Clear references
+        this.container = null;
+        this.themeService = null;
+        this.cloudSyncHandler = null;
+        this.eventHandlers = {};
     }
 }

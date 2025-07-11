@@ -11,6 +11,7 @@ export class NotificationManager {
         this.container = null;
         this.queue = [];
         this.currentNotification = null;
+        this.hideTimeout = null;
         this.init();
 
         NotificationManager.instance = this;
@@ -32,6 +33,7 @@ export class NotificationManager {
             this.container = document.createElement('div');
             this.container.id = 'notification';
             this.container.className = 'notification';
+            this.container.style.display = 'none'; // Hidden by default
             document.body.appendChild(this.container);
         }
 
@@ -68,8 +70,8 @@ export class NotificationManager {
             this.showBrowserNotification(notification.message);
         }
 
-        // Schedule next notification
-        setTimeout(() => {
+        // Schedule next notification - store timeout ID
+        this.hideTimeout = setTimeout(() => {
             this.hideDOMNotification();
             this.processQueue();
         }, notification.duration);
@@ -93,9 +95,21 @@ export class NotificationManager {
                 this.container.style.background = 'linear-gradient(135deg, var(--success) 0%, #059669 100%)';
         }
 
+        // Apply all necessary styles
+        this.container.style.position = 'fixed';
+        this.container.style.bottom = '20px';
+        this.container.style.right = '20px';
+        this.container.style.zIndex = '999999';
+        this.container.style.padding = '16px 24px';
+        this.container.style.borderRadius = '8px';
+        this.container.style.color = 'white';
+        this.container.style.fontWeight = '500';
+        this.container.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.3)';
+        this.container.style.maxWidth = '400px';
+        this.container.style.display = 'block';
+
         // Add animation class
         this.container.classList.add('notification-show');
-        this.container.style.display = 'block';
     }
 
     hideDOMNotification() {
@@ -106,9 +120,9 @@ export class NotificationManager {
     shouldShowBrowserNotification(type) {
         // Only show browser notifications for important messages
         return (type === 'success' || type === 'warning') &&
-               'Notification' in window &&
-               Notification.permission === 'granted' &&
-               document.hidden; // Only when tab is not active
+            'Notification' in window &&
+            Notification.permission === 'granted' &&
+            document.hidden; // Only when tab is not active
     }
 
     showBrowserNotification(message) {

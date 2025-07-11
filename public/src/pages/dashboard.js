@@ -28,6 +28,32 @@ export class DashboardPage {
         this.isDestroyed = false;
         this.initializationRetries = 0;
         this.maxRetries = 3;
+
+        // Set up hash change listener for tab navigation
+        this.setupHashNavigation();
+    }
+
+    setupHashNavigation() {
+        // Listen for hash changes
+        window.addEventListener('hashchange', () => {
+            this.handleHashChange();
+        });
+
+        // Handle initial hash
+        this.handleHashChange();
+    }
+
+    handleHashChange() {
+        const hash = window.location.hash.slice(1); // Remove #
+        const validTabs = ['practice', 'audio', 'metronome', 'goals', 'stats', 'history', 'calendar', 'settings'];
+
+        if (hash && validTabs.includes(hash)) {
+            console.log('Hash changed to:', hash);
+            this.switchTab(hash);
+        } else if (!hash) {
+            // Default to practice tab if no hash
+            this.switchTab('practice');
+        }
     }
 
     async render() {
@@ -278,12 +304,16 @@ export class DashboardPage {
             this.handleLogout();
         });
 
-
+        // View all sessions
+        document.getElementById('viewAllSessions')?.addEventListener('click', () => {
+            this.switchTab('history');
+        });
 
         // Mobile FAB
         document.getElementById('fabBtn')?.addEventListener('click', () => {
             this.showQuickAddModal();
         });
+
 
         // Keyboard shortcuts
         this.setupKeyboardShortcuts();
@@ -297,7 +327,6 @@ export class DashboardPage {
             console.error('Unhandled promise rejection:', e.reason);
         });
     }
-
 
 
     setupKeyboardShortcuts() {
@@ -454,7 +483,17 @@ export class DashboardPage {
             this.tabs.history = new HistoryTab(this.storageService);
             this.tabs.goals = new GoalsTab(this.storageService);
             this.tabs.calendar = new CalendarTab(this.storageService);
-            this.tabs.settings = new SettingsTab(this.storageService, this.authService, cloudStorage);
+            this.tabs.settings = new SettingsTab(this.storageService, this.authService);
+
+            // Pass theme service to settings tab
+            if (this.tabs.settings && this.themeService) {
+                this.tabs.settings.setThemeService(this.themeService);
+            }
+
+            // Pass cloud sync handler to settings tab
+            if (this.tabs.settings && this.cloudSyncHandler) {
+                this.tabs.settings.setCloudSyncHandler(this.cloudSyncHandler);
+            }
 
             console.log('✅ Tab components initialized');
         } catch (error) {
@@ -465,16 +504,16 @@ export class DashboardPage {
 
     async initializeFooter() {
         try {
-            const footerModule = await import('../components/footer.js');
-            const footer = new footerModule.Footer();
-            const footerContainer = document.getElementById('appFooter');
-
-            if (footerContainer) {
-                footerContainer.innerHTML = footer.render();
-                requestAnimationFrame(() => {
-                    footer.attachEventListeners();
-                });
-            }
+            // const footerModule = await import('../components/footer.js');
+            // const footer = new footerModule.Footer();
+            // const footerContainer = document.getElementById('appFooter');
+            //
+            // if (footerContainer) {
+            //     footerContainer.innerHTML = footer.render();
+            //     requestAnimationFrame(() => {
+            //         footer.attachEventListeners();
+            //     });
+            // }
         } catch (error) {
             console.error('❌ Error loading footer:', error);
             // Footer is not critical, continue without it
@@ -584,6 +623,9 @@ export class DashboardPage {
                 }
             }
 
+            // Update hash without triggering hashchange event
+            window.location.hash = tabName;
+
             // Dispatch custom event
             document.dispatchEvent(new CustomEvent('tabSwitched', {
                 detail: {tabName}
@@ -594,6 +636,14 @@ export class DashboardPage {
             console.error('Error switching tab:', error);
             this.showNotification('Failed to switch tab', 'error');
         }
+    }
+
+    // IMPORTANT: Add this method for calendar navigation compatibility
+    switchToTab(tabName) {
+        console.log('switchToTab called with:', tabName);
+        this.switchTab(tabName);
+        // Update hash as well
+        window.location.hash = tabName;
     }
 
     toggleTheme() {
@@ -629,10 +679,80 @@ export class DashboardPage {
                 await this.cloudSyncHandler.updateCloudStatus();
             }
 
+            // Load quick stats
+            await this.loadQuickStats();
+
+            // Load recent sessions
+            await this.loadRecentSessions();
+
             console.log('✅ Dashboard data loaded');
         } catch (error) {
             console.error('❌ Error loading dashboard data:', error);
             // Don't throw, as basic functionality should still work
+        }
+    }
+
+    async loadQuickStats() {
+        const quickStatsContainer = document.getElementById('quickStats');
+        if (!quickStatsContainer) return;
+
+        try {
+            const stats = await this.storageService.calculateStats();
+
+            quickStatsContainer.innerHTML = `
+                <div class="quick-stats-grid">
+                    <div class="quick-stat">
+                        <span class="stat-value">${stats.totalHours}h</span>
+                        <span class="stat-label">Total</span>
+                    </div>
+                    <div class="quick-stat">
+                        <span class="stat-value">${stats.currentStreak}</span>
+                        <span class="stat-label">Streak</span>
+                    </div>
+                    <div class="quick-stat">
+                        <span class="stat-value">${stats.totalSessions}</span>
+                        <span class="stat-label">Sessions</span>
+                    </div>
+                </div>
+            `;
+        } catch (error) {
+            console.error('Error loading quick stats:', error);
+            quickStatsContainer.innerHTML = '<div class="empty-state">Stats unavailable</div>';
+        }
+    }
+
+    async loadRecentSessions() {
+        const recentSessionsContainer = document.getElementById('recentSessionsList');
+        if (!recentSessionsContainer) return;
+
+        try {
+            const entries = await this.storageService.getPracticeEntries();
+            const recentEntries = entries.slice(0, 5);
+
+            if (recentEntries.length === 0) {
+                recentSessionsContainer.innerHTML = '<div class="empty-state">No practice sessions yet</div>';
+                return;
+            }
+
+            const sessionsList = recentEntries.map(entry => {
+                const date = new Date(entry.date).toLocaleDateString();
+                const duration = Math.floor((entry.duration || 0) / 60);
+
+                return `
+                    <div class="recent-session">
+                        <div class="session-info">
+                            <span class="session-area">${entry.practiceArea || 'Practice'}</span>
+                            <span class="session-date">${date}</span>
+                        </div>
+                        <span class="session-duration">${duration}m</span>
+                    </div>
+                `;
+            }).join('');
+
+            recentSessionsContainer.innerHTML = sessionsList;
+        } catch (error) {
+            console.error('Error loading recent sessions:', error);
+            recentSessionsContainer.innerHTML = '<div class="empty-state">Recent sessions unavailable</div>';
         }
     }
 
@@ -651,6 +771,9 @@ export class DashboardPage {
                 if (this.components.audioPlayer?.audio) {
                     this.components.audioPlayer.audio.pause();
                 }
+
+                // Sign out through auth service
+                await this.authService.logout();
 
                 // Clear local storage
                 localStorage.removeItem('currentUser');
@@ -685,61 +808,16 @@ export class DashboardPage {
     }
 
     showNotification(message, type = 'info') {
-        try {
-            // Create notification element
-            const notification = document.createElement('div');
-            notification.className = `notification notification-${type}`;
-            notification.innerHTML = `
-               <div class="notification-content">
-                   <span class="notification-icon">${
-                type === 'success' ? '✅' :
-                    type === 'error' ? '❌' :
-                        type === 'warning' ? '⚠️' : 'ℹ️'
-            }</span>
-                   <span class="notification-message">${message}</span>
-               </div>
-           `;
-
-            // Add to notification container or create one
-            let container = document.querySelector('.notification-container');
-            if (!container) {
-                container = document.createElement('div');
-                container.className = 'notification-container';
-                container.style.cssText = `
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    z-index: 9999;
-                    pointer-events: none;
-                `;
-                document.body.appendChild(container);
-            }
-
-            container.appendChild(notification);
-
-            // Animate in
-            requestAnimationFrame(() => {
-                notification.classList.add('show');
-            });
-
-            // Auto remove after 3 seconds
-            setTimeout(() => {
-                notification.classList.remove('show');
-                setTimeout(() => {
-                    if (notification.parentNode) {
-                        notification.remove();
-                    }
-                }, 300);
-            }, 3000);
-        } catch (error) {
-            console.error('Error showing notification:', error);
-        }
+        // Notifications disabled
     }
 
     destroy() {
         console.log('🧹 Cleaning up dashboard...');
 
         this.isDestroyed = true;
+
+        // Remove hash change listener
+        window.removeEventListener('hashchange', this.handleHashChange);
 
         // Clear intervals
         if (this.tipInterval) {

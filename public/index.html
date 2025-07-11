@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script>
-if (location.hostname === 'guitar-practice-journal.com') {
-    location.replace('https://www.guitar-practice-journal.com' + location.pathname + location.search + location.hash);
-}
-</script>
+    <script>
+        if (location.hostname === 'guitar-practice-journal.com') {
+            location.replace('https://www.guitar-practice-journal.com' + location.pathname + location.search + location.hash);
+        }
+    </script>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="Track your guitar practice sessions, set goals, and monitor your progress">
     <meta name="theme-color" content="#6366f1">
-    <title>Guitar Practice Journal</title>
+    <title>Guitar Practice Journal v9.2</title>
 
     <!-- Add this before your app scripts -->
     <script>
@@ -29,7 +29,7 @@ if (location.hostname === 'guitar-practice-journal.com') {
     <!-- Simplified base path detection -->
     <script>
         // Simple version tracking
-        window.APP_VERSION = '8.9';
+        window.APP_VERSION = '9.2';
         console.log('🎸 Loading Guitar Practice Journal version:', window.APP_VERSION);
 
         // Simplified base path detection
@@ -62,7 +62,7 @@ if (location.hostname === 'guitar-practice-journal.com') {
           href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImEiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM2MzY2ZjEiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNhODU1ZjciLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIGZpbGw9InVybCgjYSkiIHJ4PSI0Ii8+PHRleHQgeD0iMTYiIHk9IjIyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj7wn464PC90ZXh0Pjwvc3ZnPg==">
 
     <!-- PWA Manifest -->
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="./manifest.json">
 </head>
 <body>
 <div id="app">
@@ -71,7 +71,7 @@ if (location.hostname === 'guitar-practice-journal.com') {
          style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background: #0a0a0a;">
         <div class="loading-spinner"
              style="width: 50px; height: 50px; border: 3px solid #374151; border-top-color: #6366f1; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-        <p style="color: #e0e0e0; margin-top: 20px;">Loading Guitar Practice Journal v8.9.
+        <p style="color: #e0e0e0; margin-top: 20px;">Loading Guitar Practice Journal v9.2.
         <p style="color: #e0e0e0; margin-top: 20px;" id="loadingVersionText">Loading Guitar Practice Journal...</p>
         <div id="error-message"
              style="color: #ef4444; margin-top: 20px; text-align: center; max-width: 600px; display: none;"></div>
@@ -205,7 +205,7 @@ if (location.hostname === 'guitar-practice-journal.com') {
             // Fallback to default text if version loading fails
             const loadingText = document.getElementById('loadingVersionText');
             if (loadingText) {
-                loadingText.textContent = 'Loading Guitar Practice Journal v8.9...';
+                loadingText.textContent = 'Loading Guitar Practice Journal v9.2...';
             }
         }
     })();
