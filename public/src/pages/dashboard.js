@@ -45,7 +45,7 @@ export class DashboardPage {
 
     handleHashChange() {
         const hash = window.location.hash.slice(1); // Remove #
-        const validTabs = ['practice', 'audio', 'metronome', 'goals', 'stats', 'history', 'calendar', 'settings'];
+        const validTabs = ['practice', 'audio', 'metronome', 'repertoire', 'goals', 'stats', 'history', 'calendar', 'settings'];
 
         if (hash && validTabs.includes(hash)) {
             console.log('Hash changed to:', hash);
@@ -87,6 +87,10 @@ export class DashboardPage {
                     <li class="nav-item" data-tab="metronome">
                         <i class="icon">⏱️</i>
                         <span>Metronome</span>
+                    </li>
+                    <li class="nav-item" data-tab="repertoire">
+                        <i class="icon">🎸</i>
+                        <span>Repertoire</span>
                     </li>
                     <li class="nav-item" data-tab="goals">
                         <i class="icon">🎯</i>
@@ -199,6 +203,7 @@ export class DashboardPage {
                     <!-- Other tabs will be rendered by tab components -->
                     <div class="tab-pane" id="audioTab" data-tab="audio"></div>
                     <div class="tab-pane" id="metronomeTab" data-tab="metronome"></div>
+                    <div class="tab-pane" id="repertoireTab" data-tab="repertoire"></div>
                     <div class="tab-pane" id="goalsTab" data-tab="goals"></div>
                     <div class="tab-pane" id="statsTab" data-tab="stats"></div>
                     <div class="tab-pane" id="historyTab" data-tab="history"></div>
@@ -314,7 +319,6 @@ export class DashboardPage {
             this.showQuickAddModal();
         });
 
-
         // Keyboard shortcuts
         this.setupKeyboardShortcuts();
 
@@ -325,6 +329,28 @@ export class DashboardPage {
 
         window.addEventListener('unhandledrejection', (e) => {
             console.error('Unhandled promise rejection:', e.reason);
+        });
+
+        // Listen for practice session deletion to refresh dashboard data
+        window.addEventListener('practiceSessionDeleted', () => {
+            console.log('Practice session deleted, refreshing dashboard data...');
+            this.loadDashboardData();
+
+            // Also refresh streak calendar if it exists
+            if (this.components.streakHeatMap) {
+                this.components.streakHeatMap.render();
+            }
+        });
+
+        // Also listen for new practice sessions to refresh
+        window.addEventListener('practiceSessionSaved', () => {
+            console.log('Practice session saved, refreshing dashboard data...');
+            this.loadDashboardData();
+
+            // Also refresh streak calendar if it exists
+            if (this.components.streakHeatMap) {
+                this.components.streakHeatMap.render();
+            }
         });
     }
 
@@ -479,6 +505,11 @@ export class DashboardPage {
             this.tabs.practice = new PracticeTab(this.storageService);
             this.tabs.audio = new AudioTab(this.storageService, this.audioService);
             this.tabs.metronome = new MetronomeTab(this.storageService);
+
+            // Import and initialize RepertoireTab
+            const { RepertoireTab } = await import('../components/tabs/RepertoireTab.js');
+            this.tabs.repertoire = new RepertoireTab(this.storageService);
+
             this.tabs.stats = new StatsTab(this.storageService);
             this.tabs.history = new HistoryTab(this.storageService);
             this.tabs.goals = new GoalsTab(this.storageService);
@@ -575,6 +606,8 @@ export class DashboardPage {
         }
     }
 
+
+
     switchTab(tabName) {
         console.log('Switching to tab:', tabName);
 
@@ -594,6 +627,7 @@ export class DashboardPage {
                 practice: 'Practice Session',
                 audio: 'Audio Practice Tool',
                 metronome: 'Metronome',
+                repertoire: 'My Repertoire',
                 goals: 'Goals & Achievements',
                 stats: 'Practice Statistics',
                 history: 'Practice History',

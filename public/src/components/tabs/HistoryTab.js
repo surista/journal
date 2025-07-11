@@ -46,21 +46,102 @@ export class HistoryTab {
         document.getElementById('exportHistoryBtn')?.addEventListener('click', () => {
             this.exportHistory();
         });
+
+        // Delete session buttons (using event delegation)
+        document.getElementById('historyList')?.addEventListener('click', async (e) => {
+            if (e.target.classList.contains('delete-session-btn')) {
+                const sessionId = parseInt(e.target.dataset.id);
+                await this.handleDeleteSession(sessionId);
+            }
+        });
+    }
+
+    async handleDeleteSession(sessionId) {
+        // Find the session to get details for confirmation
+        const session = this.allSessions.find(s => s.id === sessionId);
+        if (!session) return;
+
+        // Format session info for confirmation
+        const date = new Date(session.date).toLocaleDateString();
+        const duration = this.formatDuration(session.duration || 0);
+        const area = session.practiceArea || 'Practice Session';
+
+        // Show confirmation dialog
+        const confirmMessage = `Are you sure you want to delete this practice session?\n\n` +
+            `${area}\n` +
+            `Date: ${date}\n` +
+            `Duration: ${duration}\n` +
+            `${session.notes ? `Notes: ${session.notes.substring(0, 50)}...` : ''}`;
+
+        if (confirm(confirmMessage)) {
+            try {
+                // Show loading state
+                const deleteBtn = document.querySelector(`[data-id="${sessionId}"] .delete-session-btn`);
+                if (deleteBtn) {
+                    deleteBtn.textContent = '⏳';
+                    deleteBtn.disabled = true;
+                }
+
+                // Delete from storage
+                const success = await this.storageService.deletePracticeEntry(sessionId);
+
+                if (success) {
+                    // Remove from local array
+                    this.allSessions = this.allSessions.filter(s => s.id !== sessionId);
+
+                    // Re-render the list
+                    this.displayHistory(this.allSessions);
+
+                    // Show notification
+                    this.showNotification('Practice session deleted successfully', 'success');
+
+                    // Emit event for other components to update
+                    window.dispatchEvent(new CustomEvent('practiceSessionDeleted', {
+                        detail: { sessionId }
+                    }));
+                } else {
+                    throw new Error('Failed to delete session');
+                }
+            } catch (error) {
+                console.error('Error deleting session:', error);
+                this.showNotification('Failed to delete practice session', 'error');
+
+                // Re-enable button on error
+                const deleteBtn = document.querySelector(`[data-id="${sessionId}"] .delete-session-btn`);
+                if (deleteBtn) {
+                    deleteBtn.textContent = '🗑️';
+                    deleteBtn.disabled = false;
+                }
+            }
+        }
     }
 
     async loadHistory() {
         try {
+            console.log('Loading practice history...');
             const sessions = await this.storageService.getPracticeEntries();
-            this.allSessions = sessions;
+            console.log('Loaded sessions:', sessions);
+
+            // Sort sessions by date (newest first)
+            this.allSessions = sessions.sort((a, b) => {
+                return new Date(b.date) - new Date(a.date);
+            });
+
             this.displayHistory(this.allSessions);
         } catch (error) {
             console.error('Error loading history:', error);
+            const container = document.getElementById('historyList');
+            if (container) {
+                container.innerHTML = '<p class="error-state">Error loading practice history. Please try refreshing the page.</p>';
+            }
         }
     }
 
     displayHistory(sessions) {
         const container = document.getElementById('historyList');
         if (!container) return;
+
+        console.log('Displaying sessions:', sessions.length);
 
         if (sessions.length === 0) {
             container.innerHTML = '<p class="empty-state">No practice sessions found</p>';
@@ -74,52 +155,114 @@ export class HistoryTab {
             <div class="history-month-group">
                 <h3 class="history-month-header">${month}</h3>
                 ${monthSessions.map(session => {
-                    const duration = TimeUtils.formatDuration(session.duration || 0);
-                    const date = TimeUtils.formatDate(session.date, {
-                        weekday: 'short',
-                        day: 'numeric'
-                    });
+            const duration = this.formatDuration(session.duration || 0);
 
-                    return `
-                        <div class="history-item">
+            // Format date with fallback
+            let dateStr = '';
+            try {
+                const date = new Date(session.date);
+                // Use native JS date formatting as fallback
+                dateStr = date.toLocaleDateString('en-US', {
+                    weekday: 'short',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: 'numeric',
+                    minute: '2-digit'
+                });
+            } catch (e) {
+                console.error('Date formatting error:', e);
+                dateStr = session.date;
+            }
+
+            return `
+                        <div class="history-item" data-id="${session.id}">
                             <div class="history-item-header">
-                                <h4>${session.practiceArea || 'Practice Session'}</h4>
-                                <span class="history-date">${date}</span>
+                                <h4>${this.escapeHtml(session.practiceArea || 'Practice Session')}</h4>
+                                <div class="history-item-actions">
+                                    <span class="history-date">${dateStr}</span>
+                                    <button class="btn-icon delete-session-btn" data-id="${session.id}" title="Delete session">
+                                        🗑️
+                                    </button>
+                                </div>
                             </div>
                             <div class="history-item-details">
                                 <span class="history-duration">
                                     <i class="icon">⏱️</i> ${duration}
                                 </span>
                                 ${session.bpm ? `<span class="history-tempo"><i class="icon">🎵</i> ${session.bpm} BPM</span>` : ''}
-                                ${session.key ? `<span class="history-key"><i class="icon">🎼</i> ${session.key}</span>` : ''}
-                                ${session.audioFile ? `<span class="history-audio"><i class="icon">🎧</i> Audio</span>` : ''}
+                                ${session.tempoPercentage ? `<span class="history-tempo"><i class="icon">📊</i> ${session.tempoPercentage}% speed</span>` : ''}
+                                ${session.key ? `<span class="history-key"><i class="icon">🎼</i> ${this.escapeHtml(session.key)}</span>` : ''}
+                                ${session.audioFile ? `<span class="history-audio"><i class="icon">🎧</i> Audio: ${this.escapeHtml(session.audioFile)}</span>` : ''}
+                                ${session.youtubeTitle ? `<span class="history-audio"><i class="icon">📺</i> YouTube: ${this.escapeHtml(session.youtubeTitle)}</span>` : ''}
                             </div>
-                            ${session.notes ? `<div class="history-notes">${session.notes}</div>` : ''}
+                            ${session.notes ? `<div class="history-notes">${this.escapeHtml(session.notes)}</div>` : ''}
                         </div>
                     `;
-                }).join('')}
+        }).join('')}
             </div>
         `).join('');
+    }
+
+    formatDuration(seconds) {
+        if (!seconds || seconds === 0) return '0m';
+
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+
+        if (hours > 0) {
+            return `${hours}h ${minutes}m`;
+        } else if (minutes > 0) {
+            return secs > 0 ? `${minutes}m ${secs}s` : `${minutes}m`;
+        } else {
+            return `${secs}s`;
+        }
+    }
+
+    escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
 
     groupSessionsByMonth(sessions) {
         const grouped = {};
 
         sessions.forEach(session => {
-            const date = new Date(session.date);
-            const monthKey = date.toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long'
-            });
+            try {
+                const date = new Date(session.date);
 
-            if (!grouped[monthKey]) {
-                grouped[monthKey] = [];
+                // Check if date is valid
+                if (isNaN(date.getTime())) {
+                    console.error('Invalid date:', session.date);
+                    return;
+                }
+
+                const monthKey = date.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long'
+                });
+
+                if (!grouped[monthKey]) {
+                    grouped[monthKey] = [];
+                }
+
+                grouped[monthKey].push(session);
+            } catch (error) {
+                console.error('Error processing session date:', error, session);
             }
-
-            grouped[monthKey].push(session);
         });
 
-        return grouped;
+        // Sort months in reverse chronological order
+        const sortedGrouped = {};
+        Object.keys(grouped)
+            .sort((a, b) => new Date(b) - new Date(a))
+            .forEach(key => {
+                sortedGrouped[key] = grouped[key];
+            });
+
+        return sortedGrouped;
     }
 
     filterHistory(filter) {

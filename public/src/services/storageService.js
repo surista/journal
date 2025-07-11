@@ -7,7 +7,7 @@ export class StorageService {
     constructor(userId) {
         this.userId = userId;
         this.prefix = `guitarpractice_${userId}_`;
-        this.useCompression = true;
+        this.useCompression = false;
         this.autoBackupEnabled = true;
         this.backupDebounceTimer = null;
         this.backupDebounceDelay = 5000;
@@ -296,13 +296,211 @@ export class StorageService {
         }
     }
 
+    async getRepertoire() {
+        try {
+            const key = `${this.prefix}repertoire`;
+            const stored = localStorage.getItem(key);
+
+            if (!stored) {
+                console.log('No repertoire found, returning empty array');
+                return [];
+            }
+
+            const repertoire = JSON.parse(stored);
+
+            // Validate that it's an array
+            if (!Array.isArray(repertoire)) {
+                console.warn('Repertoire data is not an array, resetting to empty array');
+                await this.saveRepertoire([]);
+                return [];
+            }
+
+            console.log(`Loaded ${repertoire.length} songs from repertoire`);
+            return repertoire;
+        } catch (error) {
+            console.error('Error loading repertoire:', error);
+
+            // Try to recover from corruption
+            if (error.message.includes('JSON parse error') ||
+                error.message.includes('SyntaxError') ||
+                error.message.includes('Unexpected token')) {
+
+                console.warn('Repertoire data corrupted, clearing and starting fresh');
+                const key = `${this.prefix}repertoire`;
+                localStorage.removeItem(key);
+                return [];
+            }
+
+            return [];
+        }
+    }
+
+    async saveRepertoire(repertoire) {
+        try {
+            // Validate repertoire array
+            if (!Array.isArray(repertoire)) {
+                throw new Error('Repertoire must be an array');
+            }
+
+            const key = `${this.prefix}repertoire`;
+            const repertoireJson = JSON.stringify(repertoire);
+
+            // Save to localStorage
+            localStorage.setItem(key, repertoireJson);
+
+            // Schedule backup
+            this.scheduleBackup();
+
+            // Simple cloud sync
+            if (cloudStorage && cloudStorage.currentUser) {
+                try {
+                    await cloudStorage.saveData('repertoire', repertoire);
+                    console.log('Repertoire synced to cloud');
+                } catch (error) {
+                    console.warn('Cloud repertoire sync failed:', error);
+                    // Don't fail the entire operation if cloud sync fails
+                }
+            }
+
+            console.log(`Successfully saved ${repertoire.length} songs to repertoire`);
+            return true;
+        } catch (error) {
+            console.error('Error saving repertoire:', error);
+            return false;
+        }
+    }
+
+    async addRepertoireSong(song) {
+        try {
+            const repertoire = await this.getRepertoire();
+
+            // Ensure song has required properties
+            if (!song.id) {
+                song.id = Date.now().toString();
+            }
+
+            if (!song.createdAt) {
+                song.createdAt = new Date().toISOString();
+            }
+
+            // Add new song to the beginning of the array
+            repertoire.unshift(song);
+
+            // Save back to storage
+            const success = await this.saveRepertoire(repertoire);
+
+            if (success) {
+                console.log('Song added to repertoire successfully:', song);
+                return true;
+            } else {
+                throw new Error('Failed to save repertoire to storage');
+            }
+        } catch (error) {
+            console.error('Error adding song to repertoire:', error);
+            return false;
+        }
+    }
+
+    async updateRepertoireSong(songId, updates) {
+        try {
+            const repertoire = await this.getRepertoire();
+            const songIndex = repertoire.findIndex(s => s.id === songId);
+
+            if (songIndex === -1) {
+                throw new Error(`Song with ID ${songId} not found`);
+            }
+
+            // Update the song with new properties
+            repertoire[songIndex] = { ...repertoire[songIndex], ...updates };
+
+            // Add updatedAt timestamp
+            repertoire[songIndex].updatedAt = new Date().toISOString();
+
+            // Save back to storage
+            const success = await this.saveRepertoire(repertoire);
+
+            if (success) {
+                console.log('Song updated successfully:', repertoire[songIndex]);
+                return true;
+            } else {
+                throw new Error('Failed to save updated repertoire to storage');
+            }
+        } catch (error) {
+            console.error('Error updating repertoire song:', error);
+            return false;
+        }
+    }
+
+    async deleteRepertoireSong(songId) {
+        try {
+            const repertoire = await this.getRepertoire();
+            const initialLength = repertoire.length;
+            const filteredRepertoire = repertoire.filter(s => s.id !== songId);
+
+            if (filteredRepertoire.length === initialLength) {
+                console.warn(`Song with ID ${songId} not found for deletion`);
+                return false;
+            }
+
+            // Save filtered repertoire back to storage
+            const success = await this.saveRepertoire(filteredRepertoire);
+
+            if (success) {
+                console.log('Song deleted successfully:', songId);
+                return true;
+            } else {
+                throw new Error('Failed to save repertoire after deletion');
+            }
+        } catch (error) {
+            console.error('Error deleting repertoire song:', error);
+            return false;
+        }
+    }
+
+    async updateSongPracticeStats(songId, practiceSession) {
+        try {
+            const repertoire = await this.getRepertoire();
+            const songIndex = repertoire.findIndex(s => s.id === songId);
+
+            if (songIndex === -1) {
+                console.warn(`Song with ID ${songId} not found for stats update`);
+                return false;
+            }
+
+            const song = repertoire[songIndex];
+
+            // Update practice stats
+            song.practiceCount = (song.practiceCount || 0) + 1;
+            song.totalPracticeTime = (song.totalPracticeTime || 0) + (practiceSession.duration || 0);
+            song.lastPracticed = new Date().toISOString();
+
+            // Save back to storage
+            const success = await this.saveRepertoire(repertoire);
+
+            if (success) {
+                console.log('Song practice stats updated:', song);
+                return true;
+            } else {
+                throw new Error('Failed to save updated song stats');
+            }
+        } catch (error) {
+            console.error('Error updating song practice stats:', error);
+            return false;
+        }
+    }
+
+
+
     // ===================
     // PRACTICE ENTRIES
     // ===================
 
     async savePracticeEntry(entry) {
         try {
+            console.log('📝 Attempting to save practice entry:', entry);
+
             const entries = await this.getPracticeEntries();
+            console.log('📚 Current entries count:', entries.length);
 
             // Ensure entry has required properties
             if (!entry.id) {
@@ -314,6 +512,7 @@ export class StorageService {
             }
 
             entries.unshift(entry);
+            console.log('📝 New entries count after adding:', entries.length);
 
             if (entries.length > 1000) {
                 entries.length = 1000;
@@ -331,12 +530,28 @@ export class StorageService {
                 }
             }
 
+            // Try saving without compression first to debug
+            console.log('💾 Attempting to save to localStorage...');
+
             if (this.useCompression) {
+                console.log('🗜️ Using compression...');
                 const compressed = CompressionUtils.compressObject(entries);
-                localStorage.setItem(key, compressed);
+                if (!compressed) {
+                    console.error('❌ Compression failed!');
+                    // Fallback to uncompressed
+                    localStorage.setItem(key, JSON.stringify(entries));
+                } else {
+                    localStorage.setItem(key, compressed);
+                    console.log('✅ Saved compressed data');
+                }
             } else {
                 localStorage.setItem(key, JSON.stringify(entries));
+                console.log('✅ Saved uncompressed data');
             }
+
+            // Verify save
+            const savedData = localStorage.getItem(key);
+            console.log('🔍 Verification - data exists in localStorage:', !!savedData);
 
             await this.updateStats(entry);
             this.scheduleBackup();
@@ -350,11 +565,174 @@ export class StorageService {
                 }
             }
 
-            console.log('Practice entry saved successfully:', entry);
+            console.log('✅ Practice entry saved successfully:', entry);
             return true;
         } catch (error) {
-            console.error('Error saving practice entry:', error);
+            console.error('❌ Error saving practice entry:', error);
             throw error;
+        }
+    }
+
+    async deletePracticeEntry(entryId) {
+        try {
+            console.log('🗑️ Attempting to delete practice entry:', entryId);
+
+            // Get current entries
+            const entries = await this.getPracticeEntries();
+            const entryToDelete = entries.find(e => e.id === entryId);
+
+            if (!entryToDelete) {
+                console.warn('Entry not found:', entryId);
+                return false;
+            }
+
+            // Remove the entry
+            const filteredEntries = entries.filter(e => e.id !== entryId);
+
+            // Save updated entries
+            const key = `${this.prefix}practice_entries`;
+            if (this.useCompression) {
+                const compressed = CompressionUtils.compressObject(filteredEntries);
+                localStorage.setItem(key, compressed);
+            } else {
+                localStorage.setItem(key, JSON.stringify(filteredEntries));
+            }
+
+            // Update stats by recalculating from remaining entries
+            await this.recalculateStats();
+
+            // If the deleted entry was linked to a repertoire song, update its stats
+            if (entryToDelete.notes) {
+                const repertoire = await this.getRepertoire();
+                const notesLower = entryToDelete.notes.toLowerCase();
+
+                for (const song of repertoire) {
+                    if (notesLower.includes(song.title.toLowerCase())) {
+                        // Recalculate song stats
+                        await this.recalculateSongStats(song.id);
+                        break;
+                    }
+                }
+            }
+
+            console.log('✅ Practice entry deleted successfully');
+            return true;
+        } catch (error) {
+            console.error('❌ Error deleting practice entry:', error);
+            return false;
+        }
+    }
+
+    async recalculateStats() {
+        try {
+            const entries = await this.getPracticeEntries();
+
+            // Calculate totals
+            const totalSeconds = entries.reduce((sum, entry) => sum + (entry.duration || 0), 0);
+            const totalHours = Math.floor(totalSeconds / 3600);
+
+            // Calculate practice areas
+            const practiceAreas = {};
+            entries.forEach(entry => {
+                if (entry.practiceArea) {
+                    practiceAreas[entry.practiceArea] = (practiceAreas[entry.practiceArea] || 0) + 1;
+                }
+            });
+
+            // Calculate streaks
+            const currentStreak = await this.calculateCurrentStreak();
+            const longestStreak = await this.calculateLongestStreak();
+
+            const stats = {
+                totalSessions: entries.length,
+                totalSeconds: totalSeconds,
+                totalHours: totalHours,
+                currentStreak: currentStreak,
+                longestStreak: longestStreak,
+                practiceAreas: practiceAreas
+            };
+
+            // Save recalculated stats
+            const key = `${this.prefix}stats`;
+            localStorage.setItem(key, JSON.stringify(stats));
+
+            console.log('📊 Stats recalculated:', stats);
+            return stats;
+        } catch (error) {
+            console.error('Error recalculating stats:', error);
+        }
+    }
+
+    async calculateLongestStreak() {
+        try {
+            const sessions = await this.getPracticeEntries();
+            if (sessions.length === 0) return 0;
+
+            // Get unique practice dates
+            const practiceDates = new Set();
+            sessions.forEach(session => {
+                const date = new Date(session.date).toDateString();
+                practiceDates.add(date);
+            });
+
+            // Convert to sorted array
+            const sortedDates = Array.from(practiceDates)
+                .map(d => new Date(d))
+                .sort((a, b) => a - b);
+
+            let maxStreak = 1;
+            let currentStreak = 1;
+
+            for (let i = 1; i < sortedDates.length; i++) {
+                const prevDate = sortedDates[i - 1];
+                const currDate = sortedDates[i];
+                const dayDiff = Math.floor((currDate - prevDate) / (1000 * 60 * 60 * 24));
+
+                if (dayDiff === 1) {
+                    currentStreak++;
+                    maxStreak = Math.max(maxStreak, currentStreak);
+                } else {
+                    currentStreak = 1;
+                }
+            }
+
+            return maxStreak;
+        } catch (error) {
+            console.error('Error calculating longest streak:', error);
+            return 0;
+        }
+    }
+
+    async recalculateSongStats(songId) {
+        try {
+            const repertoire = await this.getRepertoire();
+            const song = repertoire.find(s => s.id === songId);
+            if (!song) return;
+
+            const entries = await this.getPracticeEntries();
+
+            // Reset stats
+            song.practiceCount = 0;
+            song.totalPracticeTime = 0;
+            song.lastPracticed = null;
+
+            // Recalculate based on entries that mention this song
+            entries.forEach(entry => {
+                if (entry.notes && entry.notes.toLowerCase().includes(song.title.toLowerCase())) {
+                    song.practiceCount++;
+                    song.totalPracticeTime += entry.duration || 0;
+
+                    if (!song.lastPracticed || new Date(entry.date) > new Date(song.lastPracticed)) {
+                        song.lastPracticed = entry.date;
+                    }
+                }
+            });
+
+            // Save updated repertoire
+            await this.saveRepertoire(repertoire);
+            console.log('🎸 Song stats recalculated:', song);
+        } catch (error) {
+            console.error('Error recalculating song stats:', error);
         }
     }
 
@@ -363,21 +741,46 @@ export class StorageService {
             const key = `${this.prefix}practice_entries`;
             const stored = localStorage.getItem(key);
 
-            if (!stored) return [];
+            console.log('🔍 Loading practice entries...');
+            console.log('🔑 Using key:', key);
+            console.log('📦 Raw data exists:', !!stored);
 
+            if (!stored) {
+                console.log('📭 No stored data found, returning empty array');
+                return [];
+            }
+
+            let entries;
             if (this.useCompression) {
+                console.log('🗜️ Attempting to decompress...');
                 const decompressed = CompressionUtils.decompressObject(stored);
                 if (!decompressed) {
-                    console.warn('Failed to decompress practice entries');
-                    localStorage.removeItem(key);
-                    return [];
+                    console.warn('❌ Failed to decompress practice entries');
+
+                    // Try parsing as regular JSON in case it's not compressed
+                    try {
+                        entries = JSON.parse(stored);
+                        console.log('✅ Parsed as uncompressed JSON successfully');
+                    } catch (e) {
+                        console.error('❌ Failed to parse as JSON:', e);
+                        localStorage.removeItem(key);
+                        return [];
+                    }
+                } else {
+                    entries = decompressed;
+                    console.log('✅ Decompressed successfully');
                 }
-                return decompressed;
             } else {
-                return JSON.parse(stored);
+                entries = JSON.parse(stored);
+                console.log('✅ Parsed uncompressed data');
             }
+
+            console.log('📚 Loaded entries count:', entries.length);
+            console.log('📋 First entry:', entries[0]);
+
+            return entries;
         } catch (error) {
-            console.error('Error loading practice entries:', error);
+            console.error('❌ Error loading practice entries:', error);
 
             // Try to recover from corruption
             if (error.message.includes('JSON parse error') ||
@@ -643,6 +1046,7 @@ export class StorageService {
                 data: {
                     practiceEntries: await this.getPracticeEntries(),
                     goals: await this.getGoals(),
+                    repertoire: await this.getRepertoire(),
                     stats: await this.getStats(),
                     settings: await this.getUserSettings(),
                     audioSessions: this.getAllAudioSessions()
@@ -694,6 +1098,7 @@ export class StorageService {
                 userId: this.userId,
                 practiceEntries: await this.getPracticeEntries(),
                 goals: await this.getGoals(),
+                repertoire: await this.getRepertoire(),  // Add this line
                 stats: await this.getStats(),
                 settings: await this.getUserSettings(),
                 audioSessions: this.getAllAudioSessions()
@@ -721,6 +1126,7 @@ export class StorageService {
             }
 
             if (data.goals) await this.saveGoals(data.goals);
+            if (data.repertoire) await this.saveRepertoire(data.repertoire);
             if (data.stats) localStorage.setItem(`${this.prefix}stats`, JSON.stringify(data.stats));
             if (data.settings) await this.saveUserSettings(data.settings);
 
@@ -845,5 +1251,59 @@ export class StorageService {
         } else {
             return `${minutes}m`;
         }
+    }
+
+    async debugStorageState() {
+        console.log('🔍 Debugging Storage State...');
+        console.log('User ID:', this.userId);
+        console.log('Prefix:', this.prefix);
+
+        // Check all localStorage keys
+        const allKeys = Object.keys(localStorage);
+        const relevantKeys = allKeys.filter(key => key.includes('guitarpractice'));
+        console.log('📦 All guitar practice keys:', relevantKeys);
+
+        // Try to load data with different approaches
+        const key = `${this.prefix}practice_entries`;
+        const rawData = localStorage.getItem(key);
+
+        if (rawData) {
+            console.log('Raw data length:', rawData.length);
+            console.log('First 100 chars:', rawData.substring(0, 100));
+
+            // Try different parsing methods
+            try {
+                // Method 1: Direct JSON parse
+                const parsed = JSON.parse(rawData);
+                console.log('✅ Direct JSON parse successful:', parsed.length, 'entries');
+                return parsed;
+            } catch (e1) {
+                console.log('❌ Direct JSON parse failed:', e1.message);
+
+                try {
+                    // Method 2: Decompress
+                    const decompressed = CompressionUtils.decompressObject(rawData);
+                    console.log('✅ Decompression successful:', decompressed?.length, 'entries');
+                    return decompressed;
+                } catch (e2) {
+                    console.log('❌ Decompression failed:', e2.message);
+                }
+            }
+        }
+
+        // Check for backups
+        const backupKey = `${this.prefix}practice_entries_backup`;
+        const backupData = localStorage.getItem(backupKey);
+        if (backupData) {
+            try {
+                const backup = JSON.parse(backupData);
+                console.log('📦 Found backup with', backup.length, 'entries');
+                return backup;
+            } catch (e) {
+                console.log('❌ Backup parse failed:', e.message);
+            }
+        }
+
+        return null;
     }
 }

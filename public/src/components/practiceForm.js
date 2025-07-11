@@ -709,6 +709,25 @@ export class PracticeForm {
             // Save entry
             await this.storageService.savePracticeEntry(practiceEntry);
 
+            // Check if notes mention a repertoire song
+            if (notes) {
+                const repertoire = await this.storageService.getRepertoire();
+
+                // Look for song titles in notes (case-insensitive)
+                const notesLower = notes.toLowerCase();
+                for (const song of repertoire) {
+                    if (notesLower.includes(song.title.toLowerCase())) {
+                        // Update song practice stats
+                        await this.storageService.updateSongPracticeStats(song.id, practiceEntry);
+                        console.log(`Linked practice session to song: ${song.title}`);
+                        break; // Only match first song found
+                    }
+                }
+            }
+
+            // Reset form and timer
+            this.resetForm();
+
             // Reset form and timer
             this.resetForm();
             if (this.timer) {

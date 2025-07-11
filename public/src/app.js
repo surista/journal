@@ -49,6 +49,24 @@ class App {
             this.themeService = new ThemeService();
             console.log('✅ Theme initialized:', this.themeService.getTheme());
 
+            // Add global ESC key handler for modals
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' || e.keyCode === 27) {
+                    // Close any open modals
+                    const openModals = document.querySelectorAll('.modal[style*="display: flex"], .modal[style*="display: block"]');
+                    openModals.forEach(modal => {
+                        modal.style.display = 'none';
+                    });
+
+                    // Also check for any modals with .show class
+                    const showModals = document.querySelectorAll('.modal.show');
+                    showModals.forEach(modal => {
+                        modal.classList.remove('show');
+                        modal.style.display = 'none';
+                    });
+                }
+            });
+
             // Step 1: Load authentication service
             console.log('🔐 Loading authentication service...');
             const authModule = await import('./services/authService.js');

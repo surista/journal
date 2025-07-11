@@ -293,6 +293,50 @@
    font-style: italic;
 }
 
+/* History item actions */
+.history-item-actions {
+   display: flex;
+   align-items: center;
+   gap: var(--space-md);
+}
+
+.btn-icon {
+   background: none;
+   border: none;
+   cursor: pointer;
+   padding: var(--space-xs);
+   border-radius: var(--radius-sm);
+   transition: all 0.2s ease;
+   font-size: 1rem;
+   line-height: 1;
+   color: var(--text-secondary);
+}
+
+.btn-icon:hover {
+   background: var(--bg-input);
+   color: var(--text-primary);
+   transform: scale(1.1);
+}
+
+.delete-session-btn {
+   opacity: 0;
+   transition: opacity 0.2s ease;
+}
+
+.history-item:hover .delete-session-btn {
+   opacity: 1;
+}
+
+.delete-session-btn:hover {
+   color: var(--danger);
+   background: rgba(239, 68, 68, 0.1);
+}
+
+.delete-session-btn:disabled {
+   cursor: not-allowed;
+   opacity: 0.5;
+}
+
 /* Settings tab layout */
 .settings-layout {
    max-width: 800px;
