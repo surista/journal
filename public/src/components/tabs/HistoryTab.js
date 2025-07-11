@@ -193,7 +193,18 @@ export class HistoryTab {
                                 ${session.tempoPercentage ? `<span class="history-tempo"><i class="icon">📊</i> ${session.tempoPercentage}% speed</span>` : ''}
                                 ${session.key ? `<span class="history-key"><i class="icon">🎼</i> ${this.escapeHtml(session.key)}</span>` : ''}
                                 ${session.audioFile ? `<span class="history-audio"><i class="icon">🎧</i> Audio: ${this.escapeHtml(session.audioFile)}</span>` : ''}
-                                ${session.youtubeTitle ? `<span class="history-audio"><i class="icon">📺</i> YouTube: ${this.escapeHtml(session.youtubeTitle)}</span>` : ''}
+                                ${session.youtubeTitle ? `
+                                <span class="history-audio">
+                                    <i class="icon">📺</i> 
+                                    YouTube: 
+                                    ${session.youtubeUrl ?
+                                            `<a href="${this.escapeHtml(session.youtubeUrl)}" target="_blank" rel="noopener noreferrer" style="color: var(--primary); text-decoration: underline;">
+                                            ${this.escapeHtml(session.youtubeTitle)}
+                                        </a>` :
+                                            this.escapeHtml(session.youtubeTitle)
+                                        }
+                                </span>
+                            ` : ''}
                             </div>
                             ${session.notes ? `<div class="history-notes">${this.escapeHtml(session.notes)}</div>` : ''}
                         </div>

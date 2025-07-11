@@ -176,51 +176,118 @@ export class RepertoireTab {
         this.attachEventListeners();
     }
 
+    // Fix for RepertoireTab.js - attachEventListeners method
     attachEventListeners() {
-        // Add song button
-        document.getElementById('addSongBtn')?.addEventListener('click', () => {
-            this.showSongModal();
-        });
+        console.log('🎸 RepertoireTab: attachEventListeners called');
+        console.log('🎸 Container exists:', !!this.container);
 
-        // Search
-        document.getElementById('repertoireSearch')?.addEventListener('input', (e) => {
-            this.currentFilter.search = e.target.value.toLowerCase();
-            this.applyFilters();
-        });
-
-        // Filters
-        document.getElementById('difficultyFilter')?.addEventListener('change', (e) => {
-            this.currentFilter.difficulty = e.target.value;
-            this.applyFilters();
-        });
-
-        document.getElementById('statusFilter')?.addEventListener('change', (e) => {
-            this.currentFilter.status = e.target.value;
-            this.applyFilters();
-        });
-
-        // Modal controls
-        document.getElementById('closeSongModal')?.addEventListener('click', () => {
-            this.hideSongModal();
-        });
-
-        document.getElementById('cancelSongBtn')?.addEventListener('click', () => {
-            this.hideSongModal();
-        });
-
-        // Form submission
-        document.getElementById('songForm')?.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await this.saveSong();
-        });
-
-        // Close modal on outside click
-        window.addEventListener('click', (e) => {
-            const modal = document.getElementById('songModal');
-            if (e.target === modal) {
-                this.hideSongModal();
+        if (this.container) {
+            // Add debugging for the Add Song button
+            const addSongBtn = this.container.querySelector('#addSongBtn');
+            console.log('🎸 Add Song button found:', !!addSongBtn);
+            if (addSongBtn) {
+                console.log('🎸 Add Song button element:', addSongBtn);
+                addSongBtn.addEventListener('click', (e) => {
+                    console.log('🎸 Add Song button clicked directly!');
+                    e.preventDefault();
+                    this.showSongModal();
+                });
             }
-        });
+
+            // Event delegation with extensive debugging
+            this.container.addEventListener('click', async (e) => {
+                console.log('🎸 Container click detected:', e.target);
+                console.log('🎸 Target ID:', e.target.id);
+                console.log('🎸 Target classes:', e.target.className);
+
+                const target = e.target;
+
+                // Add Song button - improved detection with debugging
+                if (target.id === 'addSongBtn') {
+                    console.log('🎸 Add Song button clicked via event delegation (direct match)!');
+                    e.preventDefault();
+                    this.showSongModal();
+                    return;
+                }
+
+                if (target.closest('#addSongBtn')) {
+                    console.log('🎸 Add Song button clicked via event delegation (closest match)!');
+                    e.preventDefault();
+                    this.showSongModal();
+                    return;
+                }
+
+                // Debug other potential matches
+                if (target.textContent && target.textContent.includes('Add Song')) {
+                    console.log('🎸 Found element with "Add Song" text:', target);
+                    e.preventDefault();
+                    this.showSongModal();
+                    return;
+                }
+
+                // Close modal buttons
+                if (target.id === 'closeSongModal' || target.id === 'cancelSongBtn') {
+                    console.log('🎸 Close modal button clicked');
+                    e.preventDefault();
+                    this.hideSongModal();
+                    return;
+                }
+
+                // Song actions
+                if (target.classList.contains('edit-song-btn') || target.closest('.edit-song-btn')) {
+                    console.log('🎸 Edit song button clicked');
+                    const btn = target.classList.contains('edit-song-btn') ? target : target.closest('.edit-song-btn');
+                    const songId = btn.dataset.id;
+                    this.editSong(songId);
+                    return;
+                }
+
+                if (target.classList.contains('delete-song-btn') || target.closest('.delete-song-btn')) {
+                    console.log('🎸 Delete song button clicked');
+                    const btn = target.classList.contains('delete-song-btn') ? target : target.closest('.delete-song-btn');
+                    const songId = btn.dataset.id;
+                    await this.deleteSong(songId);
+                    return;
+                }
+
+                if (target.classList.contains('practice-song-btn') || target.closest('.practice-song-btn')) {
+                    console.log('🎸 Practice song button clicked');
+                    const btn = target.classList.contains('practice-song-btn') ? target : target.closest('.practice-song-btn');
+                    const songId = btn.dataset.id;
+                    this.practiceSong(songId);
+                    return;
+                }
+            });
+
+            // Form submission
+            this.container.addEventListener('submit', async (e) => {
+                console.log('🎸 Form submission detected:', e.target.id);
+                if (e.target.id === 'songForm') {
+                    e.preventDefault();
+                    await this.saveSong();
+                }
+            });
+
+            // Filter and search changes
+            this.container.addEventListener('change', (e) => {
+                console.log('🎸 Change event:', e.target.id, e.target.value);
+                if (e.target.id === 'difficultyFilter') {
+                    this.currentFilter.difficulty = e.target.value;
+                    this.applyFilters();
+                } else if (e.target.id === 'statusFilter') {
+                    this.currentFilter.status = e.target.value;
+                    this.applyFilters();
+                }
+            });
+
+            this.container.addEventListener('input', (e) => {
+                console.log('🎸 Input event:', e.target.id, e.target.value);
+                if (e.target.id === 'repertoireSearch') {
+                    this.currentFilter.search = e.target.value;
+                    this.applyFilters();
+                }
+            });
+        }
     }
 
     async loadRepertoire() {
@@ -308,11 +375,14 @@ export class RepertoireTab {
                 </div>
                 
                 <div class="song-actions">
-                    <button class="btn btn-sm btn-secondary" onclick="window.repertoireTab.logPractice('${song.id}')">
+                    <button class="btn btn-sm btn-secondary practice-song-btn" data-id="${song.id}">
                         Log Practice
                     </button>
-                    <button class="btn btn-sm btn-secondary" onclick="window.repertoireTab.editSong('${song.id}')">
+                    <button class="btn btn-sm btn-secondary edit-song-btn" data-id="${song.id}">
                         Edit
+                    </button>
+                    <button class="btn btn-sm btn-danger delete-song-btn" data-id="${song.id}">
+                        Delete
                     </button>
                     ${song.videoLink ? `
                         <a href="${song.videoLink}" target="_blank" class="btn btn-sm btn-secondary">
@@ -338,12 +408,24 @@ export class RepertoireTab {
     }
 
     showSongModal(songId = null) {
+        console.log('🎸 showSongModal called with songId:', songId);
+
         const modal = document.getElementById('songModal');
+        if (!modal) {
+            console.error('🎸 Modal not found!');
+            return;
+        }
+
+        // Apply the same aggressive styles as goalModal
+        modal.style.display = 'flex';
+        modal.style.visibility = 'visible';
+        modal.style.opacity = '1';
+        modal.style.zIndex = '999999';
+
         const modalTitle = document.getElementById('songModalTitle');
         const form = document.getElementById('songForm');
 
         if (songId) {
-            // Edit mode
             modalTitle.textContent = 'Edit Song';
             const song = this.repertoire.find(s => s.id === songId);
             if (song) {
@@ -359,19 +441,19 @@ export class RepertoireTab {
                 form.dataset.songId = songId;
             }
         } else {
-            // Add mode
             modalTitle.textContent = 'Add New Song';
             form.reset();
             delete form.dataset.songId;
         }
-
-        modal.style.display = 'flex';
     }
 
     hideSongModal() {
+        console.log('🎸 hideSongModal called');
         const modal = document.getElementById('songModal');
-        modal.style.display = 'none';
-        document.getElementById('songForm').reset();
+        if (modal) {
+            modal.style.display = 'none';
+            document.getElementById('songForm').reset();
+        }
     }
 
     async saveSong() {

@@ -14,6 +14,7 @@ export class PracticeForm {
         this.currentAudioFileName = ''; // Track current audio file
         this.currentYouTubeInfo = null; // Track YouTube video info
         this.currentMediaType = 'file'; // 'file' or 'youtube'
+        this.isSubmitting = false; // Add this flag to prevent duplicate submissions
 
         // Determine tab suffix from container
         if (container) {
@@ -180,8 +181,9 @@ export class PracticeForm {
 
     attachEventListeners() {
         const form = this.container.querySelector(`#practiceForm${this.tabSuffix}`);
-        if (form) {
+        if (form && !form.hasAttribute('data-listeners-attached')) {
             form.addEventListener('submit', (e) => this.handleSubmit(e));
+            form.setAttribute('data-listeners-attached', 'true');
         }
 
         // Collapsible header with audio check
@@ -462,7 +464,6 @@ export class PracticeForm {
         }
     }
 
-
     toggleTempoMode() {
         this.isPercentageMode = !this.isPercentageMode;
         this.updateTempoModeDisplay();
@@ -558,154 +559,169 @@ export class PracticeForm {
     async handleSubmit(event) {
         event.preventDefault();
 
-        // Try to get form data using the form itself
-        const form = event.target;
-        const formData = new FormData(form);
-
-        // Get values from form data
-        let practiceArea = formData.get('practiceArea') || '';
-        const customArea = formData.get('customArea') || '';
-        const audioFileValue = formData.get('audioFileName') || '';
-        const tempoValue = formData.get('tempoValue') || '';
-        const key = formData.get('key') || '';
-        const notes = formData.get('notes') || '';
-
-        // Parse media info
-        let audioFile = null;
-        let youtubeUrl = null;
-        let youtubeTitle = null;
-
-        if (audioFileValue) {
-            if (audioFileValue.startsWith('youtube:')) {
-                // Parse YouTube info
-                const youtubeData = audioFileValue.substring(8); // Remove 'youtube:'
-                const [url, title] = youtubeData.split('|');
-                youtubeUrl = url;
-                youtubeTitle = title;
-            } else if (audioFileValue.startsWith('file:')) {
-                // Parse file info
-                audioFile = audioFileValue.substring(5); // Remove 'file:'
-            } else {
-                // Legacy format - assume it's a file
-                audioFile = audioFileValue;
-            }
-        }
-
-        // Debug logging
-        console.log('Form submit for tab:', this.tabSuffix);
-        console.log('Form data:', {
-            practiceArea,
-            customArea,
-            audioFileValue,
-            tempoValue,
-            key,
-            notes
-        });
-
-        // Use custom area if selected
-        if (practiceArea === 'custom') {
-            if (customArea && customArea.trim() !== '') {
-                practiceArea = customArea.trim();
-                // Add the custom area to localStorage for future use
-                this.addCustomPracticeArea(practiceArea);
-            } else {
-                notificationManager.error('Please enter a custom practice area!');
-                const customAreaEl = document.getElementById(`customArea${this.tabSuffix}`);
-                if (customAreaEl) customAreaEl.focus();
-                return;
-            }
-        }
-
-        // Validate practice area
-        if (!practiceArea || practiceArea === '' || practiceArea === 'custom') {
-            notificationManager.error('Please select or enter a practice area!');
-            // Focus on the practice area select
-            const practiceAreaEl = document.getElementById(`practiceArea${this.tabSuffix}`);
-            if (practiceAreaEl) {
-                practiceAreaEl.focus();
-                // Highlight the select element
-                practiceAreaEl.style.border = '2px solid var(--danger)';
-                setTimeout(() => {
-                    practiceAreaEl.style.border = '';
-                }, 3000);
-            }
+        // Prevent duplicate submissions
+        if (this.isSubmitting) {
+            console.log('Already submitting, ignoring duplicate submit');
             return;
         }
 
-        // Get duration from timer
-        let duration = 0;
-        if (this.timer) {
-            duration = this.timer.getElapsedTime();
+        // Get the submit button and disable it
+        const submitButton = event.target.querySelector('button[type="submit"]');
+        if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.textContent = 'Saving...';
         }
 
-        // Validate duration - must have used the timer
-        if (duration <= 0) {
-            notificationManager.error('Please use the timer to track your practice session!');
-            // Highlight the timer
-            const timerDisplay = document.querySelector('.timer-display');
-            if (timerDisplay) {
-                timerDisplay.style.animation = 'pulse 1s ease-in-out 3';
-                setTimeout(() => {
-                    timerDisplay.style.animation = '';
-                }, 3000);
-            }
-            return;
-        }
-
-        // Warn if session is very short
-        if (duration < 60) {
-            if (!confirm('This practice session is less than 1 minute. Are you sure you want to save it?')) {
-                return;
-            }
-        }
-
-        // Process tempo value
-        let bpm = null;
-        let tempoPercentage = null;
-
-        if (tempoValue) {
-            const numValue = parseFloat(tempoValue);
-
-            if (isNaN(numValue)) {
-                notificationManager.error('Please enter a valid tempo value!');
-                return;
-            }
-
-            if (this.isPercentageMode) {
-                // Convert percentage to BPM (assuming base tempo)
-                tempoPercentage = numValue;
-                bpm = Math.round(this.baseTempo * (numValue / 100));
-
-                if (numValue < 10 || numValue > 200) {
-                    notificationManager.error('Tempo percentage must be between 10% and 200%!');
-                    return;
-                }
-            } else {
-                // Direct BPM value
-                bpm = Math.round(numValue);
-
-                if (bpm < 40 || bpm > 300) {
-                    notificationManager.error('BPM must be between 40 and 300!');
-                    return;
-                }
-            }
-        }
-
-        const practiceEntry = {
-            id: Date.now(),
-            date: new Date().toISOString(),
-            duration: duration,
-            practiceArea: practiceArea,
-            bpm: bpm,
-            tempoPercentage: tempoPercentage,
-            key: key || null,
-            notes: notes || null,
-            audioFile: audioFile || null,
-            youtubeUrl: youtubeUrl || null,
-            youtubeTitle: youtubeTitle || null
-        };
+        this.isSubmitting = true;
 
         try {
+            // Try to get form data using the form itself
+            const form = event.target;
+            const formData = new FormData(form);
+
+            // Get values from form data
+            let practiceArea = formData.get('practiceArea') || '';
+            const customArea = formData.get('customArea') || '';
+            const audioFileValue = formData.get('audioFileName') || '';
+            const tempoValue = formData.get('tempoValue') || '';
+            const key = formData.get('key') || '';
+            const notes = formData.get('notes') || '';
+
+            // Parse media info
+            let audioFile = null;
+            let youtubeUrl = null;
+            let youtubeTitle = null;
+
+            if (audioFileValue) {
+                if (audioFileValue.startsWith('youtube:')) {
+                    // Parse YouTube info
+                    const youtubeData = audioFileValue.substring(8); // Remove 'youtube:'
+                    const [url, title] = youtubeData.split('|');
+                    youtubeUrl = url;
+                    youtubeTitle = title;
+                } else if (audioFileValue.startsWith('file:')) {
+                    // Parse file info
+                    audioFile = audioFileValue.substring(5); // Remove 'file:'
+                } else {
+                    // Legacy format - assume it's a file
+                    audioFile = audioFileValue;
+                }
+            }
+
+            // Debug logging
+            console.log('Form submit for tab:', this.tabSuffix);
+            console.log('Form data:', {
+                practiceArea,
+                customArea,
+                audioFileValue,
+                tempoValue,
+                key,
+                notes
+            });
+
+            // Use custom area if selected
+            if (practiceArea === 'custom') {
+                if (customArea && customArea.trim() !== '') {
+                    practiceArea = customArea.trim();
+                    // Add the custom area to localStorage for future use
+                    this.addCustomPracticeArea(practiceArea);
+                } else {
+                    notificationManager.error('Please enter a custom practice area!');
+                    const customAreaEl = document.getElementById(`customArea${this.tabSuffix}`);
+                    if (customAreaEl) customAreaEl.focus();
+                    return;
+                }
+            }
+
+            // Validate practice area
+            if (!practiceArea || practiceArea === '' || practiceArea === 'custom') {
+                notificationManager.error('Please select or enter a practice area!');
+                // Focus on the practice area select
+                const practiceAreaEl = document.getElementById(`practiceArea${this.tabSuffix}`);
+                if (practiceAreaEl) {
+                    practiceAreaEl.focus();
+                    // Highlight the select element
+                    practiceAreaEl.style.border = '2px solid var(--danger)';
+                    setTimeout(() => {
+                        practiceAreaEl.style.border = '';
+                    }, 3000);
+                }
+                return;
+            }
+
+            // Get duration from timer
+            let duration = 0;
+            if (this.timer) {
+                duration = this.timer.getElapsedTime();
+            }
+
+            // Validate duration - must have used the timer
+            if (duration <= 0) {
+                notificationManager.error('Please use the timer to track your practice session!');
+                // Highlight the timer
+                const timerDisplay = document.querySelector('.timer-display');
+                if (timerDisplay) {
+                    timerDisplay.style.animation = 'pulse 1s ease-in-out 3';
+                    setTimeout(() => {
+                        timerDisplay.style.animation = '';
+                    }, 3000);
+                }
+                return;
+            }
+
+            // Warn if session is very short
+            if (duration < 60) {
+                if (!confirm('This practice session is less than 1 minute. Are you sure you want to save it?')) {
+                    return;
+                }
+            }
+
+            // Process tempo value
+            let bpm = null;
+            let tempoPercentage = null;
+
+            if (tempoValue) {
+                const numValue = parseFloat(tempoValue);
+
+                if (isNaN(numValue)) {
+                    notificationManager.error('Please enter a valid tempo value!');
+                    return;
+                }
+
+                if (this.isPercentageMode) {
+                    // Convert percentage to BPM (assuming base tempo)
+                    tempoPercentage = numValue;
+                    bpm = Math.round(this.baseTempo * (numValue / 100));
+
+                    if (numValue < 10 || numValue > 200) {
+                        notificationManager.error('Tempo percentage must be between 10% and 200%!');
+                        return;
+                    }
+                } else {
+                    // Direct BPM value
+                    bpm = Math.round(numValue);
+
+                    if (bpm < 40 || bpm > 300) {
+                        notificationManager.error('BPM must be between 40 and 300!');
+                        return;
+                    }
+                }
+            }
+
+            const practiceEntry = {
+                id: Date.now(),
+                date: new Date().toISOString(),
+                duration: duration,
+                practiceArea: practiceArea,
+                bpm: bpm,
+                tempoPercentage: tempoPercentage,
+                key: key || null,
+                notes: notes || null,
+                audioFile: audioFile || null,
+                youtubeUrl: youtubeUrl || null,
+                youtubeTitle: youtubeTitle || null
+            };
+
             // Save entry
             await this.storageService.savePracticeEntry(practiceEntry);
 
@@ -727,28 +743,92 @@ export class PracticeForm {
 
             // Reset form and timer
             this.resetForm();
-
-            // Reset form and timer
-            this.resetForm();
             if (this.timer) {
                 this.timer.reset();
             }
 
-            // Clear saved form state
             // Clear saved form state
             this.clearFormState();
 
             const minutes = Math.floor(duration / 60);
             notificationManager.success(`Saved ${minutes} minute${minutes !== 1 ? 's' : ''} practice session - rock on! 🎸✨`);
 
+            // Show confetti animation
+            this.showConfetti();
 
             // Emit event for other components to update
             window.dispatchEvent(new CustomEvent('practiceSessionSaved', {
                 detail: practiceEntry
             }));
+
+            // Close the practice form after a short delay
+            setTimeout(() => {
+                this.closeForm();
+            }, 1500); // Give time for confetti animation
+
         } catch (error) {
             console.error('Error saving practice session:', error);
             notificationManager.error('Failed to save practice session. Please try again.');
+        } finally {
+            // Re-enable the submit button
+            this.isSubmitting = false;
+            if (submitButton) {
+                submitButton.disabled = false;
+                submitButton.textContent = '💾 Save Practice Session';
+            }
+        }
+    }
+
+    showConfetti() {
+        // Create confetti container
+        const confettiContainer = document.createElement('div');
+        confettiContainer.className = 'confetti-container';
+        confettiContainer.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        `;
+        document.body.appendChild(confettiContainer);
+
+        // Create confetti pieces
+        const colors = ['#6366f1', '#a855f7', '#10b981', '#f59e0b', '#ef4444'];
+        const confettiCount = 50;
+
+        for (let i = 0; i < confettiCount; i++) {
+            const confetti = document.createElement('div');
+            confetti.style.cssText = `
+                position: absolute;
+                width: 10px;
+                height: 10px;
+                background: ${colors[Math.floor(Math.random() * colors.length)]};
+                left: ${Math.random() * 100}%;
+                top: -10px;
+                opacity: ${Math.random() * 0.5 + 0.5};
+                transform: rotate(${Math.random() * 360}deg);
+                animation: confettiFall ${Math.random() * 3 + 2}s ease-out;
+            `;
+            confettiContainer.appendChild(confetti);
+        }
+
+        // Remove confetti after animation
+        setTimeout(() => {
+            confettiContainer.remove();
+        }, 5000);
+    }
+
+    closeForm() {
+        // Find the collapsible section
+        const section = this.container.closest('.log-practice-section');
+        if (section) {
+            section.classList.add('collapsed');
+            const icon = section.querySelector('.collapse-icon');
+            if (icon) {
+                icon.textContent = '▶';
+            }
         }
     }
 
@@ -934,33 +1014,6 @@ export class PracticeForm {
         }
     }
 
-
-    destroy() {
-        // Clear any pending debounced saves
-        if (this.debouncedSaveFormState) {
-            this.debouncedSaveFormState.cancel && this.debouncedSaveFormState.cancel();
-        }
-
-        // Clear form state reference
-        this.formState = null;
-
-        // Clear timer reference
-        this.timer = null;
-    }
-
-    destroy() {
-        // Clear any pending debounced saves
-        if (this.debouncedSaveFormState) {
-            this.debouncedSaveFormState.cancel && this.debouncedSaveFormState.cancel();
-        }
-
-        // Clear form state reference
-        this.formState = null;
-
-        // Clear timer reference
-        this.timer = null;
-    }
-
     setAudioContext(audioInfo) {
         if (this.tabSuffix === 'Audio') {
             if (audioInfo) {
@@ -981,5 +1034,18 @@ export class PracticeForm {
 
             this.updateAudioFileDisplay();
         }
+    }
+
+    destroy() {
+        // Clear any pending debounced saves
+        if (this.debouncedSaveFormState) {
+            this.debouncedSaveFormState.cancel && this.debouncedSaveFormState.cancel();
+        }
+
+        // Clear form state reference
+        this.formState = null;
+
+        // Clear timer reference
+        this.timer = null;
     }
 }

@@ -231,17 +231,19 @@
 }
 
 .history-item {
-   background: var(--bg-input);
-   padding: var(--space-lg);
-   border-radius: var(--radius-lg);
-   margin-bottom: var(--space-md);
+   background: var(--bg-card);
    border: 1px solid var(--border);
-   transition: var(--transition-base);
+   border-radius: var(--radius-lg);
+   padding: var(--space-lg);
+   margin-bottom: var(--space-md);
+   transition: all 0.2s ease;
+   position: relative; /* Add this for hover effects */
 }
 
 .history-item:hover {
    border-color: var(--primary);
    transform: translateY(-2px);
+   box-shadow: var(--shadow-md);
 }
 
 .history-item-header {
@@ -255,8 +257,8 @@
    margin: 0;
    font-size: var(--text-lg);
    font-weight: 600;
+   color: var(--text-primary);
 }
-
 .history-date {
    font-size: var(--text-sm);
    color: var(--text-secondary);
@@ -310,6 +312,12 @@
    font-size: 1rem;
    line-height: 1;
    color: var(--text-secondary);
+   opacity: 0; /* Start hidden */
+}
+
+/* Show delete button on hover */
+.history-item:hover .btn-icon {
+   opacity: 1;
 }
 
 .btn-icon:hover {
@@ -321,10 +329,6 @@
 .delete-session-btn {
    opacity: 0;
    transition: opacity 0.2s ease;
-}
-
-.history-item:hover .delete-session-btn {
-   opacity: 1;
 }
 
 .delete-session-btn:hover {
@@ -738,3 +742,4 @@
        display: block;
    }
 }
+

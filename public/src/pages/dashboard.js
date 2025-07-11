@@ -755,13 +755,14 @@ export class DashboardPage {
         }
     }
 
+    // Update loadRecentSessions method in dashboard.js
     async loadRecentSessions() {
         const recentSessionsContainer = document.getElementById('recentSessionsList');
         if (!recentSessionsContainer) return;
 
         try {
             const entries = await this.storageService.getPracticeEntries();
-            const recentEntries = entries.slice(0, 5);
+            const recentEntries = entries.slice(0, 3); // Show only 3 most recent
 
             if (recentEntries.length === 0) {
                 recentSessionsContainer.innerHTML = '<div class="empty-state">No practice sessions yet</div>';
@@ -769,18 +770,56 @@ export class DashboardPage {
             }
 
             const sessionsList = recentEntries.map(entry => {
-                const date = new Date(entry.date).toLocaleDateString();
-                const duration = Math.floor((entry.duration || 0) / 60);
+                const date = new Date(entry.date);
+                const dateStr = date.toLocaleDateString('en-US', {
+                    weekday: 'short',
+                    month: 'short',
+                    day: 'numeric'
+                });
+                const timeStr = date.toLocaleTimeString('en-US', {
+                    hour: 'numeric',
+                    minute: '2-digit'
+                });
+
+                const duration = entry.duration || 0;
+                const minutes = Math.floor(duration / 60);
+                const seconds = duration % 60;
+                const durationStr = seconds > 0 ? `${minutes}m ${seconds}s` : `${minutes}m`;
+
+                // Build details array like History tab
+                const details = [];
+                if (entry.bpm) details.push(`🎵 ${entry.bpm} BPM`);
+                if (entry.tempoPercentage) details.push(`📊 ${entry.tempoPercentage}% speed`);
+                if (entry.key) details.push(`🎼 ${entry.key}`);
+                if (entry.audioFile) details.push(`🎧 ${entry.audioFile}`);
+                if (entry.youtubeTitle) {
+                    if (entry.youtubeUrl) {
+                        details.push(`📺 <a href="${entry.youtubeUrl}" target="_blank" style="color: var(--primary); text-decoration: underline;">${entry.youtubeTitle}</a>`);
+                    } else {
+                        details.push(`📺 ${entry.youtubeTitle}`);
+                    }
+                }
 
                 return `
-                    <div class="recent-session">
-                        <div class="session-info">
-                            <span class="session-area">${entry.practiceArea || 'Practice'}</span>
-                            <span class="session-date">${date}</span>
-                        </div>
-                        <span class="session-duration">${duration}m</span>
+                <div class="recent-session" style="background: var(--bg-input); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border); margin-bottom: 0.75rem;">
+                    <div class="session-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <span class="session-area" style="font-weight: 600; color: var(--text-primary);">
+                            ${entry.practiceArea || 'Practice'}
+                        </span>
+                        <span class="session-duration" style="color: var(--primary); font-weight: 600;">
+                            ${durationStr}
+                        </span>
                     </div>
-                `;
+                    ${details.length > 0 ? `
+                        <div class="session-details" style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.5rem;">
+                            ${details.join(' • ')}
+                        </div>
+                    ` : ''}
+                    <div class="session-time" style="font-size: 0.75rem; color: var(--text-muted);">
+                        ${dateStr} at ${timeStr}
+                    </div>
+                </div>
+            `;
             }).join('');
 
             recentSessionsContainer.innerHTML = sessionsList;

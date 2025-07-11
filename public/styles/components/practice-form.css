@@ -136,3 +136,41 @@
         transform: scale(1);
     }
 }
+
+/* Confetti Animation */
+@keyframes confettiFall {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+/* Enhanced success notification */
+.notification.success {
+    animation: successPulse 0.5s ease-out;
+}
+
+@keyframes successPulse {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Disabled button state */
+button[type="submit"]:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: var(--bg-input) !important;
+}
