@@ -495,12 +495,31 @@ export class StorageService {
     // PRACTICE ENTRIES
     // ===================
 
+    // In storageService.js, update the savePracticeEntry method:
+
     async savePracticeEntry(entry) {
         try {
             console.log('📝 Attempting to save practice entry:', entry);
 
+            // Prevent duplicate entries by checking if an identical entry was just saved
             const entries = await this.getPracticeEntries();
             console.log('📚 Current entries count:', entries.length);
+
+            // Check for duplicate entry within the last 5 seconds
+            if (entries.length > 0) {
+                const lastEntry = entries[0];
+                const lastEntryTime = new Date(lastEntry.date).getTime();
+                const currentEntryTime = new Date(entry.date).getTime();
+                const timeDiff = Math.abs(currentEntryTime - lastEntryTime);
+
+                // If the last entry has the same practice area and duration and was saved within 5 seconds, it's likely a duplicate
+                if (timeDiff < 5000 &&
+                    lastEntry.practiceArea === entry.practiceArea &&
+                    lastEntry.duration === entry.duration) {
+                    console.warn('⚠️ Duplicate entry detected, skipping save');
+                    return true; // Return success but don't save
+                }
+            }
 
             // Ensure entry has required properties
             if (!entry.id) {

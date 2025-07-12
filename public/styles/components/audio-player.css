@@ -472,3 +472,106 @@
         padding: var(--space-sm);
     }
 }
+
+/* ============================================
+   Sticky Timer for Audio Tool & Metronome Tabs
+   ============================================ */
+
+/* Make timer sticky at the top for both Audio and Metronome tabs */
+#audioTab .timer-section,
+#timerContainerAudio,
+#metronomeTab .timer-section,
+#timerContainerMetronome {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg-dark);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(10px);
+    background: rgba(26, 26, 46, 0.95);
+}
+
+/* Ensure the layout containers are scrollable */
+#audioTab .audio-layout,
+#metronomeTab .metronome-layout {
+    height: calc(100vh - 140px); /* Adjust based on header + footer height */
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-top: 0;
+}
+
+/* Add shadow when timer is "floating" */
+#audioTab .timer-section.scrolled,
+#timerContainerAudio.scrolled,
+#metronomeTab .timer-section.scrolled,
+#timerContainerMetronome.scrolled {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Ensure wrappers don't add extra top padding */
+#audioTab .audio-player-wrapper,
+#metronomeTab .metronome-wrapper {
+    padding-top: 0;
+}
+
+/* For the Practice Form inside tabs (if it exists) */
+#practiceFormContainerAudio,
+#practiceFormContainerMetronome {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-lg);
+}
+
+/* Smooth scroll behavior */
+#audioTab .audio-layout,
+#metronomeTab .metronome-layout {
+    scroll-behavior: smooth;
+}
+
+/* Ensure proper spacing from footer */
+#audioTab,
+#metronomeTab {
+    padding-bottom: 60px; /* Space for footer */
+}
+
+/* Metronome specific adjustments */
+#metronomeTab .metronome-wrapper {
+    min-height: auto; /* Override the min-height from original styles */
+    padding: var(--space-lg);
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    #audioTab .timer-section,
+    #timerContainerAudio,
+    #metronomeTab .timer-section,
+    #timerContainerMetronome {
+        padding: 0.75rem;
+    }
+
+    #audioTab .audio-layout,
+    #metronomeTab .metronome-layout {
+        height: calc(100vh - 120px); /* Less space needed on mobile */
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    #audioTab .timer-section.scrolled,
+    #timerContainerAudio.scrolled,
+    #metronomeTab .timer-section.scrolled,
+    #timerContainerMetronome.scrolled {
+        border-bottom: 2px solid var(--primary);
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    #audioTab .audio-layout,
+    #metronomeTab .metronome-layout {
+        scroll-behavior: auto;
+    }
+}

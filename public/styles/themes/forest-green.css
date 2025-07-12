@@ -1,0 +1,85 @@
+/* Forest Green Theme - Natural green with earthy tones */
+[data-theme="forest-green"] {
+    /* Primary Colors */
+    --primary: #48bb78;
+    --primary-dark: #38a169;
+    --primary-light: #68d391;
+    --primary-rgb: 72, 187, 120;
+
+    /* Background Colors */
+    --bg-dark: #0d1510;
+    --bg-primary: #1a2f23;
+    --bg-secondary: #22382b;
+    --bg-tertiary: #2a4032;
+    --bg-card: #1e3328;
+    --bg-input: #243b30;
+    --bg-hover: #2d4438;
+
+    /* Text Colors */
+    --text-primary: #e6f2ea;
+    --text-secondary: #9fb8a8;
+    --text-muted: #6b8274;
+    --text-inverse: #0d1510;
+
+    /* Border Colors */
+    --border: #2d4438;
+    --border-light: #3a5042;
+    --border-hover: #48bb78;
+
+    /* Status Colors */
+    --success: #48bb78;
+    --success-dark: #38a169;
+    --success-light: #68d391;
+
+    --warning: #f6ad55;
+    --warning-dark: #ed8936;
+    --warning-light: #fbd38d;
+
+    --danger: #fc8181;
+    --danger-dark: #f56565;
+    --danger-light: #feb2b2;
+
+    --info: #63b3ed;
+    --info-dark: #4299e1;
+    --info-light: #90cdf4;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.6);
+    --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.7);
+
+    /* Special Effects */
+    --glow-primary: 0 0 20px rgba(72, 187, 120, 0.6);
+    --glow-success: 0 0 20px rgba(72, 187, 120, 0.6);
+    --glow-danger: 0 0 20px rgba(252, 129, 129, 0.5);
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, #38a169 0%, #48bb78 100%);
+    --gradient-dark: linear-gradient(135deg, #1a2f23 0%, #0d1510 100%);
+    --gradient-card: linear-gradient(135deg, #1e3328 0%, #22382b 100%);
+}
+
+/* Forest Green specific enhancements */
+[data-theme="forest-green"] .sidebar {
+    background: linear-gradient(180deg, #1a2f23 0%, #0d1510 100%);
+}
+
+[data-theme="forest-green"] .btn-primary {
+    background: var(--gradient-primary);
+    box-shadow: 0 4px 14px 0 rgba(72, 187, 120, 0.35);
+}
+
+[data-theme="forest-green"] .nav-item.active {
+    background: linear-gradient(90deg, rgba(72, 187, 120, 0.15) 0%, rgba(72, 187, 120, 0.05) 100%);
+    border-left-color: #48bb78;
+}
+
+[data-theme="forest-green"] .practice-tip {
+    background: linear-gradient(135deg, rgba(72, 187, 120, 0.1) 0%, rgba(72, 187, 120, 0.05) 100%);
+}
+
+[data-theme="forest-green"] .timer-display {
+    background: linear-gradient(135deg, #243b30 0%, #1e3328 100%);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+}

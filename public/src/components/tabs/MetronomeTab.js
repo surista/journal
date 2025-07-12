@@ -105,6 +105,29 @@ export class MetronomeTab {
 
     onActivate() {
         // Called when tab becomes active
+
+        // Add scroll listener for sticky timer shadow effect
+        const metronomeLayout = document.querySelector('#metronomeTab .metronome-layout');
+        const timerSection = document.querySelector('#metronomeTab .timer-section');
+
+        if (metronomeLayout && timerSection) {
+            const handleScroll = () => {
+                if (metronomeLayout.scrollTop > 10) {
+                    timerSection.classList.add('scrolled');
+                } else {
+                    timerSection.classList.remove('scrolled');
+                }
+            };
+
+            // Remove any existing listeners
+            metronomeLayout.removeEventListener('scroll', handleScroll);
+            // Add new listener
+            metronomeLayout.addEventListener('scroll', handleScroll);
+
+            // Store reference for cleanup
+            this.scrollHandler = handleScroll;
+            this.scrollContainer = metronomeLayout;
+        }
     }
 
     onDeactivate() {
@@ -115,6 +138,16 @@ export class MetronomeTab {
     }
 
     destroy() {
+        // Stop metronome when destroying
+        if (this.metronome && this.metronome.isPlaying) {
+            this.metronome.stop();
+        }
+
+        // Clean up scroll listener
+        if (this.scrollHandler && this.scrollContainer) {
+            this.scrollContainer.removeEventListener('scroll', this.scrollHandler);
+        }
+
         if (this.metronome && typeof this.metronome.destroy === 'function') {
             this.metronome.destroy();
         }

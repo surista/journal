@@ -82,6 +82,16 @@ export class AudioPlayer {
             console.error('Error in audio player init:', error);
             throw error;
         }
+
+        // Make sure the audio player is globally accessible for onclick handlers
+        if (typeof window !== 'undefined') {
+            window.audioPlayer = this;
+
+            // Also try to set it on the app structure
+            if (window.app?.currentPage?.components) {
+                window.app.currentPage.components.audioPlayer = this;
+            }
+        }
     }
 
     async initializeTone() {
@@ -136,47 +146,47 @@ export class AudioPlayer {
                 
                 <!-- Content wrapper -->
                 <div style="position: relative; z-index: 1;">
-<!-- Audio Source Selection -->
-<div class="audio-source-section">
-    <h3>Audio Source</h3>
-    
-    <!-- Source Type Tabs -->
-    <div class="source-tabs" style="display: flex; gap: 8px; margin-bottom: 16px;">
-        <button class="source-tab active" data-source="file" 
-                style="flex: 1; padding: 10px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
-            📁 Local File
-        </button>
-        <button class="source-tab" data-source="youtube" 
-                style="flex: 1; padding: 10px; background: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.2s;">
-            🎬 YouTube
-        </button>
-    </div>
-    
-    <!-- File Input Section -->
-    <div id="fileInputSection" class="source-section">
-        <input type="file" id="audioFileInput" accept="audio/*" class="file-input" 
-               style="padding: 12px; background: var(--bg-input); border: 1px solid var(--border); 
-                      border-radius: 8px; color: var(--text-primary); width: 100%; margin-bottom: 16px;">
-    </div>
-    
-    <!-- YouTube Input Section -->
-    <div id="youtubeInputSection" class="source-section" style="display: none;">
-        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
-            <input type="text" id="youtubeUrlInput" placeholder="Enter YouTube URL or Video ID" 
-                   style="flex: 1; padding: 12px; background: var(--bg-input); border: 1px solid var(--border); 
-                          border-radius: 8px; color: var(--text-primary);">
-            <button id="loadYoutubeBtn" class="btn btn-primary" style="padding: 12px 20px;">
-                Load Video
-            </button>
-        </div>
-        <div id="youtubePlayerContainer" style="display: none; margin-bottom: 16px;">
-            <div id="youtubePlayer" style="width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 8px;"></div>
-        </div>
-    </div>
-    
-    <div id="currentFileName" class="current-file-name" 
-         style="color: var(--text-secondary); font-size: 14px; margin-top: 8px;"></div>
-</div>
+                    <!-- Audio Source Selection -->
+                    <div class="audio-source-section">
+                        <h3>Audio Source</h3>
+                        
+                        <!-- Source Type Tabs -->
+                        <div class="source-tabs" style="display: flex; gap: 8px; margin-bottom: 16px;">
+                            <button class="source-tab active" data-source="file" 
+                                    style="flex: 1; padding: 10px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                                📁 Local File
+                            </button>
+                            <button class="source-tab" data-source="youtube" 
+                                    style="flex: 1; padding: 10px; background: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+                                🎬 YouTube
+                            </button>
+                        </div>
+                        
+                        <!-- File Input Section -->
+                        <div id="fileInputSection" class="source-section">
+                            <input type="file" id="audioFileInput" accept="audio/*" class="file-input" 
+                                   style="padding: 12px; background: var(--bg-input); border: 1px solid var(--border); 
+                                          border-radius: 8px; color: var(--text-primary); width: 100%; margin-bottom: 16px;">
+                        </div>
+                        
+                        <!-- YouTube Input Section -->
+                        <div id="youtubeInputSection" class="source-section" style="display: none;">
+                            <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+                                <input type="text" id="youtubeUrlInput" placeholder="Enter YouTube URL or Video ID" 
+                                       style="flex: 1; padding: 12px; background: var(--bg-input); border: 1px solid var(--border); 
+                                              border-radius: 8px; color: var(--text-primary);">
+                                <button id="loadYoutubeBtn" class="btn btn-primary" style="padding: 12px 20px;">
+                                    Load Video
+                                </button>
+                            </div>
+                            <div id="youtubePlayerContainer" style="display: none; margin-bottom: 16px;">
+                                <div id="youtubePlayer" style="width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 8px;"></div>
+                            </div>
+                        </div>
+                        
+                        <div id="currentFileName" class="current-file-name" 
+                             style="color: var(--text-secondary); font-size: 14px; margin-top: 8px;"></div>
+                    </div>
 
                     <!-- Audio Controls -->
                     <div id="audioControlsSection" class="audio-controls-section" style="display: none;">
@@ -199,58 +209,58 @@ export class AudioPlayer {
                             </div>
                         </div>
 
-                        <!-- Unified Loop Controls Section -->
-<div class="loop-controls-unified" style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.1);">
-    <h4 style="margin-bottom: 16px;">Loop Controls</h4>
-    
-    <!-- Main Loop Controls Row -->
-    <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 12px; flex-wrap: wrap;">
-        <button id="setLoopStartBtn" class="btn btn-sm btn-secondary" style="padding: 6px 14px; font-size: 13px;">Start</button>
-        <button id="setLoopEndBtn" class="btn btn-sm btn-secondary" style="padding: 6px 14px; font-size: 13px;">End</button>
-        <button id="clearLoopBtn" class="btn btn-sm btn-secondary" style="padding: 6px 14px; font-size: 13px;">Clear</button>
-        <div class="loop-info" style="font-family: monospace; font-size: 13px; padding: 0 10px;">
-            <span id="loopStart">--:--</span> - <span id="loopEnd">--:--</span>
-        </div>
-        <label class="checkbox-label" style="display: flex; align-items: center; gap: 6px; margin-left: auto; font-size: 13px;">
-            <input type="checkbox" id="loopEnabled">
-            <span>Loop</span>
-        </label>
-    </div>
-    
-    <!-- Tempo Progression Row -->
-    <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 12px; flex-wrap: wrap;">
-        <label class="checkbox-label" style="display: flex; align-items: center; gap: 6px; font-size: 13px;">
-            <input type="checkbox" id="progressionEnabled">
-            <span>Auto +</span>
-        </label>
-        <div class="progression-controls-inline" id="progressionControls" style="display: none; flex: 1; display: flex; gap: 6px; align-items: center;">
-            <input type="number" id="incrementValue" value="1" min="0.1" max="10" step="0.1" 
-                   style="width: 50px; padding: 4px 6px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 4px; font-size: 13px;">
-            <select id="incrementType" style="padding: 4px 6px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 4px; font-size: 13px;">
-                <option value="percentage">%</option>
-                <option value="bpm">BPM</option>
-            </select>
-            <span style="font-size: 13px;">every</span>
-            <input type="number" id="loopInterval" value="1" min="1" max="10" 
-                   style="width: 40px; padding: 4px 6px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 4px; font-size: 13px;">
-            <span style="font-size: 13px;">loops</span>
-        </div>
-        <div class="progression-status" id="progressionStatus" style="margin-left: auto; font-size: 12px; color: var(--text-secondary);"></div>
-    </div>
-    
-    <!-- Saved Sessions Row -->
-    <div style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 12px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <span style="font-size: 13px; color: var(--text-secondary);">Saved Loops:</span>
-            <button id="saveSessionBtn" class="btn btn-sm btn-primary" style="padding: 4px 10px; font-size: 12px;">
-                💾 Save
-            </button>
-        </div>
-        <div id="savedSessionsList" class="saved-sessions-list" style="max-height: 100px; overflow-y: auto;">
-            <p class="empty-state" style="color: var(--text-secondary); text-align: center; font-size: 13px; margin: 0; padding: 10px;">No saved loops</p>
-        </div>
-    </div>
-</div>
+                        \`<!-- Unified Loop Controls Section - FIXED VERSION -->
+                        <div class="loop-controls-unified" style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); padding: 16px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.1); max-height: 200px; overflow-y: auto;">
+                            <h4 style="margin-bottom: 12px;">Loop Controls</h4>
+                            
+                            <!-- Main Loop Controls - Single Compact Row -->
+                            <div style="display: grid; grid-template-columns: auto auto auto 1fr auto; gap: 8px; align-items: center; margin-bottom: 10px;">
+                                <button id="setLoopStartBtn" class="btn btn-sm btn-secondary" style="padding: 4px 10px; font-size: 12px;">Start</button>
+                                <button id="setLoopEndBtn" class="btn btn-sm btn-secondary" style="padding: 4px 10px; font-size: 12px;">End</button>
+                                <button id="clearLoopBtn" class="btn btn-sm btn-secondary" style="padding: 4px 10px; font-size: 12px;">Clear</button>
+                                <div class="loop-info" style="font-family: monospace; font-size: 12px; text-align: center;">
+                                    <span id="loopStart">--:--</span> - <span id="loopEnd">--:--</span>
+                                </div>
+                                <label class="checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px; white-space: nowrap;">
+                                    <input type="checkbox" id="loopEnabled">
+                                    <span>Loop</span>
+                                </label>
+                            </div>
+                            
+                            <!-- Tempo Progression - Compact Row -->
+                            <div style="display: grid; grid-template-columns: auto 1fr; gap: 8px; align-items: center; margin-bottom: 10px;">
+                                <label class="checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
+                                    <input type="checkbox" id="progressionEnabled">
+                                    <span>Auto +</span>
+                                </label>
+                                <div class="progression-controls-inline" id="progressionControls" style="display: none; display: grid; grid-template-columns: auto auto auto auto auto; gap: 4px; align-items: center; font-size: 12px;">
+                                    <input type="number" id="incrementValue" value="1" min="0.1" max="10" step="0.1" 
+                                           style="width: 40px; padding: 2px 4px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 4px; font-size: 11px;">
+                                    <select id="incrementType" style="padding: 2px 4px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 4px; font-size: 11px;">
+                                        <option value="percentage">%</option>
+                                        <option value="bpm">BPM</option>
+                                    </select>
+                                    <span>every</span>
+                                    <input type="number" id="loopInterval" value="1" min="1" max="10" 
+                                           style="width: 30px; padding: 2px 4px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 4px; font-size: 11px;">
+                                    <span>loops</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Saved Sessions - Compact Section -->
+                            <div style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 8px;">
+                                <div style="display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; margin-bottom: 6px;">
+                                    <span style="font-size: 12px; color: var(--text-secondary);">Saved Loops:</span>
+                                    <button id="saveSessionBtn" class="btn btn-sm btn-primary" style="padding: 2px 8px; font-size: 11px;">
+                                        💾 Save
+                                    </button>
+                                </div>
+                                <div id="savedSessionsList" class="saved-sessions-list" style="max-height: 80px; overflow-y: auto;">
+                                    <p class="empty-state" style="color: var(--text-secondary); text-align: center; font-size: 11px; margin: 0; padding: 8px;">No saved loops</p>
+                                </div>
+                            </div>
+                        </div>\`
+
 
                         <!-- Compact Audio Controls -->
                         <div class="audio-controls-compact" style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.1);">
@@ -1709,59 +1719,59 @@ export class AudioPlayer {
 
     // Session management methods
     loadSavedSessions() {
-        if (!this.currentFileName || !this.storageService) return;
+        if (!this.storageService) {
+            if (!this.ensureStorageService()) {
+                return;
+            }
+        }
 
-        const sessions = this.storageService.getAudioSessions?.(this.currentFileName) || [];
+        // Determine current file name
+        let fileName;
+        if (this.isYouTubeMode) {
+            fileName = this.youtubeVideoTitle || this.youtubeVideoId || 'youtube_video';
+        } else if (this.currentFileName) {
+            fileName = this.currentFileName;
+        } else {
+            return; // No file loaded
+        }
+
+        const sessions = this.storageService.getAudioSessions?.(fileName) || [];
         const container = document.getElementById('savedSessionsList');
 
         if (!container) return;
 
         if (sessions.length === 0) {
-            container.innerHTML = '<p class="empty-state" style="color: var(--text-secondary); text-align: center; padding: 20px;">No saved sessions for this file</p>';
+            container.innerHTML = '<p class="empty-state" style="color: var(--text-secondary); text-align: center; font-size: 11px; margin: 0; padding: 8px;">No saved loops</p>';
             return;
         }
 
+        // Create compact session display
         container.innerHTML = sessions.map((session, index) => `
         <div class="saved-session-item" style="
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 12px;
-            transition: all 0.2s ease;
+            border-radius: 6px;
+            padding: 8px;
+            margin-bottom: 6px;
+            font-size: 11px;
         ">
-            <div class="session-info">
-                <strong style="color: var(--text-primary); display: block; margin-bottom: 8px;">
-                    ${session.name || `Session ${index + 1}`}
-                </strong>
-                <span class="session-date" style="color: var(--text-secondary); font-size: 14px;">
-                    ${new Date(session.timestamp).toLocaleDateString()} ${new Date(session.timestamp).toLocaleTimeString()}
-                </span>
-                <div class="session-details" style="margin-top: 8px; font-size: 14px; color: var(--text-secondary);">
-                    Speed: ${session.speed}% | Pitch: ${session.pitch > 0 ? '+' : ''}${session.pitch} semitones
-                    ${session.loopStart !== null ? ` | Loop: ${this.formatTime(session.loopStart)} - ${this.formatTime(session.loopEnd)}` : ''}
-                </div>
-                ${session.notes ? `
-                    <div style="
-                        margin-top: 12px;
-                        padding-top: 12px;
-                        border-top: 1px solid var(--border);
-                        font-size: 14px;
-                        color: var(--text-primary);
-                        font-style: italic;
-                    ">
-                        📝 ${session.notes}
+            <div style="display: grid; grid-template-columns: 1fr auto auto; gap: 4px; align-items: center;">
+                <div class="session-info" style="overflow: hidden;">
+                    <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        ${session.name || `Session ${index + 1}`}
                     </div>
-                ` : ''}
-            </div>
-            <div class="session-actions" style="display: flex; gap: 8px; margin-top: 16px;">
-                <button class="btn btn-sm btn-primary" onclick="window.app.currentPage.components.audioPlayer.loadSession(${index})" 
-                        style="padding: 6px 12px; font-size: 14px;">
+                    <div style="color: var(--text-secondary); font-size: 10px;">
+                        Speed: ${session.speed}% | Pitch: ${session.pitch > 0 ? '+' : ''}${session.pitch}
+                        ${session.loopStart !== null ? ` | ${this.formatTime(session.loopStart)}-${this.formatTime(session.loopEnd)}` : ''}
+                    </div>
+                </div>
+                <button class="btn btn-xs btn-primary" onclick="window.app?.currentPage?.components?.audioPlayer?.loadSession(${index}) || window.audioPlayer?.loadSession(${index})" 
+                        style="padding: 2px 6px; font-size: 10px; min-width: 35px;">
                     Load
                 </button>
-                <button class="btn btn-sm btn-danger" onclick="window.app.currentPage.components.audioPlayer.deleteSession(${index})"
-                        style="padding: 6px 12px; font-size: 14px;">
-                    Delete
+                <button class="btn btn-xs btn-danger" onclick="window.app?.currentPage?.components?.audioPlayer?.deleteSession(${index}) || window.audioPlayer?.deleteSession(${index})"
+                        style="padding: 2px 6px; font-size: 10px; min-width: 25px;">
+                    ×
                 </button>
             </div>
         </div>
@@ -1769,46 +1779,110 @@ export class AudioPlayer {
     }
 
     loadSession(index) {
-        if (!this.storageService || !this.currentFileName) return;
+        if (!this.storageService || !this.currentFileName) {
+            this.showNotification('Storage service not available', 'error');
+            return;
+        }
 
-        const sessions = this.storageService.getAudioSessions?.(this.currentFileName) || [];
+        // Handle both YouTube and file mode
+        const fileName = this.isYouTubeMode ?
+            (this.youtubeVideoTitle || this.youtubeVideoId || 'youtube_video') :
+            this.currentFileName;
+
+        const sessions = this.storageService.getAudioSessions?.(fileName) || [];
         const session = sessions[index];
 
-        if (!session) return;
+        if (!session) {
+            this.showNotification('Session not found', 'error');
+            return;
+        }
 
-        this.setSpeed(session.speed);
-        const speedSlider = document.getElementById('speedSlider');
-        if (speedSlider) speedSlider.value = session.speed;
+        console.log('Loading session:', session);
 
-        this.setPitch(session.pitch);
-        const pitchSlider = document.getElementById('pitchSlider');
-        if (pitchSlider) pitchSlider.value = session.pitch;
+        // Stop current playback
+        this.stop();
 
-        this.loopStart = session.loopStart;
-        this.loopEnd = session.loopEnd;
+        // Apply speed/tempo settings
+        if (session.speed !== undefined) {
+            this.setSpeed(session.speed);
+            const speedSlider = document.getElementById('speedSlider');
+            if (speedSlider) speedSlider.value = session.speed;
+        }
 
+        // Apply pitch settings
+        if (session.pitch !== undefined) {
+            this.setPitch(session.pitch);
+        }
+
+        // Apply loop settings
+        this.loopStart = session.loopStart !== undefined ? session.loopStart : null;
+        this.loopEnd = session.loopEnd !== undefined ? session.loopEnd : null;
+        this.isLooping = session.loopEnabled || false;
+
+        // Update UI elements
         const loopStartEl = document.getElementById('loopStart');
         const loopEndEl = document.getElementById('loopEnd');
         const loopEnabledEl = document.getElementById('loopEnabled');
 
         if (loopStartEl) {
-            loopStartEl.textContent = session.loopStart !== null ? this.formatTime(session.loopStart) : '--:--';
+            loopStartEl.textContent = this.loopStart !== null ? this.formatTime(this.loopStart) : '--:--';
         }
         if (loopEndEl) {
-            loopEndEl.textContent = session.loopEnd !== null ? this.formatTime(session.loopEnd) : '--:--';
+            loopEndEl.textContent = this.loopEnd !== null ? this.formatTime(this.loopEnd) : '--:--';
         }
         if (loopEnabledEl) {
-            loopEnabledEl.checked = session.loopEnabled || false;
+            loopEnabledEl.checked = this.isLooping;
         }
 
-        this.isLooping = session.loopEnabled || false;
+        // Update tempo progression settings if they exist
+        if (session.tempoProgression) {
+            const progressionEnabledEl = document.getElementById('progressionEnabled');
+            const incrementValueEl = document.getElementById('incrementValue');
+            const incrementTypeEl = document.getElementById('incrementType');
+            const loopIntervalEl = document.getElementById('loopInterval');
+            const progressionControlsEl = document.getElementById('progressionControls');
 
+            if (progressionEnabledEl) {
+                progressionEnabledEl.checked = session.tempoProgression.enabled || false;
+                this.tempoProgression.enabled = session.tempoProgression.enabled || false;
+            }
+            if (incrementValueEl && session.tempoProgression.incrementValue !== undefined) {
+                incrementValueEl.value = session.tempoProgression.incrementValue;
+                this.tempoProgression.incrementValue = session.tempoProgression.incrementValue;
+            }
+            if (incrementTypeEl && session.tempoProgression.incrementType) {
+                incrementTypeEl.value = session.tempoProgression.incrementType;
+                this.tempoProgression.incrementType = session.tempoProgression.incrementType;
+            }
+            if (loopIntervalEl && session.tempoProgression.loopInterval !== undefined) {
+                loopIntervalEl.value = session.tempoProgression.loopInterval;
+                this.tempoProgression.loopInterval = session.tempoProgression.loopInterval;
+            }
+            if (progressionControlsEl) {
+                progressionControlsEl.style.display = this.tempoProgression.enabled ? 'grid' : 'none';
+            }
+        }
+
+        // Update visual indicators
         this.updateLoopRegion();
-        this.showNotification('Session loaded', 'success');
+
+        if (this.waveformVisualizer && !this.isYouTubeMode) {
+            this.waveformVisualizer.updateLoopMarkers(this.loopStart, this.loopEnd);
+        }
+
+        if (this.isYouTubeMode) {
+            this.updateYouTubeLoopMarkers();
+        }
+
+        // Update progression status
+        this.updateProgressionStatus();
+
+        this.showNotification(`Session "${session.name || 'Unnamed'}" loaded successfully! 🎵`, 'success');
     }
 
+
     saveCurrentSession() {
-        if (!this.currentFileName) {
+        if (!this.currentFileName && !this.isYouTubeMode) {
             this.showNotification('No audio file loaded', 'error');
             return;
         }
@@ -1818,22 +1892,43 @@ export class AudioPlayer {
             return;
         }
 
-        // Simple session save for now
+        // Determine file name for saving
+        let fileName;
+        let displayName;
+
+        if (this.isYouTubeMode) {
+            fileName = this.youtubeVideoTitle || this.youtubeVideoId || 'youtube_video';
+            displayName = this.youtubeVideoTitle || `YouTube: ${this.youtubeVideoId}`;
+        } else {
+            fileName = this.currentFileName;
+            displayName = this.currentFileName;
+        }
+
+        // Create session object with all current settings
         const session = {
-            name: `${this.currentFileName} - ${new Date().toLocaleTimeString()}`,
+            name: `${displayName} - ${new Date().toLocaleTimeString()}`,
             timestamp: Date.now(),
-            fileName: this.currentFileName,
-            speed: this.playbackRate * 100,
+            fileName: fileName,
+            speed: Math.round(this.playbackRate * 100),
             pitch: this.pitchShiftAmount,
             loopStart: this.loopStart,
             loopEnd: this.loopEnd,
-            loopEnabled: this.isLooping
+            loopEnabled: this.isLooping,
+            tempoProgression: {
+                enabled: this.tempoProgression.enabled,
+                incrementValue: this.tempoProgression.incrementValue,
+                incrementType: this.tempoProgression.incrementType,
+                loopInterval: this.tempoProgression.loopInterval
+            },
+            isYouTubeMode: this.isYouTubeMode,
+            youtubeVideoId: this.youtubeVideoId,
+            youtubeVideoTitle: this.youtubeVideoTitle
         };
 
         if (this.storageService && this.storageService.saveAudioSession) {
-            this.storageService.saveAudioSession(this.currentFileName, session);
+            this.storageService.saveAudioSession(fileName, session);
             this.loadSavedSessions();
-            this.showNotification('Session saved successfully', 'success');
+            this.showNotification('Loop session saved successfully! 💾', 'success');
         } else {
             this.showNotification('Storage service not available', 'error');
         }

@@ -34,8 +34,6 @@
 @import './components/repertoire.css';
 
 
-
-
 /* Page-specific styles */
 @import url('./pages/auth.css');
 @import url('./pages/dashboard.css');
@@ -44,6 +42,11 @@
 /* Theme styles */
 @import url('./themes/dark.css');
 @import url('./themes/light.css');
+@import url('./themes/midnight-blue.css');
+@import url('./themes/forest-green.css');
+@import url('./themes/sunset-orange.css');
+@import url('./themes/royal-purple.css');
+@import url('./themes/ocean-teal.css');
 
 /* Utility styles - Must come last */
 @import url('./utilities/spacing.css');

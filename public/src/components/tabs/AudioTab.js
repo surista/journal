@@ -131,13 +131,42 @@ export class AudioTab {
                 this.audioPlayer.waveformVisualizer.resizeCanvas();
             });
         }
+
+        // Add scroll listener for sticky timer shadow effect
+        const audioLayout = document.querySelector('#audioTab .audio-layout');
+        const timerSection = document.querySelector('#audioTab .timer-section');
+
+        if (audioLayout && timerSection) {
+            const handleScroll = () => {
+                if (audioLayout.scrollTop > 10) {
+                    timerSection.classList.add('scrolled');
+                } else {
+                    timerSection.classList.remove('scrolled');
+                }
+            };
+
+            // Remove any existing listeners
+            audioLayout.removeEventListener('scroll', handleScroll);
+            // Add new listener
+            audioLayout.addEventListener('scroll', handleScroll);
+
+            // Store reference for cleanup
+            this.scrollHandler = handleScroll;
+            this.scrollContainer = audioLayout;
+        }
     }
+
 
     onDeactivate() {
         // Called when leaving tab
     }
 
     destroy() {
+        // Clean up scroll listener
+        if (this.scrollHandler && this.scrollContainer) {
+            this.scrollContainer.removeEventListener('scroll', this.scrollHandler);
+        }
+
         if (this.audioPlayer && typeof this.audioPlayer.destroy === 'function') {
             this.audioPlayer.destroy();
         }
@@ -146,4 +175,5 @@ export class AudioTab {
         this.practiceForm = null;
         this.container = null;
     }
+
 }

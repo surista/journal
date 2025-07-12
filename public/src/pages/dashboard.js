@@ -535,16 +535,16 @@ export class DashboardPage {
 
     async initializeFooter() {
         try {
-            // const footerModule = await import('../components/footer.js');
-            // const footer = new footerModule.Footer();
-            // const footerContainer = document.getElementById('appFooter');
-            //
-            // if (footerContainer) {
-            //     footerContainer.innerHTML = footer.render();
-            //     requestAnimationFrame(() => {
-            //         footer.attachEventListeners();
-            //     });
-            // }
+            const footerModule = await import('../components/footer.js');
+            const footer = new footerModule.Footer();
+            const footerContainer = document.getElementById('appFooter');
+
+            if (footerContainer) {
+                footerContainer.innerHTML = footer.render();
+                requestAnimationFrame(() => {
+                    footer.attachEventListeners();
+                });
+            }
         } catch (error) {
             console.error('❌ Error loading footer:', error);
             // Footer is not critical, continue without it

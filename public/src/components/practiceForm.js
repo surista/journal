@@ -597,14 +597,21 @@ export class PracticeForm {
                     // Parse YouTube info
                     const youtubeData = audioFileValue.substring(8); // Remove 'youtube:'
                     const [url, title] = youtubeData.split('|');
-                    youtubeUrl = url;
-                    youtubeTitle = title;
+                    youtubeUrl = url || '';
+                    youtubeTitle = title || '';
+                    // Don't set audioFile for YouTube videos
+                    audioFile = null;
                 } else if (audioFileValue.startsWith('file:')) {
                     // Parse file info
                     audioFile = audioFileValue.substring(5); // Remove 'file:'
+                    // Clear YouTube fields for file mode
+                    youtubeUrl = null;
+                    youtubeTitle = null;
                 } else {
                     // Legacy format - assume it's a file
                     audioFile = audioFileValue;
+                    youtubeUrl = null;
+                    youtubeTitle = null;
                 }
             }
 

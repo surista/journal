@@ -121,8 +121,11 @@
     background: var(--bg-hover);
 }
 
-/* Icon Button */
+/* Icon Button - Update the existing .btn-icon class */
 .btn-icon {
+    display: inline-flex; /* Add explicit display */
+    align-items: center;
+    justify-content: center;
     width: 2.5rem;
     height: 2.5rem;
     padding: 0;
@@ -131,6 +134,7 @@
 
 .btn-icon .icon {
     font-size: 1.25rem;
+    line-height: 1;
 }
 
 /* Button Sizes */
@@ -244,5 +248,65 @@
         right: var(--space-lg);
         width: 3rem;
         height: 3rem;
+    }
+}
+
+/* Theme Toggle Button - Add this new section */
+.theme-toggle {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    position: relative;
+    overflow: hidden;
+}
+
+.theme-toggle:hover {
+    background: var(--bg-hover);
+    border-color: var(--primary);
+    transform: scale(1.1);
+}
+
+.theme-toggle:active {
+    transform: scale(0.95);
+}
+
+.theme-toggle .icon {
+    font-size: 1.25rem;
+    line-height: 1;
+}
+
+/* Ensure the theme toggle is visible in the header */
+.header .theme-toggle,
+.header .btn-icon.theme-toggle {
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Dark/Light mode icon animation */
+.theme-toggle .icon {
+    transition: transform 0.3s ease;
+}
+
+.theme-toggle:hover .icon {
+    transform: rotate(180deg);
+}
+
+/* Responsive adjustments for theme toggle */
+@media (max-width: 768px) {
+    .theme-toggle {
+        width: 2.25rem;
+        height: 2.25rem;
+    }
+
+    .theme-toggle .icon {
+        font-size: 1.125rem;
     }
 }

@@ -1,219 +1,349 @@
-// CloudSyncHandler - Manages all cloud synchronization operations
-import { TimeUtils } from '../utils/helpers.js';
+// Enhanced cloudSyncHandler.js with real-time sync
+import { cloudStorage } from './firebaseService.js';
+import { SyncEngine } from './syncEngine.js';
 
 export class CloudSyncHandler {
-   constructor(storageService, cloudStorage) {
-       this.storageService = storageService;
-       this.cloudStorage = cloudStorage;
-   }
+    constructor(storageService) {
+        this.storageService = storageService;
+        this.syncEngine = new SyncEngine(storageService);
+        this.status = 'checking';
+        this.lastSync = null;
+        this.isInitialized = false;
+        this.setupEventListeners();
+    }
 
-   async updateCloudStatus() {
-       const statusEl = document.getElementById('cloudStatus');
-       const syncIcon = document.getElementById('syncIcon');
-       const syncText = document.getElementById('syncText');
+    setupEventListeners() {
+        // Auth state changes
+        window.addEventListener('authStateChanged', (event) => {
+            const { user } = event.detail;
+            if (user) {
+                this.onUserLogin(user);
+            } else {
+                this.onUserLogout();
+            }
+        });
 
-       if (!this.cloudStorage.currentUser) {
+        // Sync events
+        window.addEventListener('syncEnabled', () => {
+            this.updateStatus('syncing');
+        });
 
-           if (syncIcon) syncIcon.textContent = '❌';
-           if (syncText) syncText.textContent = 'Not signed in to cloud';
-           if (statusEl) statusEl.className = 'cloud-status offline';
-           return;
-       }
+        window.addEventListener('syncinitialSyncComplete', () => {
+            this.updateStatus('synced', new Date());
+        });
 
-       if (syncIcon) syncIcon.textContent = '✅';
-       if (syncText) syncText.textContent = `Signed in as ${this.cloudStorage.currentUser.email}`;
-       if (statusEl) statusEl.className = 'cloud-status online';
+        window.addEventListener('syncError', (event) => {
+            this.updateStatus('error', null, event.detail.error);
+        });
 
-       // Update last sync time
-       if (this.cloudStorage.lastSync) {
-           const lastSyncEl = document.getElementById('lastSyncTime');
-           if (lastSyncEl) {
-               lastSyncEl.textContent = TimeUtils.getRelativeTime(this.cloudStorage.lastSync);
-           }
-       }
-   }
+        window.addEventListener('syncconflictDetected', (event) => {
+            this.updateStatus('conflict');
+            this.showConflictNotification(event.detail);
+        });
 
-   async performManualSync() {
-       const btn = document.getElementById('syncNowBtn');
-       let originalText = '';
+        window.addEventListener('syncrecordAdded', () => {
+            this.refreshDashboard();
+        });
 
-       if (btn) {
-           originalText = btn.innerHTML;
-           btn.innerHTML = '<i class="icon">⏳</i> Syncing...';
-           btn.disabled = true;
-       }
+        window.addEventListener('syncrecordUpdated', () => {
+            this.refreshDashboard();
+        });
 
-       try {
-           await this.cloudStorage.performAutoSync();
-           this.showNotification('Data synced successfully', 'success');
-       } catch (error) {
-           this.showNotification('Sync failed: ' + error.message, 'error');
-       } finally {
-           if (btn) {
-               btn.innerHTML = originalText;
-               btn.disabled = false;
-           }
-           this.updateCloudStatus();
-       }
-   }
+        window.addEventListener('syncrecordDeleted', () => {
+            this.refreshDashboard();
+        });
 
-   async downloadFromCloud() {
-       if (!confirm('This will replace your local data with cloud data. Continue?')) {
-           return;
-       }
+        // Network status
+        window.addEventListener('online', () => {
+            if (cloudStorage.isAuthenticated()) {
+                this.updateStatus('syncing');
+            }
+        });
 
-       try {
-           const cloudData = await this.cloudStorage.downloadCloudData();
-           if (cloudData) {
-               await this.storageService.importData(cloudData);
-               this.showNotification('Cloud data downloaded successfully', 'success');
-               location.reload(); // Reload to show new data
-           } else {
-               this.showNotification('No cloud data found', 'warning');
-           }
-       } catch (error) {
-           this.showNotification('Download failed: ' + error.message, 'error');
-       }
-   }
+        window.addEventListener('offline', () => {
+            this.updateStatus('offline');
+        });
+    }
 
-   async uploadToCloud() {
-       if (!confirm('This will replace cloud data with your local data. Continue?')) {
-           return;
-       }
+    async onUserLogin(user) {
+        console.log('🔄 User logged in, initializing sync...');
 
-       try {
-           const localData = await this.storageService.exportAllData();
-           await this.cloudStorage.syncAllData(localData);
-           this.showNotification('Data uploaded to cloud successfully', 'success');
-       } catch (error) {
-           this.showNotification('Upload failed: ' + error.message, 'error');
-       }
-   }
+        try {
+            // Check if user has existing cloud data
+            const hasCloudData = await this.checkForCloudData();
 
-   updateSyncStatus(detail) {
-       const statusEl = document.getElementById('syncStatus');
-       const iconEl = document.getElementById('syncIcon');
+            if (!hasCloudData) {
+                // First time user - migrate local data
+                await this.migrateLocalDataToCloud();
+            }
 
-       if (detail.status === 'success') {
-           if (statusEl) {
-               statusEl.textContent = 'Synced';
-               statusEl.className = 'sync-success';
-           }
-           if (iconEl) iconEl.textContent = '✅';
-       } else if (detail.status === 'error') {
-           if (statusEl) {
-               statusEl.textContent = 'Sync error';
-               statusEl.className = 'sync-error';
-           }
-           if (iconEl) iconEl.textContent = '❌';
-       } else if (detail.status === 'syncing') {
-           if (statusEl) {
-               statusEl.textContent = 'Syncing...';
-               statusEl.className = 'sync-progress';
-           }
-           if (iconEl) iconEl.textContent = '🔄';
-       }
+            // Enable real-time sync
+            await this.syncEngine.enableSync();
+            this.isInitialized = true;
 
-       if (detail.lastSync) {
-           const lastSyncEl = document.getElementById('lastSyncTime');
-           if (lastSyncEl) {
-               lastSyncEl.textContent = TimeUtils.getRelativeTime(detail.lastSync);
-           }
-       }
-   }
+        } catch (error) {
+            console.error('❌ Sync initialization failed:', error);
+            this.updateStatus('error', null, error.message);
+        }
+    }
 
-   async handleCloudDataChange(detail) {
-       console.log('Cloud data changed:', detail.type);
+    onUserLogout() {
+        console.log('👋 User logged out, disabling sync...');
+        this.syncEngine.disableSync();
+        this.isInitialized = false;
+        this.updateStatus('checking');
+    }
 
-       // Merge changes with local data
-       if (detail.type === 'settings' && detail.data) {
-           await this.storageService.mergeCloudData({ settings: detail.data.settings });
+    async checkForCloudData() {
+        try {
+            const sessions = await cloudStorage.getPracticeSessions();
+            const goals = await cloudStorage.getGoals();
+            const repertoire = await cloudStorage.getRepertoire();
 
-           // Notify dashboard to refresh UI
-           window.dispatchEvent(new CustomEvent('cloudDataMerged', {
-               detail: { type: 'settings' }
-           }));
-       }
-   }
+            return sessions.length > 0 || goals.length > 0 || repertoire.length > 0;
+        } catch (error) {
+            console.error('Error checking cloud data:', error);
+            return false;
+        }
+    }
 
-   async handleUserLogin(user) {
-       console.log('User logged in, syncing data...');
+    async migrateLocalDataToCloud() {
+        console.log('📤 Migrating local data to cloud...');
 
-       // Download and merge cloud data
-       const cloudData = await this.cloudStorage.downloadCloudData();
-       if (cloudData) {
-           await this.storageService.mergeCloudData(cloudData);
+        try {
+            const localData = {
+                practiceSessions: await this.storageService.getPracticeEntries(),
+                goals: await this.storageService.getGoals(),
+                repertoire: await this.storageService.getRepertoire()
+            };
 
-           // Notify dashboard to refresh
-           window.dispatchEvent(new CustomEvent('cloudDataMerged', {
-               detail: { type: 'all' }
-           }));
-       }
+            await cloudStorage.migrateLocalData(localData);
 
-       // Upload any local data that's missing from cloud
-       await this.cloudStorage.performAutoSync();
+            this.showMigrationCompleteNotification(localData);
 
-       this.updateCloudStatus();
-   }
+        } catch (error) {
+            console.error('❌ Migration failed:', error);
+            throw error;
+        }
+    }
 
-   showNotification(message, type = 'info') {
-       if (window.app?.currentPage?.showNotification) {
-           window.app.currentPage.showNotification(message, type);
-       } else {
-           console.log(`[${type}] ${message}`);
-       }
-   }
+    // Status management
+    updateStatus(status, lastSync = this.lastSync, errorMessage = null) {
+        this.status = status;
+        this.lastSync = lastSync;
+        this.errorMessage = errorMessage;
+        this.updateCloudStatus();
+    }
 
-   // Set up event listeners for cloud sync
-   initializeEventListeners() {
-       // Cloud sync button listeners
-       document.getElementById('enableCloudSync')?.addEventListener('change', (e) => {
-           this.cloudStorage.setSyncEnabled(e.target.checked);
-           this.updateCloudStatus();
-       });
+    updateCloudStatus() {
+        const syncStatus = this.getSyncStatusInfo();
 
-       document.getElementById('conflictResolution')?.addEventListener('change', (e) => {
-           this.cloudStorage.setConflictResolution(e.target.value);
-       });
+        // Update UI elements
+        this.updateSyncIndicator(syncStatus);
 
-       document.getElementById('syncNowBtn')?.addEventListener('click', () => {
-           this.performManualSync();
-       });
+        // Dispatch event for other components
+        window.dispatchEvent(new CustomEvent('cloudStatusUpdated', {
+            detail: syncStatus
+        }));
+    }
 
-       document.getElementById('downloadFromCloudBtn')?.addEventListener('click', () => {
-           this.downloadFromCloud();
-       });
+    getSyncStatusInfo() {
+        const syncStatus = this.syncEngine.getStatus();
 
-       document.getElementById('uploadToCloudBtn')?.addEventListener('click', () => {
-           this.uploadToCloud();
-       });
+        return {
+            status: this.status,
+            lastSync: this.lastSync,
+            errorMessage: this.errorMessage,
+            isOnline: navigator.onLine,
+            isAuthenticated: syncStatus.authenticated,
+            queueSize: syncStatus.queueSize,
+            conflictCount: syncStatus.conflictCount,
+            deviceInfo: syncStatus.deviceInfo
+        };
+    }
 
-       // Listen for sync status changes
-       window.addEventListener('syncStatusChanged', (e) => {
-           this.updateSyncStatus(e.detail);
-       });
+    updateSyncIndicator(syncStatus) {
+        const syncIcon = document.getElementById('syncIcon');
+        const syncText = document.getElementById('syncText');
 
-       // Listen for cloud data changes
-       window.addEventListener('cloudDataChanged', (e) => {
-           this.handleCloudDataChange(e.detail);
-       });
+        if (!syncIcon || !syncText) return;
 
-       // Listen for user login
-       window.addEventListener('userLoggedIn', async (e) => {
-           await this.handleUserLogin(e.detail);
-       });
+        const { icon, text, color } = this.getStatusDisplay(syncStatus);
 
-       // Listen for auth state changes
-       window.addEventListener('authStateChanged', (e) => {
-           this.updateCloudStatus();
-       });
-   }
+        syncIcon.textContent = icon;
+        syncText.textContent = text;
+        syncIcon.style.color = color;
+        syncText.style.color = color;
 
-   destroy() {
-       // Remove event listeners if needed
-       window.removeEventListener('syncStatusChanged', this.updateSyncStatus);
-       window.removeEventListener('cloudDataChanged', this.handleCloudDataChange);
-       window.removeEventListener('userLoggedIn', this.handleUserLogin);
-       window.removeEventListener('authStateChanged', this.updateCloudStatus);
-   }
+        // Add click handler for conflicts
+        if (syncStatus.conflictCount > 0) {
+            syncIcon.style.cursor = 'pointer';
+            syncIcon.onclick = () => this.showConflictResolver();
+        } else {
+            syncIcon.style.cursor = 'default';
+            syncIcon.onclick = null;
+        }
+    }
+
+    getStatusDisplay(syncStatus) {
+        if (!syncStatus.isOnline) {
+            return {
+                icon: '📴',
+                text: 'Offline',
+                color: '#9ca3af'
+            };
+        }
+
+        if (!syncStatus.isAuthenticated) {
+            return {
+                icon: '👤',
+                text: 'Sign in for sync',
+                color: '#f59e0b'
+            };
+        }
+
+        if (syncStatus.conflictCount > 0) {
+            return {
+                icon: '⚠️',
+                text: `${syncStatus.conflictCount} conflicts`,
+                color: '#f59e0b'
+            };
+        }
+
+        if (syncStatus.queueSize > 0) {
+            return {
+                icon: '⏳',
+                text: `${syncStatus.queueSize} pending`,
+                color: '#6366f1'
+            };
+        }
+
+        switch (this.status) {
+            case 'synced':
+                return {
+                    icon: '✅',
+                    text: `Synced ${this.getRelativeTime(this.lastSync)}`,
+                    color: '#10b981'
+                };
+            case 'syncing':
+                return {
+                    icon: '🔄',
+                    text: 'Syncing...',
+                    color: '#6366f1'
+                };
+            case 'error':
+                return {
+                    icon: '❌',
+                    text: 'Sync error',
+                    color: '#ef4444'
+                };
+            default:
+                return {
+                    icon: '🔄',
+                    text: 'Checking...',
+                    color: '#6b7280'
+                };
+        }
+    }
+
+    getRelativeTime(date) {
+        if (!date) return '';
+
+        const now = new Date();
+        const diff = now - date;
+        const minutes = Math.floor(diff / 60000);
+        const hours = Math.floor(diff / 3600000);
+        const days = Math.floor(diff / 86400000);
+
+        if (minutes < 1) return 'just now';
+        if (minutes < 60) return `${minutes}m ago`;
+        if (hours < 24) return `${hours}h ago`;
+        return `${days}d ago`;
+    }
+
+    // Notifications
+    showConflictNotification(conflictData) {
+        if (window.notificationManager) {
+            window.notificationManager.warning(
+                'Sync conflict detected. Click sync status to resolve.',
+                { duration: 0 }
+            );
+        }
+    }
+
+    showMigrationCompleteNotification(data) {
+        const totalItems = data.practiceSessions.length + data.goals.length + data.repertoire.length;
+
+        if (window.notificationManager) {
+            window.notificationManager.success(
+                `Successfully synced ${totalItems} items to cloud!`,
+                { duration: 5000 }
+            );
+        }
+    }
+
+    showConflictResolver() {
+        // Create or show conflict resolution UI
+        window.dispatchEvent(new CustomEvent('showConflictResolver'));
+    }
+
+    refreshDashboard() {
+        // Refresh dashboard data when sync changes occur
+        if (window.app?.currentPage?.loadDashboardData) {
+            window.app.currentPage.loadDashboardData();
+        }
+    }
+
+    // Manual sync triggers
+    async forceSyncUp() {
+        if (!cloudStorage.isAuthenticated()) return;
+
+        this.updateStatus('syncing');
+
+        try {
+            const localData = {
+                practiceSessions: await this.storageService.getPracticeEntries(),
+                goals: await this.storageService.getGoals(),
+                repertoire: await this.storageService.getRepertoire()
+            };
+
+            await cloudStorage.migrateLocalData(localData);
+            this.updateStatus('synced', new Date());
+
+        } catch (error) {
+            this.updateStatus('error', null, error.message);
+        }
+    }
+
+    async forceSyncDown() {
+        if (!cloudStorage.isAuthenticated()) return;
+
+        this.updateStatus('syncing');
+
+        try {
+            await this.syncEngine.performInitialSync();
+            this.updateStatus('synced', new Date());
+
+        } catch (error) {
+            this.updateStatus('error', null, error.message);
+        }
+    }
+
+    // Public interface
+    isEnabled() {
+        return this.isInitialized && cloudStorage.isAuthenticated();
+    }
+
+    getConflicts() {
+        return this.syncEngine.conflicts;
+    }
+
+    async resolveConflict(conflictIndex, choice) {
+        await this.syncEngine.resolveConflict(conflictIndex, choice);
+        this.updateCloudStatus();
+    }
+
+    destroy() {
+        this.syncEngine.disableSync();
+    }
 }
