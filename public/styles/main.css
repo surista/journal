@@ -20,7 +20,7 @@
 @import url('./components/modals.css');
 @import url('./components/timer.css');
 @import url('./components/audio-player.css');
-/* @import url('./components/metronome.css'); */ /* DISABLED - conflicts with inline styles */
+@import url('./components/metronome.css');
 @import url('./components/achievements.css');
 @import url('./components/goals.css');
 @import url('./components/stats.css');
@@ -47,6 +47,22 @@
 @import url('./themes/sunset-orange.css');
 @import url('./themes/royal-purple.css');
 @import url('./themes/ocean-teal.css');
+@import url('./themes/neon-cyber.css');
+@import url('./themes/coffee-brown.css');
+@import url('./themes/northern-lights.css');
+@import url('./themes/nordic-ice.css');
+@import url('./themes/cherry-blossom.css');
+@import url('./themes/cyberpunk.css');
+@import url('./themes/earth-tone.css');
+@import url('./themes/cherry-blossom.css');
+@import url('./themes/cosmic-purple.css');
+@import url('./themes/crimson-red.css');
+@import url('./themes/golden-amber.css');
+@import url('./themes/emerald-green.css');
+
+
+
+
 
 /* Utility styles - Must come last */
 @import url('./utilities/spacing.css');

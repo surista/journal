@@ -1,5 +1,4 @@
 /* Modern Header Styles */
-
 .header {
     height: var(--header-height);
     background: var(--bg-primary);
@@ -8,11 +7,23 @@
     align-items: center;
     justify-content: space-between;
     padding: 0 var(--space-xl);
-    position: sticky;
+    position: fixed;  /* Changed from sticky to fixed */
     top: 0;
+    left: 0;
+    right: 0;
     z-index: var(--z-sticky);
     backdrop-filter: blur(10px);
     background: rgba(var(--bg-primary-rgb, 255, 255, 255), 0.8);
+}
+/* Account for sidebar width when header is fixed */
+.header {
+    left: var(--sidebar-width);
+}
+
+@media (max-width: 768px) {
+    .header {
+        left: 0;
+    }
 }
 
 /* Dark theme backdrop */
@@ -170,5 +181,36 @@
 @media (max-width: 768px) {
     .user-name {
         display: none;
+    }
+}
+
+/* Theme name display */
+.theme-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    opacity: 0.8;
+    font-weight: 500;
+}
+
+/* Theme name text */
+#currentThemeName {
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+/* Mobile responsiveness for theme info */
+@media (max-width: 768px) {
+    .theme-info {
+        font-size: 11px;
+    }
+
+    #currentThemeName {
+        max-width: 80px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 }

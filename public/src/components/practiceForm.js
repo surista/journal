@@ -615,17 +615,6 @@ export class PracticeForm {
                 }
             }
 
-            // Debug logging
-            console.log('Form submit for tab:', this.tabSuffix);
-            console.log('Form data:', {
-                practiceArea,
-                customArea,
-                audioFileValue,
-                tempoValue,
-                key,
-                notes
-            });
-
             // Use custom area if selected
             if (practiceArea === 'custom') {
                 if (customArea && customArea.trim() !== '') {
@@ -728,6 +717,15 @@ export class PracticeForm {
                 youtubeUrl: youtubeUrl || null,
                 youtubeTitle: youtubeTitle || null
             };
+
+            // Ensure YouTube URL is clean (defensive programming)
+            if (practiceEntry.youtubeUrl && practiceEntry.youtubeUrl.includes('youtube.com')) {
+                // Extract just the YouTube URL if it somehow got concatenated
+                const match = practiceEntry.youtubeUrl.match(/https:\/\/www\.youtube\.com\/watch\?v=[^&]+/);
+                if (match) {
+                    practiceEntry.youtubeUrl = match[0];
+                }
+            }
 
             // Save entry
             await this.storageService.savePracticeEntry(practiceEntry);

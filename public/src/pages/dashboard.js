@@ -15,6 +15,13 @@ import {PracticeTab} from '../components/tabs/PracticeTab.js';
 import {MetronomeTab} from '../components/tabs/MetronomeTab.js';
 import {AudioTab} from '../components/tabs/AudioTab.js';
 
+
+// Global function for YouTube link handling
+window.loadYouTubeInAudioTool = function(urlOrId) {
+    if (window.app && window.app.currentPage && window.app.currentPage.loadYouTubeInAudioTool) {
+        window.app.currentPage.loadYouTubeInAudioTool(urlOrId);
+    }
+};
 export class DashboardPage {
     constructor(storageService, authService) {
         this.storageService = storageService;
@@ -129,15 +136,18 @@ export class DashboardPage {
                         <i class="icon">☰</i>
                     </button>
                     <h1 id="pageTitle">Practice Session</h1>
-                    <div class="header-actions">
-                        <div class="sync-status" id="syncStatus">
-                            <span class="sync-icon" id="syncIcon">🔄</span>
-                            <span class="sync-text" id="syncText">Checking sync...</span>
-                        </div>
-                        <button class="btn btn-icon theme-toggle" id="themeToggle" title="Toggle theme">
-                            <i class="icon">${themeIcon}</i>
-                        </button>
-                    </div>
+                      <div class="header-actions">
+                <div class="sync-status" id="syncStatus">
+                    <span class="sync-icon" id="syncIcon">🔄</span>
+                    <span class="sync-text" id="syncText">Checking sync...</span>
+                </div>
+                <div class="theme-info">
+                    <span id="currentThemeName">${this.themeService?.getThemeData()?.name || 'Dark'}</span>
+                    <button class="btn btn-icon theme-toggle" id="themeToggle" title="Toggle theme">
+                        <i class="icon">${themeIcon}</i>
+                    </button>
+                </div>
+                </div>
                 </header>
 
                 <!-- Tab Content -->
@@ -688,17 +698,24 @@ export class DashboardPage {
 
         try {
             const newTheme = this.themeService.toggleTheme();
+            const themeData = this.themeService.getThemeData();
 
             // Update theme toggle icon
             const themeToggle = document.getElementById('themeToggle');
             if (themeToggle) {
-                themeToggle.innerHTML = `<i class="icon">${newTheme === 'dark' ? '🌙' : '☀️'}</i>`;
+                themeToggle.innerHTML = `<i class="icon">${this.themeService.isDarkTheme() ? '🌙' : '☀️'}</i>`;
+            }
+
+            // Update theme name display
+            const themeNameElement = document.getElementById('currentThemeName');
+            if (themeNameElement) {
+                themeNameElement.textContent = themeData.name;
             }
 
             // Save preference
-            this.storageService.saveUserSettings({darkMode: newTheme === 'dark'});
+            this.storageService.saveUserSettings({darkMode: this.themeService.isDarkTheme()});
 
-            console.log(`Theme switched to: ${newTheme}`);
+            console.log(`Theme switched to: ${themeData.name}`);
         } catch (error) {
             console.error('Error toggling theme:', error);
         }
@@ -755,7 +772,6 @@ export class DashboardPage {
         }
     }
 
-    // Update loadRecentSessions method in dashboard.js
     async loadRecentSessions() {
         const recentSessionsContainer = document.getElementById('recentSessionsList');
         if (!recentSessionsContainer) return;
@@ -793,8 +809,25 @@ export class DashboardPage {
                 if (entry.key) details.push(`🎼 ${entry.key}`);
                 if (entry.audioFile) details.push(`🎧 ${entry.audioFile}`);
                 if (entry.youtubeTitle) {
-                    if (entry.youtubeUrl) {
-                        details.push(`📺 <a href="${entry.youtubeUrl}" target="_blank" style="color: var(--primary); text-decoration: underline;">${entry.youtubeTitle}</a>`);
+                    if (entry.youtubeUrl || entry.youtubeVideoId) {
+                        // Ensure we have a proper YouTube URL
+                        let youtubeUrl = entry.youtubeUrl;
+
+                        // If URL contains the app domain, extract just the YouTube URL
+                        if (youtubeUrl && youtubeUrl.includes('youtube.com') && youtubeUrl.includes('www.guitar-practice-journal.com')) {
+                            // Extract the YouTube URL from the malformed URL
+                            const match = youtubeUrl.match(/https:\/\/www\.youtube\.com\/watch\?v=[^&]+/);
+                            if (match) {
+                                youtubeUrl = match[0];
+                            }
+                        }
+
+                        // If we only have video ID, construct the URL
+                        if (!youtubeUrl && entry.youtubeVideoId) {
+                            youtubeUrl = `https://www.youtube.com/watch?v=${entry.youtubeVideoId}`;
+                        }
+
+                        details.push(`📺 <a href="#" onclick="event.preventDefault(); window.loadYouTubeInAudioTool('${youtubeUrl || entry.youtubeVideoId}'); return false;" style="color: var(--primary); text-decoration: underline; cursor: pointer;" title="Load in Audio Tool">${entry.youtubeTitle}</a>`);
                     } else {
                         details.push(`📺 ${entry.youtubeTitle}`);
                     }
@@ -930,4 +963,35 @@ export class DashboardPage {
 
         console.log('✅ Dashboard cleanup complete');
     }
+
+    loadYouTubeInAudioTool(urlOrId) {
+        console.log('Loading YouTube video in Audio Tool:', urlOrId);
+
+        // Switch to audio tab
+        this.switchTab('audio');
+
+        // Wait for tab to load, then load the video
+        setTimeout(() => {
+            // Find the YouTube URL input
+            const youtubeInput = document.getElementById('youtubeUrlInput');
+            const loadButton = document.getElementById('loadYoutubeBtn');
+
+            if (youtubeInput && loadButton) {
+                // Click the YouTube source tab first
+                const youtubeTab = document.querySelector('.source-tab[data-source="youtube"]');
+                if (youtubeTab) {
+                    youtubeTab.click();
+                }
+
+                // Set the URL and trigger load
+                setTimeout(() => {
+                    youtubeInput.value = urlOrId;
+                    loadButton.click();
+                }, 100);
+            }
+        }, 300);
+    }
+
+
+
 }

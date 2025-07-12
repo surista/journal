@@ -477,14 +477,21 @@
    Sticky Timer for Audio Tool & Metronome Tabs
    ============================================ */
 
-/* Make timer sticky at the top for both Audio and Metronome tabs */
+/* Ensure the audio layout is scrollable */
+#audioTab .audio-layout {
+    height: calc(100vh - var(--header-height) - 60px); /* Adjusted calculation */
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-top: 0;
+    position: relative;
+}
+
+/* Sticky Timer for Audio Tool Tab */
 #audioTab .timer-section,
-#timerContainerAudio,
-#metronomeTab .timer-section,
-#timerContainerMetronome {
+#timerContainerAudio {
     position: sticky;
-    top: 0;
-    z-index: 100;
+    top: 0; /* Timer sticks to top of scrollable area */
+    z-index: 50; /* Lower than header */
     background: var(--bg-dark);
     padding: 1rem;
     margin-bottom: 1rem;
@@ -493,13 +500,16 @@
     background: rgba(26, 26, 46, 0.95);
 }
 
-/* Ensure the layout containers are scrollable */
-#audioTab .audio-layout,
-#metronomeTab .metronome-layout {
-    height: calc(100vh - 140px); /* Adjust based on header + footer height */
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding-top: 0;
+/* Add shadow when scrolled */
+#audioTab .timer-section.scrolled,
+#timerContainerAudio.scrolled {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* For dark themes */
+[data-theme="dark"] #timerContainerAudio,
+[data-theme="dark"] #audioTab .timer-section {
+    background: rgba(10, 10, 10, 0.95);
 }
 
 /* Add shadow when timer is "floating" */
@@ -714,4 +724,70 @@
     .save-loop-buttons .btn {
         width: 100%;
     }
+}
+
+.save-loop-info-value {
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 300px;
+    display: inline-block;
+}
+
+@media (max-width: 600px) {
+    .save-loop-info-value {
+        max-width: 200px;
+    }
+}
+
+/* Z-index fix for sticky elements */
+#audioTab .timer-section,
+#timerContainerAudio {
+    z-index: 100 !important;
+}
+
+#audioTab .audio-player-wrapper {
+    position: relative;
+    z-index: 1;
+}
+
+/* Update the audio layout to have proper scroll container */
+#audioTab .audio-layout,
+#metronomeTab .metronome-layout {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - var(--header-height) - 60px);
+    position: relative;
+}
+
+/* Timer section - make it fixed within the tab */
+#audioTab .timer-section,
+#timerContainerAudio,
+#metronomeTab .timer-section,
+#timerContainerMetronome {
+    position: relative; /* Changed from sticky */
+    z-index: 50;
+    background: var(--bg-dark);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(10px);
+    background: rgba(26, 26, 46, 0.95);
+    flex-shrink: 0; /* Prevent timer from shrinking */
+}
+
+/* Create scrollable content area */
+#audioTab .audio-player-wrapper,
+#metronomeTab .metronome-wrapper {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 1rem 1rem 1rem;
+}
+
+/* Remove scroll from the main layout container */
+#audioTab .audio-layout,
+#metronomeTab .metronome-layout {
+    overflow: hidden;
 }

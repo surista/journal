@@ -214,6 +214,12 @@ export class SessionManager {
             return;
         }
 
+        // ADD THIS VALIDATION CHECK
+        if (this.player.loopStart === null || this.player.loopEnd === null) {
+            this.player.showNotification('No loop set. Please select both loop start and end points before saving.', 'error');
+            return;
+        }
+
         if (!this.player.ensureStorageService()) {
             this.player.showNotification('Storage service not available. Please refresh the page.', 'error');
             return;
@@ -247,7 +253,7 @@ export class SessionManager {
                 <div class="save-loop-info">
                      <div class="save-loop-info-row">
                         <span class="save-loop-info-label">${sourceType}:</span>
-                        <span class="save-loop-info-value">${sourceIcon} ${sourceName}</span>
+                        <span class="save-loop-info-value" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 300px;" title="${sourceName}">${sourceIcon} ${sourceName}</span>
                     </div>
                     ${isYouTubeMode ? `
                     <div class="save-loop-info-row">
@@ -288,7 +294,7 @@ export class SessionManager {
                     <button class="btn btn-secondary" onclick="this.closest('.save-loop-modal').remove()">
                         Cancel
                     </button>
-                    <button class="btn btn-primary" id="confirmSaveLoop">
+                    <button class="btn btn-primary" id="confirmSaveLoop" ${(loopStart === null || loopEnd === null) ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
                         💾 Save Loop
                     </button>
                 </div>
@@ -348,6 +354,46 @@ export class SessionManager {
     }
 
     confirmSaveLoop() {
+
+        // ADD THIS VALIDATION BLOCK AT THE VERY BEGINNING
+        if (this.player.loopStart === null || this.player.loopEnd === null) {
+            // Show error message
+            const modal = document.getElementById('saveLoopModal');
+            if (modal) {
+                // Check if error message already exists
+                let errorDiv = modal.querySelector('#loop-error-message');
+                if (!errorDiv) {
+                    errorDiv = document.createElement('div');
+                    errorDiv.id = 'loop-error-message';
+                    errorDiv.style.cssText = `
+                    color: var(--danger);
+                    background: rgba(239, 68, 68, 0.1);
+                    border: 1px solid var(--danger);
+                    border-radius: 6px;
+                    padding: 0.75rem 1rem;
+                    margin: 1rem 0;
+                    font-size: 0.875rem;
+                    text-align: center;
+                `;
+                    errorDiv.textContent = 'No loop set. Please select both loop start and end points before saving.';
+
+                    // Insert before the buttons
+                    const buttonsDiv = modal.querySelector('.save-loop-buttons');
+                    if (buttonsDiv) {
+                        buttonsDiv.parentNode.insertBefore(errorDiv, buttonsDiv);
+                    }
+                }
+
+                // Remove error after 3 seconds
+                setTimeout(() => {
+                    if (errorDiv && errorDiv.parentNode) {
+                        errorDiv.remove();
+                    }
+                }, 3000);
+            }
+
+            return; // Stop execution
+        }
         const modal = document.getElementById('saveLoopModal');
         const nameInput = document.getElementById('loopSessionName');
         const notesInput = document.getElementById('loopSessionNotes');

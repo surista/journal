@@ -83,3 +83,28 @@
     background: linear-gradient(135deg, #243b30 0%, #1e3328 100%);
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
 }
+
+/* Header contrast fix */
+[data-theme="forest-green"] .header {
+    background: rgba(26, 47, 35, 0.95);
+    backdrop-filter: blur(10px);
+}
+
+[data-theme="forest-green"] .header #pageTitle,
+[data-theme="forest-green"] .header .theme-info,
+[data-theme="forest-green"] .header .sync-status,
+[data-theme="forest-green"] .header .sync-icon,
+[data-theme="forest-green"] .header .sync-text {
+    color: #e6f2ea !important;
+}
+
+[data-theme="forest-green"] .theme-toggle {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #e6f2ea;
+}
+
+[data-theme="forest-green"] .theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+}
