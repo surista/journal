@@ -78,19 +78,20 @@ export class AudioPlayer {
             this.initializeTone();
             this.isInitialized = true;
             console.log('Audio player initialized successfully');
+
+            // Make sure the audio player is globally accessible for onclick handlers
+            if (typeof window !== 'undefined') {
+                window.audioPlayer = this;
+
+                // Also try to set it on the app structure
+                if (window.app?.currentPage?.components) {
+                    window.app.currentPage.components.audioPlayer = this;
+                }
+            }
+
         } catch (error) {
             console.error('Error in audio player init:', error);
             throw error;
-        }
-
-        // Make sure the audio player is globally accessible for onclick handlers
-        if (typeof window !== 'undefined') {
-            window.audioPlayer = this;
-
-            // Also try to set it on the app structure
-            if (window.app?.currentPage?.components) {
-                window.app.currentPage.components.audioPlayer = this;
-            }
         }
     }
 
@@ -146,47 +147,47 @@ export class AudioPlayer {
                 
                 <!-- Content wrapper -->
                 <div style="position: relative; z-index: 1;">
-                    <!-- Audio Source Selection -->
-                    <div class="audio-source-section">
-                        <h3>Audio Source</h3>
-                        
-                        <!-- Source Type Tabs -->
-                        <div class="source-tabs" style="display: flex; gap: 8px; margin-bottom: 16px;">
-                            <button class="source-tab active" data-source="file" 
-                                    style="flex: 1; padding: 10px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
-                                📁 Local File
-                            </button>
-                            <button class="source-tab" data-source="youtube" 
-                                    style="flex: 1; padding: 10px; background: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.2s;">
-                                🎬 YouTube
-                            </button>
-                        </div>
-                        
-                        <!-- File Input Section -->
-                        <div id="fileInputSection" class="source-section">
-                            <input type="file" id="audioFileInput" accept="audio/*" class="file-input" 
-                                   style="padding: 12px; background: var(--bg-input); border: 1px solid var(--border); 
-                                          border-radius: 8px; color: var(--text-primary); width: 100%; margin-bottom: 16px;">
-                        </div>
-                        
-                        <!-- YouTube Input Section -->
-                        <div id="youtubeInputSection" class="source-section" style="display: none;">
-                            <div style="display: flex; gap: 8px; margin-bottom: 16px;">
-                                <input type="text" id="youtubeUrlInput" placeholder="Enter YouTube URL or Video ID" 
-                                       style="flex: 1; padding: 12px; background: var(--bg-input); border: 1px solid var(--border); 
-                                              border-radius: 8px; color: var(--text-primary);">
-                                <button id="loadYoutubeBtn" class="btn btn-primary" style="padding: 12px 20px;">
-                                    Load Video
-                                </button>
-                            </div>
-                            <div id="youtubePlayerContainer" style="display: none; margin-bottom: 16px;">
-                                <div id="youtubePlayer" style="width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 8px;"></div>
-                            </div>
-                        </div>
-                        
-                        <div id="currentFileName" class="current-file-name" 
-                             style="color: var(--text-secondary); font-size: 14px; margin-top: 8px;"></div>
-                    </div>
+<!-- Audio Source Selection -->
+<div class="audio-source-section">
+    <h3>Audio Source</h3>
+    
+    <!-- Source Type Tabs -->
+    <div class="source-tabs" style="display: flex; gap: 8px; margin-bottom: 16px;">
+        <button class="source-tab active" data-source="file" 
+                style="flex: 1; padding: 10px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+            📁 Local File
+        </button>
+        <button class="source-tab" data-source="youtube" 
+                style="flex: 1; padding: 10px; background: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.2s;">
+            🎬 YouTube
+        </button>
+    </div>
+    
+    <!-- File Input Section -->
+    <div id="fileInputSection" class="source-section">
+        <input type="file" id="audioFileInput" accept="audio/*" class="file-input" 
+               style="padding: 12px; background: var(--bg-input); border: 1px solid var(--border); 
+                      border-radius: 8px; color: var(--text-primary); width: 100%; margin-bottom: 16px;">
+    </div>
+    
+    <!-- YouTube Input Section -->
+    <div id="youtubeInputSection" class="source-section" style="display: none;">
+        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+            <input type="text" id="youtubeUrlInput" placeholder="Enter YouTube URL or Video ID" 
+                   style="flex: 1; padding: 12px; background: var(--bg-input); border: 1px solid var(--border); 
+                          border-radius: 8px; color: var(--text-primary);">
+            <button id="loadYoutubeBtn" class="btn btn-primary" style="padding: 12px 20px;">
+                Load Video
+            </button>
+        </div>
+        <div id="youtubePlayerContainer" style="display: none; margin-bottom: 16px;">
+            <div id="youtubePlayer" style="width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 8px;"></div>
+        </div>
+    </div>
+    
+    <div id="currentFileName" class="current-file-name" 
+         style="color: var(--text-secondary); font-size: 14px; margin-top: 8px;"></div>
+</div>
 
                     <!-- Audio Controls -->
                     <div id="audioControlsSection" class="audio-controls-section" style="display: none;">
@@ -209,58 +210,57 @@ export class AudioPlayer {
                             </div>
                         </div>
 
-                        \`<!-- Unified Loop Controls Section - FIXED VERSION -->
-                        <div class="loop-controls-unified" style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); padding: 16px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.1); max-height: 200px; overflow-y: auto;">
-                            <h4 style="margin-bottom: 12px;">Loop Controls</h4>
-                            
-                            <!-- Main Loop Controls - Single Compact Row -->
-                            <div style="display: grid; grid-template-columns: auto auto auto 1fr auto; gap: 8px; align-items: center; margin-bottom: 10px;">
-                                <button id="setLoopStartBtn" class="btn btn-sm btn-secondary" style="padding: 4px 10px; font-size: 12px;">Start</button>
-                                <button id="setLoopEndBtn" class="btn btn-sm btn-secondary" style="padding: 4px 10px; font-size: 12px;">End</button>
-                                <button id="clearLoopBtn" class="btn btn-sm btn-secondary" style="padding: 4px 10px; font-size: 12px;">Clear</button>
-                                <div class="loop-info" style="font-family: monospace; font-size: 12px; text-align: center;">
-                                    <span id="loopStart">--:--</span> - <span id="loopEnd">--:--</span>
-                                </div>
-                                <label class="checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px; white-space: nowrap;">
-                                    <input type="checkbox" id="loopEnabled">
-                                    <span>Loop</span>
-                                </label>
-                            </div>
-                            
-                            <!-- Tempo Progression - Compact Row -->
-                            <div style="display: grid; grid-template-columns: auto 1fr; gap: 8px; align-items: center; margin-bottom: 10px;">
-                                <label class="checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
-                                    <input type="checkbox" id="progressionEnabled">
-                                    <span>Auto +</span>
-                                </label>
-                                <div class="progression-controls-inline" id="progressionControls" style="display: none; display: grid; grid-template-columns: auto auto auto auto auto; gap: 4px; align-items: center; font-size: 12px;">
-                                    <input type="number" id="incrementValue" value="1" min="0.1" max="10" step="0.1" 
-                                           style="width: 40px; padding: 2px 4px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 4px; font-size: 11px;">
-                                    <select id="incrementType" style="padding: 2px 4px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 4px; font-size: 11px;">
-                                        <option value="percentage">%</option>
-                                        <option value="bpm">BPM</option>
-                                    </select>
-                                    <span>every</span>
-                                    <input type="number" id="loopInterval" value="1" min="1" max="10" 
-                                           style="width: 30px; padding: 2px 4px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 4px; font-size: 11px;">
-                                    <span>loops</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Saved Sessions - Compact Section -->
-                            <div style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 8px;">
-                                <div style="display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; margin-bottom: 6px;">
-                                    <span style="font-size: 12px; color: var(--text-secondary);">Saved Loops:</span>
-                                    <button id="saveSessionBtn" class="btn btn-sm btn-primary" style="padding: 2px 8px; font-size: 11px;">
-                                        💾 Save
-                                    </button>
-                                </div>
-                                <div id="savedSessionsList" class="saved-sessions-list" style="max-height: 80px; overflow-y: auto;">
-                                    <p class="empty-state" style="color: var(--text-secondary); text-align: center; font-size: 11px; margin: 0; padding: 8px;">No saved loops</p>
-                                </div>
-                            </div>
-                        </div>\`
-
+                        <!-- Unified Loop Controls Section -->
+<div class="loop-controls-unified" style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); padding: 16px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.1); max-height: 200px; overflow-y: auto;">
+    <h4 style="margin-bottom: 12px;">Loop Controls</h4>
+    
+    <!-- Main Loop Controls - Single Compact Row -->
+    <div style="display: grid; grid-template-columns: auto auto auto 1fr auto; gap: 8px; align-items: center; margin-bottom: 10px;">
+        <button id="setLoopStartBtn" class="btn btn-sm btn-secondary" style="padding: 4px 10px; font-size: 12px;">Start</button>
+        <button id="setLoopEndBtn" class="btn btn-sm btn-secondary" style="padding: 4px 10px; font-size: 12px;">End</button>
+        <button id="clearLoopBtn" class="btn btn-sm btn-secondary" style="padding: 4px 10px; font-size: 12px;">Clear</button>
+        <div class="loop-info" style="font-family: monospace; font-size: 12px; text-align: center;">
+            <span id="loopStart">--:--</span> - <span id="loopEnd">--:--</span>
+        </div>
+        <label class="checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px; white-space: nowrap;">
+            <input type="checkbox" id="loopEnabled">
+            <span>Loop</span>
+        </label>
+    </div>
+    
+    <!-- Tempo Progression - Compact Row -->
+    <div style="display: grid; grid-template-columns: auto 1fr; gap: 8px; align-items: center; margin-bottom: 10px;">
+        <label class="checkbox-label" style="display: flex; align-items: center; gap: 4px; font-size: 12px;">
+            <input type="checkbox" id="progressionEnabled">
+            <span>Auto +</span>
+        </label>
+        <div class="progression-controls-inline" id="progressionControls" style="display: none; display: grid; grid-template-columns: auto auto auto auto auto; gap: 4px; align-items: center; font-size: 12px;">
+            <input type="number" id="incrementValue" value="1" min="0.1" max="10" step="0.1" 
+                   style="width: 40px; padding: 2px 4px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 4px; font-size: 11px;">
+            <select id="incrementType" style="padding: 2px 4px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 4px; font-size: 11px;">
+                <option value="percentage">%</option>
+                <option value="bpm">BPM</option>
+            </select>
+            <span>every</span>
+            <input type="number" id="loopInterval" value="1" min="1" max="10" 
+                   style="width: 30px; padding: 2px 4px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 4px; font-size: 11px;">
+            <span>loops</span>
+        </div>
+    </div>
+    
+    <!-- Saved Sessions - Compact Section -->
+    <div style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 8px;">
+        <div style="display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; margin-bottom: 6px;">
+            <span style="font-size: 12px; color: var(--text-secondary);">Saved Loops:</span>
+            <button id="saveSessionBtn" class="btn btn-sm btn-primary" style="padding: 2px 8px; font-size: 11px;">
+                💾 Save
+            </button>
+        </div>
+        <div id="savedSessionsList" class="saved-sessions-list" style="max-height: 80px; overflow-y: auto;">
+            <p class="empty-state" style="color: var(--text-secondary); text-align: center; font-size: 11px; margin: 0; padding: 8px;">No saved loops</p>
+        </div>
+    </div>
+</div>
 
                         <!-- Compact Audio Controls -->
                         <div class="audio-controls-compact" style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.1);">
@@ -529,7 +529,7 @@ export class AudioPlayer {
         document.getElementById('progressionEnabled')?.addEventListener('change', (e) => {
             this.tempoProgression.enabled = e.target.checked;
             document.getElementById('progressionControls').style.display =
-                e.target.checked ? 'block' : 'none';
+                e.target.checked ? 'grid' : 'none';
             this.updateProgressionStatus();
         });
 
@@ -720,6 +720,9 @@ export class AudioPlayer {
 
         // Fetch video title after a short delay
         setTimeout(() => this.fetchYouTubeTitle(), 1000);
+
+        // Load saved sessions
+        setTimeout(() => this.loadSavedSessions(), 1500);
     }
 
     onYouTubeStateChange(event) {
@@ -755,8 +758,12 @@ export class AudioPlayer {
             return;
         }
 
+        console.log('Loading YouTube video:', { videoId, url });
+
+        // SET YOUTUBE STATE IMMEDIATELY
         this.youtubeVideoId = videoId;
         this.isYouTubeMode = true;
+        this.youtubeVideoUrl = url;
 
         // Reset state
         this.stop();
@@ -773,25 +780,37 @@ export class AudioPlayer {
         // Initialize player if not already done
         if (!this.youtubePlayer) {
             this.initializeYouTubePlayer();
-            // Load video after player is ready (cue instead of load to prevent autoplay)
+            // Load video after player is ready
             setTimeout(() => {
-                this.youtubePlayer.cueVideoById(videoId);
-                this.onVideoLoaded();
+                if (this.youtubePlayer && this.youtubePlayer.cueVideoById) {
+                    this.youtubePlayer.cueVideoById(videoId);
+                    this.onVideoLoaded();
+                }
             }, 1000);
         } else {
-            this.youtubePlayer.cueVideoById(videoId);
-            this.onVideoLoaded();
+            if (this.youtubePlayer.cueVideoById) {
+                this.youtubePlayer.cueVideoById(videoId);
+                this.onVideoLoaded();
+            }
         }
 
-        // Store the URL
-        this.youtubeVideoUrl = url;
-
-        // Update UI
+        // Update UI immediately
         const fileNameEl = document.getElementById('currentFileName');
         if (fileNameEl) {
             fileNameEl.textContent = `YouTube: ${videoId}`;
             fileNameEl.style.color = 'var(--success)';
         }
+
+        // Show controls immediately
+        const controlsSection = document.getElementById('audioControlsSection');
+        if (controlsSection) {
+            controlsSection.style.display = 'block';
+        }
+
+        // TRIGGER LOAD SAVED SESSIONS FOR YOUTUBE
+        setTimeout(() => {
+            this.loadSavedSessions();
+        }, 500);
 
         // Dispatch event for practice form
         window.dispatchEvent(new CustomEvent('youtubeVideoLoaded', {
@@ -802,126 +821,14 @@ export class AudioPlayer {
             }
         }));
 
-        // Replace waveform with YouTube progress bar that supports loop markers
-        const waveformContainer = document.querySelector('.waveform-container');
-        if (waveformContainer) {
-            waveformContainer.innerHTML = `
-        <div style="
-            width: 100%; 
-            height: 100%; 
-            position: relative;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            overflow: hidden;
-        ">
-            <!-- YouTube label -->
-            <div style="
-                position: absolute;
-                top: 10px;
-                left: 10px;
-                z-index: 10;
-                background: rgba(0, 0, 0, 0.7);
-                padding: 4px 12px;
-                border-radius: 4px;
-                font-size: 12px;
-                color: var(--text-secondary);
-            ">
-                🎬 YouTube Mode
-            </div>
-            
-            <!-- Progress bar background -->
-            <div id="youtubeProgressBar" style="
-                position: absolute;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                height: 60%;
-                background: rgba(255, 255, 255, 0.1);
-                cursor: pointer;
-            ">
-                <!-- Progress fill -->
-                <div id="youtubeProgressFill" style="
-                    position: absolute;
-                    left: 0;
-                    top: 0;
-                    bottom: 0;
-                    width: 0%;
-                    background: var(--primary);
-                    opacity: 0.5;
-                    transition: none;
-                "></div>
-                
-                <!-- Current position indicator -->
-                <div id="youtubePositionIndicator" style="
-                    position: absolute;
-                    top: 0;
-                    bottom: 0;
-                    width: 2px;
-                    background: var(--primary);
-                    left: 0%;
-                    box-shadow: 0 0 4px rgba(99, 102, 241, 0.5);
-                "></div>
-            </div>
-            
-            <!-- Loop region overlay (reuse existing ID) -->
-            <div class="loop-region" id="loopRegion" style="
-                position: absolute;
-                bottom: 0;
-                height: 60%;
-                background: rgba(99, 102, 241, 0.2);
-                pointer-events: none;
-                display: none;
-                border-left: 2px solid var(--success);
-                border-right: 2px solid var(--danger);
-            "></div>
-            
-            <!-- Time display -->
-            <div style="
-                position: absolute;
-                bottom: 10px;
-                right: 10px;
-                background: rgba(0, 0, 0, 0.7);
-                padding: 4px 12px;
-                border-radius: 4px;
-                font-size: 13px;
-                color: var(--text-primary);
-                font-family: monospace;
-            ">
-                <span id="youtubeCurrentTime">0:00</span> / <span id="youtubeDuration">0:00</span>
-            </div>
-        </div>
-    `;
+        // Replace waveform with YouTube progress bar
+        this.setupYouTubeProgressBar();
 
-            // Add click handler for seeking
-            const progressBar = document.getElementById('youtubeProgressBar');
-            if (progressBar) {
-                progressBar.addEventListener('click', (e) => {
-                    const rect = progressBar.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const percentage = x / rect.width;
-                    const seekTime = percentage * this.duration;
-
-                    if (this.youtubePlayer && this.youtubePlayer.seekTo) {
-                        this.youtubePlayer.seekTo(seekTime, true);
-                    }
-                });
-            }
-        }
-
-        // Show controls
-        const controlsSection = document.getElementById('audioControlsSection');
-        if (controlsSection) {
-            controlsSection.style.display = 'block';
-        }
-
-        // Update duration when available
-        setTimeout(() => {
-            if (this.youtubePlayer && this.youtubePlayer.getDuration) {
-                this.duration = this.youtubePlayer.getDuration();
-                const durationEl = document.getElementById('duration');
-                if (durationEl) durationEl.textContent = this.formatTime(this.duration);
-            }
-        }, 2000);
+        console.log('YouTube video setup complete:', {
+            videoId: this.youtubeVideoId,
+            isYouTubeMode: this.isYouTubeMode,
+            url: this.youtubeVideoUrl
+        });
     }
 
     onVideoLoaded() {
@@ -948,6 +855,8 @@ export class AudioPlayer {
             if (videoData && videoData.title) {
                 this.youtubeVideoTitle = videoData.title;
 
+                console.log('YouTube title fetched:', this.youtubeVideoTitle);
+
                 // Update display
                 const fileNameEl = document.getElementById('currentFileName');
                 if (fileNameEl) {
@@ -963,6 +872,9 @@ export class AudioPlayer {
                         mode: 'youtube'
                     }
                 }));
+
+                // IMPORTANT: Reload saved sessions with the new title
+                this.loadSavedSessions();
             }
         } catch (error) {
             console.error('Error fetching YouTube title:', error);
@@ -988,48 +900,58 @@ export class AudioPlayer {
 
         this.youtubeUpdateInterval = setInterval(() => {
             if (this.youtubePlayer && this.youtubePlayer.getCurrentTime) {
-                this.currentTime = this.youtubePlayer.getCurrentTime();
+                try {
+                    this.currentTime = this.youtubePlayer.getCurrentTime();
 
-                // Update time display
-                const currentTimeEl = document.getElementById('currentTime');
-                if (currentTimeEl) {
-                    currentTimeEl.textContent = this.formatTime(this.currentTime);
-                }
-
-                // Update YouTube progress bar
-                const progressFill = document.getElementById('youtubeProgressFill');
-                const positionIndicator = document.getElementById('youtubePositionIndicator');
-                const youtubeCurrentTimeEl = document.getElementById('youtubeCurrentTime');
-                const youtubeDurationEl = document.getElementById('youtubeDuration');
-
-                if (this.duration > 0) {
-                    const percentage = (this.currentTime / this.duration) * 100;
-
-                    if (progressFill) {
-                        progressFill.style.width = percentage + '%';
+                    // Update time display
+                    const currentTimeEl = document.getElementById('currentTime');
+                    if (currentTimeEl) {
+                        currentTimeEl.textContent = this.formatTime(this.currentTime);
                     }
-                    if (positionIndicator) {
-                        positionIndicator.style.left = percentage + '%';
+
+                    // Update YouTube-specific progress elements
+                    const progressFill = document.getElementById('youtubeProgressFill');
+                    const positionIndicator = document.getElementById('youtubePositionIndicator');
+                    const youtubeCurrentTimeEl = document.getElementById('youtubeCurrentTime');
+                    const youtubeDurationEl = document.getElementById('youtubeDuration');
+
+                    // Get current duration
+                    let currentDuration = this.duration;
+                    if (this.youtubePlayer.getDuration) {
+                        currentDuration = this.youtubePlayer.getDuration();
+                        if (currentDuration !== this.duration) {
+                            this.duration = currentDuration;
+                        }
                     }
-                }
 
-                if (youtubeCurrentTimeEl) {
-                    youtubeCurrentTimeEl.textContent = this.formatTime(this.currentTime);
-                }
-                if (youtubeDurationEl && this.duration) {
-                    youtubeDurationEl.textContent = this.formatTime(this.duration);
-                }
+                    if (currentDuration > 0) {
+                        const percentage = (this.currentTime / currentDuration) * 100;
 
-                // Update loop region position (it will use the existing updateLoopRegion method)
-                this.updateLoopRegion();
+                        if (progressFill) {
+                            progressFill.style.width = percentage + '%';
+                        }
+                        if (positionIndicator) {
+                            positionIndicator.style.left = percentage + '%';
+                        }
+                    }
 
-                // Update YouTube loop markers
-                this.updateYouTubeLoopMarkers();
+                    if (youtubeCurrentTimeEl) {
+                        youtubeCurrentTimeEl.textContent = this.formatTime(this.currentTime);
+                    }
+                    if (youtubeDurationEl && currentDuration) {
+                        youtubeDurationEl.textContent = this.formatTime(currentDuration);
+                    }
 
-                // Handle looping
-                if (this.isLooping && this.loopEnd !== null && this.currentTime >= this.loopEnd) {
-                    this.youtubePlayer.seekTo(this.loopStart || 0);
-                    this.handleLoopComplete();
+                    // Update loop markers
+                    this.updateYouTubeLoopMarkers();
+
+                    // Handle looping
+                    if (this.isLooping && this.loopEnd !== null && this.currentTime >= this.loopEnd) {
+                        this.youtubePlayer.seekTo(this.loopStart || 0);
+                        this.handleLoopComplete();
+                    }
+                } catch (error) {
+                    console.error('Error in YouTube time update:', error);
                 }
             }
         }, 100);
@@ -1040,6 +962,234 @@ export class AudioPlayer {
             clearInterval(this.youtubeUpdateInterval);
             this.youtubeUpdateInterval = null;
         }
+    }
+
+    updateYouTubeLoopMarkers() {
+        const container = document.querySelector('.youtube-progress-container');
+        if (!container || !this.isYouTubeMode) return;
+
+        // Get the loop region element
+        const loopRegion = document.getElementById('loopRegion');
+        if (!loopRegion) return;
+
+        // Get duration
+        let duration = this.duration;
+        if (this.isYouTubeMode && this.youtubePlayer && this.youtubePlayer.getDuration) {
+            duration = this.youtubePlayer.getDuration();
+        }
+
+        if (!duration || duration === 0) {
+            loopRegion.style.display = 'none';
+            return;
+        }
+
+        // Show/hide and position loop region
+        if (this.loopStart !== null && this.loopEnd !== null) {
+            const startPercent = Math.max(0, Math.min(100, (this.loopStart / duration) * 100));
+            const endPercent = Math.max(0, Math.min(100, (this.loopEnd / duration) * 100));
+
+            loopRegion.style.left = startPercent + '%';
+            loopRegion.style.width = (endPercent - startPercent) + '%';
+            loopRegion.style.display = 'block';
+
+            console.log(`Loop markers updated: ${startPercent.toFixed(1)}% - ${endPercent.toFixed(1)}%`);
+        } else {
+            loopRegion.style.display = 'none';
+        }
+    }
+
+    setupYouTubeProgressBar() {
+        const waveformContainer = document.querySelector('.waveform-container');
+        if (!waveformContainer) {
+            console.error('Waveform container not found');
+            return;
+        }
+
+        // Clear the container and replace with YouTube-specific progress bar
+        waveformContainer.innerHTML = `
+            <div class="youtube-progress-container" style="
+                width: 100%; 
+                height: 100%; 
+                position: relative;
+                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+                border-radius: 8px;
+                overflow: hidden;
+                border: 1px solid rgba(99, 102, 241, 0.2);
+            ">
+                <!-- YouTube mode indicator -->
+                <div style="
+                    position: absolute;
+                    top: 8px;
+                    left: 12px;
+                    z-index: 10;
+                    background: linear-gradient(45deg, #ff0000, #cc0000);
+                    padding: 4px 12px;
+                    border-radius: 12px;
+                    font-size: 11px;
+                    color: white;
+                    font-weight: 600;
+                    box-shadow: 0 2px 8px rgba(255, 0, 0, 0.3);
+                    border: 1px solid rgba(255, 255, 255, 0.2);
+                ">
+                    🎬 YouTube Mode
+                </div>
+                
+                <!-- Main progress area -->
+                <div id="youtubeProgressBar" style="
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    right: 0;
+                    height: 60%;
+                    background: rgba(0, 0, 0, 0.3);
+                    cursor: pointer;
+                    border-top: 1px solid rgba(99, 102, 241, 0.3);
+                ">
+                    <!-- Progress fill -->
+                    <div id="youtubeProgressFill" style="
+                        position: absolute;
+                        left: 0;
+                        top: 0;
+                        bottom: 0;
+                        width: 0%;
+                        background: linear-gradient(90deg, #6366f1, #8b5cf6);
+                        opacity: 0.6;
+                        transition: width 0.1s ease;
+                    "></div>
+                    
+                    <!-- Current position indicator -->
+                    <div id="youtubePositionIndicator" style="
+                        position: absolute;
+                        top: -2px;
+                        bottom: -2px;
+                        width: 3px;
+                        background: linear-gradient(180deg, #ffffff, #6366f1);
+                        left: 0%;
+                        box-shadow: 0 0 8px rgba(99, 102, 241, 0.8);
+                        border-radius: 2px;
+                        z-index: 15;
+                    "></div>
+                </div>
+                
+                <!-- Loop region overlay -->
+                <div class="loop-region" id="loopRegion" style="
+                    position: absolute;
+                    bottom: 0;
+                    height: 60%;
+                    background: rgba(99, 102, 241, 0.15);
+                    border-left: 3px solid #10b981;
+                    border-right: 3px solid #ef4444;
+                    pointer-events: none;
+                    display: none;
+                    z-index: 10;
+                "></div>
+                
+                <!-- Wave visualization area (decorative) -->
+                <div style="
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    height: 40%;
+                    background: linear-gradient(180deg, 
+                        rgba(99, 102, 241, 0.1) 0%, 
+                        rgba(139, 92, 246, 0.05) 50%, 
+                        transparent 100%);
+                    overflow: hidden;
+                ">
+                    <!-- Animated wave pattern -->
+                    <div style="
+                        position: absolute;
+                        top: 50%;
+                        left: 0;
+                        right: 0;
+                        height: 2px;
+                        background: repeating-linear-gradient(
+                            90deg,
+                            transparent 0px,
+                            rgba(99, 102, 241, 0.3) 10px,
+                            transparent 20px,
+                            rgba(139, 92, 246, 0.3) 30px,
+                            transparent 40px
+                        );
+                        animation: waveMove 3s linear infinite;
+                    "></div>
+                </div>
+                
+                <!-- Time display -->
+                <div style="
+                    position: absolute;
+                    bottom: 8px;
+                    right: 12px;
+                    background: rgba(0, 0, 0, 0.8);
+                    padding: 4px 10px;
+                    border-radius: 12px;
+                    font-size: 12px;
+                    color: #ffffff;
+                    font-family: 'Courier New', monospace;
+                    font-weight: 600;
+                    border: 1px solid rgba(255, 255, 255, 0.2);
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+                ">
+                    <span id="youtubeCurrentTime">0:00</span> / <span id="youtubeDuration">0:00</span>
+                </div>
+            </div>
+            
+            <style>
+                @keyframes waveMove {
+                    0% { transform: translateX(-40px); }
+                    100% { transform: translateX(0px); }
+                }
+                
+                .youtube-progress-container:hover #youtubePositionIndicator {
+                    width: 4px;
+                    box-shadow: 0 0 12px rgba(99, 102, 241, 1);
+                }
+                
+                #youtubeProgressBar:hover {
+                    background: rgba(0, 0, 0, 0.5);
+                }
+                
+                #youtubeProgressFill {
+                    background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+                }
+            </style>
+        `;
+
+        // Add click handler for seeking
+        const progressBar = document.getElementById('youtubeProgressBar');
+        if (progressBar) {
+            progressBar.addEventListener('click', (e) => {
+                const rect = progressBar.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const percentage = x / rect.width;
+
+                // Get duration from YouTube player
+                let duration = this.duration;
+                if (this.youtubePlayer && this.youtubePlayer.getDuration) {
+                    duration = this.youtubePlayer.getDuration();
+                }
+
+                const seekTime = percentage * duration;
+
+                if (this.youtubePlayer && this.youtubePlayer.seekTo) {
+                    this.youtubePlayer.seekTo(seekTime, true);
+                    console.log(`Seeking to ${seekTime.toFixed(2)}s (${(percentage * 100).toFixed(1)}%)`);
+                }
+            });
+
+            // Add hover effect for seeking preview
+            progressBar.addEventListener('mousemove', (e) => {
+                const rect = progressBar.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const percentage = x / rect.width;
+
+                // Could add a preview tooltip here if desired
+                progressBar.title = `Seek to ${(percentage * 100).toFixed(1)}%`;
+            });
+        }
+
+        console.log('YouTube progress bar setup complete');
     }
 
     setupTimeUpdate() {
@@ -1512,85 +1662,6 @@ export class AudioPlayer {
         }
     }
 
-    updateYouTubeLoopMarkers() {
-        const container = document.querySelector('.waveform-container');
-        if (!container || !this.isYouTubeMode) return;
-
-        // Remove ALL loop-related elements first
-        const existingMarkers = container.querySelectorAll('.youtube-loop-marker, .loop-start-marker, .loop-end-marker, .youtube-loop-region');
-        existingMarkers.forEach(marker => marker.remove());
-
-        // Also ensure the standard loop region is hidden
-        const standardLoopRegion = document.getElementById('loopRegion');
-        if (standardLoopRegion) {
-            standardLoopRegion.style.display = 'none';
-        }
-
-        // Get duration
-        let duration = this.duration;
-        if (this.isYouTubeMode && this.youtubePlayer && this.youtubePlayer.getDuration) {
-            duration = this.youtubePlayer.getDuration();
-        }
-
-        if (!duration || duration === 0) return;
-
-        // Add shaded region if both markers are set
-        if (this.loopStart !== null && this.loopEnd !== null) {
-            const startPercent = Math.max(0, Math.min(100, (this.loopStart / duration) * 100));
-            const endPercent = Math.max(0, Math.min(100, (this.loopEnd / duration) * 100));
-
-            const loopRegion = document.createElement('div');
-            loopRegion.className = 'youtube-loop-region';
-            loopRegion.style.cssText = `
-            position: absolute;
-            bottom: 0;
-            height: 60%;
-            background: rgba(99, 102, 241, 0.2);
-            left: ${startPercent}%;
-            width: ${endPercent - startPercent}%;
-            pointer-events: none;
-            z-index: 5;
-        `;
-            container.appendChild(loopRegion);
-        }
-
-        // Add start marker if set
-        if (this.loopStart !== null) {
-            const startPercent = Math.max(0, Math.min(100, (this.loopStart / duration) * 100));
-            const startMarker = document.createElement('div');
-            startMarker.className = 'youtube-loop-marker youtube-loop-start';
-            startMarker.style.cssText = `
-            position: absolute;
-            bottom: 0;
-            height: 60%;
-            width: 3px;
-            background: #22c55e;
-            left: ${startPercent}%;
-            z-index: 10;
-            box-shadow: 0 0 4px rgba(34, 197, 94, 0.5);
-        `;
-            container.appendChild(startMarker);
-        }
-
-        // Add end marker if set
-        if (this.loopEnd !== null) {
-            const endPercent = Math.max(0, Math.min(100, (this.loopEnd / duration) * 100));
-            const endMarker = document.createElement('div');
-            endMarker.className = 'youtube-loop-marker youtube-loop-end';
-            endMarker.style.cssText = `
-            position: absolute;
-            bottom: 0;
-            height: 60%;
-            width: 3px;
-            background: #ef4444;
-            left: ${endPercent}%;
-            z-index: 10;
-            box-shadow: 0 0 4px rgba(239, 68, 68, 0.5);
-        `;
-            container.appendChild(endMarker);
-        }
-    }
-
     // Speed control methods - now with pitch preservation
     adjustSpeed(change) {
         const currentSpeed = this.playbackRate * 100;
@@ -1747,39 +1818,39 @@ export class AudioPlayer {
 
         // Create compact session display
         container.innerHTML = sessions.map((session, index) => `
-        <div class="saved-session-item" style="
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            padding: 8px;
-            margin-bottom: 6px;
-            font-size: 11px;
-        ">
-            <div style="display: grid; grid-template-columns: 1fr auto auto; gap: 4px; align-items: center;">
-                <div class="session-info" style="overflow: hidden;">
-                    <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                        ${session.name || `Session ${index + 1}`}
+            <div class="saved-session-item" style="
+                background: var(--bg-card);
+                border: 1px solid var(--border);
+                border-radius: 6px;
+                padding: 8px;
+                margin-bottom: 6px;
+                font-size: 11px;
+            ">
+                <div style="display: grid; grid-template-columns: 1fr auto auto; gap: 4px; align-items: center;">
+                    <div class="session-info" style="overflow: hidden;">
+                        <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            ${session.name || `Session ${index + 1}`}
+                        </div>
+                        <div style="color: var(--text-secondary); font-size: 10px;">
+                            Speed: ${session.speed}% | Pitch: ${session.pitch > 0 ? '+' : ''}${session.pitch}
+                            ${session.loopStart !== null ? ` | ${this.formatTime(session.loopStart)}-${this.formatTime(session.loopEnd)}` : ''}
+                        </div>
                     </div>
-                    <div style="color: var(--text-secondary); font-size: 10px;">
-                        Speed: ${session.speed}% | Pitch: ${session.pitch > 0 ? '+' : ''}${session.pitch}
-                        ${session.loopStart !== null ? ` | ${this.formatTime(session.loopStart)}-${this.formatTime(session.loopEnd)}` : ''}
-                    </div>
+                    <button class="btn btn-xs btn-primary" onclick="window.app?.currentPage?.components?.audioPlayer?.loadSession(${index}) || window.audioPlayer?.loadSession(${index})" 
+                            style="padding: 2px 6px; font-size: 10px; min-width: 35px;">
+                        Load
+                    </button>
+                    <button class="btn btn-xs btn-danger" onclick="window.app?.currentPage?.components?.audioPlayer?.deleteSession(${index}) || window.audioPlayer?.deleteSession(${index})"
+                            style="padding: 2px 6px; font-size: 10px; min-width: 25px;">
+                        ×
+                    </button>
                 </div>
-                <button class="btn btn-xs btn-primary" onclick="window.app?.currentPage?.components?.audioPlayer?.loadSession(${index}) || window.audioPlayer?.loadSession(${index})" 
-                        style="padding: 2px 6px; font-size: 10px; min-width: 35px;">
-                    Load
-                </button>
-                <button class="btn btn-xs btn-danger" onclick="window.app?.currentPage?.components?.audioPlayer?.deleteSession(${index}) || window.audioPlayer?.deleteSession(${index})"
-                        style="padding: 2px 6px; font-size: 10px; min-width: 25px;">
-                    ×
-                </button>
             </div>
-        </div>
-    `).join('');
+        `).join('');
     }
 
     loadSession(index) {
-        if (!this.storageService || !this.currentFileName) {
+        if (!this.storageService || (!this.currentFileName && !this.isYouTubeMode)) {
             this.showNotification('Storage service not available', 'error');
             return;
         }
@@ -1880,10 +1951,12 @@ export class AudioPlayer {
         this.showNotification(`Session "${session.name || 'Unnamed'}" loaded successfully! 🎵`, 'success');
     }
 
-
     saveCurrentSession() {
-        if (!this.currentFileName && !this.isYouTubeMode) {
-            this.showNotification('No audio file loaded', 'error');
+        // Check if we have any audio source loaded
+        const hasAudioSource = this.currentFileName || this.isYouTubeMode;
+
+        if (!hasAudioSource) {
+            this.showNotification('No audio file or YouTube video loaded', 'error');
             return;
         }
 
@@ -1897,11 +1970,36 @@ export class AudioPlayer {
         let displayName;
 
         if (this.isYouTubeMode) {
-            fileName = this.youtubeVideoTitle || this.youtubeVideoId || 'youtube_video';
-            displayName = this.youtubeVideoTitle || `YouTube: ${this.youtubeVideoId}`;
+            // For YouTube, use video ID as the primary key
+            fileName = this.youtubeVideoId || 'youtube_unknown';
+            displayName = this.youtubeVideoTitle || `YouTube: ${this.youtubeVideoId}` || 'YouTube Video';
+
+            console.log('Saving YouTube session:', {
+                fileName,
+                displayName,
+                videoId: this.youtubeVideoId,
+                videoTitle: this.youtubeVideoTitle
+            });
         } else {
             fileName = this.currentFileName;
             displayName = this.currentFileName;
+
+            console.log('Saving file session:', {
+                fileName,
+                displayName
+            });
+        }
+
+        // Validate we have a proper fileName
+        if (!fileName || fileName === 'youtube_unknown') {
+            this.showNotification('Unable to save - video information not available', 'error');
+            console.error('Save failed - no valid fileName:', {
+                fileName,
+                isYouTubeMode: this.isYouTubeMode,
+                youtubeVideoId: this.youtubeVideoId,
+                currentFileName: this.currentFileName
+            });
+            return;
         }
 
         // Create session object with all current settings
@@ -1920,25 +2018,48 @@ export class AudioPlayer {
                 incrementType: this.tempoProgression.incrementType,
                 loopInterval: this.tempoProgression.loopInterval
             },
+            // YouTube-specific data
             isYouTubeMode: this.isYouTubeMode,
             youtubeVideoId: this.youtubeVideoId,
-            youtubeVideoTitle: this.youtubeVideoTitle
+            youtubeVideoTitle: this.youtubeVideoTitle,
+            youtubeVideoUrl: this.youtubeVideoUrl
         };
 
-        if (this.storageService && this.storageService.saveAudioSession) {
-            this.storageService.saveAudioSession(fileName, session);
-            this.loadSavedSessions();
-            this.showNotification('Loop session saved successfully! 💾', 'success');
-        } else {
-            this.showNotification('Storage service not available', 'error');
+        console.log('Attempting to save session:', session);
+
+        try {
+            if (this.storageService && this.storageService.saveAudioSession) {
+                this.storageService.saveAudioSession(fileName, session);
+                this.loadSavedSessions();
+
+                const sessionType = this.isYouTubeMode ? 'YouTube loop' : 'audio loop';
+                this.showNotification(`${sessionType} session saved successfully! 💾`, 'success');
+
+                console.log('Session saved successfully');
+            } else {
+                throw new Error('Storage service or saveAudioSession method not available');
+            }
+        } catch (error) {
+            console.error('Error saving session:', error);
+            this.showNotification('Failed to save session: ' + error.message, 'error');
         }
     }
 
     deleteSession(index) {
         if (!confirm('Are you sure you want to delete this session?')) return;
 
-        if (this.storageService && this.storageService.deleteAudioSession && this.currentFileName) {
-            this.storageService.deleteAudioSession(this.currentFileName, index);
+        // Determine current file name
+        let fileName;
+        if (this.isYouTubeMode) {
+            fileName = this.youtubeVideoTitle || this.youtubeVideoId || 'youtube_video';
+        } else if (this.currentFileName) {
+            fileName = this.currentFileName;
+        } else {
+            return;
+        }
+
+        if (this.storageService && this.storageService.deleteAudioSession) {
+            this.storageService.deleteAudioSession(fileName, index);
             this.loadSavedSessions();
             this.showNotification('Session deleted', 'info');
         }
