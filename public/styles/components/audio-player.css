@@ -575,3 +575,143 @@
         scroll-behavior: auto;
     }
 }
+
+/* Save Loop CSS */
+.save-loop-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.2s ease;
+}
+
+.save-loop-modal-content {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: var(--shadow-xl);
+    animation: slideIn 0.3s ease;
+}
+
+.save-loop-modal h3 {
+    margin: 0 0 1.5rem 0;
+    color: var(--text-primary);
+    text-align: center;
+}
+
+.save-loop-info {
+    background: var(--bg-input);
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    margin-bottom: 1.5rem;
+    border-left: 4px solid var(--primary);
+}
+
+.save-loop-info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.save-loop-info-row:last-child {
+    margin-bottom: 0;
+}
+
+.save-loop-info-label {
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.save-loop-info-value {
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+}
+
+.save-loop-form-group {
+    margin-bottom: 1.5rem;
+}
+
+.save-loop-form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.save-loop-form-group input,
+.save-loop-form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-family: inherit;
+    transition: border-color 0.2s ease;
+}
+
+.save-loop-form-group input:focus,
+.save-loop-form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+}
+
+.save-loop-form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.save-loop-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+.save-loop-buttons .btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9rem;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@media (max-width: 600px) {
+    .save-loop-modal-content {
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+
+    .save-loop-buttons {
+        flex-direction: column;
+    }
+
+    .save-loop-buttons .btn {
+        width: 100%;
+    }
+}

@@ -1,5 +1,6 @@
 // Audio Player Component - Fixed Complete Version with High-Quality Tempo Control
 import {WaveformVisualizer} from './waveform.js';
+import { SessionManager } from './audio/sessionManager.js';
 
 export class AudioPlayer {
     constructor(container, audioService) {
@@ -7,6 +8,8 @@ export class AudioPlayer {
         this.audioService = audioService;
         this.storageService = null;
         this.audio = null;
+
+        this.sessionManager = new SessionManager(this);
 
         // YouTube player
         this.youtubePlayer = null;
@@ -65,6 +68,7 @@ export class AudioPlayer {
         return true;
     }
 
+
     init() {
         if (this.isInitialized) {
             console.log('Audio player already initialized');
@@ -72,6 +76,8 @@ export class AudioPlayer {
         }
 
         console.log('Initializing audio player...');
+
+
 
         try {
             this.render();
@@ -591,8 +597,9 @@ export class AudioPlayer {
                 }
             });
         }
-
+        this.sessionManager.attachEventListeners();
         console.log('All event listeners attached successfully');
+
     }
 
     async handleFileSelect(event) {
@@ -656,7 +663,7 @@ export class AudioPlayer {
                     this.initializeWaveform(file);
 
                     // Load saved sessions
-                    this.loadSavedSessions();
+                    this.sessionManager.loadSavedSessions();
 
                     // Dispatch event for practice form
                     window.dispatchEvent(new CustomEvent('audioFileLoaded', {
@@ -722,7 +729,7 @@ export class AudioPlayer {
         setTimeout(() => this.fetchYouTubeTitle(), 1000);
 
         // Load saved sessions
-        setTimeout(() => this.loadSavedSessions(), 1500);
+        setTimeout(() => this.sessionManager.loadSavedSessions(), 1500);
     }
 
     onYouTubeStateChange(event) {
@@ -809,7 +816,7 @@ export class AudioPlayer {
 
         // TRIGGER LOAD SAVED SESSIONS FOR YOUTUBE
         setTimeout(() => {
-            this.loadSavedSessions();
+            this.sessionManager.loadSavedSessions();
         }, 500);
 
         // Dispatch event for practice form
@@ -874,7 +881,7 @@ export class AudioPlayer {
                 }));
 
                 // IMPORTANT: Reload saved sessions with the new title
-                this.loadSavedSessions();
+                this.sessionManager.loadSavedSessions();
             }
         } catch (error) {
             console.error('Error fetching YouTube title:', error);
@@ -968,9 +975,8 @@ export class AudioPlayer {
         const container = document.querySelector('.youtube-progress-container');
         if (!container || !this.isYouTubeMode) return;
 
-        // Get the loop region element
-        const loopRegion = document.getElementById('loopRegion');
-        if (!loopRegion) return;
+        // Remove existing markers
+        container.querySelectorAll('.youtube-loop-start, .youtube-loop-end').forEach(marker => marker.remove());
 
         // Get duration
         let duration = this.duration;
@@ -978,22 +984,54 @@ export class AudioPlayer {
             duration = this.youtubePlayer.getDuration();
         }
 
-        if (!duration || duration === 0) {
-            loopRegion.style.display = 'none';
-            return;
+        if (!duration || duration === 0) return;
+
+        // Add start marker if set (INDEPENDENT of end marker)
+        if (this.loopStart !== null) {
+            const startPercent = Math.max(0, Math.min(100, (this.loopStart / duration) * 100));
+            const startMarker = document.createElement('div');
+            startMarker.className = 'youtube-loop-start';
+            startMarker.style.cssText = `
+            position: absolute;
+            bottom: 0;
+            height: 60%;
+            width: 3px;
+            background: #10b981;
+            left: ${startPercent}%;
+            z-index: 10;
+            box-shadow: 0 0 4px rgba(16, 185, 129, 0.5);
+        `;
+            container.appendChild(startMarker);
         }
 
-        // Show/hide and position loop region
-        if (this.loopStart !== null && this.loopEnd !== null) {
+        // Add end marker if set (INDEPENDENT of start marker)
+        if (this.loopEnd !== null) {
+            const endPercent = Math.max(0, Math.min(100, (this.loopEnd / duration) * 100));
+            const endMarker = document.createElement('div');
+            endMarker.className = 'youtube-loop-end';
+            endMarker.style.cssText = `
+            position: absolute;
+            bottom: 0;
+            height: 60%;
+            width: 3px;
+            background: #ef4444;
+            left: ${endPercent}%;
+            z-index: 10;
+            box-shadow: 0 0 4px rgba(239, 68, 68, 0.5);
+        `;
+            container.appendChild(endMarker);
+        }
+
+        // Show loop region if both markers are set
+        const loopRegion = document.getElementById('loopRegion');
+        if (loopRegion && this.loopStart !== null && this.loopEnd !== null) {
             const startPercent = Math.max(0, Math.min(100, (this.loopStart / duration) * 100));
             const endPercent = Math.max(0, Math.min(100, (this.loopEnd / duration) * 100));
 
             loopRegion.style.left = startPercent + '%';
             loopRegion.style.width = (endPercent - startPercent) + '%';
             loopRegion.style.display = 'block';
-
-            console.log(`Loop markers updated: ${startPercent.toFixed(1)}% - ${endPercent.toFixed(1)}%`);
-        } else {
+        } else if (loopRegion) {
             loopRegion.style.display = 'none';
         }
     }
@@ -1314,6 +1352,16 @@ export class AudioPlayer {
                 if (this.isPlaying) {
                     this.youtubePlayer.pauseVideo();
                 } else {
+                    // NEW: Check if we should start from loop point
+                    if (this.isLooping && this.loopStart !== null) {
+                        const currentTime = this.youtubePlayer.getCurrentTime();
+                        // If we're outside the loop region or at the very beginning, start from loop start
+                        if (currentTime < this.loopStart ||
+                            (this.loopEnd !== null && currentTime > this.loopEnd) ||
+                            currentTime === 0) {
+                            this.youtubePlayer.seekTo(this.loopStart);
+                        }
+                    }
                     this.youtubePlayer.playVideo();
                 }
             }
@@ -1539,19 +1587,23 @@ export class AudioPlayer {
             loopStartEl.textContent = this.formatTime(this.loopStart);
         }
 
-        this.updateLoopRegion();
-
-        if (this.waveformVisualizer && !this.isYouTubeMode) {
-            this.waveformVisualizer.updateLoopMarkers(this.loopStart, this.loopEnd);
-        }
-
-        // Show loop start marker immediately for YouTube mode
+        // Update visual markers based on mode
         if (this.isYouTubeMode) {
+            // For YouTube, use the custom progress bar markers
             this.updateYouTubeLoopMarkers();
+        } else {
+            // For audio files, use ONLY the main loop region (white line)
+            this.updateLoopRegion();
+
+            // DISABLE waveform visualizer markers to prevent duplicates
+            if (this.waveformVisualizer && this.waveformVisualizer.updateLoopMarkers) {
+                this.waveformVisualizer.updateLoopMarkers(null, null); // Clear waveform markers
+            }
         }
 
         this.showNotification('Loop start set', 'success');
     }
+
 
     setLoopEnd() {
         let newEndTime;
@@ -1588,15 +1640,18 @@ export class AudioPlayer {
             this.showNotification('Loop end set', 'success');
         }
 
-        this.updateLoopRegion();
-
-        if (this.waveformVisualizer && !this.isYouTubeMode) {
-            this.waveformVisualizer.updateLoopMarkers(this.loopStart, this.loopEnd);
-        }
-
-        // Show loop markers immediately for YouTube mode
+        // Update visual markers based on mode
         if (this.isYouTubeMode) {
+            // For YouTube, use the custom progress bar markers
             this.updateYouTubeLoopMarkers();
+        } else {
+            // For audio files, use ONLY the main loop region (white line)
+            this.updateLoopRegion();
+
+            // DISABLE waveform visualizer markers to prevent duplicates
+            if (this.waveformVisualizer && this.waveformVisualizer.updateLoopMarkers) {
+                this.waveformVisualizer.updateLoopMarkers(null, null); // Clear waveform markers
+            }
         }
     }
 
@@ -1614,15 +1669,17 @@ export class AudioPlayer {
 
         this.isLooping = false;
 
-        this.updateLoopRegion();
-
-        if (this.waveformVisualizer && !this.isYouTubeMode) {
-            this.waveformVisualizer.updateLoopMarkers(null, null);
-        }
-
-        // Clear YouTube loop markers
+        // Clear visual markers based on mode
         if (this.isYouTubeMode) {
             this.updateYouTubeLoopMarkers();
+        } else {
+            // For audio files, clear main loop region
+            this.updateLoopRegion();
+
+            // Also clear waveform visualizer markers
+            if (this.waveformVisualizer && this.waveformVisualizer.updateLoopMarkers) {
+                this.waveformVisualizer.updateLoopMarkers(null, null);
+            }
         }
 
         // Reset tempo progression
@@ -1679,10 +1736,8 @@ export class AudioPlayer {
         }
 
         if (this.isYouTubeMode && this.youtubePlayer) {
-            // YouTube player supports playback rates
             this.youtubePlayer.setPlaybackRate(this.playbackRate);
         } else if (this.grainPlayer) {
-            // Apply tempo change to GrainPlayer (preserves pitch)
             this.grainPlayer.playbackRate = this.playbackRate;
         }
     }
@@ -1788,282 +1843,6 @@ export class AudioPlayer {
         }
     }
 
-    // Session management methods
-    loadSavedSessions() {
-        if (!this.storageService) {
-            if (!this.ensureStorageService()) {
-                return;
-            }
-        }
-
-        // Determine current file name
-        let fileName;
-        if (this.isYouTubeMode) {
-            fileName = this.youtubeVideoTitle || this.youtubeVideoId || 'youtube_video';
-        } else if (this.currentFileName) {
-            fileName = this.currentFileName;
-        } else {
-            return; // No file loaded
-        }
-
-        const sessions = this.storageService.getAudioSessions?.(fileName) || [];
-        const container = document.getElementById('savedSessionsList');
-
-        if (!container) return;
-
-        if (sessions.length === 0) {
-            container.innerHTML = '<p class="empty-state" style="color: var(--text-secondary); text-align: center; font-size: 11px; margin: 0; padding: 8px;">No saved loops</p>';
-            return;
-        }
-
-        // Create compact session display
-        container.innerHTML = sessions.map((session, index) => `
-            <div class="saved-session-item" style="
-                background: var(--bg-card);
-                border: 1px solid var(--border);
-                border-radius: 6px;
-                padding: 8px;
-                margin-bottom: 6px;
-                font-size: 11px;
-            ">
-                <div style="display: grid; grid-template-columns: 1fr auto auto; gap: 4px; align-items: center;">
-                    <div class="session-info" style="overflow: hidden;">
-                        <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                            ${session.name || `Session ${index + 1}`}
-                        </div>
-                        <div style="color: var(--text-secondary); font-size: 10px;">
-                            Speed: ${session.speed}% | Pitch: ${session.pitch > 0 ? '+' : ''}${session.pitch}
-                            ${session.loopStart !== null ? ` | ${this.formatTime(session.loopStart)}-${this.formatTime(session.loopEnd)}` : ''}
-                        </div>
-                    </div>
-                    <button class="btn btn-xs btn-primary" onclick="window.app?.currentPage?.components?.audioPlayer?.loadSession(${index}) || window.audioPlayer?.loadSession(${index})" 
-                            style="padding: 2px 6px; font-size: 10px; min-width: 35px;">
-                        Load
-                    </button>
-                    <button class="btn btn-xs btn-danger" onclick="window.app?.currentPage?.components?.audioPlayer?.deleteSession(${index}) || window.audioPlayer?.deleteSession(${index})"
-                            style="padding: 2px 6px; font-size: 10px; min-width: 25px;">
-                        ×
-                    </button>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    loadSession(index) {
-        if (!this.storageService || (!this.currentFileName && !this.isYouTubeMode)) {
-            this.showNotification('Storage service not available', 'error');
-            return;
-        }
-
-        // Handle both YouTube and file mode
-        const fileName = this.isYouTubeMode ?
-            (this.youtubeVideoTitle || this.youtubeVideoId || 'youtube_video') :
-            this.currentFileName;
-
-        const sessions = this.storageService.getAudioSessions?.(fileName) || [];
-        const session = sessions[index];
-
-        if (!session) {
-            this.showNotification('Session not found', 'error');
-            return;
-        }
-
-        console.log('Loading session:', session);
-
-        // Stop current playback
-        this.stop();
-
-        // Apply speed/tempo settings
-        if (session.speed !== undefined) {
-            this.setSpeed(session.speed);
-            const speedSlider = document.getElementById('speedSlider');
-            if (speedSlider) speedSlider.value = session.speed;
-        }
-
-        // Apply pitch settings
-        if (session.pitch !== undefined) {
-            this.setPitch(session.pitch);
-        }
-
-        // Apply loop settings
-        this.loopStart = session.loopStart !== undefined ? session.loopStart : null;
-        this.loopEnd = session.loopEnd !== undefined ? session.loopEnd : null;
-        this.isLooping = session.loopEnabled || false;
-
-        // Update UI elements
-        const loopStartEl = document.getElementById('loopStart');
-        const loopEndEl = document.getElementById('loopEnd');
-        const loopEnabledEl = document.getElementById('loopEnabled');
-
-        if (loopStartEl) {
-            loopStartEl.textContent = this.loopStart !== null ? this.formatTime(this.loopStart) : '--:--';
-        }
-        if (loopEndEl) {
-            loopEndEl.textContent = this.loopEnd !== null ? this.formatTime(this.loopEnd) : '--:--';
-        }
-        if (loopEnabledEl) {
-            loopEnabledEl.checked = this.isLooping;
-        }
-
-        // Update tempo progression settings if they exist
-        if (session.tempoProgression) {
-            const progressionEnabledEl = document.getElementById('progressionEnabled');
-            const incrementValueEl = document.getElementById('incrementValue');
-            const incrementTypeEl = document.getElementById('incrementType');
-            const loopIntervalEl = document.getElementById('loopInterval');
-            const progressionControlsEl = document.getElementById('progressionControls');
-
-            if (progressionEnabledEl) {
-                progressionEnabledEl.checked = session.tempoProgression.enabled || false;
-                this.tempoProgression.enabled = session.tempoProgression.enabled || false;
-            }
-            if (incrementValueEl && session.tempoProgression.incrementValue !== undefined) {
-                incrementValueEl.value = session.tempoProgression.incrementValue;
-                this.tempoProgression.incrementValue = session.tempoProgression.incrementValue;
-            }
-            if (incrementTypeEl && session.tempoProgression.incrementType) {
-                incrementTypeEl.value = session.tempoProgression.incrementType;
-                this.tempoProgression.incrementType = session.tempoProgression.incrementType;
-            }
-            if (loopIntervalEl && session.tempoProgression.loopInterval !== undefined) {
-                loopIntervalEl.value = session.tempoProgression.loopInterval;
-                this.tempoProgression.loopInterval = session.tempoProgression.loopInterval;
-            }
-            if (progressionControlsEl) {
-                progressionControlsEl.style.display = this.tempoProgression.enabled ? 'grid' : 'none';
-            }
-        }
-
-        // Update visual indicators
-        this.updateLoopRegion();
-
-        if (this.waveformVisualizer && !this.isYouTubeMode) {
-            this.waveformVisualizer.updateLoopMarkers(this.loopStart, this.loopEnd);
-        }
-
-        if (this.isYouTubeMode) {
-            this.updateYouTubeLoopMarkers();
-        }
-
-        // Update progression status
-        this.updateProgressionStatus();
-
-        this.showNotification(`Session "${session.name || 'Unnamed'}" loaded successfully! 🎵`, 'success');
-    }
-
-    saveCurrentSession() {
-        // Check if we have any audio source loaded
-        const hasAudioSource = this.currentFileName || this.isYouTubeMode;
-
-        if (!hasAudioSource) {
-            this.showNotification('No audio file or YouTube video loaded', 'error');
-            return;
-        }
-
-        if (!this.ensureStorageService()) {
-            this.showNotification('Storage service not available. Please refresh the page.', 'error');
-            return;
-        }
-
-        // Determine file name for saving
-        let fileName;
-        let displayName;
-
-        if (this.isYouTubeMode) {
-            // For YouTube, use video ID as the primary key
-            fileName = this.youtubeVideoId || 'youtube_unknown';
-            displayName = this.youtubeVideoTitle || `YouTube: ${this.youtubeVideoId}` || 'YouTube Video';
-
-            console.log('Saving YouTube session:', {
-                fileName,
-                displayName,
-                videoId: this.youtubeVideoId,
-                videoTitle: this.youtubeVideoTitle
-            });
-        } else {
-            fileName = this.currentFileName;
-            displayName = this.currentFileName;
-
-            console.log('Saving file session:', {
-                fileName,
-                displayName
-            });
-        }
-
-        // Validate we have a proper fileName
-        if (!fileName || fileName === 'youtube_unknown') {
-            this.showNotification('Unable to save - video information not available', 'error');
-            console.error('Save failed - no valid fileName:', {
-                fileName,
-                isYouTubeMode: this.isYouTubeMode,
-                youtubeVideoId: this.youtubeVideoId,
-                currentFileName: this.currentFileName
-            });
-            return;
-        }
-
-        // Create session object with all current settings
-        const session = {
-            name: `${displayName} - ${new Date().toLocaleTimeString()}`,
-            timestamp: Date.now(),
-            fileName: fileName,
-            speed: Math.round(this.playbackRate * 100),
-            pitch: this.pitchShiftAmount,
-            loopStart: this.loopStart,
-            loopEnd: this.loopEnd,
-            loopEnabled: this.isLooping,
-            tempoProgression: {
-                enabled: this.tempoProgression.enabled,
-                incrementValue: this.tempoProgression.incrementValue,
-                incrementType: this.tempoProgression.incrementType,
-                loopInterval: this.tempoProgression.loopInterval
-            },
-            // YouTube-specific data
-            isYouTubeMode: this.isYouTubeMode,
-            youtubeVideoId: this.youtubeVideoId,
-            youtubeVideoTitle: this.youtubeVideoTitle,
-            youtubeVideoUrl: this.youtubeVideoUrl
-        };
-
-        console.log('Attempting to save session:', session);
-
-        try {
-            if (this.storageService && this.storageService.saveAudioSession) {
-                this.storageService.saveAudioSession(fileName, session);
-                this.loadSavedSessions();
-
-                const sessionType = this.isYouTubeMode ? 'YouTube loop' : 'audio loop';
-                this.showNotification(`${sessionType} session saved successfully! 💾`, 'success');
-
-                console.log('Session saved successfully');
-            } else {
-                throw new Error('Storage service or saveAudioSession method not available');
-            }
-        } catch (error) {
-            console.error('Error saving session:', error);
-            this.showNotification('Failed to save session: ' + error.message, 'error');
-        }
-    }
-
-    deleteSession(index) {
-        if (!confirm('Are you sure you want to delete this session?')) return;
-
-        // Determine current file name
-        let fileName;
-        if (this.isYouTubeMode) {
-            fileName = this.youtubeVideoTitle || this.youtubeVideoId || 'youtube_video';
-        } else if (this.currentFileName) {
-            fileName = this.currentFileName;
-        } else {
-            return;
-        }
-
-        if (this.storageService && this.storageService.deleteAudioSession) {
-            this.storageService.deleteAudioSession(fileName, index);
-            this.loadSavedSessions();
-            this.showNotification('Session deleted', 'info');
-        }
-    }
 
     destroy() {
         console.log('Destroying audio player...');
@@ -2083,6 +1862,7 @@ export class AudioPlayer {
             this.waveformVisualizer.destroy?.();
             this.waveformVisualizer = null;
         }
+        this.sessionManager.destroy();
 
         this.isInitialized = false;
     }
