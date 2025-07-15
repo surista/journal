@@ -58,9 +58,9 @@ export class Metronome {
                     </div>
                 </div>
                 
-                <!-- BPM Display -->
+                <!-- BPM Display - Compact -->
                 <div class="bpm-display-container">
-                    <div class="bpm-circle" id="bpmCircle">
+                    <div class="bpm-display" id="bpmDisplay">
                         <div class="bpm-value" id="bpmValue">${this.bpm}</div>
                         <div class="bpm-label">BPM</div>
                     </div>
@@ -297,12 +297,12 @@ export class Metronome {
 
         const isAccent = this.accentPattern[this.currentBeat];
 
-        // Pulse the BPM circle
-        const bpmCircle = document.getElementById('bpmCircle');
-        if (bpmCircle) {
-            bpmCircle.classList.add('pulse');
+        // Pulse the BPM display
+        const bpmDisplay = document.getElementById('bpmDisplay');
+        if (bpmDisplay) {
+            bpmDisplay.classList.add('pulse');
             setTimeout(() => {
-                bpmCircle.classList.remove('pulse');
+                bpmDisplay.classList.remove('pulse');
             }, 100);
         }
 

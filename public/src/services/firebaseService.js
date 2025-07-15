@@ -1,33 +1,5 @@
 // Enhanced firebaseService.js with real-time sync capabilities
-import {initializeApp} from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
-import {getAnalytics} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics.js";
-import {
-    getAuth,
-    signInWithEmailAndPassword,
-    createUserWithEmailAndPassword,
-    signOut,
-    onAuthStateChanged,
-    updateProfile
-} from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js';
-import {
-    getFirestore,
-    doc,
-    setDoc,
-    getDoc,
-    collection,
-    getDocs,
-    addDoc,
-    updateDoc,
-    deleteDoc,
-    query,
-    where,
-    orderBy,
-    limit,
-    onSnapshot,
-    serverTimestamp,
-    writeBatch,
-    enableMultiTabIndexedDbPersistence
-} from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js';
+// Using Firebase compat SDK to match login.html
 
 // Your existing config
 const firebaseConfig = {
@@ -40,20 +12,55 @@ const firebaseConfig = {
     measurementId: "G-XRW7J1FY1M"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const analytics = getAnalytics(app);
+// Initialize Firebase using compat SDK
+let app, auth, db;
 
-// Enable offline persistence
-try {
-    await enableMultiTabIndexedDbPersistence(db);
-    console.log('✅ Firestore offline persistence enabled');
-} catch (err) {
-    if (err.code === 'failed-precondition') {
-        console.warn('⚠️ Multiple tabs open, persistence can only be enabled in one tab');
-    } else if (err.code === 'unimplemented') {
-        console.warn('⚠️ Browser doesn\'t support offline persistence');
+// Function to initialize Firebase when it's available
+function initializeFirebase() {
+    try {
+        if (typeof firebase !== 'undefined') {
+            console.log('🔥 Initializing Firebase from global scope');
+            
+            // Check if already initialized
+            if (!firebase.apps.length) {
+                app = firebase.initializeApp(firebaseConfig);
+            } else {
+                app = firebase.app();
+            }
+            
+            auth = firebase.auth();
+            db = firebase.firestore();
+            
+            // Enable offline persistence
+            db.enablePersistence()
+                .then(() => console.log('✅ Firestore offline persistence enabled'))
+                .catch((err) => {
+                    if (err.code === 'failed-precondition') {
+                        console.warn('⚠️ Multiple tabs open, persistence can only be enabled in one tab');
+                    } else if (err.code === 'unimplemented') {
+                        console.warn('⚠️ Browser doesn\'t support offline persistence');
+                    }
+                });
+            
+            return true;
+        }
+        return false;
+    } catch (error) {
+        console.error('❌ Firebase initialization error:', error);
+        return false;
+    }
+}
+
+// Try to initialize immediately
+if (!initializeFirebase()) {
+    console.warn('⚠️ Firebase not yet loaded, will retry...');
+    
+    // Retry initialization when DOM is loaded
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeFirebase);
+    } else {
+        // Try again after a short delay
+        setTimeout(initializeFirebase, 100);
     }
 }
 
@@ -89,7 +96,19 @@ class CloudStorage {
     }
 
     init() {
-        onAuthStateChanged(auth, (user) => {
+        // Ensure Firebase is initialized
+        if (!auth) {
+            // Try to initialize Firebase
+            if (initializeFirebase()) {
+                console.log('✅ Firebase initialized on retry');
+            } else {
+                console.error('❌ Auth still not initialized');
+                this.isReady = true; // Set to true to prevent infinite wait
+                return;
+            }
+        }
+        
+        auth.onAuthStateChanged((user) => {
             this.currentUser = user;
             this.isReady = true;
             console.log(user ? '✅ User authenticated' : '❌ User not authenticated');
@@ -120,19 +139,26 @@ class CloudStorage {
     // Authentication methods (enhanced)
     async signIn(email, password) {
         try {
-            const result = await signInWithEmailAndPassword(auth, email, password);
+            if (!auth) {
+                throw new Error('Firebase Auth not initialized');
+            }
+            const result = await auth.signInWithEmailAndPassword(email, password);
             return {success: true, user: result.user};
         } catch (error) {
+            console.error('SignIn error:', error);
             return {success: false, error: error.message};
         }
     }
 
     async signUp(email, password, displayName = null) {
         try {
-            const result = await createUserWithEmailAndPassword(auth, email, password);
+            if (!auth) {
+                throw new Error('Firebase Auth not initialized');
+            }
+            const result = await auth.createUserWithEmailAndPassword(email, password);
 
             if (displayName) {
-                await updateProfile(result.user, { displayName });
+                await result.user.updateProfile({ displayName });
             }
 
             // Create user profile document
@@ -146,16 +172,19 @@ class CloudStorage {
 
     async signOut() {
         this.stopAllListeners();
-        await signOut(auth);
+        if (auth) {
+            await auth.signOut();
+        }
     }
 
     async createUserProfile(user) {
-        const userRef = doc(db, 'users', user.uid);
-        await setDoc(userRef, {
+        if (!db) return;
+        const userRef = db.collection('users').doc(user.uid);
+        await userRef.set({
             email: user.email,
             displayName: user.displayName || '',
-            createdAt: serverTimestamp(),
-            lastLoginAt: serverTimestamp(),
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            lastLoginAt: firebase.firestore.FieldValue.serverTimestamp(),
             preferences: {
                 theme: 'dark',
                 notifications: true,
@@ -166,19 +195,17 @@ class CloudStorage {
 
     // Real-time sync methods
     startRealtimeSync(collectionName, callback) {
-        if (!this.currentUser) {
-            console.warn('Cannot start sync - user not authenticated');
+        if (!this.currentUser || !db) {
+            console.warn('Cannot start sync - user not authenticated or DB not initialized');
             return;
         }
 
         const userId = this.currentUser.uid;
-        const q = query(
-            collection(db, collectionName),
-            where('userId', '==', userId),
-            orderBy('metadata.updatedAt', 'desc')
-        );
+        const q = db.collection(collectionName)
+            .where('userId', '==', userId)
+            .orderBy('metadata.updatedAt', 'desc');
 
-        const unsubscribe = onSnapshot(q, (snapshot) => {
+        const unsubscribe = q.onSnapshot((snapshot) => {
             const changes = snapshot.docChanges();
             changes.forEach(change => {
                 if (callback) {
@@ -597,4 +624,4 @@ class CloudStorage {
 }
 
 export const cloudStorage = new CloudStorage();
-export {auth, db, analytics};
+export {auth, db};
