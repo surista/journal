@@ -166,8 +166,8 @@ class App {
                 </div>
             `;
 
-            // Load dashboard module
-            const dashboardModule = await import('./pages/dashboard.js');
+            // Load dashboard module - using new dashboard
+            const dashboardModule = await import('./pages/dashboardNew.js');
             const dashboard = new dashboardModule.DashboardPage(this.storageService, this.authService);
 
             // Pass theme service to dashboard
