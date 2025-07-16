@@ -14,7 +14,7 @@
     display: none;
     align-items: center;
     justify-content: center;
-    z-index: 9999;
+    z-index: 1000001; /* Above footer */
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.2s ease, visibility 0.2s ease;
@@ -23,6 +23,13 @@
 /* When modal is shown */
 .modal[style*="display: block"] {
     display: flex !important;
+}
+
+/* Show class for modals */
+.modal.show {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
 }
 
 /* Modal Content Container */
@@ -429,6 +436,13 @@
         max-height: 100%;
         border-radius: 0;
     }
+    
+    #goalModal .modal-content {
+        width: 95%;
+        max-width: 95%;
+        max-height: 95vh;
+        margin: 2.5vh auto;
+    }
 }
 
 @media (max-width: 480px) {
@@ -504,31 +518,48 @@
    ============================================ */
 
 #goalModal {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    display: none;
+    align-items: center !important;
+    justify-content: center !important;
     z-index: 999999 !important;
+    background: rgba(0, 0, 0, 0.8) !important;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+#goalModal.show, #progressModal.show {
+    display: flex !important;
+    opacity: 1 !important;
     visibility: visible !important;
-    background: rgba(0, 0, 0, 0.85) !important;
 }
 
 #goalModal .modal-content {
+    position: relative;
     max-width: 650px;
-    min-height: 400px;
-    background: linear-gradient(145deg, #2a2a2a, #1e1e1e) !important;
-    border: 1px solid #404040 !important;
-    box-shadow:
-            0 25px 50px rgba(0, 0, 0, 0.9),
-            0 0 0 1px rgba(255, 255, 255, 0.1),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
-    padding: 2.5rem !important;
-    border-radius: 16px !important;
+    width: 90%;
+    max-height: 90vh;
+    margin: auto;
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border) !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5) !important;
+    padding: 2rem !important;
+    border-radius: var(--radius-xl) !important;
+    overflow-y: auto;
+    transform: scale(1);
 }
 
 #goalModal h3 {
-    color: #f0f0f0 !important;
+    color: var(--text-primary) !important;
     margin-bottom: 1.5rem;
 }
 
 #goalModal p {
-    color: #b0b0b0 !important;
+    color: var(--text-secondary) !important;
     margin-bottom: 2rem;
 }
 
@@ -542,23 +573,23 @@
 .goal-area-select {
     flex: 2;
     padding: 1rem;
-    background: #333 !important;
-    border: 1px solid #555 !important;
-    border-radius: 8px;
-    color: #f0f0f0 !important;
+    background: var(--bg-input) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: var(--radius-md);
+    color: var(--text-primary) !important;
     font-size: 1rem;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .goal-minutes-input {
     flex: 0 0 80px;
     padding: 1rem;
-    background: #333 !important;
-    border: 1px solid #555 !important;
-    border-radius: 8px;
-    color: #f0f0f0 !important;
+    background: var(--bg-input) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: var(--radius-md);
+    color: var(--text-primary) !important;
     text-align: center;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .remove-goal-btn {
@@ -584,7 +615,7 @@
 }
 
 .close-btn {
-    color: #999 !important;
+    color: var(--text-secondary) !important;
     float: right;
     font-size: 28px;
     font-weight: bold;
@@ -596,8 +627,8 @@
 }
 
 .close-btn:hover {
-    color: #f0f0f0 !important;
-    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary) !important;
+    background: var(--bg-hover);
 }
 
 .modal-actions {
@@ -605,6 +636,23 @@
     gap: 1rem;
     margin-top: 2.5rem;
     justify-content: flex-end;
+}
+
+/* Progress Modal Styles */
+#progressModal {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    display: none;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 1000001 !important;
+    background: rgba(0, 0, 0, 0.8) !important;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
 .goal-form-actions {

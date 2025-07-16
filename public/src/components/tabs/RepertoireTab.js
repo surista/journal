@@ -194,6 +194,18 @@ export class RepertoireTab {
                 });
             }
 
+            // ESC key handler for modal - store reference for cleanup
+            this.escKeyHandler = (e) => {
+                if (e.key === 'Escape') {
+                    const modal = document.getElementById('songModal');
+                    if (modal && (modal.style.display === 'flex' || modal.style.visibility === 'visible')) {
+                        console.log('🎸 ESC key pressed, closing modal');
+                        this.hideSongModal();
+                    }
+                }
+            };
+            document.addEventListener('keydown', this.escKeyHandler);
+
             // Event delegation with extensive debugging
             this.container.addEventListener('click', async (e) => {
                 console.log('🎸 Container click detected:', e.target);
@@ -201,6 +213,29 @@ export class RepertoireTab {
                 console.log('🎸 Target classes:', e.target.className);
 
                 const target = e.target;
+
+                // Handle collapsible song cards
+                const songHeader = target.closest('.song-header[data-toggle="collapse"]');
+                if (songHeader) {
+                    console.log('🎸 Song header clicked');
+                    const targetId = songHeader.getAttribute('data-target');
+                    const targetElement = document.getElementById(targetId);
+                    const icon = songHeader.querySelector('.collapse-icon');
+                    
+                    if (targetElement && icon) {
+                        if (targetElement.style.display === 'none' || !targetElement.style.display) {
+                            targetElement.style.display = 'block';
+                            icon.textContent = '▲';
+                            songHeader.classList.add('expanded');
+                        } else {
+                            targetElement.style.display = 'none';
+                            icon.textContent = '▼';
+                            songHeader.classList.remove('expanded');
+                        }
+                    }
+                    e.stopPropagation();
+                    return;
+                }
 
                 // Add Song button - improved detection with debugging
                 if (target.id === 'addSongBtn') {
@@ -225,8 +260,11 @@ export class RepertoireTab {
                     return;
                 }
 
-                // Close modal buttons
-                if (target.id === 'closeSongModal' || target.id === 'cancelSongBtn') {
+                // Close modal buttons - check for close button or its parent
+                if (target.id === 'closeSongModal' || 
+                    target.id === 'cancelSongBtn' ||
+                    target.classList.contains('close-btn') ||
+                    target.classList.contains('close-modal')) {
                     console.log('🎸 Close modal button clicked');
                     e.preventDefault();
                     this.hideSongModal();
@@ -349,46 +387,63 @@ export class RepertoireTab {
         }
 
         grid.innerHTML = this.filteredRepertoire.map(song => `
-            <div class="song-card" data-id="${song.id}">
-                <div class="song-header">
-                    <h4 class="song-title">${this.escapeHtml(song.title)}</h4>
-                    <span class="song-status status-${song.status}">${this.formatStatus(song.status)}</span>
-                </div>
-                
-                ${song.artist ? `<p class="song-artist">${this.escapeHtml(song.artist)}</p>` : ''}
-                
-                <div class="song-details">
-                    <span class="difficulty difficulty-${song.difficulty}">${this.capitalize(song.difficulty)}</span>
-                    ${song.key ? `<span class="song-key">Key: ${song.key}</span>` : ''}
-                    ${song.tempo ? `<span class="song-tempo">${song.tempo} BPM</span>` : ''}
-                </div>
-                
-                ${song.lastPracticed ? `
-                    <div class="last-practiced">
-                        Last practiced: ${this.formatRelativeDate(song.lastPracticed)}
+            <div class="song-card collapsible" data-id="${song.id}">
+                <div class="song-header" data-toggle="collapse" data-target="song-${song.id}">
+                    <div class="song-header-content">
+                        <span class="song-title">${this.escapeHtml(song.title)}</span>
+                        ${song.artist ? `<span class="song-artist">${this.escapeHtml(song.artist)}</span>` : '<span class="song-artist"></span>'}
+                        <span class="song-status status-${song.status}">${this.formatStatus(song.status)}</span>
+                        <i class="collapse-icon">▼</i>
                     </div>
-                ` : ''}
-                
-                <div class="song-stats">
-                    <span><i class="icon">📅</i> ${song.practiceCount || 0} sessions</span>
-                    <span><i class="icon">⏱️</i> ${this.formatDuration(song.totalPracticeTime || 0)}</span>
                 </div>
                 
-                <div class="song-actions">
-                    <button class="btn btn-sm btn-secondary practice-song-btn" data-id="${song.id}">
-                        Log Practice
-                    </button>
-                    <button class="btn btn-sm btn-secondary edit-song-btn" data-id="${song.id}">
-                        Edit
-                    </button>
-                    <button class="btn btn-sm btn-danger delete-song-btn" data-id="${song.id}">
-                        🗑️ Delete
-                    </button>
-                    ${song.videoLink ? `
-                        <a href="${song.videoLink}" target="_blank" class="btn btn-sm btn-secondary">
-                            Video
-                        </a>
+                <div class="song-details-collapsible" id="song-${song.id}" style="display: none;">
+                    ${song.artist ? `<p class="song-artist">${this.escapeHtml(song.artist)}</p>` : ''}
+                    
+                    <div class="song-details">
+                        <span class="difficulty difficulty-${song.difficulty}">${this.capitalize(song.difficulty)}</span>
+                        ${song.key ? `<span class="song-key">Key: ${song.key}</span>` : ''}
+                        ${song.tempo ? `<span class="song-tempo">${song.tempo} BPM</span>` : ''}
+                    </div>
+                    
+                    ${song.lastPracticed ? `
+                        <div class="last-practiced">
+                            Last practiced: ${this.formatRelativeDate(song.lastPracticed)}
+                        </div>
                     ` : ''}
+                    
+                    <div class="song-stats">
+                        <span><i class="icon">📅</i> ${song.practiceCount || 0} sessions</span>
+                        <span><i class="icon">⏱️</i> ${this.formatDuration(song.totalPracticeTime || 0)}</span>
+                    </div>
+                    
+                    ${song.notes ? `
+                        <div class="song-notes">
+                            <strong>Notes:</strong> ${this.escapeHtml(song.notes)}
+                        </div>
+                    ` : ''}
+                    
+                    <div class="song-actions">
+                        <button class="btn btn-sm btn-secondary practice-song-btn" data-id="${song.id}">
+                            Log Practice
+                        </button>
+                        <button class="btn btn-sm btn-secondary edit-song-btn" data-id="${song.id}">
+                            Edit
+                        </button>
+                        <button class="btn btn-sm btn-danger delete-song-btn" data-id="${song.id}">
+                            🗑️ Delete
+                        </button>
+                        ${song.videoLink ? `
+                            <a href="${song.videoLink}" target="_blank" class="btn btn-sm btn-secondary">
+                                Video
+                            </a>
+                        ` : ''}
+                        ${song.sheetLink ? `
+                            <a href="${song.sheetLink}" target="_blank" class="btn btn-sm btn-secondary">
+                                Sheet Music
+                            </a>
+                        ` : ''}
+                    </div>
                 </div>
             </div>
         `).join('');
@@ -459,7 +514,13 @@ export class RepertoireTab {
         const modal = document.getElementById('songModal');
         if (modal) {
             modal.style.display = 'none';
-            document.getElementById('songForm').reset();
+            modal.style.visibility = 'hidden';
+            modal.style.opacity = '0';
+            const form = document.getElementById('songForm');
+            if (form) {
+                form.reset();
+                delete form.dataset.songId;
+            }
         }
     }
 
@@ -617,7 +678,11 @@ export class RepertoireTab {
     }
 
     destroy() {
-        // Clean up
+        // Clean up event listeners
+        if (this.escKeyHandler) {
+            document.removeEventListener('keydown', this.escKeyHandler);
+        }
+        // Clean up global reference
         window.repertoireTab = null;
     }
 }

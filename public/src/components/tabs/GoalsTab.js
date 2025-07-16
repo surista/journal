@@ -6,6 +6,9 @@ export class GoalsTab {
         this.goals = [];
         this.filter = 'active'; // 'active', 'completed', 'all'
         this.editingGoalId = null;
+        
+        // Bind ESC key handler
+        this.handleEscKey = this.handleEscKey.bind(this);
     }
 
     async render(container) {
@@ -50,7 +53,7 @@ export class GoalsTab {
             </div>
 
             <!-- Goal Modal -->
-            <div class="modal" id="goalModal" style="display: none;">
+            <div class="modal" id="goalModal">
                 <div class="modal-content">
                     <span class="close-btn" id="closeGoalModal">&times;</span>
                     <h3 id="goalModalTitle">Add New Goal</h3>
@@ -126,7 +129,7 @@ export class GoalsTab {
             </div>
 
             <!-- Progress Update Modal -->
-            <div class="modal" id="progressModal" style="display: none;">
+            <div class="modal" id="progressModal">
                 <div class="modal-content" style="max-width: 400px;">
                     <span class="close-btn" id="closeProgressModal">&times;</span>
                     <h3>Update Progress</h3>
@@ -186,11 +189,25 @@ export class GoalsTab {
                     console.log('Event propagation stopped:', e.defaultPrevented);
 
                     e.preventDefault();
+                    e.stopPropagation();
 
                     try {
                         console.log('🎯 Calling showGoalModal...');
                         this.showGoalModal();
                         console.log('🎯 showGoalModal completed');
+                        
+                        // Double-check modal is visible
+                        const modal = document.getElementById('goalModal');
+                        if (modal && window.getComputedStyle(modal).display === 'none') {
+                            console.error('🎯 Modal still hidden after showGoalModal!');
+                            console.error('🎯 Modal classes:', modal.className);
+                            console.error('🎯 Modal computed styles:', {
+                                display: window.getComputedStyle(modal).display,
+                                opacity: window.getComputedStyle(modal).opacity,
+                                visibility: window.getComputedStyle(modal).visibility,
+                                zIndex: window.getComputedStyle(modal).zIndex
+                            });
+                        }
                     } catch (error) {
                         console.error('🎯 Error in showGoalModal:', error);
                     }
@@ -207,6 +224,8 @@ export class GoalsTab {
                 // Modal controls
                 else if (target.id === 'closeGoalModal' || target.id === 'cancelGoalBtn') {
                     e.preventDefault();
+                    e.stopPropagation();
+                    console.log('🎯 Close button clicked:', target.id);
                     this.hideGoalModal();
                 } else if (target.id === 'closeProgressModal' || target.id === 'cancelProgressBtn') {
                     e.preventDefault();
@@ -288,6 +307,24 @@ export class GoalsTab {
         window.addEventListener('practiceSessionSaved', (e) => {
             this.checkGoalProgress(e.detail);
         });
+
+        // Add ESC key handler
+        document.addEventListener('keydown', this.handleEscKey);
+    }
+    
+    handleEscKey(e) {
+        if (e.key === 'Escape') {
+            const goalModal = document.getElementById('goalModal');
+            const progressModal = document.getElementById('progressModal');
+            
+            if (goalModal && goalModal.style.display !== 'none') {
+                e.preventDefault();
+                this.hideGoalModal();
+            } else if (progressModal && progressModal.style.display !== 'none') {
+                e.preventDefault();
+                this.hideProgressModal();
+            }
+        }
     }
 
     async loadGoals() {
@@ -456,10 +493,44 @@ export class GoalsTab {
             return;
         }
 
-        // Reset and populate form...
+        // Force remove any conflicting styles
+        modal.style.removeProperty('opacity');
+        modal.style.removeProperty('visibility');
+
+        // Reset and populate form
         if (goalId) {
-            // ... existing code for editing
+            // Edit mode
+            const goal = this.goals.find(g => g.id === goalId);
+            if (!goal) {
+                console.error('Goal not found:', goalId);
+                return;
+            }
+            
+            this.editingGoalId = goalId;
+            modalTitle.textContent = 'Edit Goal';
+            
+            // Populate form fields
+            document.getElementById('goalTitle').value = goal.title || '';
+            document.getElementById('goalCategory').value = goal.category || 'other';
+            document.getElementById('goalType').value = goal.type || '';
+            document.getElementById('goalTargetDate').value = goal.targetDate || '';
+            document.getElementById('goalDescription').value = goal.description || '';
+            document.getElementById('goalCriteria').value = goal.criteria || '';
+            
+            // Handle measurement fields
+            if (goal.type) {
+                document.getElementById('measurementFields').style.display = 'block';
+                document.getElementById('goalCurrent').value = goal.current || 0;
+                document.getElementById('goalTarget').value = goal.target || '';
+                document.getElementById('goalCurrent').required = true;
+                document.getElementById('goalTarget').required = true;
+            } else {
+                document.getElementById('measurementFields').style.display = 'none';
+                document.getElementById('goalCurrent').required = false;
+                document.getElementById('goalTarget').required = false;
+            }
         } else {
+            // Add mode
             this.editingGoalId = null;
             modalTitle.textContent = 'Add New Goal';
             form.reset();
@@ -468,25 +539,39 @@ export class GoalsTab {
             document.getElementById('goalTarget').required = false;
         }
 
-        // Force modal visibility with multiple methods
+        // Show modal using the CSS class approach
         modal.style.display = 'flex';
-        modal.style.visibility = 'visible';
-        modal.style.opacity = '1';
-        modal.style.zIndex = '999999';
+        
+        // Force reflow to ensure display is applied before adding class
+        modal.offsetHeight;
+        
+        // Add the show class which handles opacity and visibility
         modal.classList.add('show');
+        
+        // Focus on first input after animation completes
+        setTimeout(() => {
+            const firstInput = document.getElementById('goalTitle');
+            if (firstInput) {
+                firstInput.focus();
+            }
+        }, 200);
 
-        console.log('🎯 Modal should now be visible. Final styles:', {
-            display: modal.style.display,
-            visibility: modal.style.visibility,
-            opacity: modal.style.opacity,
-            zIndex: modal.style.zIndex
-        });
+        console.log('🎯 Modal display:', modal.style.display);
+        console.log('🎯 Modal classes:', modal.className);
+        console.log('🎯 Modal computed style:', window.getComputedStyle(modal).display);
+        console.log('🎯 Modal should now be visible');
     }
 
     hideGoalModal() {
         const modal = document.getElementById('goalModal');
         if (modal) {
-            modal.style.display = 'none';
+            // Remove the show class first
+            modal.classList.remove('show');
+            
+            // Wait for transition to complete before hiding
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 200);
         }
         this.editingGoalId = null;
     }
@@ -607,12 +692,22 @@ export class GoalsTab {
 
         modal.dataset.goalId = goalId;
         modal.style.display = 'flex';
+        
+        // Force reflow and add show class
+        modal.offsetHeight;
+        modal.classList.add('show');
     }
 
     hideProgressModal() {
         const modal = document.getElementById('progressModal');
         if (modal) {
-            modal.style.display = 'none';
+            // Remove the show class first
+            modal.classList.remove('show');
+            
+            // Wait for transition to complete before hiding
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 200);
         }
     }
 
@@ -694,8 +789,17 @@ export class GoalsTab {
     }
 
     destroy() {
+        // Remove ESC key handler
+        document.removeEventListener('keydown', this.handleEscKey);
+        
+        // Hide any open modals
+        this.hideGoalModal();
+        this.hideProgressModal();
+        
+        // Clear data
         this.goals = [];
         this.container = null;
+        this.editingGoalId = null;
     }
 
 }

@@ -1,5 +1,21 @@
 /* Goals Component Styles */
 
+.goals-page {
+    max-width: 800px !important; /* Constrained to middle third */
+    margin: 0 auto !important;
+    padding: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Ensure the tab pane container is also constrained */
+#goals-tab,
+.tab-pane:has(.goals-page) {
+    max-width: 800px !important;
+    margin: 0 auto !important;
+    width: 100%;
+}
+
 .goals-list {
     background: var(--bg-card);
     border-radius: var(--radius-xl);
@@ -218,10 +234,6 @@
 }
 
 /* Goals Page Styles */
-.goals-page {
-    max-width: 1200px;
-    margin: 0 auto;
-}
 
 .goals-header {
     display: flex;
@@ -255,9 +267,22 @@
 
 .goals-stats {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: var(--space-lg);
+    grid-template-columns: repeat(4, 1fr); /* 4 columns for the stats */
+    gap: var(--space-md);
     margin-bottom: var(--space-xl);
+}
+
+/* Adjust stats on smaller screens */
+@media (max-width: 800px) {
+    .goals-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .goals-stats {
+        grid-template-columns: 1fr;
+    }
 }
 
 .goals-list {

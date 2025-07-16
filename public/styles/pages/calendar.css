@@ -6,6 +6,12 @@
     padding: var(--space-xl);
 }
 
+/* Calendar container for tab view */
+#calendarContainer {
+    max-width: 1000px; /* Slightly wider for calendar, but still constrained */
+    margin: 0 auto;
+}
+
 .calendar-header {
     display: flex;
     justify-content: space-between;
@@ -58,12 +64,12 @@
 
 .calendar-day-header {
     background: var(--bg-card);
-    padding: var(--space-md);
+    padding: var(--space-sm);
     text-align: center;
     font-weight: 600;
     color: var(--text-secondary);
     font-size: var(--text-sm);
-    aspect-ratio: 1;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -75,10 +81,11 @@
     position: relative;
     cursor: pointer;
     transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     min-height: 60px;
+    padding: 0;
+    box-sizing: border-box;
+    /* Remove flexbox to prevent date centering */
+    display: block;
 }
 
 .calendar-day:hover {
@@ -110,11 +117,15 @@
 .calendar-day-number {
     position: absolute;
     top: 4px;
-    left: 6px;
-    font-size: var(--text-sm);
+    left: 4px;
+    font-size: 0.7rem;
     color: var(--text-secondary);
-    font-weight: 500;
-    z-index: 2;
+    font-weight: 400;
+    z-index: 1;
+    /* Ensure it doesn't affect flex layout */
+    margin: 0;
+    padding: 0;
+    line-height: 1;
 }
 
 /* Minutes Circle - Central display */
@@ -123,18 +134,18 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 36px;
-    height: 36px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
-    background: var(--primary);
-    color: white;
+    background: var(--accent, var(--primary));
+    color: var(--accent-foreground, var(--primary-foreground, white));
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 600;
-    font-size: 0.75rem;
+    font-size: 0.65rem;
     z-index: 3;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 4px var(--shadow-color, rgba(0, 0, 0, 0.1));
 }
 
 .calendar-day.today .minutes-circle {
@@ -310,15 +321,25 @@
 }
 
 .stat-card h3 {
-    margin: 0 0 var(--space-md) 0;
+    margin: 0 0 var(--space-lg) 0;
     color: var(--text-secondary);
     font-size: var(--text-sm);
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
 
+.stat-group {
+    display: flex;
+    justify-content: space-around;
+    gap: var(--space-lg);
+}
+
+.stat-item {
+    flex: 1;
+}
+
 .stat-value {
-    font-size: var(--text-2xl);
+    font-size: var(--text-xl);
     font-weight: 700;
     color: var(--primary);
     display: block;
@@ -344,10 +365,11 @@
 }
 
 .badges {
-    display: flex;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
     gap: var(--space-md);
-    flex-wrap: wrap;
+    max-width: 600px;
+    margin: 0 auto;
 }
 
 .badge {
@@ -361,6 +383,7 @@
     border-radius: var(--radius-lg);
     transition: var(--transition-base);
     opacity: 0.4;
+    min-width: 100px;
 }
 
 .badge.earned {
@@ -485,6 +508,13 @@
 }
 
 /* Responsive */
+@media (max-width: 1024px) {
+    .badges {
+        grid-template-columns: repeat(3, 1fr);
+        max-width: 450px;
+    }
+}
+
 @media (max-width: 768px) {
     .calendar-grid {
         gap: 1px;
@@ -496,9 +526,9 @@
     }
 
     .minutes-circle {
-        width: 32px;
-        height: 32px;
-        font-size: 0.75rem;
+        width: 28px;
+        height: 28px;
+        font-size: 0.65rem;
     }
 
     .calendar-quadrants {
@@ -507,7 +537,7 @@
     }
 
     .calendar-day-number {
-        font-size: 0.75rem;
+        font-size: 0.65rem;
     }
 
     .session-popup {
@@ -527,5 +557,24 @@
 
     .calendar-actions .btn {
         flex: 1;
+    }
+
+    .badges {
+        grid-template-columns: repeat(2, 1fr);
+        max-width: 300px;
+        gap: var(--space-sm);
+    }
+
+    .badge {
+        min-width: auto;
+        padding: var(--space-sm);
+    }
+
+    .badge-icon {
+        font-size: var(--text-lg);
+    }
+
+    .badge-label {
+        font-size: 0.75rem;
     }
 }
