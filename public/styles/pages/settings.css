@@ -1,0 +1,137 @@
+/* Settings Page Styles */
+.settings-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--space-xl);
+}
+
+.settings-header {
+    margin-bottom: var(--space-2xl);
+}
+
+.settings-header h2 {
+    margin: 0;
+    font-size: var(--text-2xl);
+    color: var(--text-primary);
+}
+
+.settings-sections {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+}
+
+.settings-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl);
+}
+
+.settings-section h3 {
+    margin: 0 0 var(--space-lg) 0;
+    font-size: var(--text-lg);
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.settings-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.setting-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.setting-item label {
+    color: var(--text-primary);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.setting-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary);
+}
+
+.setting-item input[type="number"],
+.setting-item input[type="time"],
+.setting-item select {
+    padding: var(--space-sm) var(--space-md);
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: var(--text-base);
+    max-width: 200px;
+}
+
+/* Data Management Section */
+.data-actions {
+    display: flex;
+    gap: var(--space-md);
+    flex-wrap: wrap;
+}
+
+.data-stats {
+    margin-top: var(--space-lg);
+    padding: var(--space-md);
+    background: var(--bg-input);
+    border-radius: var(--radius-md);
+}
+
+.data-stats p {
+    margin: 0;
+    color: var(--text-secondary);
+}
+
+/* About Section */
+.about-links {
+    display: flex;
+    gap: var(--space-lg);
+    margin-top: var(--space-md);
+}
+
+.about-links a {
+    color: var(--primary);
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+}
+
+.about-links a:hover {
+    opacity: 0.8;
+    text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .settings-page {
+        padding: var(--space-lg);
+    }
+    
+    .settings-section {
+        padding: var(--space-lg);
+    }
+    
+    .data-actions {
+        flex-direction: column;
+    }
+    
+    .data-actions .btn {
+        width: 100%;
+    }
+    
+    .about-links {
+        flex-direction: column;
+        gap: var(--space-sm);
+    }
+}

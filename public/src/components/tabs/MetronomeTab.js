@@ -74,7 +74,7 @@ export class MetronomeTab {
         const metronomeContainer = document.getElementById('metronomeContainer');
         if (metronomeContainer) {
             try {
-                const { Metronome } = await import('../metronome.js');
+                const { MetronomeEnhanced } = await import('../metronomeEnhanced.js');
                 const { AudioService } = await import('../../services/audioService.js');
 
                 // Get the audio service from dashboard or create new one
@@ -83,7 +83,7 @@ export class MetronomeTab {
                     audioService = new AudioService();
                 }
 
-                this.metronome = new Metronome(metronomeContainer, audioService);
+                this.metronome = new MetronomeEnhanced(metronomeContainer, audioService);
 
                 if (this.timer) {
                     this.metronome.setTimer(this.timer);

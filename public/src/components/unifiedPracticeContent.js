@@ -1,6 +1,6 @@
 // Unified Practice Content Component (inline version)
 import { Timer } from './timer.js';
-import { Metronome } from './metronome.js';
+import { MetronomeEnhanced } from './metronomeEnhanced.js';
 import { AudioPlayer } from './audioPlayer.js';
 import { AudioService } from '../services/audioService.js';
 
@@ -341,7 +341,7 @@ export class UnifiedPracticeContent {
         const container = document.getElementById('metronomeContainer');
         if (container) {
             if (!this.metronome) {
-                this.metronome = new Metronome(container);
+                this.metronome = new MetronomeEnhanced(container, this.audioService);
             }
             // Metronome already renders itself in init()
         }
