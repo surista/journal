@@ -382,7 +382,7 @@ export class RepertoireTab {
                         Edit
                     </button>
                     <button class="btn btn-sm btn-danger delete-song-btn" data-id="${song.id}">
-                        Delete
+                        🗑️ Delete
                     </button>
                     ${song.videoLink ? `
                         <a href="${song.videoLink}" target="_blank" class="btn btn-sm btn-secondary">
@@ -416,11 +416,18 @@ export class RepertoireTab {
             return;
         }
 
-        // Apply the same aggressive styles as goalModal
+        // Apply the centering styles
         modal.style.display = 'flex';
         modal.style.visibility = 'visible';
         modal.style.opacity = '1';
-        modal.style.zIndex = '999999';
+        modal.style.zIndex = '9999';
+        modal.style.position = 'fixed';
+        modal.style.top = '0';
+        modal.style.left = '0';
+        modal.style.width = '100%';
+        modal.style.height = '100%';
+        modal.style.alignItems = 'center';
+        modal.style.justifyContent = 'center';
 
         const modalTitle = document.getElementById('songModalTitle');
         const form = document.getElementById('songForm');
@@ -500,6 +507,21 @@ export class RepertoireTab {
 
     editSong(songId) {
         this.showSongModal(songId);
+    }
+
+    async deleteSong(songId) {
+        if (!confirm('Are you sure you want to delete this song?')) {
+            return;
+        }
+
+        try {
+            await this.storageService.deleteRepertoireSong(songId);
+            this.showNotification('Song deleted successfully', 'success');
+            await this.loadRepertoire();
+        } catch (error) {
+            console.error('Error deleting song:', error);
+            this.showNotification('Failed to delete song', 'error');
+        }
     }
 
     async logPractice(songId) {

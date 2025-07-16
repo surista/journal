@@ -1,9 +1,19 @@
 /* Repertoire Component Styles */
 
 .repertoire-page {
-    max-width: 1400px;
-    margin: 0 auto;
+    max-width: 800px !important; /* Constrained to middle third */
+    margin: 0 auto !important;
     padding: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Ensure the tab pane container is also constrained */
+#repertoire-tab,
+.tab-pane:has(.repertoire-page) {
+    max-width: 800px !important;
+    margin: 0 auto !important;
+    width: 100%;
 }
 
 .repertoire-header {
@@ -49,9 +59,16 @@
 /* Stats */
 .repertoire-stats {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: var(--space-lg);
+    grid-template-columns: repeat(3, 1fr); /* 3 columns for middle third */
+    gap: var(--space-md);
     margin-bottom: var(--space-xl);
+}
+
+/* Adjust stats on smaller screens */
+@media (max-width: 600px) {
+    .repertoire-stats {
+        grid-template-columns: 1fr;
+    }
 }
 
 .repertoire-stats .stat-card {
@@ -78,7 +95,7 @@
 /* Grid */
 .repertoire-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    grid-template-columns: 1fr; /* Single column for middle third layout */
     gap: var(--space-xl);
 }
 
@@ -221,8 +238,53 @@
 }
 
 /* Modal Form Styles */
+#songModal {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 9999 !important;
+    background: rgba(0, 0, 0, 0.8) !important;
+    backdrop-filter: blur(4px);
+}
+
 #songModal .modal-content {
+    position: relative;
     max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    margin: auto;
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    overflow-y: auto;
+    transform: scale(1);
+    padding: 2rem;
+}
+
+#songModal h3 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#songModal .close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    line-height: 1;
 }
 
 #songModal .form-row {
@@ -272,6 +334,13 @@
 
     .song-actions .btn {
         width: 100%;
+    }
+
+    #songModal .modal-content {
+        width: 95%;
+        max-width: 95%;
+        max-height: 95vh;
+        margin: 2.5vh auto;
     }
 
     #songModal .form-row {
