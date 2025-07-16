@@ -1,7 +1,6 @@
 // New Dashboard Page Component with Top Navigation and Unified Practice Content
 import { Header } from '../components/header.js';
 import { TopNavigation } from '../components/topNavigation.js';
-import { UnifiedPracticeContent } from '../components/unifiedPracticeContent.js';
 import { Footer } from '../components/footer.js';
 import { CloudSyncHandler } from '../services/cloudSyncHandler.js';
 
@@ -15,9 +14,9 @@ export class DashboardPage {
         this.themeService = null;
         this.header = null;
         this.topNav = null;
-        this.practiceContent = null;
         this.cloudSyncHandler = null;
         this.isDestroyed = false;
+        this.footer = null;
     }
 
     async render() {
@@ -49,7 +48,6 @@ export class DashboardPage {
         
         this.header = new Header(this.themeService);
         this.topNav = new TopNavigation();
-        this.practiceContent = new UnifiedPracticeContent(this.storageService);
 
         // Initial header setup
         this.header.setCurrentTab(tabTitles[this.currentTab]);
@@ -68,48 +66,7 @@ export class DashboardPage {
                     <div class="tab-content" id="tabContent">
                         <!-- Practice Tab -->
                         <div class="tab-pane active" id="practiceTab" data-tab="practice">
-                            <div class="practice-page-layout">
-                                <!-- Main Practice Content -->
-                                <div id="practiceContentContainer" class="practice-main-content">
-                                    <!-- Unified practice content will be rendered here -->
-                                </div>
-                                
-                                <!-- Sidebar with Recent Sessions and Stats -->
-                                <aside class="practice-sidebar">
-                                    <!-- Recent Sessions -->
-                                    <div class="dashboard-widget">
-                                        <div class="widget-header">
-                                            <h3 class="widget-title">Recent Sessions</h3>
-                                            <button class="widget-action" id="viewAllSessions">View All</button>
-                                        </div>
-                                        <div id="recentSessionsList" class="recent-sessions-widget">
-                                            <div class="loading-placeholder">Loading recent sessions...</div>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Quick Stats -->
-                                    <div class="stats-mini-grid">
-                                        <div class="stat-mini">
-                                            <div class="stat-value" id="totalPracticeTime">0h 0m</div>
-                                            <div class="stat-label">Total Time</div>
-                                        </div>
-                                        <div class="stat-mini">
-                                            <div class="stat-value" id="currentStreak">0</div>
-                                            <div class="stat-label">Day Streak</div>
-                                        </div>
-                                        <div class="stat-mini">
-                                            <div class="stat-value" id="sessionsThisWeek">0</div>
-                                            <div class="stat-label">This Week</div>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Practice Tips -->
-                                    <div class="practice-tips-widget">
-                                        <h4>Today's Tip</h4>
-                                        <p id="dailyTip">Focus on playing slowly and accurately before increasing speed.</p>
-                                    </div>
-                                </aside>
-                            </div>
+                            <!-- Practice tab content will be loaded dynamically -->
                         </div>
                         
                         <!-- Other tabs -->
@@ -141,8 +98,8 @@ export class DashboardPage {
             this.switchTab(tab);
         });
         
-        // Initialize practice content
-        this.initializePracticeContent();
+        // Initialize practice tab
+        this.loadTabContent('practice');
         
         // View all sessions
         document.getElementById('viewAllSessions')?.addEventListener('click', () => {
@@ -155,25 +112,7 @@ export class DashboardPage {
         });
     }
 
-    initializePracticeContent() {
-        const container = document.getElementById('practiceContentContainer');
-        if (container && this.practiceContent) {
-            this.practiceContent.init(container);
-            
-            // Set up save callback
-            this.practiceContent.setOnSaveCallback((sessionData) => {
-                // Refresh recent sessions after saving
-                this.loadRecentSessions();
-                this.loadQuickStats();
-                
-                // Show success message
-                this.header.setStatus('Practice session saved!', 'success');
-                setTimeout(() => {
-                    this.header.setStatus('All systems go', 'success');
-                }, 3000);
-            });
-        }
-    }
+    // Practice content is now handled by PracticeTabMinimal
 
     async switchTab(tab) {
         this.currentTab = tab;
@@ -213,6 +152,10 @@ export class DashboardPage {
         
         try {
             switch (tab) {
+                case 'practice':
+                    const { PracticeTab } = await import('../components/tabs/PracticeTab.js');
+                    this.tabs[tab] = new PracticeTab(this.storageService);
+                    break;
                 case 'repertoire':
                     const { RepertoireTab } = await import('../components/tabs/RepertoireTab.js');
                     this.tabs[tab] = new RepertoireTab(this.storageService);
@@ -235,10 +178,7 @@ export class DashboardPage {
                     break;
                 case 'settings':
                     const { SettingsTab } = await import('../components/tabs/SettingsTab.js');
-                    this.tabs[tab] = new SettingsTab(this.storageService, this.authService);
-                    if (this.themeService) {
-                        this.tabs[tab].setThemeService(this.themeService);
-                    }
+                    this.tabs[tab] = new SettingsTab(this.storageService, this.authService, this.cloudSyncHandler?.cloudSyncService);
                     break;
             }
             
@@ -248,9 +188,11 @@ export class DashboardPage {
             }
         } catch (error) {
             console.error(`Failed to load ${tab} tab:`, error);
+            console.error('Error details:', error.message, error.stack);
             tabContainer.innerHTML = `
                 <div class="error-state">
                     <p>Failed to load ${tab} content</p>
+                    <p class="error-details">${error.message || 'Unknown error'}</p>
                     <button class="retry-btn" onclick="location.reload()">Retry</button>
                 </div>
             `;
@@ -261,9 +203,9 @@ export class DashboardPage {
         // Initialize footer
         const footerContainer = document.getElementById('appFooter');
         if (footerContainer) {
-            const footer = new Footer();
-            footerContainer.innerHTML = footer.render();
-            footer.attachEventListeners();
+            this.footer = new Footer();
+            footerContainer.innerHTML = this.footer.render();
+            this.footer.attachEventListeners();
         }
         
         // Check initial hash
@@ -278,92 +220,14 @@ export class DashboardPage {
     }
 
     async loadDashboardData() {
-        await Promise.all([
-            this.loadRecentSessions(),
-            this.loadQuickStats(),
-            this.loadDailyTip()
-        ]);
+        // Dashboard data loading removed - now handled by PracticeTabMinimal
     }
-
-    async loadRecentSessions() {
-        const container = document.getElementById('recentSessionsList');
-        if (!container) return;
-        
-        try {
-            const sessions = await this.storageService.getAllPracticeEntries();
-            const recentSessions = sessions.slice(-5).reverse();
-            
-            if (recentSessions.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <p>No practice sessions yet. Start your first session!</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            container.innerHTML = recentSessions.map(session => `
-                <div class="recent-session-item">
-                    <div class="session-icon">${session.mode === 'metronome' ? '🎵' : session.mode === 'audio' ? '🎵' : '📹'}</div>
-                    <div class="session-details">
-                        <div class="session-title">${session.title || 'Practice Session'}</div>
-                        <div class="session-meta">
-                            ${new Date(session.date).toLocaleDateString()} • 
-                            ${Math.floor(session.duration / 60)}m ${session.duration % 60}s
-                            ${session.tempo ? ` • ${session.tempo} BPM` : ''}
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        } catch (error) {
-            console.error('Failed to load recent sessions:', error);
-            container.innerHTML = '<p class="error-text">Failed to load sessions</p>';
-        }
-    }
-
-    async loadQuickStats() {
-        try {
-            const stats = await this.storageService.getStatistics();
-            
-            // Update stat cards
-            document.getElementById('totalPracticeTime').textContent = 
-                `${Math.floor(stats.totalMinutes / 60)}h ${stats.totalMinutes % 60}m`;
-            document.getElementById('currentStreak').textContent = stats.currentStreak || 0;
-            document.getElementById('goalsCompleted').textContent = stats.goalsCompleted || 0;
-            document.getElementById('sessionsThisWeek').textContent = stats.sessionsThisWeek || 0;
-        } catch (error) {
-            console.error('Failed to load stats:', error);
-        }
-    }
-
-    loadDailyTip() {
-        const tips = [
-            "Focus on playing slowly and accurately before increasing speed. Quality over quantity!",
-            "Practice with a metronome to improve your timing and rhythm.",
-            "Break difficult passages into smaller chunks and master each part.",
-            "Record yourself playing to identify areas that need improvement.",
-            "Set specific, measurable goals for each practice session.",
-            "Warm up with scales and exercises before diving into repertoire.",
-            "Take regular breaks to avoid fatigue and maintain focus.",
-            "Practice the transitions between sections, not just the sections themselves.",
-            "Use a practice journal to track your progress and insights.",
-            "Listen to multiple interpretations of pieces you're learning."
-        ];
-        
-        const tipElement = document.getElementById('dailyTip');
-        if (tipElement) {
-            const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
-            tipElement.textContent = tips[dayOfYear % tips.length];
-        }
-    }
+    // Dashboard data, stats and tips are now handled by PracticeTabMinimal
 
     setThemeService(themeService) {
         this.themeService = themeService;
         if (this.header) {
             this.header.themeService = themeService;
-        }
-        if (this.tabs.settings) {
-            this.tabs.settings.setThemeService(themeService);
         }
     }
 
@@ -378,6 +242,11 @@ export class DashboardPage {
         // Clean up practice content
         if (this.practiceContent) {
             this.practiceContent.destroy();
+        }
+        
+        // Clean up footer
+        if (this.footer && this.footer.destroy) {
+            this.footer.destroy();
         }
         
         // Clean up components

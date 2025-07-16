@@ -72,6 +72,10 @@ export class SettingsTab {
                                     <option value="clave">Clave</option>
                                     <option value="rim">Rim Shot</option>
                                     <option value="hihat">Hi-Hat</option>
+                                    <option value="kick">Kick Drum</option>
+                                    <option value="snare">Snare</option>
+                                    <option value="triangle">Triangle</option>
+                                    <option value="shaker">Shaker</option>
                                 </select>
                             </div>
                             <div class="setting-item">

@@ -43,6 +43,7 @@ export class KeyboardShortcutsManager {
         this.register(']', () => this.increaseBPM(), 'Increase BPM');
         this.register('shift+[', () => this.decreaseBPM(10), 'Decrease BPM by 10');
         this.register('shift+]', () => this.increaseBPM(10), 'Increase BPM by 10');
+        this.register('shift+m', () => this.cycleMetronomeSound(), 'Cycle metronome sound');
         
         // UI controls
         this.register('/', () => this.focusSearch(), 'Focus search');
@@ -164,6 +165,59 @@ export class KeyboardShortcutsManager {
         if (metronome && metronome.bpm > 40) {
             metronome.setBPM(Math.max(metronome.bpm - amount, 40));
         }
+    }
+
+    cycleMetronomeSound() {
+        // Try to find the unified practice component first
+        const unifiedPractice = window.app?.currentPage?.tabs?.practice?.unifiedPractice;
+        if (unifiedPractice && unifiedPractice.metronomeState) {
+            const sounds = ['click', 'beep', 'tick', 'wood', 'cowbell', 'clave', 'rim', 'hihat', 'kick', 'snare', 'triangle', 'shaker'];
+            const currentIndex = sounds.indexOf(unifiedPractice.metronomeState.sound);
+            const nextIndex = (currentIndex + 1) % sounds.length;
+            const nextSound = sounds[nextIndex];
+            
+            // Update the metronome state
+            unifiedPractice.metronomeState.sound = nextSound;
+            
+            // Update the dropdown
+            const soundSelect = document.getElementById('soundSelect');
+            if (soundSelect) {
+                soundSelect.value = nextSound;
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('defaultMetronomeSound', nextSound);
+            
+            // Show notification
+            this.showNotification(`Metronome sound: ${nextSound}`);
+        }
+    }
+    
+    showNotification(message) {
+        // Create a simple notification
+        const notification = document.createElement('div');
+        notification.className = 'keyboard-shortcut-notification';
+        notification.textContent = message;
+        notification.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10000;
+            font-size: 14px;
+            animation: slideIn 0.3s ease;
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.animation = 'slideOut 0.3s ease';
+            setTimeout(() => notification.remove(), 300);
+        }, 2000);
     }
 
     // Audio controls
