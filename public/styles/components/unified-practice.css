@@ -1,0 +1,286 @@
+/* Unified Practice Component Styles */
+/* Consolidated from minimal-practice.css */
+
+/* Container */
+.unified-practice-minimal {
+    background: var(--bg-card);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    padding: 2rem;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Timer Display Section */
+.timer-display-section {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.timer-display {
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: 0.05em;
+    margin-bottom: 1.5rem;
+    background: var(--bg-secondary);
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+}
+
+/* Timer Controls */
+.timer-controls-row {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.timer-control-btn {
+    padding: 0.75rem 2rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.938rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.timer-control-btn.primary {
+    background: var(--primary);
+    color: white;
+}
+
+.timer-control-btn.primary:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+.timer-control-btn.secondary {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+}
+
+.timer-control-btn.secondary:hover {
+    background: var(--bg-tertiary);
+}
+
+/* Sync Checkbox */
+.timer-sync-row {
+    margin-bottom: 1rem;
+}
+
+.sync-checkbox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.sync-checkbox input[type="checkbox"] {
+    cursor: pointer;
+}
+
+/* Save Session Button */
+.save-session-btn {
+    width: 100%;
+    padding: 1rem;
+    background: var(--success);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.save-session-btn:hover {
+    background: var(--success-hover);
+    transform: translateY(-1px);
+}
+
+/* Mode Tabs */
+.mode-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    background: var(--bg-secondary);
+    padding: 0.25rem;
+    border-radius: 10px;
+}
+
+.mode-tab {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.mode-tab:hover {
+    color: var(--text-primary);
+}
+
+.mode-tab.active {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tab-icon {
+    font-size: 1.125rem;
+}
+
+/* Mode Content Area */
+.mode-content-area {
+    min-height: 300px;
+}
+
+/* Mode Panels */
+.mode-panel {
+    display: none;
+}
+
+.mode-panel.active {
+    display: block;
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Metronome Panel */
+.metronome-container {
+    padding: 1.5rem;
+    background: var(--bg-secondary);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+}
+
+/* Audio Panel */
+.audio-container {
+    padding: 1.5rem;
+    background: var(--bg-secondary);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+}
+
+/* YouTube Panel */
+.youtube-container {
+    padding: 1.5rem;
+    background: var(--bg-secondary);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+}
+
+.youtube-input-group {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.youtube-input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+}
+
+.youtube-input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.youtube-load-btn {
+    padding: 0.75rem 1.5rem;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.youtube-load-btn:hover {
+    background: var(--primary-hover);
+}
+
+/* YouTube Player */
+.youtube-player-wrapper {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    height: 0;
+    overflow: hidden;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.youtube-player-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 8px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .unified-practice-minimal {
+        padding: 1.5rem;
+    }
+    
+    .timer-display {
+        font-size: 2.5rem;
+        padding: 0.75rem 1.5rem;
+    }
+    
+    .timer-control-btn {
+        padding: 0.625rem 1.5rem;
+        font-size: 0.875rem;
+    }
+    
+    .mode-tab {
+        font-size: 0.813rem;
+        padding: 0.625rem 0.75rem;
+    }
+    
+    .tab-text {
+        display: none;
+    }
+}

@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Pitch Shifter - Adjust Pitch Without Changing Speed</title>
+    <meta name="description" content="Free online YouTube pitch shifter. Change the pitch of any YouTube video without affecting playback speed. Perfect for music practice and transcription.">
+    
+    <!-- Tone.js for audio processing -->
+    <script src="https://unpkg.com/tone@14.7.77/build/Tone.js"></script>
+    
+    <style>
+        :root {
+            --primary: #1976d2;
+            --primary-dark: #115293;
+            --secondary: #dc004e;
+            --background: #0a0a0a;
+            --surface: #1a1a1a;
+            --surface-light: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --error: #f44336;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            flex: 1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .main-content {
+            display: grid;
+            gap: 2rem;
+            grid-template-columns: 1fr;
+        }
+
+        @media (min-width: 768px) {
+            .main-content {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
+
+        .video-section {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .url-input-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 1rem;
+            font-size: 1rem;
+            background: var(--surface-light);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.2);
+        }
+
+        button {
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .primary-btn {
+            background: var(--primary);
+            color: white;
+        }
+
+        .primary-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(25, 118, 210, 0.4);
+        }
+
+        .secondary-btn {
+            background: var(--surface-light);
+            color: var(--text-primary);
+            border: 2px solid var(--surface-light);
+        }
+
+        .secondary-btn:hover {
+            border-color: var(--primary);
+            background: rgba(25, 118, 210, 0.1);
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 8px;
+            background: #000;
+            margin-bottom: 2rem;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .controls-section {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .pitch-control {
+            margin-bottom: 2rem;
+        }
+
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .pitch-value {
+            color: var(--primary);
+            font-family: 'Monaco', 'Consolas', monospace;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            background: var(--surface-light);
+            border-radius: 4px;
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 12px rgba(25, 118, 210, 0.5);
+        }
+
+        .pitch-presets {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .preset-btn {
+            padding: 0.5rem;
+            font-size: 0.9rem;
+            background: var(--surface-light);
+            color: var(--text-secondary);
+            border: 1px solid transparent;
+        }
+
+        .preset-btn:hover {
+            border-color: var(--primary);
+            color: var(--text-primary);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .status-idle {
+            background: var(--surface-light);
+            color: var(--text-secondary);
+        }
+
+        .status-active {
+            background: rgba(76, 175, 80, 0.1);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .status-error {
+            background: rgba(244, 67, 54, 0.1);
+            color: var(--error);
+            border: 1px solid var(--error);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .action-buttons button {
+            flex: 1;
+        }
+
+        .shortcuts-info {
+            background: var(--surface-light);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 2rem;
+        }
+
+        .shortcuts-info h3 {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+
+        .shortcut-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.25rem 0;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .shortcut-key {
+            font-family: 'Monaco', 'Consolas', monospace;
+            background: var(--surface);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            color: var(--text-primary);
+        }
+
+        .instructions {
+            background: rgba(25, 118, 210, 0.1);
+            border: 1px solid var(--primary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .instructions h3 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .instructions ol {
+            margin-left: 1.5rem;
+            color: var(--text-secondary);
+        }
+
+        .instructions li {
+            margin-bottom: 0.5rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--surface);
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            color: var(--error);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .volume-control {
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 767px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .pitch-presets {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>YouTube Pitch Shifter</h1>
+            <p class="subtitle">Change pitch without affecting playback speed</p>
+        </header>
+
+        <div class="main-content">
+            <div class="video-section">
+                <div class="url-input-group">
+                    <input type="text" 
+                           id="youtube-url" 
+                           placeholder="Enter YouTube URL (e.g., https://youtube.com/watch?v=...)"
+                           autocomplete="off">
+                    <button class="primary-btn" onclick="loadVideo()">
+                        <span>Load Video</span>
+                    </button>
+                </div>
+
+                <div id="video-container" class="video-container" style="display: none;">
+                    <iframe id="youtube-player" 
+                            allowfullscreen 
+                            allow="autoplay; encrypted-media"></iframe>
+                </div>
+
+                <div class="instructions">
+                    <h3>How to use:</h3>
+                    <ol>
+                        <li>Paste a YouTube video URL above and click "Load Video"</li>
+                        <li>Click "Enable Pitch Shifting" to activate audio processing</li>
+                        <li>Select the browser tab showing this YouTube video when prompted</li>
+                        <li>Use the pitch slider or keyboard shortcuts to adjust pitch</li>
+                        <li>The video will continue playing at normal speed with adjusted pitch</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="controls-section">
+                <div id="status" class="status-indicator status-idle">
+                    <span class="status-dot"></span>
+                    <span>Ready to start</span>
+                </div>
+
+                <div class="pitch-control">
+                    <div class="control-label">
+                        <span>Pitch Adjustment</span>
+                        <span class="pitch-value" id="pitch-value">0 semitones</span>
+                    </div>
+                    <input type="range" 
+                           id="pitch-slider" 
+                           min="-12" 
+                           max="12" 
+                           step="1" 
+                           value="0"
+                           disabled>
+                    
+                    <div class="pitch-presets">
+                        <button class="preset-btn" onclick="setPitch(-12)" disabled>-1 Oct</button>
+                        <button class="preset-btn" onclick="setPitch(-7)" disabled>-P5</button>
+                        <button class="preset-btn" onclick="setPitch(-5)" disabled>-P4</button>
+                        <button class="preset-btn" onclick="setPitch(-3)" disabled>-m3</button>
+                        <button class="preset-btn" onclick="setPitch(-1)" disabled>-1 ST</button>
+                        <button class="preset-btn" onclick="setPitch(0)" disabled>Reset</button>
+                        <button class="preset-btn" onclick="setPitch(1)" disabled>+1 ST</button>
+                        <button class="preset-btn" onclick="setPitch(3)" disabled>+m3</button>
+                        <button class="preset-btn" onclick="setPitch(5)" disabled>+P4</button>
+                        <button class="preset-btn" onclick="setPitch(7)" disabled>+P5</button>
+                        <button class="preset-btn" onclick="setPitch(12)" disabled>+1 Oct</button>
+                    </div>
+                </div>
+
+                <div class="volume-control">
+                    <div class="control-label">
+                        <span>Volume</span>
+                        <span class="pitch-value" id="volume-value">100%</span>
+                    </div>
+                    <input type="range" 
+                           id="volume-slider" 
+                           min="0" 
+                           max="100" 
+                           step="1" 
+                           value="100"
+                           disabled>
+                </div>
+
+                <div class="action-buttons">
+                    <button id="toggle-pitch" class="primary-btn" onclick="togglePitchShifting()" disabled>
+                        Enable Pitch Shifting
+                    </button>
+                    <button class="secondary-btn" onclick="resetControls()" disabled>
+                        Reset All
+                    </button>
+                </div>
+
+                <div class="shortcuts-info">
+                    <h3>Keyboard Shortcuts</h3>
+                    <div class="shortcut-item">
+                        <span>Pitch Up</span>
+                        <span class="shortcut-key">↑ / +</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <span>Pitch Down</span>
+                        <span class="shortcut-key">↓ / -</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <span>Reset Pitch</span>
+                        <span class="shortcut-key">0</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <span>Toggle Processing</span>
+                        <span class="shortcut-key">Space</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2024 YouTube Pitch Shifter | Built with Web Audio API & Tone.js</p>
+    </footer>
+
+    <script type="module">
+        import { YouTubeAudioProcessor } from './src/services/youtubeAudioProcessor.js';
+        
+        // Global variables
+        let processor = null;
+        let videoLoaded = false;
+        let isProcessing = false;
+
+        // Initialize processor
+        async function initializeProcessor() {
+            if (!processor) {
+                processor = new YouTubeAudioProcessor();
+            }
+        }
+
+        // Load YouTube video
+        window.loadVideo = function() {
+            const urlInput = document.getElementById('youtube-url');
+            const url = urlInput.value.trim();
+            
+            if (!url) {
+                showError('Please enter a YouTube URL');
+                return;
+            }
+
+            // Extract video ID from various YouTube URL formats
+            const videoId = extractVideoId(url);
+            if (!videoId) {
+                showError('Invalid YouTube URL');
+                return;
+            }
+
+            // Load video in iframe
+            const iframe = document.getElementById('youtube-player');
+            iframe.src = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=1`;
+            
+            // Show video container
+            document.getElementById('video-container').style.display = 'block';
+            
+            // Enable controls
+            document.getElementById('toggle-pitch').disabled = false;
+            updateStatus('Video loaded - Click "Enable Pitch Shifting" to start', 'idle');
+            
+            videoLoaded = true;
+        };
+
+        // Extract YouTube video ID from URL
+        function extractVideoId(url) {
+            const patterns = [
+                /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+                /^([a-zA-Z0-9_-]{11})$/
+            ];
+            
+            for (const pattern of patterns) {
+                const match = url.match(pattern);
+                if (match) return match[1];
+            }
+            return null;
+        }
+
+        // Toggle pitch shifting
+        window.togglePitchShifting = async function() {
+            if (!videoLoaded) {
+                showError('Please load a video first');
+                return;
+            }
+
+            const button = document.getElementById('toggle-pitch');
+            
+            if (!isProcessing) {
+                try {
+                    button.innerHTML = '<span class="loading"></span> Starting...';
+                    button.disabled = true;
+                    
+                    await initializeProcessor();
+                    await processor.startTabAudioCapture();
+                    
+                    isProcessing = true;
+                    button.innerHTML = 'Disable Pitch Shifting';
+                    button.disabled = false;
+                    
+                    // Enable all controls
+                    enableControls(true);
+                    updateStatus('Pitch shifting active', 'active');
+                    
+                    // Apply current pitch value
+                    const currentPitch = parseInt(document.getElementById('pitch-slider').value);
+                    processor.setPitch(currentPitch);
+                    
+                } catch (error) {
+                    console.error('Failed to start pitch shifting:', error);
+                    showError(error.message || 'Failed to start audio processing');
+                    button.innerHTML = 'Enable Pitch Shifting';
+                    button.disabled = false;
+                    isProcessing = false;
+                }
+            } else {
+                // Stop processing
+                processor.stopProcessing();
+                isProcessing = false;
+                button.innerHTML = 'Enable Pitch Shifting';
+                enableControls(false);
+                updateStatus('Pitch shifting disabled', 'idle');
+            }
+        };
+
+        // Set pitch value
+        window.setPitch = function(value) {
+            document.getElementById('pitch-slider').value = value;
+            updatePitchDisplay(value);
+            
+            if (processor && isProcessing) {
+                processor.setPitch(value);
+            }
+        };
+
+        // Update pitch display
+        function updatePitchDisplay(value) {
+            const pitchValue = document.getElementById('pitch-value');
+            const semitones = parseInt(value);
+            
+            if (semitones === 0) {
+                pitchValue.textContent = '0 semitones';
+            } else if (semitones > 0) {
+                pitchValue.textContent = `+${semitones} semitone${semitones !== 1 ? 's' : ''}`;
+            } else {
+                pitchValue.textContent = `${semitones} semitone${semitones !== -1 ? 's' : ''}`;
+            }
+        }
+
+        // Update volume display
+        function updateVolumeDisplay(value) {
+            document.getElementById('volume-value').textContent = `${value}%`;
+        }
+
+        // Reset all controls
+        window.resetControls = function() {
+            setPitch(0);
+            document.getElementById('volume-slider').value = 100;
+            updateVolumeDisplay(100);
+            
+            if (processor && isProcessing) {
+                processor.setVolume(1);
+            }
+        };
+
+        // Enable/disable controls
+        function enableControls(enabled) {
+            const controls = [
+                'pitch-slider',
+                'volume-slider',
+                ...document.querySelectorAll('.preset-btn'),
+                ...document.querySelectorAll('.action-buttons button:not(#toggle-pitch)')
+            ];
+            
+            controls.forEach(control => {
+                if (control.id) {
+                    document.getElementById(control.id).disabled = !enabled;
+                } else {
+                    control.disabled = !enabled;
+                }
+            });
+        }
+
+        // Update status indicator
+        function updateStatus(message, type = 'idle') {
+            const status = document.getElementById('status');
+            status.className = `status-indicator status-${type}`;
+            status.innerHTML = `<span class="status-dot"></span><span>${message}</span>`;
+        }
+
+        // Show error message
+        function showError(message) {
+            updateStatus(message, 'error');
+            setTimeout(() => {
+                if (!isProcessing) {
+                    updateStatus('Ready to start', 'idle');
+                }
+            }, 5000);
+        }
+
+        // Event listeners
+        document.getElementById('pitch-slider').addEventListener('input', (e) => {
+            const value = parseInt(e.target.value);
+            updatePitchDisplay(value);
+            
+            if (processor && isProcessing) {
+                processor.setPitch(value);
+            }
+        });
+
+        document.getElementById('volume-slider').addEventListener('input', (e) => {
+            const value = parseInt(e.target.value);
+            updateVolumeDisplay(value);
+            
+            if (processor && isProcessing) {
+                processor.setVolume(value / 100);
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (!videoLoaded || !isProcessing) return;
+            
+            const currentPitch = parseInt(document.getElementById('pitch-slider').value);
+            
+            switch(e.key) {
+                case 'ArrowUp':
+                case '+':
+                case '=':
+                    e.preventDefault();
+                    setPitch(Math.min(currentPitch + 1, 12));
+                    break;
+                case 'ArrowDown':
+                case '-':
+                case '_':
+                    e.preventDefault();
+                    setPitch(Math.max(currentPitch - 1, -12));
+                    break;
+                case '0':
+                    e.preventDefault();
+                    setPitch(0);
+                    break;
+                case ' ':
+                    e.preventDefault();
+                    togglePitchShifting();
+                    break;
+            }
+        });
+
+        // Enter key on URL input
+        document.getElementById('youtube-url').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                loadVideo();
+            }
+        });
+
+        // Check browser compatibility
+        if (!YouTubeAudioProcessor.isSupported()) {
+            showError('Your browser does not support the required audio APIs');
+            document.getElementById('toggle-pitch').disabled = true;
+        }
+
+        // Initialize
+        updatePitchDisplay(0);
+        updateVolumeDisplay(100);
+    </script>
+</body>
+</html>

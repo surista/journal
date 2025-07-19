@@ -1,0 +1,56 @@
+/* History Delete Button Styles */
+
+/* Ensure delete button in history is always visible and clickable */
+.history-item .delete-session-btn {
+    opacity: 0.7 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Show fully on hover */
+.history-item:hover .delete-session-btn {
+    opacity: 1 !important;
+}
+
+.history-item .delete-session-btn:hover {
+    color: var(--danger);
+    background: rgba(239, 68, 68, 0.1);
+    transform: scale(1.1);
+}
+
+.history-item .delete-session-btn:active {
+    transform: scale(0.95);
+}
+
+.history-item .delete-session-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.5 !important;
+}
+
+/* Ensure button is clickable even when parent has pointer-events changes */
+.history-item-actions {
+    pointer-events: auto !important;
+}
+
+.history-item-actions .delete-session-btn {
+    pointer-events: auto !important;
+}
+
+/* Override any conflicting btn-icon styles */
+.history-item .btn-icon.delete-session-btn {
+    width: auto;
+    height: auto;
+    min-width: 32px;
+    min-height: 32px;
+}

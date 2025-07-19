@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Pitch Shifter - Browser Extension</title>
+    <meta name="description" content="Instructions for using the YouTube Pitch Shifter as a browser extension or bookmarklet">
+    
+    <style>
+        :root {
+            --primary: #ff0000;
+            --background: #0f0f0f;
+            --surface: #272727;
+            --text-primary: #ffffff;
+            --text-secondary: #aaaaaa;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 2.5rem;
+        }
+
+        h2 {
+            color: var(--text-primary);
+            margin: 2rem 0 1rem;
+            font-size: 1.5rem;
+        }
+
+        .section {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .bookmarklet {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 1rem 0;
+            transition: opacity 0.3s;
+        }
+
+        .bookmarklet:hover {
+            opacity: 0.8;
+        }
+
+        code {
+            background: #1a1a1a;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.9rem;
+        }
+
+        pre {
+            background: #1a1a1a;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .instructions {
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 4px solid var(--primary);
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        ol, ul {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .feature-card h3 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .keyboard-shortcuts {
+            background: #1a1a1a;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .shortcut {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--surface);
+        }
+
+        .shortcut:last-child {
+            border-bottom: none;
+        }
+
+        .key {
+            background: var(--surface);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>YouTube Pitch Shifter Extension</h1>
+        <p>Change the pitch of any YouTube video without affecting playback speed, directly in your browser!</p>
+
+        <div class="section">
+            <h2>🔖 Quick Install - Bookmarklet</h2>
+            <p>The easiest way to use the pitch shifter on any YouTube video:</p>
+            
+            <div class="instructions">
+                <p><strong>Drag this button to your bookmarks bar:</strong></p>
+                <a href="javascript:(function(){if(!window.location.href.includes('youtube.com/watch')){alert('Please run this on a YouTube video page');return;}if(window.YTPitchShifter){window.YTPitchShifter.toggle();return;}const script=document.createElement('script');script.src='https://unpkg.com/tone@14.7.77/build/Tone.js';script.onload=async()=>{class YTPitchShifter{constructor(){this.audioContext=null;this.source=null;this.pitchShifter=null;this.gainNode=null;this.mediaStream=null;this.isProcessing=false;this.pitch=0;this.ui=null;this.init();}async init(){try{this.audioContext=new(window.AudioContext||window.webkitAudioContext)();await Tone.start();this.createUI();this.bindKeyboard();}catch(e){alert('Failed to initialize audio:'+e.message);}}async toggle(){if(!this.isProcessing){await this.start();}else{this.stop();}}async start(){try{const stream=await navigator.mediaDevices.getDisplayMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false},video:false,preferCurrentTab:true});if(!stream.getAudioTracks().length){throw new Error('No audio track');}this.mediaStream=stream;this.pitchShifter=new Tone.PitchShift({pitch:this.pitch,windowSize:0.1,delayTime:0}).toDestination();this.gainNode=new Tone.Gain(1);this.gainNode.connect(this.pitchShifter);this.source=new Tone.UserMedia();await this.source.open(stream);this.source.connect(this.gainNode);this.isProcessing=true;this.updateUI();stream.getAudioTracks()[0].onended=()=>this.stop();}catch(e){alert('Failed to capture audio. Select this tab when prompted.');}}stop(){if(this.mediaStream){this.mediaStream.getTracks().forEach(t=>t.stop());}if(this.source){this.source.close();this.source.disconnect();}if(this.pitchShifter){this.pitchShifter.disconnect();this.pitchShifter.dispose();}if(this.gainNode){this.gainNode.disconnect();this.gainNode.dispose();}this.isProcessing=false;this.updateUI();}setPitch(semitones){this.pitch=Math.max(-12,Math.min(12,semitones));if(this.pitchShifter){this.pitchShifter.pitch=this.pitch;}this.updateUI();}createUI(){this.ui=document.createElement('div');this.ui.id='yt-pitch-shifter';this.ui.innerHTML=`<style>#yt-pitch-shifter{position:fixed;bottom:20px;right:20px;background:#212121;color:white;padding:15px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.5);font-family:Arial,sans-serif;z-index:9999;min-width:200px;}#yt-pitch-shifter h3{margin:0 0 10px;font-size:14px;color:#ff0000;}#yt-pitch-shifter .controls{display:flex;align-items:center;gap:10px;margin-bottom:10px;}#yt-pitch-shifter button{background:#ff0000;color:white;border:none;padding:5px 15px;border-radius:4px;cursor:pointer;font-size:12px;}#yt-pitch-shifter button:hover{background:#cc0000;}#yt-pitch-shifter .pitch-display{font-size:18px;font-weight:bold;text-align:center;margin:5px 0;}#yt-pitch-shifter .status{font-size:11px;color:#888;text-align:center;}#yt-pitch-shifter input[type='range']{width:100%;margin:5px 0;}</style><h3>🎵 Pitch Shifter</h3><div class='pitch-display'><span id='pitch-value'>0</span> semitones</div><input type='range' id='pitch-slider' min='-12' max='12' step='1' value='0'><div class='controls'><button onclick='window.YTPitchShifter.setPitch(window.YTPitchShifter.pitch-1)'>-1</button><button onclick='window.YTPitchShifter.setPitch(0)'>Reset</button><button onclick='window.YTPitchShifter.setPitch(window.YTPitchShifter.pitch+1)'>+1</button></div><button id='toggle-btn' onclick='window.YTPitchShifter.toggle()'>Enable</button><div class='status' id='status'>Ready</div>`;document.body.appendChild(this.ui);this.ui.querySelector('#pitch-slider').addEventListener('input',e=>this.setPitch(parseInt(e.target.value)));}updateUI(){if(!this.ui)return;this.ui.querySelector('#pitch-value').textContent=this.pitch;this.ui.querySelector('#pitch-slider').value=this.pitch;this.ui.querySelector('#toggle-btn').textContent=this.isProcessing?'Disable':'Enable';this.ui.querySelector('#status').textContent=this.isProcessing?'Processing':'Ready';}bindKeyboard(){document.addEventListener('keydown',e=>{if(!this.isProcessing)return;if(e.key==='ArrowUp'){e.preventDefault();this.setPitch(this.pitch+1);}else if(e.key==='ArrowDown'){e.preventDefault();this.setPitch(this.pitch-1);}else if(e.key==='0'){e.preventDefault();this.setPitch(0);}});}}window.YTPitchShifter=new YTPitchShifter();};document.head.appendChild(script);})();" 
+                   class="bookmarklet">🎵 YouTube Pitch Shifter</a>
+            </div>
+            
+            <ol>
+                <li>Drag the button above to your browser's bookmarks bar</li>
+                <li>Navigate to any YouTube video</li>
+                <li>Click the bookmark to activate the pitch shifter</li>
+                <li>A control panel will appear in the bottom-right corner</li>
+            </ol>
+        </div>
+
+        <div class="section">
+            <h2>🎮 How to Use</h2>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>1. Activate</h3>
+                    <p>Click the bookmarklet while watching a YouTube video</p>
+                </div>
+                <div class="feature-card">
+                    <h3>2. Enable Processing</h3>
+                    <p>Click "Enable" and select the current tab when prompted</p>
+                </div>
+                <div class="feature-card">
+                    <h3>3. Adjust Pitch</h3>
+                    <p>Use the slider or buttons to change pitch in real-time</p>
+                </div>
+            </div>
+
+            <div class="keyboard-shortcuts">
+                <h3>Keyboard Shortcuts (when active):</h3>
+                <div class="shortcut">
+                    <span>Pitch Up</span>
+                    <span class="key">↑</span>
+                </div>
+                <div class="shortcut">
+                    <span>Pitch Down</span>
+                    <span class="key">↓</span>
+                </div>
+                <div class="shortcut">
+                    <span>Reset Pitch</span>
+                    <span class="key">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🛠️ Alternative: Standalone Pages</h2>
+            <p>For more advanced features and controls:</p>
+            <ul>
+                <li><a href="youtube-pitch-shifter.html" style="color: var(--primary);">Basic Pitch Shifter</a> - Simple interface with essential controls</li>
+                <li><a href="youtube-pitch-advanced.html" style="color: var(--primary);">Advanced Pitch Shifter</a> - Professional features including fine-tuning, presets, and visualization</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>💻 For Developers</h2>
+            <p>Want to customize or extend the pitch shifter? Here's the core implementation:</p>
+            
+            <pre><code>// Initialize Tone.js and create pitch shifter
+const pitchShifter = new Tone.PitchShift({
+    pitch: 0,        // Semitones (-12 to +12)
+    windowSize: 0.1, // Lower = less latency
+    delayTime: 0     // Additional delay
+}).toDestination();
+
+// Capture tab audio
+const stream = await navigator.mediaDevices.getDisplayMedia({
+    audio: true,
+    video: false,
+    preferCurrentTab: true
+});
+
+// Connect audio stream to pitch shifter
+const source = new Tone.UserMedia();
+await source.open(stream);
+source.connect(pitchShifter);
+
+// Change pitch
+pitchShifter.pitch = 5; // +5 semitones</code></pre>
+
+            <p>Check out the <a href="https://github.com/yourusername/youtube-pitch-shifter" style="color: var(--primary);">GitHub repository</a> for the full source code.</p>
+        </div>
+
+        <div class="section">
+            <h2>🔧 Troubleshooting</h2>
+            <ul>
+                <li><strong>No audio capture dialog appears:</strong> Make sure you're on a YouTube video page and your browser supports screen capture API</li>
+                <li><strong>Audio has delay:</strong> This is normal due to processing. Try the "Low Latency" mode in the advanced version</li>
+                <li><strong>Can't hear processed audio:</strong> Ensure you selected the correct tab (with "Share tab audio" checked) when prompted</li>
+                <li><strong>Browser compatibility:</strong> Works best in Chrome, Edge, and other Chromium-based browsers</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>📝 Features</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>🎵 Real-time Processing</h3>
+                    <p>Change pitch instantly without buffering</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🎯 Preserves Tempo</h3>
+                    <p>Pitch changes don't affect playback speed</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🎹 Musical Intervals</h3>
+                    <p>Preset buttons for common intervals</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⌨️ Keyboard Control</h3>
+                    <p>Quick adjustments with arrow keys</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔊 Volume Control</h3>
+                    <p>Independent volume adjustment</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📱 Responsive Design</h3>
+                    <p>Works on desktop and mobile browsers</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add smooth scroll behavior
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>

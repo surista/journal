@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced YouTube Pitch Shifter - Professional Audio Processing</title>
+    <meta name="description" content="Professional YouTube pitch shifter with advanced controls, fine-tuning, and high-quality audio processing. Perfect for musicians and audio professionals.">
+    
+    <!-- Tone.js for audio processing -->
+    <script src="https://unpkg.com/tone@14.7.77/build/Tone.js"></script>
+    
+    <style>
+        :root {
+            --primary: #00897b;
+            --primary-dark: #00695c;
+            --secondary: #ff5722;
+            --background: #121212;
+            --surface: #1e1e1e;
+            --surface-light: #2c2c2c;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --success: #4caf50;
+            --warning: #ff9800;
+            --error: #f44336;
+            --accent: #7c4dff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            flex: 1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+        }
+
+        .main-grid {
+            display: grid;
+            gap: 2rem;
+            grid-template-columns: 1fr;
+        }
+
+        @media (min-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
+
+        .video-section {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .url-input-wrapper {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .url-input-group {
+            display: flex;
+            gap: 1rem;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 1.2rem;
+            font-size: 1.1rem;
+            background: var(--surface-light);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(0, 137, 123, 0.2);
+        }
+
+        button {
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        button:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .primary-btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 137, 123, 0.4);
+        }
+
+        .secondary-btn {
+            background: var(--surface-light);
+            color: var(--text-primary);
+            border: 2px solid var(--surface-light);
+        }
+
+        .secondary-btn:hover {
+            border-color: var(--primary);
+            background: rgba(0, 137, 123, 0.1);
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 12px;
+            background: #000;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .controls-panel {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .control-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .control-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .pitch-display {
+            background: var(--surface-light);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            border: 2px solid var(--surface-light);
+            transition: all 0.3s ease;
+        }
+
+        .pitch-display.active {
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(0, 137, 123, 0.3);
+        }
+
+        .pitch-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary);
+            font-family: 'Monaco', 'Consolas', monospace;
+            line-height: 1;
+        }
+
+        .pitch-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .slider-container {
+            margin: 1.5rem 0;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 10px;
+            background: var(--surface-light);
+            border-radius: 5px;
+            outline: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+            position: relative;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 28px;
+            height: 28px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 20px rgba(0, 137, 123, 0.6);
+        }
+
+        .fine-tune-controls {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .fine-tune-btn {
+            padding: 0.8rem;
+            background: var(--surface-light);
+            border: 2px solid transparent;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .fine-tune-btn:hover {
+            border-color: var(--primary);
+            background: rgba(0, 137, 123, 0.1);
+        }
+
+        .preset-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 0.8rem;
+        }
+
+        .preset-btn {
+            padding: 0.8rem;
+            background: var(--surface-light);
+            font-size: 0.9rem;
+            border: 2px solid transparent;
+            position: relative;
+        }
+
+        .preset-btn:hover {
+            border-color: var(--accent);
+            background: rgba(124, 77, 255, 0.1);
+        }
+
+        .preset-btn.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .advanced-settings {
+            background: var(--surface-light);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid var(--surface);
+        }
+
+        .setting-row:last-child {
+            border-bottom: none;
+        }
+
+        .setting-label {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+            background: var(--surface);
+            border-radius: 13px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: var(--primary);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+        }
+
+        .toggle-switch.active::after {
+            transform: translateX(24px);
+        }
+
+        .status-card {
+            background: var(--surface-light);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .status-card.active {
+            border-color: var(--success);
+            background: rgba(76, 175, 80, 0.1);
+        }
+
+        .status-card.error {
+            border-color: var(--error);
+            background: rgba(244, 67, 54, 0.1);
+        }
+
+        .status-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--text-secondary);
+            animation: pulse 2s infinite;
+        }
+
+        .status-card.active .status-indicator {
+            background: var(--success);
+        }
+
+        .status-card.error .status-indicator {
+            background: var(--error);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .metric-item {
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .metric-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .waveform-container {
+            background: var(--surface-light);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            height: 100px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .waveform-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .keyboard-shortcuts {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .shortcut-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .shortcut-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.8rem;
+            background: var(--surface-light);
+            border-radius: 8px;
+        }
+
+        .key-combo {
+            font-family: 'Monaco', 'Consolas', monospace;
+            background: var(--surface);
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            color: var(--accent);
+            border: 1px solid var(--accent);
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 767px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .fine-tune-controls {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: var(--surface-light);
+            color: var(--text-primary);
+            text-align: center;
+            border-radius: 8px;
+            padding: 0.5rem;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.8rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Advanced YouTube Pitch Shifter</h1>
+            <p class="subtitle">Professional audio processing with advanced controls</p>
+        </header>
+
+        <div class="main-grid">
+            <div class="video-section">
+                <div class="url-input-wrapper">
+                    <div class="url-input-group">
+                        <input type="text" 
+                               id="youtube-url" 
+                               placeholder="Enter YouTube URL or Video ID"
+                               autocomplete="off">
+                        <button class="primary-btn" onclick="loadVideo()">
+                            <span>Load Video</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="video-container" class="video-container" style="display: none;">
+                    <iframe id="youtube-player" 
+                            allowfullscreen 
+                            allow="autoplay; encrypted-media"></iframe>
+                </div>
+
+                <div class="waveform-container" id="waveform-container" style="display: none;">
+                    <canvas id="waveform-canvas" class="waveform-canvas"></canvas>
+                </div>
+            </div>
+
+            <div class="controls-panel">
+                <div class="status-card" id="status-card">
+                    <div class="status-title">
+                        <span class="status-indicator"></span>
+                        <span id="status-text">Ready to start</span>
+                    </div>
+                    <div class="metrics-grid" id="metrics" style="display: none;">
+                        <div class="metric-item">
+                            <div class="metric-value" id="latency">0ms</div>
+                            <div class="metric-label">Latency</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value" id="quality">High</div>
+                            <div class="metric-label">Quality</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h2 class="section-title">
+                        <span>🎵</span>
+                        Pitch Control
+                    </h2>
+                    
+                    <div class="pitch-display" id="pitch-display">
+                        <div class="pitch-number" id="pitch-number">0</div>
+                        <div class="pitch-label">semitones</div>
+                    </div>
+
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>Coarse Adjustment</span>
+                            <span id="pitch-value">0 ST</span>
+                        </div>
+                        <input type="range" 
+                               id="pitch-slider" 
+                               min="-24" 
+                               max="24" 
+                               step="1" 
+                               value="0"
+                               disabled>
+                    </div>
+
+                    <div class="fine-tune-controls">
+                        <button class="fine-tune-btn" onclick="adjustPitch(-0.1)" disabled>
+                            -10 cents
+                        </button>
+                        <button class="fine-tune-btn" onclick="adjustPitch(-0.01)" disabled>
+                            -1 cent
+                        </button>
+                        <button class="fine-tune-btn" onclick="adjustPitch(0.01)" disabled>
+                            +1 cent
+                        </button>
+                        <button class="fine-tune-btn" onclick="adjustPitch(0.1)" disabled>
+                            +10 cents
+                        </button>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h2 class="section-title">
+                        <span>🎹</span>
+                        Musical Presets
+                    </h2>
+                    <div class="preset-grid">
+                        <button class="preset-btn" onclick="setPitchPreset(-12)" disabled>-1 Oct</button>
+                        <button class="preset-btn" onclick="setPitchPreset(-7)" disabled>-P5</button>
+                        <button class="preset-btn" onclick="setPitchPreset(-5)" disabled>-P4</button>
+                        <button class="preset-btn" onclick="setPitchPreset(-4)" disabled>-M3</button>
+                        <button class="preset-btn" onclick="setPitchPreset(-3)" disabled>-m3</button>
+                        <button class="preset-btn" onclick="setPitchPreset(0)" disabled>Reset</button>
+                        <button class="preset-btn" onclick="setPitchPreset(3)" disabled>+m3</button>
+                        <button class="preset-btn" onclick="setPitchPreset(4)" disabled>+M3</button>
+                        <button class="preset-btn" onclick="setPitchPreset(5)" disabled>+P4</button>
+                        <button class="preset-btn" onclick="setPitchPreset(7)" disabled>+P5</button>
+                        <button class="preset-btn" onclick="setPitchPreset(12)" disabled>+1 Oct</button>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h2 class="section-title">
+                        <span>⚙️</span>
+                        Advanced Settings
+                    </h2>
+                    <div class="advanced-settings">
+                        <div class="setting-row">
+                            <span class="setting-label tooltip">
+                                Processing Quality
+                                <span class="tooltiptext">Higher quality = better sound but more latency</span>
+                            </span>
+                            <select id="quality-select" disabled>
+                                <option value="low">Low Latency</option>
+                                <option value="medium" selected>Balanced</option>
+                                <option value="high">High Quality</option>
+                            </select>
+                        </div>
+                        <div class="setting-row">
+                            <span class="setting-label tooltip">
+                                Preserve Formants
+                                <span class="tooltiptext">Maintains vocal characteristics when pitch shifting</span>
+                            </span>
+                            <div class="toggle-switch" id="formant-toggle" onclick="toggleFormant()"></div>
+                        </div>
+                        <div class="setting-row">
+                            <span class="setting-label">Volume</span>
+                            <input type="range" 
+                                   id="volume-slider" 
+                                   min="0" 
+                                   max="150" 
+                                   value="100"
+                                   style="width: 120px;"
+                                   disabled>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="toggle-btn" class="primary-btn" onclick="toggleProcessing()" disabled style="width: 100%; margin-top: 1.5rem;">
+                    Enable Pitch Shifting
+                </button>
+            </div>
+        </div>
+
+        <div class="keyboard-shortcuts">
+            <h2 class="section-title">
+                <span>⌨️</span>
+                Keyboard Shortcuts
+            </h2>
+            <div class="shortcut-grid">
+                <div class="shortcut-item">
+                    <span class="key-combo">↑ / ↓</span>
+                    <span>Pitch up/down (1 semitone)</span>
+                </div>
+                <div class="shortcut-item">
+                    <span class="key-combo">Shift + ↑/↓</span>
+                    <span>Fine tune (10 cents)</span>
+                </div>
+                <div class="shortcut-item">
+                    <span class="key-combo">Ctrl + ↑/↓</span>
+                    <span>Ultra fine (1 cent)</span>
+                </div>
+                <div class="shortcut-item">
+                    <span class="key-combo">0</span>
+                    <span>Reset pitch</span>
+                </div>
+                <div class="shortcut-item">
+                    <span class="key-combo">Space</span>
+                    <span>Toggle processing</span>
+                </div>
+                <div class="shortcut-item">
+                    <span class="key-combo">1-9</span>
+                    <span>Quick presets</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { YouTubeAudioProcessor } from './src/services/youtubeAudioProcessor.js';
+        
+        // Global variables
+        let processor = null;
+        let videoLoaded = false;
+        let isProcessing = false;
+        let currentPitch = 0;
+        let fineTuneCents = 0;
+        let preserveFormants = false;
+        let analyser = null;
+        let animationId = null;
+
+        // Initialize processor
+        async function initializeProcessor() {
+            if (!processor) {
+                processor = new YouTubeAudioProcessor();
+            }
+        }
+
+        // Load YouTube video
+        window.loadVideo = async function() {
+            const urlInput = document.getElementById('youtube-url');
+            const url = urlInput.value.trim();
+            
+            if (!url) {
+                showError('Please enter a YouTube URL');
+                return;
+            }
+
+            // Extract video ID
+            const videoId = extractVideoId(url);
+            if (!videoId) {
+                showError('Invalid YouTube URL');
+                return;
+            }
+
+            // Load video
+            const iframe = document.getElementById('youtube-player');
+            iframe.src = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=1`;
+            
+            // Show video container
+            document.getElementById('video-container').style.display = 'block';
+            document.getElementById('waveform-container').style.display = 'block';
+            
+            // Enable main button
+            document.getElementById('toggle-btn').disabled = false;
+            updateStatus('Video loaded - Ready to process', 'idle');
+            
+            videoLoaded = true;
+        };
+
+        // Extract YouTube video ID
+        function extractVideoId(url) {
+            const patterns = [
+                /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+                /^([a-zA-Z0-9_-]{11})$/
+            ];
+            
+            for (const pattern of patterns) {
+                const match = url.match(pattern);
+                if (match) return match[1];
+            }
+            return null;
+        }
+
+        // Toggle audio processing
+        window.toggleProcessing = async function() {
+            if (!videoLoaded) {
+                showError('Please load a video first');
+                return;
+            }
+
+            const button = document.getElementById('toggle-btn');
+            
+            if (!isProcessing) {
+                try {
+                    button.innerHTML = '<span class="loading"></span> Starting...';
+                    button.disabled = true;
+                    
+                    await initializeProcessor();
+                    await processor.startTabAudioCapture();
+                    
+                    // Setup audio visualization
+                    setupVisualization();
+                    
+                    isProcessing = true;
+                    button.innerHTML = 'Disable Pitch Shifting';
+                    button.disabled = false;
+                    
+                    // Enable all controls
+                    enableControls(true);
+                    updateStatus('Processing active', 'active');
+                    document.getElementById('pitch-display').classList.add('active');
+                    document.getElementById('metrics').style.display = 'grid';
+                    
+                    // Apply current settings
+                    applyCurrentPitch();
+                    
+                } catch (error) {
+                    console.error('Failed to start:', error);
+                    showError(error.message || 'Failed to start audio processing');
+                    button.innerHTML = 'Enable Pitch Shifting';
+                    button.disabled = false;
+                    isProcessing = false;
+                }
+            } else {
+                // Stop processing
+                processor.stopProcessing();
+                stopVisualization();
+                isProcessing = false;
+                button.innerHTML = 'Enable Pitch Shifting';
+                enableControls(false);
+                updateStatus('Processing stopped', 'idle');
+                document.getElementById('pitch-display').classList.remove('active');
+                document.getElementById('metrics').style.display = 'none';
+            }
+        };
+
+        // Adjust pitch with fine tuning
+        window.adjustPitch = function(cents) {
+            fineTuneCents += cents;
+            
+            // Wrap cents to semitones
+            while (fineTuneCents >= 1) {
+                currentPitch += 1;
+                fineTuneCents -= 1;
+            }
+            while (fineTuneCents <= -1) {
+                currentPitch -= 1;
+                fineTuneCents += 1;
+            }
+            
+            // Clamp to range
+            if (currentPitch > 24) currentPitch = 24;
+            if (currentPitch < -24) currentPitch = -24;
+            
+            updatePitchDisplay();
+            applyCurrentPitch();
+        };
+
+        // Set pitch preset
+        window.setPitchPreset = function(semitones) {
+            currentPitch = semitones;
+            fineTuneCents = 0;
+            document.getElementById('pitch-slider').value = semitones;
+            updatePitchDisplay();
+            applyCurrentPitch();
+            
+            // Update active preset button
+            document.querySelectorAll('.preset-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.includes('Reset') && semitones === 0) {
+                    btn.classList.add('active');
+                }
+            });
+        };
+
+        // Apply current pitch to processor
+        function applyCurrentPitch() {
+            if (processor && isProcessing) {
+                const totalPitch = currentPitch + fineTuneCents;
+                processor.setPitch(totalPitch);
+                
+                // Update quality based on setting
+                const quality = document.getElementById('quality-select').value;
+                updateProcessingQuality(quality);
+            }
+        }
+
+        // Update pitch display
+        function updatePitchDisplay() {
+            const totalPitch = currentPitch + fineTuneCents;
+            document.getElementById('pitch-number').textContent = totalPitch.toFixed(2);
+            document.getElementById('pitch-value').textContent = `${currentPitch} ST`;
+            document.getElementById('pitch-slider').value = currentPitch;
+        }
+
+        // Toggle formant preservation
+        window.toggleFormant = function() {
+            preserveFormants = !preserveFormants;
+            const toggle = document.getElementById('formant-toggle');
+            toggle.classList.toggle('active');
+            
+            // Apply formant settings if processing
+            if (processor && isProcessing) {
+                // This would require additional implementation in the processor
+                console.log('Formant preservation:', preserveFormants);
+            }
+        };
+
+        // Update processing quality
+        function updateProcessingQuality(quality) {
+            if (processor && processor.pitchShifter) {
+                const settings = {
+                    'low': { windowSize: 0.05, delayTime: 0.01 },
+                    'medium': { windowSize: 0.1, delayTime: 0.02 },
+                    'high': { windowSize: 0.3, delayTime: 0.05 }
+                };
+                
+                const setting = settings[quality];
+                // Would need to recreate pitch shifter with new settings
+                document.getElementById('quality').textContent = 
+                    quality.charAt(0).toUpperCase() + quality.slice(1);
+                
+                // Update latency display
+                const latency = Math.round(setting.windowSize * 1000);
+                document.getElementById('latency').textContent = `${latency}ms`;
+            }
+        }
+
+        // Setup audio visualization
+        function setupVisualization() {
+            if (!processor.audioContext) return;
+            
+            analyser = processor.audioContext.createAnalyser();
+            analyser.fftSize = 2048;
+            
+            const canvas = document.getElementById('waveform-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+            
+            function draw() {
+                animationId = requestAnimationFrame(draw);
+                
+                analyser.getByteTimeDomainData(dataArray);
+                
+                ctx.fillStyle = '#2c2c2c';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = '#00897b';
+                ctx.beginPath();
+                
+                const sliceWidth = canvas.width / bufferLength;
+                let x = 0;
+                
+                for (let i = 0; i < bufferLength; i++) {
+                    const v = dataArray[i] / 128.0;
+                    const y = v * canvas.height / 2;
+                    
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                    
+                    x += sliceWidth;
+                }
+                
+                ctx.lineTo(canvas.width, canvas.height / 2);
+                ctx.stroke();
+            }
+            
+            draw();
+        }
+
+        // Stop visualization
+        function stopVisualization() {
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+        }
+
+        // Enable/disable controls
+        function enableControls(enabled) {
+            const controls = [
+                'pitch-slider',
+                'volume-slider',
+                'quality-select',
+                ...document.querySelectorAll('.preset-btn'),
+                ...document.querySelectorAll('.fine-tune-btn')
+            ];
+            
+            controls.forEach(control => {
+                if (control.id) {
+                    document.getElementById(control.id).disabled = !enabled;
+                } else {
+                    control.disabled = !enabled;
+                }
+            });
+        }
+
+        // Update status
+        function updateStatus(message, type = 'idle') {
+            const card = document.getElementById('status-card');
+            card.className = `status-card ${type}`;
+            document.getElementById('status-text').textContent = message;
+        }
+
+        // Show error
+        function showError(message) {
+            updateStatus(message, 'error');
+            setTimeout(() => {
+                if (!isProcessing) {
+                    updateStatus('Ready to start', 'idle');
+                }
+            }, 5000);
+        }
+
+        // Event listeners
+        document.getElementById('pitch-slider').addEventListener('input', (e) => {
+            currentPitch = parseInt(e.target.value);
+            updatePitchDisplay();
+            applyCurrentPitch();
+        });
+
+        document.getElementById('volume-slider').addEventListener('input', (e) => {
+            const value = parseInt(e.target.value);
+            if (processor && isProcessing) {
+                processor.setVolume(value / 100);
+            }
+        });
+
+        document.getElementById('quality-select').addEventListener('change', (e) => {
+            updateProcessingQuality(e.target.value);
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (!videoLoaded || !isProcessing) return;
+            
+            if (e.key === ' ') {
+                e.preventDefault();
+                toggleProcessing();
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (e.shiftKey) {
+                    adjustPitch(0.1);
+                } else if (e.ctrlKey) {
+                    adjustPitch(0.01);
+                } else {
+                    adjustPitch(1);
+                }
+            } else if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (e.shiftKey) {
+                    adjustPitch(-0.1);
+                } else if (e.ctrlKey) {
+                    adjustPitch(-0.01);
+                } else {
+                    adjustPitch(-1);
+                }
+            } else if (e.key === '0') {
+                e.preventDefault();
+                setPitchPreset(0);
+            } else if (e.key >= '1' && e.key <= '9') {
+                e.preventDefault();
+                const presets = [-12, -7, -5, -3, 0, 3, 5, 7, 12];
+                const index = parseInt(e.key) - 1;
+                if (index < presets.length) {
+                    setPitchPreset(presets[index]);
+                }
+            }
+        });
+
+        // Enter key on URL input
+        document.getElementById('youtube-url').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                loadVideo();
+            }
+        });
+
+        // Check browser compatibility
+        if (!YouTubeAudioProcessor.isSupported()) {
+            showError('Your browser does not support the required audio APIs');
+            document.getElementById('toggle-btn').disabled = true;
+        }
+
+        // Initialize
+        updatePitchDisplay();
+    </script>
+</body>
+</html>

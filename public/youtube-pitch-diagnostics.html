@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Pitch Shifter - Diagnostics</title>
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .diagnostic {
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+        }
+        .diagnostic h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+        .result {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            transition: background 0.3s;
+        }
+        button:hover:not(:disabled) {
+            background: #0056b3;
+        }
+        button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            opacity: 0.65;
+        }
+        .test-section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+        }
+        .code-block {
+            background: #2d3436;
+            color: #dfe6e9;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .fix-suggestion {
+            background: #e3f2fd;
+            border: 1px solid #90caf9;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+        .fix-suggestion h4 {
+            margin-top: 0;
+            color: #1565c0;
+        }
+        ul {
+            line-height: 1.8;
+        }
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #007bff;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-left: 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 YouTube Pitch Shifter Diagnostics</h1>
+        
+        <div class="diagnostic">
+            <h3>1. Browser Compatibility Check</h3>
+            <div id="browser-check"></div>
+        </div>
+
+        <div class="diagnostic">
+            <h3>2. API Support Check</h3>
+            <div id="api-check"></div>
+        </div>
+
+        <div class="diagnostic">
+            <h3>3. Security Context Check</h3>
+            <div id="security-check"></div>
+        </div>
+
+        <div class="diagnostic">
+            <h3>4. Extension Interference Check</h3>
+            <div id="extension-check"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>5. Live Audio Capture Test</h3>
+            <p>Click the button below to test audio capture functionality:</p>
+            <button onclick="testAudioCapture()">Test Audio Capture</button>
+            <div id="capture-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>6. Alternative Audio Test</h3>
+            <p>Test Web Audio API with a local audio element:</p>
+            <button onclick="testLocalAudio()">Test Local Audio Processing</button>
+            <div id="local-audio-result"></div>
+        </div>
+
+        <div class="fix-suggestion">
+            <h4>📋 Recommended Fixes</h4>
+            <ul id="fix-list">
+                <li>Results will appear here after running diagnostics...</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h3>7. Working Alternative</h3>
+            <p>If the above tests fail, try this JavaScript snippet directly in the browser console on a YouTube page:</p>
+            <div class="code-block">
+// Run this in the console on youtube.com
+const video = document.querySelector('video');
+const audioCtx = new AudioContext();
+const source = audioCtx.createMediaElementSource(video);
+const gainNode = audioCtx.createGain();
+source.connect(gainNode);
+gainNode.connect(audioCtx.destination);
+console.log('Audio routed through Web Audio API');
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Run diagnostics on page load
+        window.addEventListener('load', () => {
+            checkBrowser();
+            checkAPIs();
+            checkSecurity();
+            checkExtensions();
+        });
+
+        function checkBrowser() {
+            const result = document.getElementById('browser-check');
+            const userAgent = navigator.userAgent;
+            
+            let html = '<div class="result info">User Agent: ' + userAgent + '</div>';
+            
+            // Check browser type
+            if (userAgent.includes('Chrome')) {
+                html += '<div class="result success">✓ Chrome detected - Fully supported</div>';
+            } else if (userAgent.includes('Edg')) {
+                html += '<div class="result success">✓ Edge detected - Fully supported</div>';
+            } else if (userAgent.includes('Firefox')) {
+                html += '<div class="result warning">⚠ Firefox detected - Limited support for tab audio capture</div>';
+            } else if (userAgent.includes('Safari')) {
+                html += '<div class="result error">✗ Safari detected - Tab audio capture not supported</div>';
+            } else {
+                html += '<div class="result warning">⚠ Unknown browser - Support may vary</div>';
+            }
+            
+            result.innerHTML = html;
+        }
+
+        function checkAPIs() {
+            const result = document.getElementById('api-check');
+            let html = '';
+            
+            // Check for required APIs
+            const apis = [
+                { name: 'MediaDevices API', check: () => navigator.mediaDevices },
+                { name: 'getDisplayMedia', check: () => navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia },
+                { name: 'Web Audio API', check: () => window.AudioContext || window.webkitAudioContext },
+                { name: 'getUserMedia', check: () => navigator.mediaDevices && navigator.mediaDevices.getUserMedia },
+                { name: 'Screen Capture', check: () => 'getDisplayMedia' in navigator.mediaDevices },
+                { name: 'Audio Worklet', check: () => window.AudioWorklet }
+            ];
+            
+            apis.forEach(api => {
+                try {
+                    if (api.check()) {
+                        html += `<div class="result success">✓ ${api.name} is supported</div>`;
+                    } else {
+                        html += `<div class="result error">✗ ${api.name} is NOT supported</div>`;
+                    }
+                } catch (e) {
+                    html += `<div class="result error">✗ ${api.name} check failed: ${e.message}</div>`;
+                }
+            });
+            
+            result.innerHTML = html;
+        }
+
+        function checkSecurity() {
+            const result = document.getElementById('security-check');
+            let html = '';
+            
+            // Check HTTPS
+            if (location.protocol === 'https:') {
+                html += '<div class="result success">✓ Page served over HTTPS</div>';
+            } else if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+                html += '<div class="result success">✓ Running on localhost (secure context)</div>';
+            } else {
+                html += '<div class="result error">✗ Page NOT served over HTTPS - Some features may be blocked</div>';
+            }
+            
+            // Check permissions
+            if ('permissions' in navigator) {
+                html += '<div class="result success">✓ Permissions API available</div>';
+            } else {
+                html += '<div class="result warning">⚠ Permissions API not available</div>';
+            }
+            
+            // Check for secure context
+            if (window.isSecureContext) {
+                html += '<div class="result success">✓ Running in secure context</div>';
+            } else {
+                html += '<div class="result error">✗ NOT running in secure context</div>';
+            }
+            
+            result.innerHTML = html;
+        }
+
+        function checkExtensions() {
+            const result = document.getElementById('extension-check');
+            let html = '';
+            
+            // Check for common extension indicators
+            const extensionIndicators = [
+                { property: 'chrome.runtime', name: 'Chrome extension runtime' },
+                { property: '__REACT_DEVTOOLS_GLOBAL_HOOK__', name: 'React DevTools' },
+                { property: '__VUE_DEVTOOLS_GLOBAL_HOOK__', name: 'Vue DevTools' },
+                { property: '_AdBlock', name: 'AdBlock' },
+                { property: 'webkitSpeechRecognition', name: 'Speech recognition' }
+            ];
+            
+            let extensionsFound = false;
+            extensionIndicators.forEach(indicator => {
+                try {
+                    if (window[indicator.property]) {
+                        html += `<div class="result warning">⚠ ${indicator.name} detected</div>`;
+                        extensionsFound = true;
+                    }
+                } catch (e) {
+                    // Ignore errors
+                }
+            });
+            
+            if (!extensionsFound) {
+                html += '<div class="result success">✓ No known interfering extensions detected</div>';
+            } else {
+                html += '<div class="result info">ℹ Some extensions may interfere with audio capture</div>';
+            }
+            
+            result.innerHTML = html;
+        }
+
+        async function testAudioCapture() {
+            const resultDiv = document.getElementById('capture-result');
+            resultDiv.innerHTML = '<div class="result info">Testing audio capture...<span class="spinner"></span></div>';
+            
+            const fixes = [];
+            
+            try {
+                // Test 1: Basic getDisplayMedia
+                let stream;
+                try {
+                    stream = await navigator.mediaDevices.getDisplayMedia({
+                        audio: true,
+                        video: false
+                    });
+                    resultDiv.innerHTML += '<div class="result success">✓ Basic audio capture successful</div>';
+                } catch (e) {
+                    resultDiv.innerHTML += `<div class="result error">✗ Basic capture failed: ${e.name}: ${e.message}</div>`;
+                    
+                    // Try alternative parameters
+                    try {
+                        stream = await navigator.mediaDevices.getDisplayMedia({
+                            audio: {
+                                echoCancellation: false,
+                                noiseSuppression: false,
+                                sampleRate: 48000
+                            },
+                            video: false
+                        });
+                        resultDiv.innerHTML += '<div class="result success">✓ Alternative capture successful</div>';
+                    } catch (e2) {
+                        resultDiv.innerHTML += `<div class="result error">✗ Alternative capture failed: ${e2.name}</div>`;
+                        
+                        if (e.name === 'NotAllowedError') {
+                            fixes.push('Grant screen sharing permission when prompted');
+                            fixes.push('Check browser settings for screen capture permissions');
+                        } else if (e.name === 'NotSupportedError') {
+                            fixes.push('Try using Chrome or Edge browser');
+                            fixes.push('Disable ad blockers and privacy extensions');
+                            fixes.push('Ensure the page is served over HTTPS');
+                        }
+                    }
+                }
+                
+                if (stream) {
+                    const tracks = stream.getAudioTracks();
+                    resultDiv.innerHTML += `<div class="result info">ℹ Audio tracks found: ${tracks.length}</div>`;
+                    
+                    tracks.forEach((track, index) => {
+                        resultDiv.innerHTML += `<div class="result info">Track ${index + 1}: ${track.label} (${track.readyState})</div>`;
+                    });
+                    
+                    // Clean up
+                    stream.getTracks().forEach(track => track.stop());
+                    resultDiv.innerHTML += '<div class="result success">✓ Stream cleaned up successfully</div>';
+                }
+                
+            } catch (error) {
+                resultDiv.innerHTML += `<div class="result error">✗ Unexpected error: ${error.message}</div>`;
+                fixes.push('Check browser console for detailed error messages');
+            }
+            
+            // Update fix suggestions
+            updateFixes(fixes);
+        }
+
+        async function testLocalAudio() {
+            const resultDiv = document.getElementById('local-audio-result');
+            resultDiv.innerHTML = '<div class="result info">Testing local audio processing...</div>';
+            
+            try {
+                // Create audio context
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                resultDiv.innerHTML += '<div class="result success">✓ Audio context created</div>';
+                
+                // Create oscillator for testing
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                gainNode.gain.value = 0.1; // Low volume
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.start();
+                resultDiv.innerHTML += '<div class="result success">✓ Test tone started (you should hear a beep)</div>';
+                
+                setTimeout(() => {
+                    oscillator.stop();
+                    resultDiv.innerHTML += '<div class="result success">✓ Audio processing works correctly</div>';
+                }, 1000);
+                
+            } catch (error) {
+                resultDiv.innerHTML += `<div class="result error">✗ Audio test failed: ${error.message}</div>`;
+            }
+        }
+
+        function updateFixes(additionalFixes = []) {
+            const fixList = document.getElementById('fix-list');
+            let fixes = [
+                'Use Chrome or Edge browser for best compatibility',
+                'Ensure this page is served over HTTPS or localhost',
+                'Temporarily disable ad blockers and privacy extensions',
+                'When prompted, select "Chrome Tab" and check "Share tab audio"',
+                'Make sure the YouTube video is playing audio before capturing',
+                ...additionalFixes
+            ];
+            
+            fixList.innerHTML = fixes.map(fix => `<li>${fix}</li>`).join('');
+        }
+    </script>
+</body>
+</html>

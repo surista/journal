@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Pitch Shifter - Simple Version</title>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .error {
+            background: #fee;
+            border: 1px solid #fcc;
+            color: #c00;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success {
+            background: #efe;
+            border: 1px solid #cfc;
+            color: #060;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .controls {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f8f8;
+            border-radius: 4px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        input[type="range"] {
+            width: 100%;
+            margin: 10px 0;
+        }
+        .instructions {
+            background: #f0f8ff;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .method-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+        }
+        .method-section h3 {
+            margin-top: 0;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>YouTube Pitch Shifter</h1>
+        
+        <div id="status"></div>
+        
+        <div class="instructions">
+            <h2>Instructions</h2>
+            <p>This tool allows you to change the pitch of YouTube videos. Due to browser restrictions, please try the following methods:</p>
+        </div>
+
+        <div class="method-section">
+            <h3>Method 1: Direct Browser Tab (Recommended for Chrome/Edge)</h3>
+            <ol>
+                <li>Make sure this page is served over HTTPS (or use localhost)</li>
+                <li>Disable any ad blockers or privacy extensions temporarily</li>
+                <li>Click "Start Pitch Shifter" below</li>
+                <li>In the popup, choose "Chrome Tab" or "Browser Tab"</li>
+                <li>Select the tab with your YouTube video</li>
+                <li>Make sure "Share tab audio" is checked</li>
+            </ol>
+            <button id="startDirect" onclick="startDirectMethod()">Start Pitch Shifter</button>
+        </div>
+
+        <div class="method-section">
+            <h3>Method 2: Extension-Free Bookmarklet</h3>
+            <p>Drag this link to your bookmarks bar:</p>
+            <a href="javascript:(function(){const s=document.createElement('script');s.textContent=`(${function(){
+                if(!window.location.href.includes('youtube.com/watch')){
+                    alert('Please use this on a YouTube video page');
+                    return;
+                }
+                const video = document.querySelector('video');
+                if(!video){
+                    alert('No video found');
+                    return;
+                }
+                
+                // Create audio context and nodes
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const source = audioContext.createMediaElementSource(video);
+                
+                // Create pitch shift using native Web Audio API
+                const pitchShift = audioContext.createScriptProcessor(4096, 1, 1);
+                let pitch = 1.0;
+                
+                // Simple pitch shifting algorithm
+                let phase = 0;
+                pitchShift.onaudioprocess = function(e) {
+                    const input = e.inputBuffer.getChannelData(0);
+                    const output = e.outputBuffer.getChannelData(0);
+                    
+                    for (let i = 0; i < input.length; i++) {
+                        const index = Math.floor(phase) % input.length;
+                        output[i] = input[index];
+                        phase += pitch;
+                        if (phase >= input.length) phase -= input.length;
+                    }
+                };
+                
+                // Connect nodes
+                source.connect(pitchShift);
+                pitchShift.connect(audioContext.destination);
+                
+                // Create UI
+                const ui = document.createElement('div');
+                ui.style.cssText = 'position:fixed;bottom:20px;right:20px;background:white;padding:20px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.3);z-index:9999;';
+                ui.innerHTML = '<h3>Pitch Control</h3><input type="range" min="0.5" max="2" step="0.1" value="1" id="pitchControl"><br><span id="pitchValue">Pitch: 1.0x</span>';
+                document.body.appendChild(ui);
+                
+                document.getElementById('pitchControl').oninput = function(e) {
+                    pitch = parseFloat(e.target.value);
+                    document.getElementById('pitchValue').textContent = 'Pitch: ' + pitch.toFixed(1) + 'x';
+                };
+            }})()`;document.body.appendChild(s);})()" 
+            style="background: #28a745; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; display: inline-block;">
+                🎵 YouTube Pitch Control
+            </a>
+        </div>
+
+        <div class="method-section">
+            <h3>Method 3: Using Web Audio API (Alternative)</h3>
+            <p>Paste a YouTube URL below and we'll try an alternative method:</p>
+            <input type="text" id="ytUrl" placeholder="https://youtube.com/watch?v=..." style="width: 100%; padding: 8px; margin: 10px 0;">
+            <button onclick="loadAlternative()">Load with Alternative Method</button>
+            <div id="alternativePlayer"></div>
+        </div>
+
+        <div class="controls" id="controls" style="display: none;">
+            <h3>Pitch Control</h3>
+            <input type="range" id="pitchSlider" min="-12" max="12" step="1" value="0">
+            <div id="pitchDisplay">Pitch: 0 semitones</div>
+            <button onclick="resetPitch()">Reset</button>
+        </div>
+    </div>
+
+    <script>
+        let audioContext = null;
+        let source = null;
+        let pitchShift = null;
+
+        function showStatus(message, type = 'info') {
+            const status = document.getElementById('status');
+            status.className = type === 'error' ? 'error' : 'success';
+            status.textContent = message;
+        }
+
+        async function startDirectMethod() {
+            try {
+                // Load Tone.js
+                if (typeof Tone === 'undefined') {
+                    showStatus('Loading audio library...', 'info');
+                    await loadToneJS();
+                }
+
+                // Initialize Tone.js
+                await Tone.start();
+                showStatus('Audio engine started. Requesting tab audio...', 'info');
+
+                // Try different approaches for tab capture
+                let stream;
+                try {
+                    // Method 1: Standard getDisplayMedia
+                    stream = await navigator.mediaDevices.getDisplayMedia({
+                        audio: {
+                            echoCancellation: false,
+                            noiseSuppression: false,
+                            sampleSize: 16,
+                            channelCount: 2
+                        },
+                        video: false
+                    });
+                } catch (e1) {
+                    console.error('Method 1 failed:', e1);
+                    
+                    // Method 2: With video mandatory false
+                    try {
+                        stream = await navigator.mediaDevices.getDisplayMedia({
+                            audio: true,
+                            video: { mandatory: { chromeMediaSource: 'tab' } }
+                        });
+                        // Stop video track if present
+                        const videoTracks = stream.getVideoTracks();
+                        videoTracks.forEach(track => track.stop());
+                    } catch (e2) {
+                        console.error('Method 2 failed:', e2);
+                        throw new Error('Unable to capture tab audio. Please check browser permissions.');
+                    }
+                }
+
+                const audioTracks = stream.getAudioTracks();
+                if (audioTracks.length === 0) {
+                    throw new Error('No audio track found. Make sure to select a tab with audio and check "Share tab audio".');
+                }
+
+                // Create pitch shifter
+                pitchShift = new Tone.PitchShift({
+                    pitch: 0,
+                    windowSize: 0.05,
+                    delayTime: 0
+                }).toDestination();
+
+                // Connect stream to pitch shifter
+                source = new Tone.UserMedia();
+                await source.open(stream);
+                source.connect(pitchShift);
+
+                showStatus('Pitch shifter active! Use the controls below.', 'success');
+                document.getElementById('controls').style.display = 'block';
+
+                // Handle stream end
+                stream.getAudioTracks()[0].onended = () => {
+                    showStatus('Audio capture ended', 'info');
+                    cleanup();
+                };
+
+            } catch (error) {
+                console.error('Error:', error);
+                showStatus(`Error: ${error.message}`, 'error');
+                
+                // Provide detailed troubleshooting
+                if (error.name === 'NotAllowedError') {
+                    showStatus('Permission denied. Please allow screen sharing and try again.', 'error');
+                } else if (error.name === 'NotSupportedError') {
+                    showStatus('Not supported. Try: 1) Use Chrome/Edge, 2) Disable extensions, 3) Use HTTPS', 'error');
+                }
+            }
+        }
+
+        async function loadToneJS() {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = 'https://unpkg.com/tone@14.7.77/build/Tone.js';
+                script.onload = resolve;
+                script.onerror = () => reject(new Error('Failed to load Tone.js'));
+                document.head.appendChild(script);
+            });
+        }
+
+        function loadAlternative() {
+            const url = document.getElementById('ytUrl').value;
+            if (!url) {
+                showStatus('Please enter a YouTube URL', 'error');
+                return;
+            }
+
+            const videoId = extractVideoId(url);
+            if (!videoId) {
+                showStatus('Invalid YouTube URL', 'error');
+                return;
+            }
+
+            const player = document.getElementById('alternativePlayer');
+            player.innerHTML = `
+                <iframe width="100%" height="400" 
+                        src="https://www.youtube.com/embed/${videoId}?enablejsapi=1" 
+                        frameborder="0" allowfullscreen></iframe>
+                <p style="margin-top: 10px; color: #666;">
+                    Note: For this method to work with pitch shifting, you'll need to use the bookmarklet above while the video is playing.
+                </p>
+            `;
+        }
+
+        function extractVideoId(url) {
+            const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/);
+            return match ? match[1] : null;
+        }
+
+        function cleanup() {
+            if (source) {
+                source.close();
+                source.disconnect();
+            }
+            if (pitchShift) {
+                pitchShift.disconnect();
+                pitchShift.dispose();
+            }
+        }
+
+        function resetPitch() {
+            document.getElementById('pitchSlider').value = 0;
+            updatePitch(0);
+        }
+
+        // Pitch slider handling
+        document.getElementById('pitchSlider').addEventListener('input', (e) => {
+            updatePitch(parseInt(e.target.value));
+        });
+
+        function updatePitch(value) {
+            if (pitchShift) {
+                pitchShift.pitch = value;
+            }
+            document.getElementById('pitchDisplay').textContent = `Pitch: ${value > 0 ? '+' : ''}${value} semitones`;
+        }
+
+        // Check environment
+        window.addEventListener('load', () => {
+            if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
+                showStatus('Warning: This page should be served over HTTPS for full functionality', 'error');
+            }
+            
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
+                showStatus('Your browser does not support screen capture API', 'error');
+                document.getElementById('startDirect').disabled = true;
+            }
+        });
+    </script>
+</body>
+</html>

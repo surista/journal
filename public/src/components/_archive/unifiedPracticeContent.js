@@ -33,7 +33,7 @@ export class UnifiedPracticeContent {
                     </div>
                     <label class="sync-metronome-label">
                         <input type="checkbox" id="syncMetronome" checked>
-                        Start timer with metronome
+                        Start timer with audio
                     </label>
                 </div>
                 

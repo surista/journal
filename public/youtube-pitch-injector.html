@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Pitch Shifter - Direct Injection Method</title>
+    
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #e0e0e0;
+        }
+        .container {
+            background: #2a2a2a;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+        }
+        h1 {
+            color: #ff4444;
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #999;
+            margin-bottom: 30px;
+        }
+        .method-card {
+            background: #333;
+            border-radius: 8px;
+            padding: 25px;
+            margin: 20px 0;
+            border: 2px solid #444;
+            transition: border-color 0.3s;
+        }
+        .method-card:hover {
+            border-color: #ff4444;
+        }
+        .method-card h2 {
+            color: #ff4444;
+            margin-top: 0;
+        }
+        .bookmarklet-container {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: #222;
+            border-radius: 8px;
+            border: 2px dashed #666;
+        }
+        .bookmarklet {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff4444, #cc0000);
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 18px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(255, 68, 68, 0.3);
+        }
+        .bookmarklet:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 68, 68, 0.5);
+        }
+        .instructions {
+            background: #3a3a3a;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .instructions ol {
+            line-height: 1.8;
+            padding-left: 20px;
+        }
+        .code-block {
+            background: #1a1a1a;
+            border: 1px solid #444;
+            border-radius: 6px;
+            padding: 20px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #f0f0f0;
+            margin: 15px 0;
+        }
+        .code-block button {
+            float: right;
+            background: #444;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: -10px;
+            margin-right: -10px;
+        }
+        .code-block button:hover {
+            background: #555;
+        }
+        .warning {
+            background: #4a4a00;
+            border: 1px solid #666600;
+            color: #ffff99;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+        .success {
+            background: #003300;
+            border: 1px solid #006600;
+            color: #99ff99;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .feature {
+            background: #3a3a3a;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        button {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #cc0000;
+        }
+        .demo-video {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .demo-video iframe {
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 YouTube Pitch Shifter</h1>
+        <p class="subtitle">No permissions required - Works directly on YouTube!</p>
+
+        <div class="method-card">
+            <h2>Method 1: One-Click Bookmarklet (Recommended)</h2>
+            
+            <div class="bookmarklet-container">
+                <p><strong>Drag this button to your bookmarks bar:</strong></p>
+                <a href="javascript:(function(){if(!window.location.href.includes('youtube.com/watch')){alert('⚠️ Please use this on a YouTube video page!\n\nGo to youtube.com and play any video first.');return;}const existingUI=document.getElementById('pitch-shifter-ui');if(existingUI){existingUI.style.display=existingUI.style.display==='none'?'block':'none';return;}const video=document.querySelector('video');if(!video){alert('No video element found. Make sure a video is loaded.');return;}let audioContext,source,pitchShift,gainNode;let isConnected=false;let currentPitch=1.0;function initAudio(){if(audioContext)return;audioContext=new(window.AudioContext||window.webkitAudioContext)();source=audioContext.createMediaElementSource(video);gainNode=audioContext.createGain();gainNode.gain.value=1.0;const scriptProcessor=audioContext.createScriptProcessor(4096,2,2);let pitchBuffer=[];let phase=0;scriptProcessor.onaudioprocess=function(e){const inputL=e.inputBuffer.getChannelData(0);const inputR=e.inputBuffer.getChannelData(1);const outputL=e.outputBuffer.getChannelData(0);const outputR=e.outputBuffer.getChannelData(1);for(let i=0;i<inputL.length;i++){const sampleIndex=Math.floor(phase)%inputL.length;outputL[i]=inputL[sampleIndex];outputR[i]=inputR[sampleIndex];phase+=currentPitch;if(phase>=inputL.length)phase-=inputL.length;}};source.connect(scriptProcessor);scriptProcessor.connect(gainNode);gainNode.connect(audioContext.destination);isConnected=true;}const ui=document.createElement('div');ui.id='pitch-shifter-ui';ui.innerHTML=`<style>#pitch-shifter-ui{position:fixed;bottom:20px;right:20px;background:rgba(40,40,40,0.95);backdrop-filter:blur(10px);color:white;padding:20px;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.5);font-family:Arial,sans-serif;z-index:999999;min-width:280px;border:1px solid rgba(255,255,255,0.1);}#pitch-shifter-ui h3{margin:0 0 15px;font-size:16px;color:#ff4444;display:flex;align-items:center;gap:8px;}#pitch-shifter-ui .controls{margin:15px 0;}#pitch-shifter-ui .pitch-display{font-size:24px;font-weight:bold;text-align:center;margin:10px 0;color:#fff;background:rgba(255,255,255,0.1);padding:10px;border-radius:8px;}#pitch-shifter-ui input[type='range']{width:100%;margin:10px 0;cursor:pointer;}#pitch-shifter-ui .button-group{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin:10px 0;}#pitch-shifter-ui button{background:#ff4444;color:white;border:none;padding:8px;border-radius:6px;cursor:pointer;font-size:12px;transition:all 0.2s;}#pitch-shifter-ui button:hover{background:#cc0000;transform:translateY(-1px);}#pitch-shifter-ui button:active{transform:translateY(0);}#pitch-shifter-ui .status{font-size:11px;color:#888;text-align:center;margin-top:10px;}#pitch-shifter-ui .close-btn{position:absolute;top:10px;right:10px;background:transparent;color:#888;font-size:20px;padding:0;width:25px;height:25px;display:flex;align-items:center;justify-content:center;}#pitch-shifter-ui .close-btn:hover{color:#ff4444;background:rgba(255,255,255,0.1);}</style><button class='close-btn' onclick='document.getElementById("pitch-shifter-ui").style.display="none"'>×</button><h3>🎵 Pitch Shifter</h3><div class='pitch-display'><span id='pitch-value'>1.00x</span></div><div class='controls'><input type='range' id='pitch-slider' min='0.5' max='2.0' step='0.01' value='1.0'><div class='button-group'><button onclick='setPitchValue(0.5)'>0.5x</button><button onclick='setPitchValue(0.75)'>0.75x</button><button onclick='setPitchValue(1.0)'>Reset</button><button onclick='setPitchValue(1.25)'>1.25x</button><button onclick='setPitchValue(1.5)'>1.5x</button><button onclick='setPitchValue(2.0)'>2.0x</button></div></div><div class='status' id='status'>Click Enable to start</div><button id='toggle-btn' onclick='togglePitchShift()' style='width:100%;margin-top:10px;padding:10px;font-size:14px;'>Enable Pitch Shift</button>`;document.body.appendChild(ui);window.setPitchValue=function(value){currentPitch=value;document.getElementById('pitch-slider').value=value;document.getElementById('pitch-value').textContent=value.toFixed(2)+'x';};window.togglePitchShift=function(){if(!isConnected){try{initAudio();document.getElementById('status').textContent='✓ Active - Adjust pitch with slider';document.getElementById('toggle-btn').textContent='Disable Pitch Shift';document.getElementById('toggle-btn').style.background='#666';}catch(e){document.getElementById('status').textContent='Error: '+e.message;}}else{location.reload();}};document.getElementById('pitch-slider').addEventListener('input',function(e){setPitchValue(parseFloat(e.target.value));});document.addEventListener('keydown',function(e){if(!isConnected)return;if(e.key==='ArrowUp'&&currentPitch<2.0){e.preventDefault();setPitchValue(Math.min(currentPitch+0.05,2.0));}else if(e.key==='ArrowDown'&&currentPitch>0.5){e.preventDefault();setPitchValue(Math.max(currentPitch-0.05,0.5));}else if(e.key==='0'){e.preventDefault();setPitchValue(1.0);}});console.log('YouTube Pitch Shifter loaded! Use the control panel in the bottom-right corner.');})();" 
+                     class="bookmarklet">
+                    🎵 YouTube Pitch Shifter
+                </a>
+                <p style="color: #999; margin-top: 15px; font-size: 14px;">
+                    Can't drag? Right-click and "Bookmark This Link" instead
+                </p>
+            </div>
+
+            <div class="instructions">
+                <h3>How to Install:</h3>
+                <ol>
+                    <li>Drag the red button above to your browser's bookmarks bar</li>
+                    <li>If you can't see the bookmarks bar, press <code>Ctrl+Shift+B</code> (Windows) or <code>Cmd+Shift+B</code> (Mac)</li>
+                    <li>Go to any YouTube video</li>
+                    <li>Click the bookmark to activate the pitch shifter</li>
+                </ol>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature">
+                    <div class="feature-icon">🎯</div>
+                    <strong>No Permissions</strong>
+                    <p>Works directly on YouTube</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">⚡</div>
+                    <strong>Instant</strong>
+                    <p>One click activation</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🎹</div>
+                    <strong>0.5x - 2.0x</strong>
+                    <p>Wide pitch range</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="method-card">
+            <h2>Method 2: Console Script (Quick Test)</h2>
+            <p>For a quick test, paste this code in the browser console while on YouTube:</p>
+            
+            <div class="code-block">
+                <button onclick="copyCode()">Copy</button>
+                <pre id="console-code">// Simple pitch shifter for YouTube
+const video = document.querySelector('video');
+const audioCtx = new AudioContext();
+const source = audioCtx.createMediaElementSource(video);
+const pitchShift = audioCtx.createScriptProcessor(4096, 2, 2);
+let pitch = 1.0; // Change this value: 0.5 = lower, 2.0 = higher
+
+let phase = 0;
+pitchShift.onaudioprocess = function(e) {
+    const inputL = e.inputBuffer.getChannelData(0);
+    const outputL = e.outputBuffer.getChannelData(0);
+    
+    for (let i = 0; i < inputL.length; i++) {
+        outputL[i] = inputL[Math.floor(phase) % inputL.length];
+        phase += pitch;
+        if (phase >= inputL.length) phase -= inputL.length;
+    }
+};
+
+source.connect(pitchShift);
+pitchShift.connect(audioCtx.destination);
+
+console.log('Pitch shifter active! Change the "pitch" variable to adjust.');</pre>
+            </div>
+            
+            <div class="instructions">
+                <h3>How to Use Console Method:</h3>
+                <ol>
+                    <li>Go to any YouTube video</li>
+                    <li>Press <code>F12</code> to open Developer Tools</li>
+                    <li>Click on the "Console" tab</li>
+                    <li>Paste the code above and press Enter</li>
+                    <li>Modify <code>pitch = 1.0</code> to change pitch (0.5-2.0)</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="method-card">
+            <h2>Method 3: Userscript (Permanent Solution)</h2>
+            <p>For a permanent solution, install this as a userscript with Tampermonkey/Greasemonkey:</p>
+            
+            <div class="code-block">
+                <button onclick="copyUserscript()">Copy Userscript</button>
+                <pre id="userscript-code">// ==UserScript==
+// @name         YouTube Pitch Shifter
+// @namespace    http://tampermonkey.net/
+// @version      1.0
+// @description  Add pitch control to YouTube videos
+// @match        https://www.youtube.com/watch*
+// @grant        none
+// ==/UserScript==
+
+(function() {
+    'use strict';
+    
+    // Wait for video element
+    const waitForVideo = setInterval(() => {
+        const video = document.querySelector('video');
+        if (video) {
+            clearInterval(waitForVideo);
+            addPitchControl(video);
+        }
+    }, 1000);
+    
+    function addPitchControl(video) {
+        // Add control button to YouTube controls
+        const controls = document.querySelector('.ytp-right-controls');
+        if (!controls) return;
+        
+        const button = document.createElement('button');
+        button.className = 'ytp-button';
+        button.innerHTML = '🎵';
+        button.title = 'Pitch Control';
+        button.onclick = () => togglePitchUI();
+        
+        controls.insertBefore(button, controls.firstChild);
+    }
+})();</pre>
+            </div>
+        </div>
+
+        <div class="warning">
+            <strong>Why doesn't screen capture work?</strong><br>
+            Modern browsers block screen capture on many systems due to security policies. The methods above work by directly accessing the video element's audio, which doesn't require any special permissions.
+        </div>
+
+        <div class="success" id="success-message" style="display: none;">
+            ✓ Code copied to clipboard!
+        </div>
+
+        <div class="demo-video">
+            <h3>Quick Demo</h3>
+            <iframe width="560" height="315" 
+                    src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+                    frameborder="0" 
+                    allowfullscreen></iframe>
+            <p style="color: #666; margin-top: 10px;">Try the bookmarklet on this video!</p>
+        </div>
+    </div>
+
+    <script>
+        function copyCode() {
+            const code = document.getElementById('console-code').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                showSuccess();
+            });
+        }
+        
+        function copyUserscript() {
+            const code = document.getElementById('userscript-code').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                showSuccess();
+            });
+        }
+        
+        function showSuccess() {
+            const msg = document.getElementById('success-message');
+            msg.style.display = 'block';
+            setTimeout(() => {
+                msg.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
