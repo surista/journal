@@ -1,0 +1,134 @@
+/* Dashboard Layout Styles */
+/* Consolidated from new-layout.css */
+
+/* Dashboard Container */
+.dashboard-container {
+    min-height: 100vh;
+    background: var(--bg-primary);
+    padding-top: 56px; /* Account for fixed header */
+    padding-bottom: 48px; /* Account for fixed footer */
+}
+
+/* Main Content Area */
+.main-content {
+    width: 100%;
+    min-height: calc(100vh - 104px); /* Full height minus header and footer */
+}
+
+/* Tab Content Container */
+.tab-content-container {
+    width: 100%;
+    padding: 2rem 0;
+}
+
+/* Practice Page Layout */
+.practice-page-layout-single {
+    max-width: 700px; /* Match header/footer width */
+    margin: 0 auto;
+    width: 100%;
+    padding: 0 2rem;
+}
+
+.practice-main-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.practice-container-wrapper {
+    width: 100%;
+}
+
+.practice-bottom-widgets {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+}
+
+/* Dashboard Widgets */
+.dashboard-widget {
+    background: var(--bg-card);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.dashboard-widget.compact {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    min-height: 150px;
+}
+
+.dashboard-widget.compact .widget-title {
+    margin-bottom: 0;
+    flex-shrink: 0;
+}
+
+.dashboard-widget.compact #quickStats {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.widget-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.widget-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.widget-action {
+    padding: 0.375rem 0.75rem;
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.813rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.widget-action:hover {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    border-color: var(--primary);
+}
+
+/* Recent Sessions Widget */
+.recent-sessions-widget {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.recent-sessions-widget.compact {
+    max-height: 200px;
+}
+
+/* Responsive Layout */
+
+@media (max-width: 768px) {
+    .tab-content-container {
+        padding: 1rem;
+    }
+
+    .dashboard-widget {
+        padding: 1rem;
+    }
+
+    .widget-title {
+        font-size: 1rem;
+    }
+}

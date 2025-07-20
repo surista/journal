@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir)",
+      "Bash(node:*)",
+      "Bash(cp:*)",
+      "Bash(grep:*)",
+      "Bash(npm run bump-patch:*)",
+      "Bash(npm run update-version:*)"
+    ],
+    "deny": []
+  }
+}

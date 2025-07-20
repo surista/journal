@@ -1,0 +1,106 @@
+/* Midnight Blue Theme - Deep blue with purple accents */
+[data-theme="midnight-blue"] {
+    /* Primary Colors */
+    --primary: #5e72e4;
+    --primary-dark: #4c63d2;
+    --primary-light: #7f8ff5;
+    --primary-rgb: 94, 114, 228;
+
+    /* Background Colors */
+    --bg-dark: #0f1419;
+    --bg-primary: #1a1f2e;
+    --bg-secondary: #242937;
+    --bg-tertiary: #2e3341;
+    --bg-card: #1e2330;
+    --bg-input: #252a38;
+    --bg-hover: #2a2f3d;
+
+    /* Text Colors */
+    --text-primary: #e1e8ed;
+    --text-secondary: #8b92a7;
+    --text-muted: #5a6178;
+    --text-inverse: #0f1419;
+
+    /* Border Colors */
+    --border: #2e3444;
+    --border-light: #3a4050;
+    --border-hover: #5e72e4;
+
+    /* Status Colors */
+    --success: #48bb78;
+    --success-dark: #38a169;
+    --success-light: #68d391;
+
+    --warning: #ed8936;
+    --warning-dark: #dd6b20;
+    --warning-light: #f6ad55;
+
+    --danger: #f56565;
+    --danger-dark: #e53e3e;
+    --danger-light: #fc8181;
+
+    --info: #4299e1;
+    --info-dark: #3182ce;
+    --info-light: #63b3ed;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
+    --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.6);
+
+    /* Special Effects */
+    --glow-primary: 0 0 20px rgba(94, 114, 228, 0.5);
+    --glow-success: 0 0 20px rgba(72, 187, 120, 0.5);
+    --glow-danger: 0 0 20px rgba(245, 101, 101, 0.5);
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, #5e72e4 0%, #8b5cf6 100%);
+    --gradient-dark: linear-gradient(135deg, #1a1f2e 0%, #0f1419 100%);
+    --gradient-card: linear-gradient(135deg, #1e2330 0%, #242937 100%);
+}
+
+/* Midnight Blue specific enhancements */
+[data-theme="midnight-blue"] .sidebar {
+    background: linear-gradient(180deg, #1a1f2e 0%, #0f1419 100%);
+}
+
+[data-theme="midnight-blue"] .btn-primary {
+    background: var(--gradient-primary);
+    box-shadow: 0 4px 14px 0 rgba(94, 114, 228, 0.35);
+}
+
+[data-theme="midnight-blue"] .nav-item.active {
+    background: linear-gradient(90deg, rgba(94, 114, 228, 0.1) 0%, rgba(94, 114, 228, 0.05) 100%);
+    border-left-color: #5e72e4;
+}
+
+[data-theme="midnight-blue"] .timer-display {
+    background: linear-gradient(135deg, #252a38 0%, #1e2330 100%);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Header contrast fix */
+[data-theme="midnight-blue"] .header {
+    background: rgba(26, 31, 46, 0.95);
+    backdrop-filter: blur(10px);
+}
+
+[data-theme="midnight-blue"] .header #pageTitle,
+[data-theme="midnight-blue"] .header .theme-info,
+[data-theme="midnight-blue"] .header .sync-status,
+[data-theme="midnight-blue"] .header .sync-icon,
+[data-theme="midnight-blue"] .header .sync-text {
+    color: #e1e8ed !important;
+}
+
+[data-theme="midnight-blue"] .theme-toggle {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #e1e8ed;
+}
+
+[data-theme="midnight-blue"] .theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+}

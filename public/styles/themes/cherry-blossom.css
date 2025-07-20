@@ -1,0 +1,51 @@
+/* Cherry Blossom Theme - Soft pinks and whites */
+[data-theme="cherry-blossom"] {
+    /* Primary Colors */
+    --primary: #ec4899;
+    --primary-dark: #db2777;
+    --primary-light: #f472b6;
+    --primary-rgb: 236, 72, 153;
+
+    /* Background Colors */
+    --bg-dark: #1f0f14;
+    --bg-primary: #3b1e29;
+    --bg-secondary: #4f2937;
+    --bg-tertiary: #633544;
+    --bg-card: #4f2937;
+    --bg-input: #633544;
+    --bg-hover: #774051;
+
+    /* Text Colors */
+    --text-primary: #fdf2f8;
+    --text-secondary: #fbcfe8;
+    --text-muted: #f9a8d4;
+    --text-inverse: #1f0f14;
+
+    /* Border Colors */
+    --border: #633544;
+    --border-light: #774051;
+    --border-hover: #ec4899;
+
+    /* Status Colors */
+    --success: #4ade80;
+    --warning: #fbbf24;
+    --danger: #f87171;
+    --info: #a78bfa;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.6);
+
+    /* Special Effects */
+    --glow-primary: 0 0 30px rgba(236, 72, 153, 0.5);
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, #db2777 0%, #f472b6 100%);
+    --gradient-dark: linear-gradient(135deg, #3b1e29 0%, #1f0f14 100%);
+}
+
+[data-theme="cherry-blossom"] .header {
+    background: rgba(59, 30, 41, 0.95);
+    backdrop-filter: blur(10px);
+}

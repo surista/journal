@@ -1,0 +1,332 @@
+/* Main CSS Entry Point - Guitar Practice Journal */
+/* This file imports all other CSS files in the correct order */
+
+/* Base styles - Must come first */
+@import url('./base/reset.css');
+@import url('./base/variables.css');
+@import url('./base/typography.css');
+@import url('./base/animations.css');
+
+/* Layout styles */
+@import url('./layout/grid.css');
+@import url('./layout/sidebar.css');
+@import url('./layout/header.css');
+@import url('./layout/responsive.css');
+
+/* Component styles */
+@import url('./components/buttons.css');
+@import url('./components/forms.css');
+@import url('./components/cards.css');
+@import url('./components/modals.css');
+@import url('./components/timer.css');
+@import url('./components/audio-player.css');
+@import url('./components/metronome.css');
+@import url('./components/achievements.css');
+@import url('./components/goals.css');
+@import url('./components/stats.css');
+@import url('./components/quick-stats.css');
+@import url('./components/heatmap.css');
+@import url('./components/waveform.css');
+@import url('./components/notifications.css');
+@import url('./components/loading.css');
+@import url('./components/footer.css');
+@import url('./components/top-navigation.css');
+@import './components/practice-form.css';
+@import './components/practice-log-modal.css';
+@import './components/repertoire.css';
+@import './components/unified-practice.css';
+@import './components/recent-sessions.css';
+@import './components/calendar-stats.css';
+@import './minimal-practice.css';
+
+
+/* Page-specific styles */
+@import url('./pages/auth.css');
+@import url('./pages/dashboard.css');
+@import url('./pages/dashboard-new.css');
+@import url('./pages/calendar.css');
+@import url('./pages/settings.css');
+
+/* Theme styles */
+@import url('./themes/dark.css');
+@import url('./themes/light.css');
+@import url('./themes/midnight-blue.css');
+@import url('./themes/forest-green.css');
+@import url('./themes/sunset-orange.css');
+@import url('./themes/royal-purple.css');
+@import url('./themes/ocean-teal.css');
+@import url('./themes/neon-cyber.css');
+@import url('./themes/coffee-brown.css');
+@import url('./themes/northern-lights.css');
+@import url('./themes/nordic-ice.css');
+@import url('./themes/cherry-blossom.css');
+@import url('./themes/cyberpunk.css');
+@import url('./themes/earth-tone.css');
+@import url('./themes/cherry-blossom.css');
+@import url('./themes/cosmic-purple.css');
+@import url('./themes/crimson-red.css');
+@import url('./themes/golden-amber.css');
+@import url('./themes/emerald-green.css');
+
+
+
+
+
+/* Utility styles - Must come last */
+@import url('./utilities/spacing.css');
+@import url('./utilities/display.css');
+/* @import url('./utilities/text.css'); */ /* Commented out - file missing */
+@import url('./utilities/helpers.css');
+@import url('./utilities/audio-player-fixes.css');
+
+/* Fallback text utilities (since text.css is missing) */
+.text-left { text-align: left !important; }
+.text-center { text-align: center !important; }
+.text-right { text-align: right !important; }
+.text-justify { text-align: justify !important; }
+
+.text-uppercase { text-transform: uppercase !important; }
+.text-lowercase { text-transform: lowercase !important; }
+.text-capitalize { text-transform: capitalize !important; }
+
+.text-bold { font-weight: bold !important; }
+.text-normal { font-weight: normal !important; }
+.text-light { font-weight: 300 !important; }
+
+.text-italic { font-style: italic !important; }
+.text-normal-style { font-style: normal !important; }
+
+.text-underline { text-decoration: underline !important; }
+.text-line-through { text-decoration: line-through !important; }
+.text-no-decoration { text-decoration: none !important; }
+
+.text-wrap { white-space: normal !important; }
+.text-nowrap { white-space: nowrap !important; }
+.text-break { word-break: break-word !important; }
+.text-truncate {
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+}
+
+/* Text sizes */
+.text-xs { font-size: 0.75rem !important; }
+.text-sm { font-size: 0.875rem !important; }
+.text-base { font-size: 1rem !important; }
+.text-lg { font-size: 1.125rem !important; }
+.text-xl { font-size: 1.25rem !important; }
+.text-2xl { font-size: 1.5rem !important; }
+.text-3xl { font-size: 1.875rem !important; }
+.text-4xl { font-size: 2.25rem !important; }
+
+/* Text colors */
+.text-primary { color: var(--text-primary) !important; }
+.text-secondary { color: var(--text-secondary) !important; }
+.text-muted { color: var(--text-muted) !important; }
+.text-success { color: var(--success) !important; }
+.text-warning { color: var(--warning) !important; }
+.text-danger { color: var(--danger) !important; }
+.text-info { color: var(--info) !important; }
+
+/* Line heights */
+.leading-none { line-height: 1 !important; }
+.leading-tight { line-height: 1.25 !important; }
+.leading-snug { line-height: 1.375 !important; }
+.leading-normal { line-height: 1.5 !important; }
+.leading-relaxed { line-height: 1.625 !important; }
+.leading-loose { line-height: 2 !important; }
+
+/* Notification positioning fix - add to your main CSS */
+
+/* Hide hamburger menu when not needed */
+.main-content .menu-toggle {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .main-content .menu-toggle {
+        display: block;
+    }
+}
+
+
+/* Timer section styling */
+.timer-section {
+    margin-bottom: var(--space-xl);
+}
+
+/* Audio player wrapper */
+.audio-player-wrapper {
+    padding: var(--space-lg);
+}
+
+/* Metronome wrapper */
+.metronome-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+    padding: var(--space-lg);
+}
+
+/* Session item styling improvements */
+.session-item {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    margin-bottom: var(--space-sm);
+}
+
+.session-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-sm);
+}
+
+.session-date {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.session-duration {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.session-details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.session-detail {
+    display: flex;
+    gap: var(--space-xs);
+    font-size: 0.875rem;
+}
+
+.detail-label {
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.detail-value {
+    color: var(--text-primary);
+}
+
+.session-notes {
+    margin-top: var(--space-sm);
+    padding-top: var(--space-sm);
+    border-top: 1px solid var(--border);
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+/* Empty state styling */
+.empty-state {
+    text-align: center;
+    color: var(--text-secondary);
+    padding: var(--space-xl);
+    font-style: italic;
+}
+
+/* Loading spinner fix */
+.app-loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--bg-dark);
+    z-index: 9999;
+}
+
+.loading-spinner {
+    border: 3px solid var(--border);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Error message styling */
+#error-message {
+    max-width: 90%;
+    margin: 0 auto;
+    padding: 2rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+#error-message strong {
+    color: var(--danger);
+    display: block;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+#error-message button {
+    margin: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+#error-message button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.streak-heatmap { padding: 1rem; }
+.heatmap-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 2px; max-width: 300px; }
+.heatmap-day { width: 10px; height: 10px; background: var(--text-muted); border-radius: 2px; opacity: 0.3; }
+.heatmap-day.has-practice { background: var(--success); opacity: 1; }
+
+.data-summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: var(--bg-input);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.summary-label {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.summary-value {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.btn-danger {
+    background: var(--danger);
+    color: white;
+    border: 1px solid var(--danger);
+}
+
+.btn-danger:hover {
+    background: #dc2626;
+    border-color: #dc2626;
+}

@@ -1,0 +1,673 @@
+/* ============================================
+   Modal Component Styles
+   ============================================ */
+
+/* Base Modal Styles */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000001; /* Above footer */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+/* When modal is shown */
+.modal[style*="display: block"] {
+    display: flex !important;
+}
+
+/* Show class for modals */
+.modal.show {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* Modal Content Container */
+.modal-content {
+    position: relative;
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow: hidden;
+    transform: scale(0.95);
+    transition: transform 0.2s ease;
+}
+
+/* Modal visible state */
+.modal[style*="opacity: 1"] .modal-content {
+    transform: scale(1);
+}
+
+/* Modal Header */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-input);
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+/* Modal Close Button */
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s ease;
+    line-height: 1;
+}
+
+.modal-close:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+    transform: rotate(90deg);
+}
+
+/* Modal Body */
+.modal-body {
+    padding: 2rem;
+    overflow-y: auto;
+    max-height: calc(90vh - 5rem);
+}
+
+/* Modal Footer */
+.modal-footer {
+    padding: 1rem 2rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    background: var(--bg-input);
+}
+
+/* ============================================
+   Page Modal Specific Styles
+   ============================================ */
+
+.page-modal {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+}
+
+.page-modal .modal-content {
+    max-width: 900px;
+    width: 90%;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.page-modal .modal-header {
+    flex-shrink: 0;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--border);
+    background: transparent;
+}
+
+.page-modal .modal-header h2 {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 1.5rem;
+}
+
+.page-modal .modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+}
+
+.page-modal .info-page-wrapper {
+    padding: 2rem;
+}
+
+/* Hide duplicate headers in page modals */
+.page-modal .page-header {
+    display: none;
+}
+
+/* Ensure all info page types work in modal */
+.page-modal .about-page,
+.page-modal .features-page,
+.page-modal .whats-new-page,
+.page-modal .roadmap-page {
+    max-width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+/* Generic section styling for page modals */
+.page-modal .content-section,
+.page-modal .features-grid,
+.page-modal .roadmap-timeline {
+    margin-top: 0;
+}
+
+/* Section backgrounds in modals */
+.page-modal .hero-section,
+.page-modal .philosophy-section,
+.page-modal .story-section,
+.page-modal .mission-section,
+.page-modal .team-section,
+.page-modal .support-section,
+.page-modal .release-section,
+.page-modal .roadmap-section {
+    background: var(--bg-input);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border-radius: var(--radius-lg);
+}
+
+/* Badges in modals */
+.page-modal .version-badge,
+.page-modal .status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-full);
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.page-modal .version-badge {
+    background: var(--primary);
+    color: white;
+}
+
+.page-modal .status-badge.in-progress {
+    background: var(--success);
+    color: white;
+}
+
+.page-modal .status-badge.planned {
+    background: var(--info);
+    color: white;
+}
+
+.page-modal .status-badge.future {
+    background: var(--warning);
+    color: white;
+}
+
+/* Card layouts in modals */
+.page-modal .philosophy-card,
+.page-modal .highlight-card,
+.page-modal .feature-item,
+.page-modal .roadmap-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+}
+
+/* Lists in modals */
+.page-modal ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.page-modal li {
+    padding: 0.5rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.page-modal li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: var(--primary);
+}
+
+/* Feature-specific list styling */
+.page-modal .feature-item li::before {
+    content: "✓";
+    color: var(--success);
+}
+
+/* CTA sections in modals */
+.page-modal .cta-section,
+.page-modal .feedback-section,
+.page-modal .commitment-section,
+.page-modal .contact-section {
+    text-align: center;
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: var(--bg-input);
+    border-radius: var(--radius-lg);
+}
+
+/* Buttons in page modals */
+.page-modal .btn {
+    margin: 0.5rem;
+}
+
+/* ============================================
+   Confirmation Modal Styles
+   ============================================ */
+
+.confirm-modal .modal-content {
+    max-width: 400px;
+}
+
+.confirm-modal .modal-body {
+    text-align: center;
+    padding: 2rem;
+}
+
+.confirm-modal .modal-body p {
+    margin-bottom: 1.5rem;
+    color: var(--text-secondary);
+}
+
+/* ============================================
+   Settings Modal Styles
+   ============================================ */
+
+.settings-modal .modal-content {
+    max-width: 700px;
+}
+
+.settings-section {
+    margin-bottom: 2rem;
+}
+
+.settings-section h3 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.setting-item:last-child {
+    border-bottom: none;
+}
+
+.setting-label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.setting-label strong {
+    color: var(--text-primary);
+}
+
+.setting-label small {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+/* ============================================
+   Scrollbar Styling for Modals
+   ============================================ */
+
+.modal-body::-webkit-scrollbar,
+.page-modal .modal-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-body::-webkit-scrollbar-track,
+.page-modal .modal-body::-webkit-scrollbar-track {
+    background: var(--bg-input);
+    border-radius: 4px;
+}
+
+.modal-body::-webkit-scrollbar-thumb,
+.page-modal .modal-body::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover,
+.page-modal .modal-body::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+}
+
+/* ============================================
+   Modal Animations
+   ============================================ */
+
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+        margin: 1rem;
+    }
+
+    .page-modal .modal-content {
+        width: 100%;
+        height: 100%;
+        max-width: 100%;
+        max-height: 100%;
+        border-radius: 0;
+        margin: 0;
+    }
+
+    .modal-header {
+        padding: 1rem 1.5rem;
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+    }
+
+    .page-modal .modal-header {
+        padding: 1rem 1.5rem;
+        position: sticky;
+        top: 0;
+        background: var(--bg-card);
+        z-index: 10;
+    }
+
+    .page-modal .info-page-wrapper {
+        padding: 1rem;
+    }
+
+    .page-modal .philosophy-grid,
+    .page-modal .release-highlights,
+    .page-modal .commitments,
+    .page-modal .features-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .settings-modal .modal-content {
+        width: 100%;
+        height: 100%;
+        max-height: 100%;
+        border-radius: 0;
+    }
+
+    #goalModal .modal-content {
+        width: 95%;
+        max-width: 95%;
+        max-height: 95vh;
+        margin: 2.5vh auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .modal-header h2 {
+        font-size: 1.125rem;
+    }
+
+    .modal-footer {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .modal-footer .btn {
+        width: 100%;
+    }
+}
+
+/* ============================================
+   Dark Mode Overrides
+   ============================================ */
+
+.dark-mode .modal {
+    background: rgba(0, 0, 0, 0.9);
+}
+
+.dark-mode .modal-content {
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+}
+
+/* ============================================
+   Accessibility
+   ============================================ */
+
+.modal:focus-within {
+    outline: none;
+}
+
+.modal-content:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+/* Ensure modal is announced to screen readers */
+.modal[role="dialog"] {
+    aria-modal: true;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .modal-content {
+        border: 2px solid var(--text-primary);
+    }
+
+    .modal-header,
+    .modal-footer {
+        border-width: 2px;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .modal,
+    .modal-content {
+        transition: none;
+    }
+
+    .modal-close:hover {
+        transform: none;
+    }
+}
+/* ============================================
+   Calendar Goal Modal Styles
+   ============================================ */
+
+#goalModal {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    display: none;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 999999 !important;
+    background: rgba(0, 0, 0, 0.8) !important;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+#goalModal.show, #progressModal.show {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+#goalModal .modal-content {
+    position: relative;
+    max-width: 650px;
+    width: 90%;
+    max-height: 90vh;
+    margin: auto;
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border) !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5) !important;
+    padding: 2rem !important;
+    border-radius: var(--radius-xl) !important;
+    overflow-y: auto;
+    transform: scale(1);
+}
+
+#goalModal h3 {
+    color: var(--text-primary) !important;
+    margin-bottom: 1.5rem;
+}
+
+#goalModal p {
+    color: var(--text-secondary) !important;
+    margin-bottom: 2rem;
+}
+
+.goal-input-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    align-items: center;
+}
+
+.goal-area-select {
+    flex: 2;
+    padding: 1rem;
+    background: var(--bg-input) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: var(--radius-md);
+    color: var(--text-primary) !important;
+    font-size: 1rem;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.goal-minutes-input {
+    flex: 0 0 80px;
+    padding: 1rem;
+    background: var(--bg-input) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: var(--radius-md);
+    color: var(--text-primary) !important;
+    text-align: center;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.remove-goal-btn {
+    padding: 0.75rem;
+    background: linear-gradient(145deg, #e74c3c, #c0392b);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s ease;
+}
+
+.remove-goal-btn:hover {
+    background: linear-gradient(145deg, #c0392b, #a93226);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+.close-btn {
+    color: var(--text-secondary) !important;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+    color: var(--text-primary) !important;
+    background: var(--bg-hover);
+}
+
+.modal-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2.5rem;
+    justify-content: flex-end;
+}
+
+/* Progress Modal Styles */
+#progressModal {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    display: none;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 1000001 !important;
+    background: rgba(0, 0, 0, 0.8) !important;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.goal-form-actions {
+    margin: 2rem 0;
+}
+
+.btn {
+    padding: 0.75rem 1.5rem !important;
+    border-radius: 8px !important;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}

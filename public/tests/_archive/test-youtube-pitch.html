@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Pitch Control Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1a1a2e;
+            color: #eee;
+        }
+        .test-section {
+            background: #0f0f23;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #6366f1;
+        }
+        h2 {
+            color: #818cf8;
+        }
+        .test-case {
+            background: #1a1a2e;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 3px solid #6366f1;
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+        .status.pass {
+            background: #10b981;
+            color: white;
+        }
+        .status.fail {
+            background: #ef4444;
+            color: white;
+        }
+        .status.pending {
+            background: #f59e0b;
+            color: white;
+        }
+        .instructions {
+            background: #1e293b;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            line-height: 1.6;
+        }
+        .warning {
+            background: #7c2d12;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>YouTube Pitch Control Test Suite</h1>
+    
+    <div class="test-section">
+        <h2>Test Overview</h2>
+        <p>This page tests the new YouTube pitch control implementation that allows pitch adjustment independent of playback speed.</p>
+        
+        <div class="instructions">
+            <h3>How it works:</h3>
+            <ol>
+                <li>The implementation uses the Screen Capture API to capture tab audio</li>
+                <li>Audio is processed through Web Audio API and Tone.js for pitch shifting</li>
+                <li>Pitch can be adjusted without affecting playback speed</li>
+                <li>The original YouTube video continues playing at normal speed</li>
+            </ol>
+        </div>
+        
+        <div class="warning">
+            <strong>⚠️ Important:</strong> When you click "Enable Pitch Shifting", your browser will ask you to share tab audio. Make sure to select the current tab for the feature to work properly.
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test Cases</h2>
+        
+        <div class="test-case">
+            <h3>1. Basic Functionality <span class="status pending">PENDING</span></h3>
+            <p>Steps:</p>
+            <ol>
+                <li>Load a YouTube video</li>
+                <li>Click "Enable Pitch Shifting"</li>
+                <li>Select current tab in the dialog</li>
+                <li>Verify pitch controls become active</li>
+            </ol>
+        </div>
+        
+        <div class="test-case">
+            <h3>2. Pitch Independence <span class="status pending">PENDING</span></h3>
+            <p>Steps:</p>
+            <ol>
+                <li>Enable pitch shifting</li>
+                <li>Adjust pitch up/down</li>
+                <li>Verify pitch changes without speed change</li>
+                <li>Adjust speed separately</li>
+                <li>Verify speed changes without pitch change</li>
+            </ol>
+        </div>
+        
+        <div class="test-case">
+            <h3>3. Audio Quality <span class="status pending">PENDING</span></h3>
+            <p>Check for:</p>
+            <ul>
+                <li>No audio dropouts</li>
+                <li>Minimal latency</li>
+                <li>Clean pitch shifting without artifacts</li>
+                <li>Proper stereo imaging</li>
+            </ul>
+        </div>
+        
+        <div class="test-case">
+            <h3>4. UI Behavior <span class="status pending">PENDING</span></h3>
+            <p>Verify:</p>
+            <ul>
+                <li>Pitch buttons disabled when processor inactive</li>
+                <li>Warning message when trying to use pitch without enabling</li>
+                <li>Proper button state changes</li>
+                <li>Clear visual feedback</li>
+            </ul>
+        </div>
+        
+        <div class="test-case">
+            <h3>5. Edge Cases <span class="status pending">PENDING</span></h3>
+            <p>Test:</p>
+            <ul>
+                <li>Switching between YouTube and local files</li>
+                <li>Closing tab during audio capture</li>
+                <li>Multiple enable/disable cycles</li>
+                <li>Browser compatibility (Chrome, Edge, Firefox)</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Known Limitations</h2>
+        <ul>
+            <li>Requires user permission for tab audio capture</li>
+            <li>May not work in all browsers (requires getDisplayMedia support)</li>
+            <li>Small latency between video and processed audio</li>
+            <li>Cannot capture audio from muted tabs</li>
+        </ul>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test URLs</h2>
+        <p>Try these YouTube videos for testing:</p>
+        <ul>
+            <li>Music: <code>https://www.youtube.com/watch?v=dQw4w9WgXcQ</code></li>
+            <li>Guitar lesson: <code>https://www.youtube.com/watch?v=0Aq8sWcLu1U</code></li>
+            <li>Speech: <code>https://www.youtube.com/watch?v=9bZkp7q19f0</code></li>
+        </ul>
+    </div>
+    
+    <script>
+        // Quick test to verify browser compatibility
+        if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
+            console.log('✓ Browser supports getDisplayMedia API');
+        } else {
+            console.error('✗ Browser does not support getDisplayMedia API');
+            alert('Your browser does not support the required APIs for pitch shifting');
+        }
+        
+        if (window.AudioContext || window.webkitAudioContext) {
+            console.log('✓ Browser supports Web Audio API');
+        } else {
+            console.error('✗ Browser does not support Web Audio API');
+        }
+    </script>
+</body>
+</html>

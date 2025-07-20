@@ -1,0 +1,92 @@
+/* Slate Gray Theme - Modern grays with blue undertones */
+[data-theme="slate-gray"] {
+    /* Primary Colors */
+    --primary: #64748b;
+    --primary-dark: #475569;
+    --primary-light: #94a3b8;
+    --primary-rgb: 100, 116, 139;
+
+    /* Background Colors */
+    --bg-dark: #0f172a;
+    --bg-primary: #1e293b;
+    --bg-secondary: #334155;
+    --bg-tertiary: #475569;
+    --bg-card: #334155;
+    --bg-input: #475569;
+    --bg-hover: #64748b;
+
+    /* Text Colors */
+    --text-primary: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    --text-inverse: #0f172a;
+
+    /* Border Colors */
+    --border: #475569;
+    --border-light: #64748b;
+    --border-hover: #94a3b8;
+
+    /* Status Colors */
+    --success: #22c55e;
+    --success-dark: #16a34a;
+    --success-light: #4ade80;
+
+    --warning: #eab308;
+    --warning-dark: #ca8a04;
+    --warning-light: #facc15;
+
+    --danger: #e11d48;
+    --danger-dark: #be123c;
+    --danger-light: #f43f5e;
+
+    --info: #0ea5e9;
+    --info-dark: #0284c7;
+    --info-light: #38bdf8;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
+    --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.6);
+
+    /* Special Effects */
+    --glow-primary: 0 0 20px rgba(100, 116, 139, 0.5);
+    --glow-success: 0 0 20px rgba(34, 197, 94, 0.5);
+    --glow-danger: 0 0 20px rgba(225, 29, 72, 0.5);
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, #475569 0%, #94a3b8 100%);
+    --gradient-dark: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    --gradient-card: linear-gradient(135deg, #334155 0%, #334155 100%);
+}
+
+/* Slate Gray specific enhancements */
+[data-theme="slate-gray"] .sidebar {
+    background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+}
+
+[data-theme="slate-gray"] .btn-primary {
+    background: var(--gradient-primary);
+    box-shadow: 0 4px 14px 0 rgba(100, 116, 139, 0.4);
+}
+
+[data-theme="slate-gray"] .nav-item.active {
+    background: linear-gradient(90deg, rgba(100, 116, 139, 0.15) 0%, rgba(100, 116, 139, 0.05) 100%);
+    border-left-color: #94a3b8;
+}
+
+[data-theme="slate-gray"] .header {
+    background: rgba(30, 41, 59, 0.95);
+}
+
+[data-theme="slate-gray"] .timer-display {
+    background: linear-gradient(135deg, #475569 0%, #334155 100%);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Header contrast fix */
+[data-theme="slate-gray"] .header #pageTitle,
+[data-theme="slate-gray"] .header .theme-info,
+[data-theme="slate-gray"] .header .sync-status {
+    color: #f1f5f9 !important;
+}

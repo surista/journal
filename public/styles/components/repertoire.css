@@ -1,0 +1,420 @@
+/* Repertoire Component Styles */
+
+.repertoire-page {
+    max-width: 800px !important; /* Constrained to middle third */
+    margin: 0 auto !important;
+    padding: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Ensure the tab pane container is also constrained */
+#repertoire-tab,
+.tab-pane:has(.repertoire-page) {
+    max-width: 800px !important;
+    margin: 0 auto !important;
+    width: 100%;
+}
+
+.repertoire-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-xl);
+}
+
+.repertoire-header h2 {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: var(--text-2xl);
+}
+
+/* Controls */
+.repertoire-controls {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--space-lg);
+    margin-bottom: var(--space-xl);
+}
+
+.search-bar {
+    flex: 1;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: var(--space-md);
+    font-size: var(--text-base);
+}
+
+.repertoire-filters {
+    display: flex;
+    gap: var(--space-md);
+}
+
+.repertoire-filters select {
+    min-width: 150px;
+}
+
+/* Stats */
+.repertoire-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 columns for middle third */
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+}
+
+/* Adjust stats on smaller screens */
+@media (max-width: 600px) {
+    .repertoire-stats {
+        grid-template-columns: 1fr;
+    }
+}
+
+.repertoire-stats .stat-card {
+    background: var(--bg-card);
+    padding: var(--space-lg);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    text-align: center;
+}
+
+.repertoire-stats .stat-value {
+    display: block;
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: var(--space-xs);
+}
+
+.repertoire-stats .stat-label {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+/* Grid */
+.repertoire-grid {
+    display: grid;
+    grid-template-columns: 1fr; /* Single column for middle third layout */
+    gap: var(--space-sm);
+}
+
+/* Song Card */
+.song-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.song-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary);
+}
+
+/* Collapsible song header */
+.song-header[data-toggle="collapse"] {
+    padding: var(--space-md) var(--space-lg);
+    cursor: pointer;
+    background: var(--bg-card);
+    transition: background-color 0.2s ease;
+    user-select: none;
+    margin-bottom: 0;
+}
+
+.song-header[data-toggle="collapse"]:hover {
+    background: var(--bg-secondary);
+}
+
+.song-header-content {
+    display: grid;
+    grid-template-columns: 2fr 1.5fr auto auto;
+    gap: 1rem;
+    align-items: center;
+    width: 100%;
+}
+
+.collapse-icon {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    transition: transform 0.2s ease;
+    justify-self: end;
+}
+
+.song-header.expanded .collapse-icon {
+    transform: rotate(180deg);
+}
+
+/* Collapsible content */
+.song-details-collapsible {
+    padding: 0 var(--space-lg) var(--space-lg);
+    background: var(--bg-card);
+    border-top: 1px solid var(--border);
+    animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        max-height: 0;
+    }
+    to {
+        opacity: 1;
+        max-height: 1000px;
+    }
+}
+
+.song-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--space-md);
+}
+
+.song-title {
+    margin: 0;
+    font-size: var(--text-base);
+    color: var(--text-primary);
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.song-header-content .song-artist {
+    color: var(--text-secondary);
+    font-size: var(--text-sm);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.song-details-collapsible .song-artist {
+    color: var(--text-secondary);
+    font-size: var(--text-base);
+    margin: 0 0 var(--space-md) 0;
+}
+
+/* Status Badge */
+.song-status {
+    padding: 0.125rem 0.5rem;
+    border-radius: var(--radius-full);
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.status-learning {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--warning);
+}
+
+.status-polishing {
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--info);
+}
+
+.status-performance-ready {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success);
+}
+
+.status-inactive {
+    background: rgba(156, 163, 175, 0.1);
+    color: var(--text-muted);
+}
+
+/* Details */
+.song-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+    margin-bottom: var(--space-md);
+    font-size: var(--text-sm);
+}
+
+.difficulty {
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+}
+
+.difficulty-beginner {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success);
+}
+
+.difficulty-intermediate {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--warning);
+}
+
+.difficulty-advanced {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger);
+}
+
+.song-key,
+.song-tempo {
+    color: var(--text-secondary);
+}
+
+.last-practiced {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    margin-bottom: var(--space-sm);
+}
+
+/* Stats */
+.song-stats {
+    display: flex;
+    gap: var(--space-lg);
+    margin-bottom: var(--space-lg);
+    padding: var(--space-sm) 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+.song-stats .icon {
+    margin-right: var(--space-xs);
+}
+
+/* Actions */
+.song-actions {
+    display: flex;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+}
+
+.song-actions .btn {
+    flex: 1;
+    min-width: 100px;
+}
+
+/* Modal Form Styles */
+#songModal {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 9999 !important;
+    background: rgba(0, 0, 0, 0.8) !important;
+    backdrop-filter: blur(4px);
+}
+
+#songModal .modal-content {
+    position: relative;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    margin: auto;
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    overflow-y: auto;
+    transform: scale(1);
+    padding: 2rem;
+}
+
+#songModal h3 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#songModal .close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    line-height: 1;
+}
+
+#songModal .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md);
+}
+
+#songModal .required {
+    color: var(--danger);
+}
+
+/* Empty State */
+.repertoire-grid .empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: var(--space-3xl);
+    color: var(--text-secondary);
+}
+
+.repertoire-grid .empty-state .icon {
+    display: block;
+    margin-bottom: var(--space-lg);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .repertoire-controls {
+        grid-template-columns: 1fr;
+    }
+
+    .repertoire-filters {
+        flex-direction: column;
+    }
+
+    .repertoire-filters select {
+        width: 100%;
+    }
+
+    .repertoire-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .song-actions {
+        flex-direction: column;
+    }
+
+    .song-actions .btn {
+        width: 100%;
+    }
+
+    #songModal .modal-content {
+        width: 95%;
+        max-width: 95%;
+        max-height: 95vh;
+        margin: 2.5vh auto;
+    }
+
+    #songModal .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Make song header responsive */
+    .song-header-content {
+        grid-template-columns: 1fr auto auto;
+    }
+    
+    .song-header-content .song-artist {
+        display: none; /* Hide artist in mobile view to save space */
+    }
+}

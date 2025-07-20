@@ -1,0 +1,80 @@
+/* Dark Theme Variables */
+[data-theme="dark"] {
+    /* Backgrounds - True dark for OLED */
+    --bg-primary: #0a0a0a;
+    --bg-secondary: #141414;
+    --bg-tertiary: #1a1a1a;
+    --bg-card: #141414;
+    --bg-input: #1a1a1a;
+    --bg-hover: #242424;
+
+    /* Use dark variants */
+    --bg-dark: #0a0a0a;
+    --bg-dark-secondary: #141414;
+    --bg-dark-tertiary: #1a1a1a;
+
+    /* Text Colors - Better contrast */
+    --text-primary: #f5f5f5;
+    --text-secondary: #a3a3a3;
+    --text-tertiary: #737373;
+    --text-muted: #525252;
+    --text-inverse: #0a0a0a;
+
+    /* Borders - Subtle */
+    --border: rgba(255, 255, 255, 0.15);
+    --border-hover: rgba(255, 255, 255, 0.25);
+
+    /* Shadows - Darker and deeper */
+    --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    --shadow-sm: 0 2px 4px -1px rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.6), 0 4px 6px -4px rgba(0, 0, 0, 0.5);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.7), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+
+    /* Adjust semantic colors for dark theme */
+    --primary: #6366f1;
+    --primary-dark: #4f46e5;
+    --primary-light: #818cf8;
+
+    --success: #34d399;
+    --success-light: #6ee7b7;
+    --success-dark: #10b981;
+
+    --danger: #f87171;
+    --danger-light: #fca5a5;
+    --danger-dark: #ef4444;
+
+    --warning: #fbbf24;
+    --warning-light: #fcd34d;
+    --warning-dark: #f59e0b;
+
+    --info: #60a5fa;
+    --info-light: #93c5fd;
+    --info-dark: #3b82f6;
+}
+
+/* Smooth theme transition */
+* {
+    transition: background-color var(--transition-base),
+                border-color var(--transition-base),
+                color var(--transition-base);
+}
+
+/* Enhanced component visibility for dark theme */
+[data-theme="dark"] .timer-widget,
+[data-theme="dark"] .log-practice-section,
+[data-theme="dark"] .metronome-container,
+[data-theme="dark"] .dashboard-widget,
+[data-theme="dark"] .practice-tips,
+[data-theme="dark"] .audio-player {
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06), /* Subtle outer glow */
+                var(--shadow-lg); /* Keep the existing shadow */
+}
+
+/* Make cards slightly lighter than background for better separation */
+[data-theme="dark"] .timer-widget,
+[data-theme="dark"] .log-practice-section,
+[data-theme="dark"] .metronome-container {
+    background: #161616; /* Slightly lighter than --bg-card (#141414) */
+}
