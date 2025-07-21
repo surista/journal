@@ -3,6 +3,8 @@ import {WaveformVisualizer} from './waveform.js';
 import { SessionManager } from './audio/sessionManager.js';
 import { youtubeAudioProcessor } from '../services/youtubeAudioProcessor.js';
 import { StorageService } from '../services/storageService.js';
+// Temporarily disabled to isolate syntax error
+// import { SimpleTonePlayer } from '../services/simpleTonePlayer.js';
 
 export class AudioPlayer {
     constructor(container, audioService) {
@@ -21,8 +23,9 @@ export class AudioPlayer {
         this.youtubeVideoTitle = null;
         this.youtubeVideoUrl = null;
 
-        // Tone.js components for high-quality playback
-        this.grainPlayer = null;
+        // Audio player components
+        this.tonePlayer = null; // SimpleTonePlayer for better quality
+        this.grainPlayer = null; // Legacy support
         this.isInitialized = false;
         this.eventListenersAttached = false;
         this.currentFileName = null;
@@ -35,7 +38,8 @@ export class AudioPlayer {
         this.loopEnd = null;
         this.isLooping = false;
         this.audioLoaded = false;
-        this.qualityMode = 'medium'; // 'low', 'medium', 'high'
+        this.qualityMode = 'high'; // 'basic', 'medium', 'high', 'ultra'
+        this.useSimplePlayer = false; // Temporarily disabled to isolate syntax error
 
         // Tempo progression for loops
         this.tempoProgression = {
@@ -73,7 +77,7 @@ export class AudioPlayer {
                 try {
                     this.storageService = new StorageService();
                     console.log('Storage service created new instance');
-
+                    
                     // Make it available globally for other components
                     if (window.app) {
                         window.app.storageService = this.storageService;
@@ -82,7 +86,7 @@ export class AudioPlayer {
                     console.error('Failed to create storage service instance:', e);
                 }
             }
-
+            
             if (!this.storageService) {
                 console.error('Storage service not found in any expected location');
                 return false;
@@ -138,7 +142,7 @@ export class AudioPlayer {
             // Start Tone.js
             await Tone.start();
             console.log('Tone.js initialized');
-
+            
             // Set the destination volume to ensure it's at unity gain
             Tone.Destination.volume.value = 0; // 0 dB
 
@@ -149,7 +153,7 @@ export class AudioPlayer {
             // Add a master gain node for volume control
             // Start at 1.0 gain which corresponds to 100% on the exponentially-scaled volume slider
             this.masterGain = new Tone.Gain(1.0).toDestination();
-
+            
             // Ensure the gain is stable and doesn't ramp
             this.masterGain.gain.cancelScheduledValues(Tone.now());
             this.masterGain.gain.setValueAtTime(1.0, Tone.now());
@@ -161,6 +165,20 @@ export class AudioPlayer {
                 if (window.app?.audioService) {
                     this.audioService = window.app.audioService;
                     console.log('AudioService retrieved from global app');
+                }
+            }
+            
+            // Load saved quality mode preference
+            if (this.storageService) {
+                const savedMode = await this.storageService.getSetting('audioQualityMode');
+                if (savedMode) {
+                    this.qualityMode = savedMode;
+                    
+                    // Update UI
+                    const qualitySelect = document.getElementById('qualityModeSelect');
+                    if (qualitySelect) {
+                        qualitySelect.value = savedMode;
+                    }
                 }
             }
 
@@ -384,6 +402,22 @@ export class AudioPlayer {
                                     <i class="icon" style="font-size: 18px;">🔊</i>
                                     <input type="range" id="volumeSlider" min="0" max="100" value="100" class="slider" 
                                            style="flex: 1; height: 8px; background: linear-gradient(to right, #374151 0%, #6366f1 100%); border-radius: 4px; outline: none; -webkit-appearance: none; -moz-appearance: none; appearance: none;">
+                                </div>
+                            </div>
+                            
+                            <!-- Quality Mode Selector -->
+                            <div class="quality-mode-selector" style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
+                                <label style="display: block; margin-bottom: 8px; font-size: 14px; color: var(--text-secondary);">
+                                    Audio Quality Mode: <span id="qualityModeLabel" style="color: var(--primary); font-weight: 600;">High (Quality)</span>
+                                </label>
+                                <select id="qualityModeSelect" class="form-select" style="width: 100%; padding: 8px; background: var(--bg-input); border: 1px solid var(--border); border-radius: 6px; font-size: 14px;">
+                                    <option value="basic">Basic (Fast) - Simple playback rate</option>
+                                    <option value="medium">Medium (Balanced) - Tone.js GrainPlayer</option>
+                                    <option value="high" selected>High (Quality) - SoundTouch algorithm</option>
+                                    <option value="ultra" disabled>Ultra (Studio) - Coming soon</option>
+                                </select>
+                                <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">
+                                    Higher quality modes use more CPU but provide better audio quality when changing tempo.
                                 </div>
                             </div>
                             
@@ -613,9 +647,9 @@ export class AudioPlayer {
         });
 
         if (playPauseBtn) {
-            playPauseBtn.addEventListener('click', () => {
+            playPauseBtn.addEventListener('click', async () => {
                 console.log('Play button clicked');
-                this.togglePlayPause();
+                await this.togglePlayPause();
             });
         } else {
             console.error('audioPlayPauseBtn not found!');
@@ -650,7 +684,7 @@ export class AudioPlayer {
                 }
             });
         }
-
+        
         // Also add direct listener as backup
         const saveBtn = document.getElementById('saveSessionBtn');
         if (saveBtn) {
@@ -720,6 +754,28 @@ export class AudioPlayer {
             this.setPitch(0);
         });
 
+        // Quality mode selector
+        const qualityModeSelect = document.getElementById('qualityModeSelect');
+        if (qualityModeSelect) {
+            qualityModeSelect.addEventListener('change', async (e) => {
+                const newMode = e.target.value;
+                await this.setQualityMode(newMode);
+                
+                // Update label
+                const label = document.getElementById('qualityModeLabel');
+                if (label) {
+                    const option = qualityModeSelect.options[qualityModeSelect.selectedIndex];
+                    label.textContent = option.textContent.split(' - ')[0];
+                }
+                
+                // If audio is loaded, we might need to reload with new processor
+                if (this.audioLoaded && this.useEnhancedProcessor) {
+                    this.showNotification('Quality mode changed. Audio will be reprocessed.', 'info');
+                    // Note: Actual reprocessing would happen on next play
+                }
+            });
+        }
+
         // Volume control
         const volumeSlider = document.getElementById('volumeSlider');
         if (volumeSlider) {
@@ -728,7 +784,7 @@ export class AudioPlayer {
                 // Initial slider is at 100, so set gain to 1.0 (100% squared)
                 this.masterGain.gain.setValueAtTime(1.0, Tone.now());
             }
-
+            
             volumeSlider.addEventListener('input', (e) => {
                 const value = e.target.value;
                 document.getElementById('volumeValue').textContent = value + '%';
@@ -830,106 +886,178 @@ export class AudioPlayer {
             if (this.practiceForm) {
                 this.practiceForm.setAudioContext(file.name);
             }
-            // Filename display is now managed by the parent component
-            // const fileNameEl = document.getElementById('currentFileName');
-            // if (fileNameEl) {
-            //     fileNameEl.textContent = `Loaded: ${file.name}`;
-            //     fileNameEl.style.color = 'var(--success)';
-            // }
 
             // Dispose of previous player
             if (this.grainPlayer) {
                 this.grainPlayer.stop();
                 this.grainPlayer.dispose();
+                this.grainPlayer = null;
             }
-
-            // Convert file to URL
-            const audioUrl = URL.createObjectURL(file);
 
             // Reset loaded state
             this.audioLoaded = false;
 
-            // Create GrainPlayer with settings optimized for tempo changes
-            // Key insight: For tempo changes, we need consistent grain timing
-            this.grainPlayer = new Tone.GrainPlayer({
-                url: audioUrl,
-                loop: false,
-                playbackRate: 1.0,
-                grainSize: 0.1,     // 100ms grains - good balance
-                overlap: 0.2,       // 20% overlap - reduces phasing artifacts
-                reverse: false,
-                volume: -12,        // Start at reasonable level
-                fadeIn: 0,
-                fadeOut: 0,
-                onload: () => {
-                    try {
-                        console.log('Audio loaded in Tone.js GrainPlayer');
-                        this.duration = this.grainPlayer.buffer.duration;
+            // Use SimpleTonePlayer for better quality
+            if (this.useSimplePlayer) {
+                await this.loadWithSimplePlayer(file);
+            } else {
+                // Fall back to standard GrainPlayer
+                await this.loadWithStandardProcessor(file);
+            }
 
-                        // Mark as loaded in our own property
-                        this.audioLoaded = true;
+        } catch (error) {
+            console.error('Error loading audio file:', error);
+            this.showNotification('Failed to load audio file: ' + error.message, 'error');
+            const controlsSection = document.getElementById('audioControlsSection');
+            if (controlsSection) {
+                controlsSection.style.display = 'none';
+            }
+        }
+    }
 
-                        // Reset detune to default
-                        this.grainPlayer.detune = 0;
+    async loadWithSimplePlayer(file) {
+        console.log('Loading with SimpleTonePlayer for better quality');
+        
+        try {
+            // Dispose of previous players
+            if (this.tonePlayer) {
+                this.tonePlayer.dispose();
+            }
+            
+            // Create new player
+            this.tonePlayer = new SimpleTonePlayer();
+            await this.tonePlayer.initialize();
+            
+            // Load the audio buffer
+            const arrayBuffer = await file.arrayBuffer();
+            const audioBuffer = await (this.audioContext || Tone.context._context).decodeAudioData(arrayBuffer);
+            
+            await this.tonePlayer.loadBuffer(audioBuffer);
+            this.duration = audioBuffer.duration;
+            
+            // Set initial parameters
+            this.tonePlayer.setPlaybackRate(this.playbackRate);
+            this.tonePlayer.setPitchShift(this.pitchShiftAmount);
+            
+            // Mark as loaded
+            this.audioLoaded = true;
+            
+            // Show controls
+            const controlsSection = document.getElementById('audioControlsSection');
+            if (controlsSection) {
+                controlsSection.style.display = 'block';
+            }
 
-                        // Connect to master gain before setting volume
-                        this.grainPlayer.connect(this.masterGain);
-                        
-                        // Set master gain to current volume slider value
-                        const volumeSlider = document.getElementById('volumeSlider');
-                        if (volumeSlider && this.masterGain) {
-                            const normalizedValue = volumeSlider.value / 100;
-                            const gainValue = normalizedValue * normalizedValue; // Exponential curve
-                            this.masterGain.gain.cancelScheduledValues(Tone.now());
-                            this.masterGain.gain.setValueAtTime(gainValue, Tone.now());
-                        }
+            // Update duration display
+            const durationEl = document.getElementById('duration');
+            const currentTimeEl = document.getElementById('currentTime');
+            if (durationEl) durationEl.textContent = this.formatTime(this.duration);
+            if (currentTimeEl) currentTimeEl.textContent = this.formatTime(0);
 
-                        console.log('Audio chain connected: GrainPlayer -> MasterGain -> Destination');
+            // Initialize waveform
+            await this.initializeWaveform(file);
 
-                        // Show controls with loading state
-                        const controlsSection = document.getElementById('audioControlsSection');
-                        if (controlsSection) {
-                            controlsSection.style.display = 'block';
-                        }
+            // Load saved sessions
+            this.sessionManager.loadSavedSessions();
 
-                        // Show loading state for waveform
-                        const loadingState = document.getElementById('waveformLoadingState');
-                        const waveformCanvas = document.getElementById('waveformCanvas');
-                        if (loadingState && waveformCanvas) {
-                            loadingState.style.display = 'flex';
-                            waveformCanvas.style.opacity = '0';
-                        }
+            // Dispatch event for practice form
+            window.dispatchEvent(new CustomEvent('audioFileLoaded', {
+                detail: {fileName: file.name}
+            }));
 
-                        const durationEl = document.getElementById('duration');
-                        const currentTimeEl = document.getElementById('currentTime');
+            console.log('SimpleTonePlayer setup complete');
+            
+        } catch (error) {
+            console.error('Error loading with SimpleTonePlayer:', error);
+            // Fall back to standard processor
+            this.useSimplePlayer = false;
+            await this.loadWithStandardProcessor(file);
+        }
+    }
 
-                        if (durationEl) durationEl.textContent = this.formatTime(this.duration);
-                        if (currentTimeEl) currentTimeEl.textContent = this.formatTime(0);
+    async loadWithStandardProcessor(file) {
+        console.log('Loading with standard Tone.js processor');
+        
+        // Convert file to URL
+        const audioUrl = URL.createObjectURL(file);
 
-                        // Initialize waveform
-                        this.initializeWaveform(file);
+        // Create GrainPlayer for tempo stretching
+        this.grainPlayer = new Tone.GrainPlayer({
+            url: audioUrl,
+            loop: false,
+            playbackRate: 1.0,
+            grainSize: 0.1,     // Balanced settings
+            overlap: 0.5,       // Balanced settings
+            reverse: false,
+            volume: 0,          // Start at unity gain (0 dB)
+            fadeIn: 0,          // No fade in
+            fadeOut: 0,         // No fade out
+            onload: () => {
+                try {
+                    console.log('Audio loaded in Tone.js GrainPlayer');
+                    this.duration = this.grainPlayer.buffer.duration;
 
-                        // Load saved sessions
-                        this.sessionManager.loadSavedSessions();
+                    // Mark as loaded in our own property
+                    this.audioLoaded = true;
 
-                        // Dispatch event for practice form
-                        window.dispatchEvent(new CustomEvent('audioFileLoaded', {
-                            detail: {fileName: file.name}
-                        }));
+                    // Set volume before connecting to prevent any initial spike
+                    this.grainPlayer.volume.value = 0; // 0 dB (unity gain)
+                    this.grainPlayer.volume.cancelScheduledValues(Tone.now());
+                    this.grainPlayer.volume.setValueAtTime(0, Tone.now());
 
-                        console.log('Audio player setup complete');
+                    // Connect audio chain with high-quality pitch shifter
+                    // Use a simpler approach - let GrainPlayer handle tempo, use pitch shifter for pitch only
+                    this.grainPlayer.detune = 0; // Reset detune
 
-                    } catch (error) {
-                        console.error('Error in onload callback:', error);
-                        // Continue anyway - the audio might still be playable
-                        this.audioLoaded = true;
+                    // Connect directly to master gain
+                    this.grainPlayer.connect(this.masterGain);
+
+                    console.log('Audio chain connected: GrainPlayer -> MasterGain -> Destination');
+
+                    // Show controls with loading state
+                    const controlsSection = document.getElementById('audioControlsSection');
+                    if (controlsSection) {
+                        controlsSection.style.display = 'block';
                     }
-                },
-                onerror: (error) => {
-                    console.error('Error loading audio:', error);
-                    this.showNotification('Failed to load audio file', 'error');
+
+                    // Show loading state for waveform
+                    const loadingState = document.getElementById('waveformLoadingState');
+                    const waveformCanvas = document.getElementById('waveformCanvas');
+                    if (loadingState && waveformCanvas) {
+                        loadingState.style.display = 'flex';
+                        waveformCanvas.style.opacity = '0';
+                    }
+
+                    const durationEl = document.getElementById('duration');
+                    const currentTimeEl = document.getElementById('currentTime');
+
+                    if (durationEl) durationEl.textContent = this.formatTime(this.duration);
+                    if (currentTimeEl) currentTimeEl.textContent = this.formatTime(0);
+
+                    // Initialize waveform
+                    this.initializeWaveform(file);
+
+                    // Load saved sessions
+                    this.sessionManager.loadSavedSessions();
+
+                    // Dispatch event for practice form
+                    window.dispatchEvent(new CustomEvent('audioFileLoaded', {
+                        detail: {fileName: file.name}
+                    }));
+
+                    console.log('Audio player setup complete');
+                    
+                } catch (error) {
+                    console.error('Error in onload callback:', error);
+                    // Continue anyway - the audio might still be playable
+                    this.audioLoaded = true;
                 }
-            });
+            },
+            onerror: (error) => {
+                console.error('Error loading audio:', error);
+                this.showNotification('Failed to load audio file', 'error');
+            }
+        });
 
         } catch (error) {
             console.error('Error loading audio file:', error);
@@ -945,7 +1073,8 @@ export class AudioPlayer {
         // Ensure YouTube API is loaded
         if (!window.YT || !window.YT.Player) {
             console.error('YouTube API not loaded');
-            setTimeout(() => this.initializeYouTubePlayer(), 1000);
+            const self = this;
+            setTimeout(function() { self.initializeYouTubePlayer(); }, 1000);
             return;
         }
 
@@ -1318,13 +1447,13 @@ export class AudioPlayer {
             console.error('Waveform container not found');
             return;
         }
-
+        
         // Force refresh loop controls to ensure consistent layout
         const loopControlsSection = document.querySelector('.loop-controls-section');
         if (loopControlsSection) {
             // Force re-render by updating a data attribute
             loopControlsSection.setAttribute('data-mode', 'youtube');
-
+            
             // Ensure progression controls stay on separate line
             const progressionControls = document.getElementById('progressionControls');
             if (progressionControls && progressionControls.style.display === 'flex') {
@@ -1522,7 +1651,10 @@ export class AudioPlayer {
     setupTimeUpdate() {
         // Create a loop to update time display
         const updateTime = () => {
-            if (this.grainPlayer && this.grainPlayer.state === 'started') {
+            const isPlaying = (this.tonePlayer && this.tonePlayer.state === 'started') || 
+                            (this.grainPlayer && this.grainPlayer.state === 'started');
+                            
+            if (isPlaying) {
                 // Calculate elapsed real time since playback started
                 const realElapsed = Tone.now() - this.startTime;
 
@@ -1532,11 +1664,15 @@ export class AudioPlayer {
                 // Handle looping
                 if (this.isLooping && this.loopEnd !== null && this.currentTime >= this.loopEnd) {
                     this.startOffset = this.loopStart || 0;
-                    this.grainPlayer.stop();
-                    this.grainPlayer.playbackRate = this.playbackRate;
-
-                    // Restart playback for loop
-                    this.grainPlayer.start(undefined, this.startOffset);
+                    
+                    if (this.tonePlayer && this.useSimplePlayer) {
+                        this.tonePlayer.stop();
+                        this.tonePlayer.start(undefined, this.startOffset);
+                    } else if (this.grainPlayer) {
+                        this.grainPlayer.stop();
+                        this.grainPlayer.playbackRate = this.playbackRate;
+                        this.grainPlayer.start(undefined, this.startOffset);
+                    }
 
                     this.startTime = Tone.now();
                     this.currentTime = this.startOffset;
@@ -1717,7 +1853,13 @@ export class AudioPlayer {
             // Store current playback position before stopping
             this.currentTime = this.startOffset + (Tone.now() - this.startTime) * this.playbackRate;
 
-            this.grainPlayer.stop();
+            // Stop playback based on current player
+            if (this.tonePlayer && this.useSimplePlayer) {
+                this.tonePlayer.stop();
+            } else if (this.grainPlayer) {
+                this.grainPlayer.stop();
+            }
+            
             this.isPlaying = false;
 
             // Stop timer if sync is enabled
@@ -1743,16 +1885,29 @@ export class AudioPlayer {
                 }
             }
 
-            // Start playback with current tempo setting
-            this.grainPlayer.playbackRate = this.playbackRate;
+            // Start playback based on current player
+            if (this.tonePlayer && this.useSimplePlayer) {
+                // Use SimpleTonePlayer
+                await this.tonePlayer.start(undefined, startPosition);
+            } else if (this.grainPlayer) {
+                // Use standard GrainPlayer
+                this.grainPlayer.playbackRate = this.playbackRate;
+                
+                // Ensure volume is set before starting with proper compensation
+                this.grainPlayer.volume.cancelScheduledValues(Tone.now());
+                
+                // Apply volume compensation based on current playback rate
+                let volumeCompensation = 0;
+                if (this.playbackRate < 1.0) {
+                    volumeCompensation = (1.0 - this.playbackRate) * 6;
+                } else if (this.playbackRate > 1.0) {
+                    volumeCompensation = (this.playbackRate - 1.0) * 3;
+                }
+                this.grainPlayer.volume.setValueAtTime(volumeCompensation, Tone.now());
 
-            // Ensure Tone.js context is started
-            if (Tone.context.state !== 'running') {
-                await Tone.start();
+                // Start playback without fade-in
+                this.grainPlayer.start(undefined, startPosition);
             }
-            
-            // Start playback at the correct volume (already set in GrainPlayer constructor)
-            this.grainPlayer.start(undefined, startPosition);
 
             this.startTime = Tone.now();
             this.startOffset = startPosition;
@@ -1772,6 +1927,7 @@ export class AudioPlayer {
 
         this.updatePlayPauseButton();
     }
+
 
     syncTimerStart() {
         try {
@@ -1888,6 +2044,8 @@ export class AudioPlayer {
             this.stopYouTubeTimeUpdates();
             // For YouTube, explicitly seek to start
             this.youtubePlayer.seekTo(0);
+        } else if (this.tonePlayer && this.useSimplePlayer) {
+            this.tonePlayer.stop();
         } else if (this.grainPlayer) {
             this.grainPlayer.stop();
         }
@@ -2134,19 +2292,66 @@ export class AudioPlayer {
 
         if (this.isYouTubeMode && this.youtubePlayer) {
             this.youtubePlayer.setPlaybackRate(this.playbackRate);
-        } else if (this.grainPlayer) {
-            // Use fixed grain parameters for consistency
-            // The key to good quality is NOT changing grain size with tempo
-            this.grainPlayer.grainSize = 0.1;  // Keep constant
-            this.grainPlayer.overlap = 0.2;    // Keep constant
+        } else if (this.tonePlayer && this.useSimplePlayer) {
+            // Use SimpleTonePlayer for clean tempo changes
+            this.tonePlayer.setPlaybackRate(this.playbackRate);
             
-            // Set playback rate directly - GrainPlayer handles this smoothly internally
+            // Apply volume compensation based on playback rate
+            let volumeCompensation = 0;
+            if (this.playbackRate < 0.8) {
+                // Slower speeds need slight boost
+                volumeCompensation = (0.8 - this.playbackRate) * 3; // Up to +3dB
+            } else if (this.playbackRate > 1.2) {
+                // Faster speeds need slight boost
+                volumeCompensation = (this.playbackRate - 1.2) * 2; // Up to +2dB
+            }
+            this.tonePlayer.setVolume(volumeCompensation);
+            
+            // No need to compensate pitch - SimpleTonePlayer handles it correctly
+        } else if (this.grainPlayer) {
+            // FIX: Audio quality degradation when changing playback speed
+            // The GrainPlayer uses granular synthesis which can introduce artifacts when
+            // changing playback rate. To mitigate this:
+            // 1. Dynamically adjust grain settings based on playback rate
+            // 2. Apply volume compensation to counteract the inherent volume drop
+            // 3. Consider using Tone.Player + separate pitch shifting for better quality
+            
+            // Optimize grain settings for tempo changes
+            // Use larger grains and less overlap when changing tempo to reduce artifacts
+            if (Math.abs(this.playbackRate - 1.0) > 0.1) {
+                // For significant tempo changes, use settings optimized for tempo stretching
+                this.grainPlayer.grainSize = 0.15;  // Larger grains for cleaner tempo changes
+                this.grainPlayer.overlap = 0.3;     // Less overlap to reduce artifacts
+            } else {
+                // For normal playback, use high quality settings
+                this.grainPlayer.grainSize = 0.05;  // Small grains for best quality
+                this.grainPlayer.overlap = 0.75;    // High overlap for smooth sound
+            }
+
+            // Set playback rate
             this.grainPlayer.playbackRate = this.playbackRate;
 
-            // Handle pitch if needed
-            if (this.pitchShiftAmount !== 0) {
-                this.setPitch(this.pitchShiftAmount);
+            // Apply volume compensation to counteract the volume drop
+            // GrainPlayer tends to get quieter at different speeds
+            let volumeCompensation = 0;
+            if (this.playbackRate < 1.0) {
+                // Slower speeds need more volume boost
+                volumeCompensation = (1.0 - this.playbackRate) * 6; // Up to +6dB boost at 0% speed
+            } else if (this.playbackRate > 1.0) {
+                // Faster speeds also need some compensation
+                volumeCompensation = (this.playbackRate - 1.0) * 3; // Up to +6dB boost at 300% speed
             }
+            
+            // Apply volume compensation to the GrainPlayer
+            this.grainPlayer.volume.cancelScheduledValues(Tone.now());
+            this.grainPlayer.volume.setValueAtTime(volumeCompensation, Tone.now());
+
+            // Compensate for pitch change due to playback rate
+            // When speed increases, pitch goes up, so we need to shift down
+            const pitchCompensation = -12 * Math.log2(this.playbackRate);
+
+            // Apply both user pitch shift and compensation
+            this.applyHighQualityPitchShift(this.pitchShiftAmount + pitchCompensation);
         }
     }
 
@@ -2178,10 +2383,14 @@ export class AudioPlayer {
                 window.youtubeAudioProcessor.setPitch(pitch);
             }
             // Don't show notification every time - buttons are already visually disabled
+        } else if (this.tonePlayer && this.useSimplePlayer) {
+            // SimpleTonePlayer handles pitch correctly
+            this.tonePlayer.setPitchShift(pitch);
         } else if (this.grainPlayer && this.audioLoaded) {
-            // For regular audio files, use detune for pitch shifting
-            // GrainPlayer preserves pitch during tempo changes, so no compensation needed
-            this.grainPlayer.detune = pitch * 100; // Convert semitones to cents
+            // For regular audio files, implement better pitch shifting
+            // Also compensate for playback rate pitch change
+            const pitchCompensation = -12 * Math.log2(this.playbackRate);
+            this.applyHighQualityPitchShift(pitch + pitchCompensation);
         }
     }
 
@@ -2221,32 +2430,46 @@ export class AudioPlayer {
     }
 
     // Set audio quality mode for adaptive performance
-    setQualityMode(mode = 'high') {
-        const qualitySettings = {
-            low: {
-                grainSize: 0.25,     // Larger grains for lower CPU
-                overlap: 0.25        // Less overlap
-            },
-            medium: {
-                grainSize: 0.15,     // Medium grain size for balanced quality
-                overlap: 0.4         // Moderate overlap
-            },
-            high: {
-                grainSize: 0.1,      // Smaller grains for better quality
-                overlap: 0.5         // Good overlap for smooth sound
-            }
-        };
-
-        const settings = qualitySettings[mode] || qualitySettings.high;
+    async setQualityMode(mode = 'high') {
         this.qualityMode = mode;
+        
+        // For now, all modes use GrainPlayer (SimpleTonePlayer temporarily disabled)
+        if (mode === 'high') {
+            this.useSimplePlayer = false; // Temporarily disabled
+            console.log('Using GrainPlayer for high quality mode (SimpleTonePlayer temporarily disabled)');
+        } else {
+            this.useSimplePlayer = false;
+            console.log('Using GrainPlayer for', mode, 'mode');
+            
+            // Update GrainPlayer settings if it exists
+            if (this.grainPlayer) {
+                const qualitySettings = {
+                    basic: {
+                        grainSize: 0.2,      // Larger grains for lower CPU
+                        overlap: 0.25        // Less overlap
+                    },
+                    medium: {
+                        grainSize: 0.1,      // Medium grain size
+                        overlap: 0.5         // Good overlap
+                    }
+                };
 
-        // Update GrainPlayer settings for optimal pitch shifting
-        if (this.grainPlayer) {
-            this.grainPlayer.grainSize = settings.grainSize;
-            this.grainPlayer.overlap = settings.overlap;
+                const settings = qualitySettings[mode] || qualitySettings.medium;
+                this.grainPlayer.grainSize = settings.grainSize;
+                this.grainPlayer.overlap = settings.overlap;
+            }
         }
 
         console.log(`Audio quality mode set to: ${mode}`);
+        
+        // Store preference
+        if (this.storageService) {
+            try {
+                await this.storageService.saveSetting('audioQualityMode', mode);
+            } catch (e) {
+                console.error('Failed to save quality mode preference:', e);
+            }
+        }
     }
 
     updatePitchButtonStates() {

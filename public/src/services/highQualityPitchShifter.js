@@ -61,7 +61,10 @@ export class HighQualityPitchShifter {
             this.soundTouch.pitch = this.pitchSemitones;
             this.soundTouch.rate = this.rate;
             
-            this.filter = new SimpleFilter(this.soundTouch, this.BUFFER_SIZE);
+            // Create the filter using SoundTouch's built-in filter
+            const source = new SoundTouch.WebAudioBufferSource(this.BUFFER_SIZE);
+            source.connect(this.soundTouch);
+            this.filter = source;
             console.log('SoundTouch filter initialized');
         }
     }
@@ -114,12 +117,11 @@ export class HighQualityPitchShifter {
         }
         
         // Process through SoundTouch
-        this.filter.sourceSound.extract(this.samples, left.length);
         this.filter.putSource(this.samples, left.length);
         
         // Extract processed samples
         const extractedSamples = new Float32Array(this.BUFFER_SIZE * 2);
-        const framesExtracted = this.filter.extract(extractedSamples, this.BUFFER_SIZE);
+        const framesExtracted = this.soundTouch.extract(extractedSamples, this.BUFFER_SIZE);
         
         // De-interleave and write to output
         const outputLeft = outputBuffer.getChannelData(0);
@@ -316,20 +318,5 @@ export class NativePitchShifter {
     }
 }
 
-// Simple filter wrapper for SoundTouch
-class SimpleFilter {
-    constructor(soundTouch, bufferSize) {
-        this.soundTouch = soundTouch;
-        this.bufferSize = bufferSize;
-        this.sourceSound = new SoundTouch.WebAudioBufferSource(bufferSize);
-        this.sourceSound.connect(soundTouch);
-    }
-    
-    putSource(samples, numFrames) {
-        this.sourceSound.putSource(samples, numFrames);
-    }
-    
-    extract(target, numFrames) {
-        return this.soundTouch.extract(target, numFrames);
-    }
-}
+// Note: SimpleFilter functionality is now integrated into the main class
+// using SoundTouch.WebAudioBufferSource directly

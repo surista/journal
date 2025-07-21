@@ -149,13 +149,28 @@ export class DashboardPage {
 
     async loadTabContent(tab) {
         const tabContainer = document.querySelector(`#${tab}Tab`);
-        if (!tabContainer) return;
+        if (!tabContainer) {
+            console.error(`Tab container not found for tab: ${tab}`);
+            return;
+        }
 
         try {
             switch (tab) {
                 case 'practice':
-                    const { PracticeTab } = await import('../components/tabs/PracticeTab.js');
-                    this.tabs[tab] = new PracticeTab(this.storageService);
+                    console.log('Loading PracticeTab module...');
+                    try {
+                        const practiceModule = await import('../components/tabs/PracticeTab.js');
+                        console.log('PracticeTab module loaded:', practiceModule);
+                        const { PracticeTab } = practiceModule;
+                        console.log('Creating PracticeTab instance...');
+                        this.tabs[tab] = new PracticeTab(this.storageService);
+                        console.log('PracticeTab instance created');
+                    } catch (innerError) {
+                        console.error('Inner error loading practice tab:', innerError);
+                        console.error('Inner error message:', innerError.message);
+                        console.error('Inner error stack:', innerError.stack);
+                        throw innerError;
+                    }
                     break;
                 case 'repertoire':
                     const { RepertoireTab } = await import('../components/tabs/RepertoireTab.js');
@@ -189,7 +204,13 @@ export class DashboardPage {
             }
         } catch (error) {
             console.error(`Failed to load ${tab} tab:`, error);
-            console.error('Error details:', error.message, error.stack);
+            console.error('Error details:', error.message);
+            if (error.stack) {
+                console.error('Stack trace:', error.stack);
+            }
+            // Log the actual error type
+            console.error('Error type:', error.constructor.name);
+            console.error('Full error object:', error);
             tabContainer.innerHTML = `
                 <div class="error-state">
                     <p>Failed to load ${tab} content</p>

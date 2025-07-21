@@ -365,7 +365,6 @@ export class RepertoireTab {
             });
 
             this.container.addEventListener('input', (e) => {
-                console.log('🎸 Input event:', e.target.id, e.target.value);
                 if (e.target.id === 'repertoireSearch') {
                     this.currentFilter.search = e.target.value;
                     this.applyFilters();

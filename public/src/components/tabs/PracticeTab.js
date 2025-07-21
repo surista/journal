@@ -45,22 +45,30 @@ export class PracticeTab {
     }
 
     async initializeComponents() {
-        // Initialize unified practice component
-        const container = document.getElementById('unifiedPracticeContainer');
-        if (container) {
-            this.unifiedPractice = new UnifiedPracticeMinimal(this.storageService);
-            this.unifiedPractice.init(container);
+        try {
+            // Initialize unified practice component
+            const container = document.getElementById('unifiedPracticeContainer');
+            if (container) {
+                console.log('Creating UnifiedPracticeMinimal instance...');
+                this.unifiedPractice = new UnifiedPracticeMinimal(this.storageService);
+                console.log('UnifiedPracticeMinimal instance created, calling init...');
+                this.unifiedPractice.init(container);
+                console.log('UnifiedPracticeMinimal initialized');
 
-            // Set callback for when sessions are saved
-            this.unifiedPractice.setOnSaveCallback(async (sessionData) => {
-                await this.loadPracticeData();
+                // Set callback for when sessions are saved
+                this.unifiedPractice.setOnSaveCallback(async (sessionData) => {
+                    await this.loadPracticeData();
 
-                // Update header status if available
-                const dashboard = window.app?.currentPage;
-                if (dashboard?.header) {
-                    dashboard.header.updateStatus('Session saved!', 'success');
-                }
-            });
+                    // Update header status if available
+                    const dashboard = window.app?.currentPage;
+                    if (dashboard?.header) {
+                        dashboard.header.updateStatus('Session saved!', 'success');
+                    }
+                });
+            }
+        } catch (error) {
+            console.error('Error in initializeComponents:', error);
+            throw error;
         }
     }
 

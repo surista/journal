@@ -441,6 +441,14 @@ export class UnifiedPracticeMinimal {
 
             destroy: () => clearInterval(this.timer.interval)
         };
+        
+        // Make timer accessible globally for audio player sync
+        window.currentTimer = this.timer;
+        
+        // Also set it in the app context if available
+        if (window.app && window.app.currentPage) {
+            window.app.currentPage.timer = this.timer;
+        }
     }
 
     updateTimerDisplay() {
@@ -1304,10 +1312,18 @@ export class UnifiedPracticeMinimal {
             }
 
             // Create a new AudioPlayer instance
-            this.audioPlayer = new AudioPlayer(container, this.audioService);
-
-            // Initialize the audio player (this will call initializeTone)
-            this.audioPlayer.init();
+            try {
+                console.log('Creating AudioPlayer instance in UnifiedPracticeMinimal...');
+                this.audioPlayer = new AudioPlayer(container, this.audioService);
+                console.log('AudioPlayer instance created, calling init...');
+                
+                // Initialize the audio player (this will call initializeTone)
+                this.audioPlayer.init();
+                console.log('AudioPlayer initialized successfully');
+            } catch (error) {
+                console.error('Error creating/initializing AudioPlayer:', error);
+                throw error;
+            }
 
             // CRITICAL: Hide the AudioPlayer's own UI elements that we don't want
             // Hide the entire audio source section from AudioPlayer
@@ -2672,6 +2688,14 @@ export class UnifiedPracticeMinimal {
 
         if (this.timer) {
             this.timer.destroy();
+            
+            // Clean up global timer references
+            if (window.currentTimer === this.timer) {
+                window.currentTimer = null;
+            }
+            if (window.app && window.app.currentPage && window.app.currentPage.timer === this.timer) {
+                window.app.currentPage.timer = null;
+            }
         }
         if (this.metronomeState.interval) {
             clearInterval(this.metronomeState.interval);

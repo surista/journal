@@ -557,13 +557,28 @@ export class GoalsTab {
             document.getElementById('goalTarget').required = false;
         }
 
-        // Show modal using the CSS class approach
-        modal.style.display = 'flex';
+        // Remove any inline styles that might conflict
+        modal.style.removeProperty('display');
+        modal.style.removeProperty('visibility');
+        modal.style.removeProperty('opacity');
 
-        // Force reflow to ensure display is applied before adding class
-        modal.offsetHeight;
+        // Force modal to be visible using inline styles with !important
+        modal.setAttribute('style', `
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            background-color: rgba(0, 0, 0, 0.5) !important;
+            align-items: center !important;
+            justify-content: center !important;
+            z-index: 9999 !important;
+        `);
 
-        // Add the show class which handles opacity and visibility
+        // Add the show class as well
         modal.classList.add('show');
 
         // Focus on first input after animation completes
@@ -583,13 +598,14 @@ export class GoalsTab {
     hideGoalModal() {
         const modal = document.getElementById('goalModal');
         if (modal) {
-            // Remove the show class first
+            // Remove the show class
             modal.classList.remove('show');
-
-            // Wait for transition to complete before hiding
-            setTimeout(() => {
-                modal.style.display = 'none';
-            }, 200);
+            
+            // Remove all inline styles
+            modal.removeAttribute('style');
+            
+            // Ensure it's hidden
+            modal.style.display = 'none';
         }
         this.editingGoalId = null;
     }

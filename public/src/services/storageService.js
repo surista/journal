@@ -238,18 +238,35 @@ export class StorageService {
 
             // If no local data but user is authenticated, try to load from Firebase
             if (!stored && this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
-                console.log('No local goals found, loading from cloud...');
-                try {
-                    const cloudGoals = await this.firebaseSync.getGoals();
-                    if (cloudGoals && cloudGoals.length > 0) {
-                        console.log(`☁️ Loaded ${cloudGoals.length} goals from cloud`);
-                        // Save to local storage for next time
-                        await this.saveGoals(cloudGoals);
-                        return cloudGoals;
-                    }
-                } catch (cloudError) {
-                    console.warn('Failed to load goals from cloud:', cloudError);
+                // Check if we're already loading to prevent duplicate loads
+                if (this._loadingGoals) {
+                    console.log('Already loading goals from cloud, waiting...');
+                    return this._loadingGoalsPromise || [];
                 }
+                
+                this._loadingGoals = true;
+                console.log('No local goals found, loading from cloud...');
+                
+                this._loadingGoalsPromise = (async () => {
+                    try {
+                        const cloudGoals = await this.firebaseSync.getGoals();
+                        if (cloudGoals && cloudGoals.length > 0) {
+                            console.log(`☁️ Loaded ${cloudGoals.length} goals from cloud`);
+                            // Save to local storage for next time
+                            await this.saveGoals(cloudGoals);
+                            return cloudGoals;
+                        }
+                        return [];
+                    } catch (cloudError) {
+                        console.warn('Failed to load goals from cloud:', cloudError);
+                        return [];
+                    } finally {
+                        this._loadingGoals = false;
+                        this._loadingGoalsPromise = null;
+                    }
+                })();
+                
+                return this._loadingGoalsPromise;
             }
 
             if (!stored) {
@@ -365,18 +382,35 @@ export class StorageService {
 
             // If no local data but user is authenticated, try to load from Firebase
             if (!stored && this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
-                console.log('No local repertoire found, loading from cloud...');
-                try {
-                    const cloudRepertoire = await this.firebaseSync.getRepertoire();
-                    if (cloudRepertoire && cloudRepertoire.length > 0) {
-                        console.log(`☁️ Loaded ${cloudRepertoire.length} songs from cloud`);
-                        // Save to local storage for next time
-                        await this.saveRepertoire(cloudRepertoire);
-                        return cloudRepertoire;
-                    }
-                } catch (cloudError) {
-                    console.warn('Failed to load repertoire from cloud:', cloudError);
+                // Check if we're already loading to prevent duplicate loads
+                if (this._loadingRepertoire) {
+                    console.log('Already loading repertoire from cloud, waiting...');
+                    return this._loadingRepertoirePromise || [];
                 }
+                
+                this._loadingRepertoire = true;
+                console.log('No local repertoire found, loading from cloud...');
+                
+                this._loadingRepertoirePromise = (async () => {
+                    try {
+                        const cloudRepertoire = await this.firebaseSync.getRepertoire();
+                        if (cloudRepertoire && cloudRepertoire.length > 0) {
+                            console.log(`☁️ Loaded ${cloudRepertoire.length} songs from cloud`);
+                            // Save to local storage for next time
+                            await this.saveRepertoire(cloudRepertoire);
+                            return cloudRepertoire;
+                        }
+                        return [];
+                    } catch (cloudError) {
+                        console.warn('Failed to load repertoire from cloud:', cloudError);
+                        return [];
+                    } finally {
+                        this._loadingRepertoire = false;
+                        this._loadingRepertoirePromise = null;
+                    }
+                })();
+                
+                return this._loadingRepertoirePromise;
             }
 
             if (!stored) {
@@ -868,18 +902,35 @@ export class StorageService {
 
             // If no local data but user is authenticated, try to load from Firebase
             if (!stored && this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
-                console.log('No local practice entries found, loading from cloud...');
-                try {
-                    const cloudSessions = await this.firebaseSync.getPracticeSessions();
-                    if (cloudSessions && cloudSessions.length > 0) {
-                        console.log(`☁️ Loaded ${cloudSessions.length} practice sessions from cloud`);
-                        // Save to local storage for next time
-                        await this.savePracticeEntries(cloudSessions);
-                        return cloudSessions;
-                    }
-                } catch (cloudError) {
-                    console.warn('Failed to load practice sessions from cloud:', cloudError);
+                // Check if we're already loading to prevent duplicate loads
+                if (this._loadingPracticeEntries) {
+                    console.log('Already loading practice entries from cloud, waiting...');
+                    return this._loadingPracticeEntriesPromise || [];
                 }
+                
+                this._loadingPracticeEntries = true;
+                console.log('No local practice entries found, loading from cloud...');
+                
+                this._loadingPracticeEntriesPromise = (async () => {
+                    try {
+                        const cloudSessions = await this.firebaseSync.getPracticeSessions();
+                        if (cloudSessions && cloudSessions.length > 0) {
+                            console.log(`☁️ Loaded ${cloudSessions.length} practice sessions from cloud`);
+                            // Save to local storage for next time
+                            await this.savePracticeEntries(cloudSessions);
+                            return cloudSessions;
+                        }
+                        return [];
+                    } catch (cloudError) {
+                        console.warn('Failed to load practice sessions from cloud:', cloudError);
+                        return [];
+                    } finally {
+                        this._loadingPracticeEntries = false;
+                        this._loadingPracticeEntriesPromise = null;
+                    }
+                })();
+                
+                return this._loadingPracticeEntriesPromise;
             }
 
             if (!stored) {

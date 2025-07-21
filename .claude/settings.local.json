@@ -12,7 +12,9 @@
       "Bash(git push:*)",
       "Bash(npm version:*)",
       "Bash(firebase deploy:*)",
-      "Bash(firebase projects:list:*)"
+      "Bash(firebase projects:list:*)",
+      "Bash(rm:*)",
+      "Bash(python:*)"
     ],
     "deny": []
   }
