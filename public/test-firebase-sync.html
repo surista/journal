@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Sync Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Firebase Sync Diagnostic Test</h1>
+    
+    <div class="test-section">
+        <h2>1. Firebase SDK Status</h2>
+        <div id="sdkStatus"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. Firebase Initialization</h2>
+        <div id="initStatus"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>3. Authentication Status</h2>
+        <div id="authStatus"></div>
+        <button onclick="testLogin()">Test Login</button>
+        <button onclick="checkCurrentUser()">Check Current User</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>4. Firestore Connection</h2>
+        <div id="firestoreStatus"></div>
+        <button onclick="testFirestoreWrite()">Test Write</button>
+        <button onclick="testFirestoreRead()">Test Read</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>5. Storage Service Integration</h2>
+        <div id="storageStatus"></div>
+        <button onclick="testStorageService()">Test Storage Service</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>6. Console Output</h2>
+        <pre id="consoleOutput"></pre>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        const log = (message, type = 'info') => {
+            const consoleOutput = document.getElementById('consoleOutput');
+            const timestamp = new Date().toLocaleTimeString();
+            consoleOutput.textContent += `[${timestamp}] ${message}\n`;
+            console.log(message);
+        };
+
+        const showStatus = (elementId, message, type = 'info') => {
+            const element = document.getElementById(elementId);
+            element.innerHTML += `<div class="status ${type}">${message}</div>`;
+        };
+
+        // Test 1: Check Firebase SDK
+        if (typeof firebase !== 'undefined') {
+            showStatus('sdkStatus', '✓ Firebase SDK loaded successfully', 'success');
+            showStatus('sdkStatus', `Firebase SDK version: ${firebase.SDK_VERSION || 'Unknown'}`, 'info');
+        } else {
+            showStatus('sdkStatus', '✗ Firebase SDK not loaded', 'error');
+        }
+
+        // Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyACB5lnRzzgIKR1toEXVKGkBfadk6KB_g0",
+            authDomain: "guitar-practice-journal-9f064.firebaseapp.com",
+            projectId: "guitar-practice-journal-9f064",
+            storageBucket: "guitar-practice-journal-9f064.firebasestorage.app",
+            messagingSenderId: "657026172181",
+            appId: "1:657026172181:web:3a41e0793d0763e229d51c",
+            measurementId: "G-XRW7J1FY1M"
+        };
+
+        let app, auth, db;
+
+        // Test 2: Initialize Firebase
+        try {
+            if (!firebase.apps.length) {
+                app = firebase.initializeApp(firebaseConfig);
+                showStatus('initStatus', '✓ Firebase app initialized', 'success');
+            } else {
+                app = firebase.app();
+                showStatus('initStatus', '✓ Firebase app already initialized', 'success');
+            }
+            
+            auth = firebase.auth();
+            db = firebase.firestore();
+            
+            showStatus('initStatus', '✓ Auth service initialized', 'success');
+            showStatus('initStatus', '✓ Firestore initialized', 'success');
+            
+            // Enable persistence
+            db.enablePersistence()
+                .then(() => showStatus('initStatus', '✓ Offline persistence enabled', 'success'))
+                .catch(err => {
+                    if (err.code === 'failed-precondition') {
+                        showStatus('initStatus', '⚠ Multiple tabs open, persistence already enabled', 'warning');
+                    } else {
+                        showStatus('initStatus', `✗ Persistence error: ${err.message}`, 'error');
+                    }
+                });
+            
+        } catch (error) {
+            showStatus('initStatus', `✗ Initialization error: ${error.message}`, 'error');
+            log(`Initialization error: ${error.stack}`);
+        }
+
+        // Test 3: Check authentication
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                showStatus('authStatus', `✓ User authenticated: ${user.email}`, 'success');
+                showStatus('authStatus', `User ID: ${user.uid}`, 'info');
+                log(`Authenticated as: ${user.email}`);
+            } else {
+                showStatus('authStatus', '✗ No user authenticated', 'warning');
+                log('No user authenticated');
+            }
+        });
+
+        async function testLogin() {
+            try {
+                // Try demo login first
+                const email = prompt('Enter email (or use demo@example.com):') || 'demo@example.com';
+                const password = prompt('Enter password (or use demo123):') || 'demo123';
+                
+                log(`Attempting login with: ${email}`);
+                
+                const result = await auth.signInWithEmailAndPassword(email, password);
+                showStatus('authStatus', `✓ Login successful: ${result.user.email}`, 'success');
+                log('Login successful');
+            } catch (error) {
+                showStatus('authStatus', `✗ Login failed: ${error.message}`, 'error');
+                log(`Login error: ${error.code} - ${error.message}`);
+            }
+        }
+
+        function checkCurrentUser() {
+            const user = auth.currentUser;
+            if (user) {
+                showStatus('authStatus', `Current user: ${user.email} (${user.uid})`, 'info');
+                log(`Current user: ${JSON.stringify({
+                    email: user.email,
+                    uid: user.uid,
+                    emailVerified: user.emailVerified
+                })}`);
+            } else {
+                showStatus('authStatus', 'No current user', 'warning');
+                log('No current user');
+            }
+        }
+
+        async function testFirestoreWrite() {
+            try {
+                const user = auth.currentUser;
+                if (!user) {
+                    showStatus('firestoreStatus', '✗ Must be logged in to test write', 'error');
+                    return;
+                }
+                
+                const testDoc = {
+                    test: true,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    userId: user.uid,
+                    email: user.email
+                };
+                
+                log('Writing test document...');
+                
+                await db.collection('test').doc('test-doc').set(testDoc);
+                showStatus('firestoreStatus', '✓ Write test successful', 'success');
+                log('Write successful');
+                
+                // Try user-specific write
+                await db.collection('users').doc(user.uid).collection('test').doc('test-doc').set(testDoc);
+                showStatus('firestoreStatus', '✓ User collection write successful', 'success');
+                
+            } catch (error) {
+                showStatus('firestoreStatus', `✗ Write error: ${error.message}`, 'error');
+                log(`Write error: ${error.code} - ${error.message}`);
+            }
+        }
+
+        async function testFirestoreRead() {
+            try {
+                const user = auth.currentUser;
+                if (!user) {
+                    showStatus('firestoreStatus', '✗ Must be logged in to test read', 'error');
+                    return;
+                }
+                
+                log('Reading test document...');
+                
+                const doc = await db.collection('test').doc('test-doc').get();
+                if (doc.exists) {
+                    showStatus('firestoreStatus', '✓ Read test successful', 'success');
+                    showStatus('firestoreStatus', `Data: ${JSON.stringify(doc.data())}`, 'info');
+                    log(`Read data: ${JSON.stringify(doc.data())}`);
+                } else {
+                    showStatus('firestoreStatus', '⚠ No test document found', 'warning');
+                }
+                
+                // Check user collections
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                if (userDoc.exists) {
+                    showStatus('firestoreStatus', '✓ User document exists', 'success');
+                } else {
+                    showStatus('firestoreStatus', '⚠ No user document found', 'warning');
+                }
+                
+            } catch (error) {
+                showStatus('firestoreStatus', `✗ Read error: ${error.message}`, 'error');
+                log(`Read error: ${error.code} - ${error.message}`);
+            }
+        }
+
+        async function testStorageService() {
+            try {
+                // Import storage service
+                const { StorageService } = await import('./src/services/storageService.js');
+                showStatus('storageStatus', '✓ StorageService imported', 'success');
+                
+                const user = auth.currentUser || { id: 'test-user', email: 'test@example.com' };
+                const storage = new StorageService(user.id);
+                
+                showStatus('storageStatus', `✓ StorageService initialized for user: ${user.id}`, 'success');
+                showStatus('storageStatus', `Cloud sync enabled: ${storage.cloudSyncEnabled}`, 'info');
+                showStatus('storageStatus', `Firebase sync service: ${storage.firebaseSync ? 'Available' : 'Not available'}`, 'info');
+                
+                // Check if Firebase sync is authenticated
+                if (storage.firebaseSync) {
+                    const isAuth = storage.firebaseSync.isAuthenticated();
+                    showStatus('storageStatus', `Firebase sync authenticated: ${isAuth}`, isAuth ? 'success' : 'warning');
+                }
+                
+                // Test save
+                const testEntry = {
+                    id: Date.now(),
+                    date: new Date().toISOString(),
+                    duration: 300,
+                    practiceArea: 'Test',
+                    notes: 'Test entry from diagnostic'
+                };
+                
+                await storage.savePracticeEntry(testEntry);
+                showStatus('storageStatus', '✓ Test practice entry saved', 'success');
+                
+                // Check if it was synced
+                const entries = await storage.getPracticeEntries();
+                showStatus('storageStatus', `Total entries in storage: ${entries.length}`, 'info');
+                
+            } catch (error) {
+                showStatus('storageStatus', `✗ Storage test error: ${error.message}`, 'error');
+                log(`Storage error: ${error.stack}`);
+            }
+        }
+
+        // Auto-run some tests
+        setTimeout(() => {
+            checkCurrentUser();
+        }, 1000);
+    </script>
+</body>
+</html>

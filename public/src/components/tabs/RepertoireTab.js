@@ -182,16 +182,25 @@ export class RepertoireTab {
         console.log('🎸 Container exists:', !!this.container);
 
         if (this.container) {
+            // Remove previous event listener if it exists
+            if (this.addSongClickHandler) {
+                const oldBtn = this.container.querySelector('#addSongBtn');
+                if (oldBtn) {
+                    oldBtn.removeEventListener('click', this.addSongClickHandler);
+                }
+            }
+
             // Add debugging for the Add Song button
             const addSongBtn = this.container.querySelector('#addSongBtn');
             console.log('🎸 Add Song button found:', !!addSongBtn);
             if (addSongBtn) {
                 console.log('🎸 Add Song button element:', addSongBtn);
-                addSongBtn.addEventListener('click', (e) => {
+                this.addSongClickHandler = (e) => {
                     console.log('🎸 Add Song button clicked directly!');
                     e.preventDefault();
                     this.showSongModal();
-                });
+                };
+                addSongBtn.addEventListener('click', this.addSongClickHandler);
             }
 
             // ESC key handler for modal - store reference for cleanup
@@ -328,14 +337,20 @@ export class RepertoireTab {
                 }
             });
 
-            // Form submission
-            this.container.addEventListener('submit', async (e) => {
+            // Form submission - remove old handler first
+            if (this.submitHandler) {
+                this.container.removeEventListener('submit', this.submitHandler);
+            }
+            
+            this.submitHandler = async (e) => {
                 console.log('🎸 Form submission detected:', e.target.id);
                 if (e.target.id === 'songForm') {
                     e.preventDefault();
                     await this.saveSong();
                 }
-            });
+            };
+            
+            this.container.addEventListener('submit', this.submitHandler);
 
             // Filter and search changes
             this.container.addEventListener('change', (e) => {
@@ -522,23 +537,38 @@ export class RepertoireTab {
     }
 
     async saveSong() {
-        const form = document.getElementById('songForm');
-        const songId = form.dataset.songId;
-
-        const songData = {
-            title: document.getElementById('songTitle').value.trim(),
-            artist: document.getElementById('songArtist').value.trim(),
-            difficulty: document.getElementById('songDifficulty').value,
-            status: document.getElementById('songStatus').value,
-            key: document.getElementById('songKey').value,
-            tempo: document.getElementById('songTempo').value ? parseInt(document.getElementById('songTempo').value) : null,
-            notes: document.getElementById('songNotes').value.trim(),
-            videoLink: document.getElementById('songVideoLink').value.trim(),
-            sheetLink: document.getElementById('songSheetLink').value.trim(),
-            updatedAt: new Date().toISOString()
-        };
-
+        // Prevent double saves
+        if (this.isSaving) {
+            console.log('🎸 Save already in progress, ignoring duplicate request');
+            return;
+        }
+        
+        this.isSaving = true;
+        
         try {
+            const form = document.getElementById('songForm');
+            const songId = form.dataset.songId;
+
+            const songData = {
+                title: document.getElementById('songTitle').value.trim(),
+                artist: document.getElementById('songArtist').value.trim(),
+                difficulty: document.getElementById('songDifficulty').value,
+                status: document.getElementById('songStatus').value,
+                key: document.getElementById('songKey').value,
+                tempo: document.getElementById('songTempo').value ? parseInt(document.getElementById('songTempo').value) : null,
+                notes: document.getElementById('songNotes').value.trim(),
+                videoLink: document.getElementById('songVideoLink').value.trim(),
+                sheetLink: document.getElementById('songSheetLink').value.trim(),
+                updatedAt: new Date().toISOString()
+            };
+            
+            // Validate required fields
+            if (!songData.title) {
+                this.showNotification('Song title is required', 'error');
+                this.isSaving = false;
+                return;
+            }
+            
             if (songId) {
                 // Update existing song
                 await this.storageService.updateRepertoireSong(songId, songData);
@@ -560,6 +590,8 @@ export class RepertoireTab {
         } catch (error) {
             console.error('Error saving song:', error);
             this.showNotification('Failed to save song', 'error');
+        } finally {
+            this.isSaving = false;
         }
     }
 

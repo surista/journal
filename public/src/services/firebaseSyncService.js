@@ -69,14 +69,18 @@ class FirebaseSyncService {
                     console.log('✅ User authenticated:', user.email);
                     await this.ensureUserDocument();
                     this.processPendingWrites();
-                    this.setupRealtimeListeners();
+                    // Temporarily disable real-time listeners to avoid permission errors
+                    // this.setupRealtimeListeners();
+                    console.log('⚠️ Real-time listeners disabled for now');
                 } else {
                     console.log('❌ User not authenticated');
                     this.removeRealtimeListeners();
                 }
             });
 
-            // Monitor connection state
+            // Monitor connection state - disabled due to permission issues
+            // Note: .info/connected requires special permissions
+            /*
             this.db.collection('.info').doc('connected').onSnapshot((snapshot) => {
                 const isConnected = snapshot.data()?.connected || false;
                 if (isConnected && this.currentUser) {
@@ -84,6 +88,7 @@ class FirebaseSyncService {
                     this.processPendingWrites();
                 }
             });
+            */
 
             this.isInitialized = true;
             console.log('✅ Firebase Sync Service initialized');
@@ -150,7 +155,7 @@ class FirebaseSyncService {
             await this.db.collection('users')
                 .doc(this.currentUser.uid)
                 .collection('practice_sessions')
-                .doc(session.id)
+                .doc(String(session.id))
                 .set(sessionData);
             
             console.log('✅ Practice session saved to cloud:', session.id);
@@ -206,7 +211,7 @@ class FirebaseSyncService {
             await this.db.collection('users')
                 .doc(this.currentUser.uid)
                 .collection('practice_sessions')
-                .doc(sessionId)
+                .doc(String(sessionId))
                 .update(updateData);
             
             console.log('✅ Practice session updated:', sessionId);
@@ -236,7 +241,7 @@ class FirebaseSyncService {
             await this.db.collection('users')
                 .doc(this.currentUser.uid)
                 .collection('practice_sessions')
-                .doc(sessionId)
+                .doc(String(sessionId))
                 .delete();
             
             console.log('✅ Practice session deleted:', sessionId);
@@ -280,7 +285,7 @@ class FirebaseSyncService {
             await this.db.collection('users')
                 .doc(this.currentUser.uid)
                 .collection('goals')
-                .doc(goal.id)
+                .doc(String(goal.id))
                 .set(goalData);
             
             console.log('✅ Goal saved to cloud:', goal.id);
@@ -336,7 +341,7 @@ class FirebaseSyncService {
             await this.db.collection('users')
                 .doc(this.currentUser.uid)
                 .collection('goals')
-                .doc(goalId)
+                .doc(String(goalId))
                 .update(updateData);
             
             console.log('✅ Goal updated:', goalId);
@@ -366,7 +371,7 @@ class FirebaseSyncService {
             await this.db.collection('users')
                 .doc(this.currentUser.uid)
                 .collection('goals')
-                .doc(goalId)
+                .doc(String(goalId))
                 .delete();
             
             console.log('✅ Goal deleted:', goalId);
@@ -410,7 +415,7 @@ class FirebaseSyncService {
             await this.db.collection('users')
                 .doc(this.currentUser.uid)
                 .collection('repertoire')
-                .doc(song.id)
+                .doc(String(song.id))
                 .set(songData);
             
             console.log('✅ Repertoire song saved to cloud:', song.id);
@@ -466,7 +471,7 @@ class FirebaseSyncService {
             await this.db.collection('users')
                 .doc(this.currentUser.uid)
                 .collection('repertoire')
-                .doc(songId)
+                .doc(String(songId))
                 .update(updateData);
             
             console.log('✅ Repertoire song updated:', songId);
@@ -496,7 +501,7 @@ class FirebaseSyncService {
             await this.db.collection('users')
                 .doc(this.currentUser.uid)
                 .collection('repertoire')
-                .doc(songId)
+                .doc(String(songId))
                 .delete();
             
             console.log('✅ Repertoire song deleted:', songId);
@@ -574,7 +579,6 @@ class FirebaseSyncService {
         const practiceUnsubscribe = this.db.collection('users')
             .doc(this.currentUser.uid)
             .collection('practice_sessions')
-            .orderBy('updatedAt', 'desc')
             .limit(50)
             .onSnapshot((snapshot) => {
                 snapshot.docChanges().forEach((change) => {

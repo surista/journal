@@ -167,9 +167,13 @@ export class GoalsTab {
     attachEventListeners() {
         console.log('🎯 GoalsTab attachEventListeners called');
 
-        // Use event delegation on container
-        if (this.container) {
-            this.container.addEventListener('click', async (e) => {
+        // Remove any existing click handler to prevent duplicates
+        if (this.clickHandler) {
+            this.container.removeEventListener('click', this.clickHandler);
+        }
+
+        // Create the click handler function
+        this.clickHandler = async (e) => {
                 console.log('🎯 Click detected on:', e.target);
                 const target = e.target;
 
@@ -248,15 +252,21 @@ export class GoalsTab {
                     const goalId = parseFloat(btn.dataset.id); // Use parseFloat to handle decimal IDs
                     this.showProgressModal(goalId);
                 }
-            });
+            };
 
-            // Form submission
-            this.container.addEventListener('submit', async (e) => {
+            // Form submission - remove old handler first
+            if (this.submitHandler) {
+                this.container.removeEventListener('submit', this.submitHandler);
+            }
+            
+            this.submitHandler = async (e) => {
                 if (e.target.id === 'goalForm') {
                     e.preventDefault();
                     await this.saveGoal();
                 }
-            });
+            };
+            
+            this.container.addEventListener('submit', this.submitHandler);
 
             // Goal type change for showing/hiding measurement fields
             this.container.addEventListener('change', (e) => {
@@ -295,7 +305,11 @@ export class GoalsTab {
                         document.getElementById('goalTarget').required = false;
                     }
                 }
-            });
+            };
+
+        // Add the click handler to the container
+        if (this.container) {
+            this.container.addEventListener('click', this.clickHandler);
         }
 
         // Listen for practice sessions to auto-update progress
@@ -580,26 +594,37 @@ export class GoalsTab {
     }
 
     async saveGoal() {
-        const title = document.getElementById('goalTitle').value.trim();
-        const category = document.getElementById('goalCategory').value;
-        const type = document.getElementById('goalType').value;
-        const current = document.getElementById('goalCurrent').value ? parseInt(document.getElementById('goalCurrent').value) : null;
-        const target = document.getElementById('goalTarget').value ? parseInt(document.getElementById('goalTarget').value) : null;
-        const targetDate = document.getElementById('goalTargetDate').value;
-        const description = document.getElementById('goalDescription').value.trim();
-        const criteria = document.getElementById('goalCriteria').value.trim();
-
-        if (!title) {
-            this.showError('Goal title is required');
+        // Prevent double saves
+        if (this.isSaving) {
+            console.log('🎯 Save already in progress, ignoring duplicate request');
             return;
         }
+        
+        this.isSaving = true;
+        
+        try {
+            const title = document.getElementById('goalTitle').value.trim();
+            const category = document.getElementById('goalCategory').value;
+            const type = document.getElementById('goalType').value;
+            const current = document.getElementById('goalCurrent').value ? parseInt(document.getElementById('goalCurrent').value) : null;
+            const target = document.getElementById('goalTarget').value ? parseInt(document.getElementById('goalTarget').value) : null;
+            const targetDate = document.getElementById('goalTargetDate').value;
+            const description = document.getElementById('goalDescription').value.trim();
+            const criteria = document.getElementById('goalCriteria').value.trim();
 
-        if (type && (!current && current !== 0 || !target)) {
-            this.showError('Current and target values are required for measured goals');
-            return;
-        }
+            if (!title) {
+                this.showError('Goal title is required');
+                this.isSaving = false;
+                return;
+            }
 
-        const goalData = {
+            if (type && (!current && current !== 0 || !target)) {
+                this.showError('Current and target values are required for measured goals');
+                this.isSaving = false;
+                return;
+            }
+
+            const goalData = {
             title,
             category,
             type: type || null,
@@ -625,6 +650,8 @@ export class GoalsTab {
         } catch (error) {
             console.error('Error saving goal:', error);
             this.showError('Failed to save goal');
+        } finally {
+            this.isSaving = false;
         }
     }
 
