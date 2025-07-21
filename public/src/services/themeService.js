@@ -99,6 +99,36 @@ export class ThemeService {
                 name: 'Slate Gray',
                 icon: '🔘',
                 description: 'Modern grays with blue undertones'
+            },
+            'pastel-dream': {
+                name: 'Pastel Dream',
+                icon: '🦄',
+                description: 'Soft lavender and pink pastels'
+            },
+            'cotton-candy': {
+                name: 'Cotton Candy',
+                icon: '🍭',
+                description: 'Sweet pink and blue pastels'
+            },
+            'spring-meadow': {
+                name: 'Spring Meadow',
+                icon: '🌷',
+                description: 'Fresh greens and flower pastels'
+            },
+            'sunset-sherbet': {
+                name: 'Sunset Sherbet',
+                icon: '🍧',
+                description: 'Warm orange and peach pastels'
+            },
+            'ocean-breeze': {
+                name: 'Ocean Breeze',
+                icon: '🌊',
+                description: 'Light aqua and sky blue pastels'
+            },
+            'bubblegum-pop': {
+                name: 'Bubblegum Pop',
+                icon: '🍬',
+                description: 'Bright pink and purple pastels'
             }
         };
 
@@ -165,6 +195,12 @@ export class ThemeService {
                 'crimson-red': '#2d0a0a',
                 'golden-amber': '#2e2012',
                 'slate-gray': '#1e293b',
+                'pastel-dream': '#FDFBFF',
+                'cotton-candy': '#FFFBFD',
+                'spring-meadow': '#FBFFFB',
+                'sunset-sherbet': '#FFFBF7',
+                'ocean-breeze': '#F7FEFF',
+                'bubblegum-pop': '#FFFBFE'
             };
             metaThemeColor.content = colors[theme] || '#0a0a0a';
         }

@@ -1,0 +1,83 @@
+/* Spring Meadow Theme - Fresh greens and flower pastels */
+
+[data-theme="spring-meadow"] {
+    /* Primary Colors - Fresh green and flower pink */
+    --primary: #B3E5B3;
+    --primary-dark: #99DD99;
+    --primary-light: #CCEECC;
+    --secondary: #FFB3CC;
+    --secondary-dark: #FF99BB;
+    --secondary-light: #FFCCDD;
+
+    /* Status Colors - Garden bright */
+    --success: #A3E5A3;
+    --success-dark: #88DD88;
+    --success-light: #BBFFBB;
+    --danger: #FFB3A3;
+    --danger-dark: #FF9988;
+    --danger-light: #FFCCBB;
+    --warning: #FFE5A3;
+    --warning-dark: #FFDD88;
+    --warning-light: #FFF0BB;
+    --info: #A3D9FF;
+    --info-dark: #88CCFF;
+    --info-light: #BBE6FF;
+
+    /* Light Backgrounds - Fresh mint green */
+    --bg-dark: #F0FFF0;
+    --bg-darker: #E8FFE8;
+    --bg-card: #FAFFFA;
+    --bg-card-hover: #F5FFF5;
+    --bg-input: #E0FFE0;
+    --bg-input-hover: #D6FFD6;
+    --bg-modal: rgba(179, 229, 179, 0.95);
+    --bg-sidebar: #EBFFEB;
+    --bg-overlay: rgba(179, 229, 179, 0.4);
+
+    /* Text Colors */
+    --text-primary: #3D5C3D;
+    --text-secondary: #6B8C6B;
+    --text-tertiary: #8BAC8B;
+    --text-muted: #BDDCBD;
+    --text-disabled: #D5ECD5;
+
+    /* Borders - Leaf greens */
+    --border: #DFF2DF;
+    --border-light: #F0FFF0;
+    --border-focus: #99DD99;
+    --border-error: #FFB3A3;
+    --border-success: #A3E5A3;
+
+    /* Shadows - Garden morning */
+    --shadow-sm: 0 1px 3px 0 rgba(179, 229, 179, 0.15);
+    --shadow-md: 0 4px 6px -1px rgba(179, 229, 179, 0.2);
+    --shadow-lg: 0 10px 15px -3px rgba(179, 229, 179, 0.25);
+    --shadow-xl: 0 20px 25px -5px rgba(179, 229, 179, 0.3);
+    --shadow-2xl: 0 25px 50px -12px rgba(179, 229, 179, 0.35);
+    --shadow-inner: inset 0 2px 4px 0 rgba(179, 229, 179, 0.1);
+    --shadow-glow: 0 0 20px rgba(179, 229, 179, 0.5);
+
+    /* Scrollbar */
+    --scrollbar-track: #F0FFF0;
+    --scrollbar-thumb: #B3E5B3;
+    --scrollbar-thumb-hover: #99DD99;
+
+    /* Code */
+    --code-bg: #F7FFF7;
+    --code-text: #5B7B5B;
+    --code-comment: #88CC88;
+    --code-string: #FF99BB;
+    --code-keyword: #88AAFF;
+
+    /* Gradients - Spring bloom */
+    --gradient-primary: linear-gradient(135deg, #B3E5B3 0%, #FFB3CC 100%);
+    --gradient-success: linear-gradient(135deg, #A3E5A3 0%, #BBFFBB 100%);
+    --gradient-danger: linear-gradient(135deg, #FFB3A3 0%, #FFCCBB 100%);
+    --gradient-warning: linear-gradient(135deg, #FFE5A3 0%, #FFF0BB 100%);
+    --gradient-light: linear-gradient(135deg, #FFFFFF 0%, #F7FFF7 100%);
+
+    /* Opacity values */
+    --opacity-hover: 0.95;
+    --opacity-disabled: 0.6;
+    --opacity-overlay: 0.5;
+}

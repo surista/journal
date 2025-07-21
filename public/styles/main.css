@@ -67,10 +67,15 @@
 @import url('./themes/crimson-red.css');
 @import url('./themes/golden-amber.css');
 @import url('./themes/emerald-green.css');
-
-
-
-
+@import url('./themes/slate-gray.css');
+@import url('./themes/pastel-dream.css');
+@import url('./themes/cotton-candy.css');
+@import url('./themes/spring-meadow.css');
+@import url('./themes/sunset-sherbet.css');
+@import url('./themes/ocean-breeze.css');
+@import url('./themes/bubblegum-pop.css');
+@import url('./themes/pastel-overrides.css');
+@import url('./themes/pastel-backgrounds.css');
 
 /* Utility styles - Must come last */
 @import url('./utilities/spacing.css');

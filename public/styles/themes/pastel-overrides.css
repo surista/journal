@@ -1,0 +1,246 @@
+/* Pastel Theme Overrides - Additional styling for light pastel themes */
+
+/* Pastel Dream Theme */
+[data-theme="pastel-dream"] {
+    --bg-primary: #F3EBFF;
+    --bg-secondary: #F8F3FF;
+    --bg-tertiary: #EDE5FF;
+}
+
+[data-theme="pastel-dream"] body,
+[data-theme="pastel-dream"] .main-content,
+[data-theme="pastel-dream"] .content-wrapper {
+    background: linear-gradient(135deg, #F3EBFF 0%, #F8F3FF 100%) !important;
+    min-height: 100vh;
+}
+
+[data-theme="pastel-dream"] .modal-content {
+    background: linear-gradient(135deg, #FDFAFF 0%, #F8F3FF 100%);
+    border: 2px solid #E0B3FF;
+}
+
+[data-theme="pastel-dream"] .btn-primary {
+    background: linear-gradient(135deg, #E0B3FF 0%, #D19FFF 100%);
+    box-shadow: 0 4px 15px rgba(224, 179, 255, 0.4);
+}
+
+[data-theme="pastel-dream"] .card {
+    background: rgba(253, 250, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border: 1px solid #EDE5FF;
+}
+
+/* Cotton Candy Theme */
+[data-theme="cotton-candy"] {
+    --bg-primary: #FFE8F3;
+    --bg-secondary: #E6F5FF;
+    --bg-tertiary: #FFD6E7;
+}
+
+[data-theme="cotton-candy"] body,
+[data-theme="cotton-candy"] .main-content,
+[data-theme="cotton-candy"] .content-wrapper {
+    background: linear-gradient(135deg, #FFE8F3 0%, #E6F5FF 100%) !important;
+    min-height: 100vh;
+}
+
+[data-theme="cotton-candy"] .modal-content {
+    background: linear-gradient(135deg, #FFFAFC 0%, #F5FCFF 100%);
+    border: 2px solid #FFB6D9;
+}
+
+[data-theme="cotton-candy"] .btn-primary {
+    background: linear-gradient(135deg, #FFB6D9 0%, #A6D8FF 100%);
+    box-shadow: 0 4px 15px rgba(255, 182, 217, 0.4);
+}
+
+[data-theme="cotton-candy"] .card {
+    background: rgba(255, 250, 252, 0.9);
+    backdrop-filter: blur(10px);
+    border: 1px solid #FFE0EC;
+}
+
+/* Spring Meadow Theme */
+[data-theme="spring-meadow"] {
+    --bg-primary: #E8FFE8;
+    --bg-secondary: #FFF0F7;
+    --bg-tertiary: #D6FFD6;
+}
+
+[data-theme="spring-meadow"] body,
+[data-theme="spring-meadow"] .main-content,
+[data-theme="spring-meadow"] .content-wrapper {
+    background: linear-gradient(135deg, #E8FFE8 0%, #FFF0F7 100%) !important;
+    min-height: 100vh;
+}
+
+[data-theme="spring-meadow"] .modal-content {
+    background: linear-gradient(135deg, #FAFFFA 0%, #FFF5FA 100%);
+    border: 2px solid #B3E5B3;
+}
+
+[data-theme="spring-meadow"] .btn-primary {
+    background: linear-gradient(135deg, #B3E5B3 0%, #99DD99 100%);
+    box-shadow: 0 4px 15px rgba(179, 229, 179, 0.4);
+}
+
+[data-theme="spring-meadow"] .card {
+    background: rgba(250, 255, 250, 0.9);
+    backdrop-filter: blur(10px);
+    border: 1px solid #DFF2DF;
+}
+
+/* Sunset Sherbet Theme */
+[data-theme="sunset-sherbet"] {
+    --bg-primary: #FFE8D9;
+    --bg-secondary: #FFF0E6;
+    --bg-tertiary: #FFD6BD;
+}
+
+[data-theme="sunset-sherbet"] body,
+[data-theme="sunset-sherbet"] .main-content,
+[data-theme="sunset-sherbet"] .content-wrapper {
+    background: linear-gradient(135deg, #FFE8D9 0%, #FFF0E6 100%) !important;
+    min-height: 100vh;
+}
+
+[data-theme="sunset-sherbet"] .modal-content {
+    background: linear-gradient(135deg, #FFFAF5 0%, #FFE8D9 100%);
+    border: 2px solid #FFB399;
+}
+
+[data-theme="sunset-sherbet"] .btn-primary {
+    background: linear-gradient(135deg, #FFB399 0%, #FFD199 100%);
+    box-shadow: 0 4px 15px rgba(255, 179, 153, 0.4);
+}
+
+[data-theme="sunset-sherbet"] .card {
+    background: rgba(255, 250, 245, 0.9);
+    backdrop-filter: blur(10px);
+    border: 1px solid #FFE0CC;
+}
+
+/* Ocean Breeze Theme */
+[data-theme="ocean-breeze"] {
+    --bg-primary: #E6F5FF;
+    --bg-secondary: #F0FAFF;
+    --bg-tertiary: #CCE9FF;
+}
+
+[data-theme="ocean-breeze"] body,
+[data-theme="ocean-breeze"] .main-content,
+[data-theme="ocean-breeze"] .content-wrapper {
+    background: linear-gradient(135deg, #E6F5FF 0%, #F0FAFF 100%) !important;
+    min-height: 100vh;
+}
+
+[data-theme="ocean-breeze"] .modal-content {
+    background: linear-gradient(135deg, #FAFEFF 0%, #E6F5FF 100%);
+    border: 2px solid #99D9E5;
+}
+
+[data-theme="ocean-breeze"] .btn-primary {
+    background: linear-gradient(135deg, #99D9E5 0%, #99E5D9 100%);
+    box-shadow: 0 4px 15px rgba(153, 217, 229, 0.4);
+}
+
+[data-theme="ocean-breeze"] .card {
+    background: rgba(250, 254, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border: 1px solid #CCE9F2;
+}
+
+/* Bubblegum Pop Theme */
+[data-theme="bubblegum-pop"] {
+    --bg-primary: #FFE0F0;
+    --bg-secondary: #F0E6FF;
+    --bg-tertiary: #FFCCE5;
+}
+
+[data-theme="bubblegum-pop"] body,
+[data-theme="bubblegum-pop"] .main-content,
+[data-theme="bubblegum-pop"] .content-wrapper {
+    background: linear-gradient(135deg, #FFE0F0 0%, #F0E6FF 100%) !important;
+    min-height: 100vh;
+}
+
+[data-theme="bubblegum-pop"] .modal-content {
+    background: linear-gradient(135deg, #FFFAFD 0%, #F8F0FF 100%);
+    border: 2px solid #FF99CC;
+}
+
+[data-theme="bubblegum-pop"] .btn-primary {
+    background: linear-gradient(135deg, #FF99CC 0%, #CC99FF 100%);
+    box-shadow: 0 4px 15px rgba(255, 153, 204, 0.4);
+}
+
+[data-theme="bubblegum-pop"] .card {
+    background: rgba(255, 250, 253, 0.9);
+    backdrop-filter: blur(10px);
+    border: 1px solid #FFE0F0;
+}
+
+/* Common pastel theme overrides */
+[data-theme="pastel-dream"] .sidebar,
+[data-theme="cotton-candy"] .sidebar,
+[data-theme="spring-meadow"] .sidebar,
+[data-theme="sunset-sherbet"] .sidebar,
+[data-theme="ocean-breeze"] .sidebar,
+[data-theme="bubblegum-pop"] .sidebar {
+    backdrop-filter: blur(10px);
+    box-shadow: 2px 0 20px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="pastel-dream"] .nav-item.active,
+[data-theme="cotton-candy"] .nav-item.active,
+[data-theme="spring-meadow"] .nav-item.active,
+[data-theme="sunset-sherbet"] .nav-item.active,
+[data-theme="ocean-breeze"] .nav-item.active,
+[data-theme="bubblegum-pop"] .nav-item.active {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    color: white;
+    font-weight: 600;
+}
+
+[data-theme="pastel-dream"] .form-control:focus,
+[data-theme="cotton-candy"] .form-control:focus,
+[data-theme="spring-meadow"] .form-control:focus,
+[data-theme="sunset-sherbet"] .form-control:focus,
+[data-theme="ocean-breeze"] .form-control:focus,
+[data-theme="bubblegum-pop"] .form-control:focus {
+    background: white;
+    box-shadow: 0 0 0 4px var(--primary-light);
+}
+
+[data-theme="pastel-dream"] .achievement-badge.earned,
+[data-theme="cotton-candy"] .achievement-badge.earned,
+[data-theme="spring-meadow"] .achievement-badge.earned,
+[data-theme="sunset-sherbet"] .achievement-badge.earned,
+[data-theme="ocean-breeze"] .achievement-badge.earned,
+[data-theme="bubblegum-pop"] .achievement-badge.earned {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    border: 2px solid white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="pastel-dream"] .stat-card,
+[data-theme="cotton-candy"] .stat-card,
+[data-theme="spring-meadow"] .stat-card,
+[data-theme="sunset-sherbet"] .stat-card,
+[data-theme="ocean-breeze"] .stat-card,
+[data-theme="bubblegum-pop"] .stat-card {
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-card-hover) 100%);
+    border: 1px solid var(--border);
+}
+
+[data-theme="pastel-dream"] .timer-display,
+[data-theme="cotton-candy"] .timer-display,
+[data-theme="spring-meadow"] .timer-display,
+[data-theme="sunset-sherbet"] .timer-display,
+[data-theme="ocean-breeze"] .timer-display,
+[data-theme="bubblegum-pop"] .timer-display {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+}
