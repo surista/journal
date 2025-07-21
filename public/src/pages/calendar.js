@@ -99,7 +99,7 @@ export class CalendarPage {
                                     <span class="stat-value" id="monthHours">0h</span>
                                     <span class="stat-value" id="monthMinutes">0m</span>
                                 </div>
-                                <div class="stat-label">TOTAL<br/>TIME</div>
+                                <div class="stat-label">TOTAL TIME</div>
                             </div>
                         </div>
                     </div>
@@ -118,12 +118,7 @@ export class CalendarPage {
                                     <span class="stat-value" id="totalHours">0h</span>
                                     <span class="stat-value" id="totalMinutes">0m</span>
                                 </div>
-                                <div class="stat-label">TOTAL<br/>TIME</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-value" id="longestStreak">0</div>
-                                <div class="stat-sublabel">days</div>
-                                <div class="stat-label">LONGEST<br/>STREAK</div>
+                                <div class="stat-label">TOTAL TIME</div>
                             </div>
                         </div>
                     </div>

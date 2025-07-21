@@ -20,6 +20,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Advanced music theory tools
 - Plugin architecture for extensions
 
+## [9.94] - 2025-07-21
+
+### Fixed
+- **Audio Processing**: Updated tempo shift implementation for better performance
+  - Enhanced pitch shifting algorithm stability
+  - Improved audio quality at extreme tempo changes
+
+## [9.89-9.93] - 2025-07-20
+
+### Added
+- **Cloud Sync with Firebase**: Complete cloud synchronization system
+  - Automatic backup of practice sessions, goals, and repertoire to cloud
+  - Real-time sync across multiple devices
+  - Offline support with automatic sync when reconnected
+  - Cloud Sync Manager component for user control
+  - Secure Firebase authentication integration
+- **New Pastel Themes**: Added 6 new pastel light themes
+  - Cotton Candy, Bubblegum Pop, Spring Meadow
+  - Sunset Sherbet, Ocean Breeze, Pastel Dream
+  - Enhanced theme system with vibrant pastel colors
+
+### Fixed
+- **Firebase Integration**: Multiple fixes for cloud sync functionality
+  - Fixed data loading from cloud on startup
+  - Resolved syntax errors in Firebase listeners
+  - Improved error handling for network issues
+  - Better conflict resolution for concurrent edits
+
+### Changed
+- **Storage Architecture**: Enhanced to support cloud sync
+  - Added sync metadata to all data types
+  - Improved data structure for cloud compatibility
+  - Better handling of large datasets
+
 ## [9.4.0] - 2025-07-12
 
 ### Fixed
@@ -30,7 +64,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Modal System**: Enhanced modal CSS for universal compatibility
   - Applied aggressive styling patterns across all modals
   - Better support for modals created dynamically
-- 
 ## [5.4.0] - 2025-07-10
 
 ### Added

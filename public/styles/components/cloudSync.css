@@ -156,6 +156,24 @@
 #syncNowBtn {
     width: 100%;
     margin-top: var(--space-md);
+    background: var(--primary) !important;
+    background-color: brown;
+    color: red !important;
+    border-color: var(--primary) !important;
+}
+
+#syncNowBtn:hover {
+    background: var(--primary-dark) !important;
+    border-color: var(--primary-dark) !important;
+    transform: translateY(-1px);
+}
+
+#syncNowBtn:disabled {
+    background: var(--bg-tertiary) !important;
+    color: var(--text-secondary) !important;
+    border-color: var(--border) !important;
+    cursor: not-allowed;
+    opacity: 0.6;
 }
 
 /* Advanced Settings */

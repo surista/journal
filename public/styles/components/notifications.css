@@ -55,6 +55,14 @@
     color: var(--text-primary);
 }
 
+/* Ensure message text is white for colored notifications */
+.notification.success .notification-message,
+.notification.error .notification-message,
+.notification.warning .notification-message,
+.notification.info .notification-message {
+    color: white;
+}
+
 .notification-close {
     width: 24px;
     height: 24px;

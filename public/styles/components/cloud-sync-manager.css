@@ -173,21 +173,25 @@
     border-radius: 8px;
     box-shadow: var(--shadow-lg);
     animation: slideIn 0.3s ease-out;
+    color: var(--text-primary);
 }
 
 .notification.success {
-    border-left: 4px solid var(--success);
-    color: var(--success);
+    background: #059669; /* Darker green */
+    color: white;
+    border-left: none;
 }
 
 .notification.error {
-    border-left: 4px solid var(--danger);
-    color: var(--danger);
+    background: #dc2626; /* Darker red */
+    color: white;
+    border-left: none;
 }
 
 .notification.info {
-    border-left: 4px solid var(--info);
-    color: var(--info);
+    background: #3730a3; /* Darker blue */
+    color: white;
+    border-left: none;
 }
 
 .notification.fade-out {

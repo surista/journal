@@ -21,7 +21,8 @@ guitar-practice-journal/
 │   │   ├── achievementBadges.js # Gamification badges
 │   │   ├── waveform.js     # Audio waveform visualization
 │   │   ├── VirtualScrollList.js # Performance optimization
-│   │   └── LazyImage.js    # Lazy loading images
+│   │   ├── LazyImage.js    # Lazy loading images
+│   │   └── CloudSyncManager.js # Firebase cloud sync UI
 │   ├── pages/              # Main application views
 │   │   ├── dashboard.js    # Primary interface (tabbed layout)
 │   │   ├── calendar.js     # Practice calendar view
@@ -33,14 +34,17 @@ guitar-practice-journal/
 │   │   ├── authService.js       # Local authentication
 │   │   ├── notificationManager.js # User notifications
 │   │   ├── themeService.js      # Dark/light theme
-│   │   └── pushNotificationService.js # PWA notifications
+│   │   ├── pushNotificationService.js # PWA notifications
+│   │   ├── firebaseSyncService.js # Firebase integration
+│   │   └── cloudSyncService.js    # Cloud sync logic
 │   └── utils/              # Helper functions & utilities
 │       ├── helpers.js      # Time formatting, compression, debouncing
 │       └── router.js       # SPA routing with config integration
 └── styles/
     ├── main.css           # Global styles, variables, typography
     ├── components.css     # Component-specific styles
-    └── pages.css          # Page-specific styles
+    ├── pages.css          # Page-specific styles
+    └── themes/            # 23+ theme variations
 ```
 
 ## 🔧 Technology Stack
@@ -56,6 +60,10 @@ guitar-practice-journal/
 - **Fallback**: localStorage (with compression)
 - **Migration**: Automatic localStorage → IndexedDB
 - **Caching**: In-memory cache with TTL
+- **Cloud Sync**: Firebase Firestore (v9.89+)
+  - Real-time synchronization
+  - Offline support with automatic sync
+  - Conflict resolution for concurrent edits
 
 ### **Audio Processing**
 - **Engine**: Web Audio API
@@ -170,6 +178,7 @@ App Start → AuthService.getCurrentUser()
 - **Features**: Compression, migration, export/import
 - **Caching**: Smart caching with TTL for performance
 - **Sync**: Cross-tab data synchronization
+- **Cloud Backup**: Firebase Firestore integration (v9.89+)
 
 ### **4. Practice Tracking System**
 - **Components**: PracticeForm, StatsPanel, Calendar
@@ -182,6 +191,13 @@ App Start → AuthService.getCurrentUser()
 - **Features**: Goal setting, progress tracking, gamification
 - **Types**: Time goals, streak goals, area-specific goals
 - **Rewards**: Badge system with visual feedback
+
+### **6. Cloud Sync System** (v9.89+)
+- **Components**: CloudSyncManager, FirebaseSyncService
+- **Features**: Real-time data synchronization
+- **Data Types**: Practice sessions, goals, repertoire
+- **Capabilities**: Offline support, conflict resolution
+- **Security**: Firebase authentication
 
 ## 🔌 Component Interfaces
 
@@ -250,14 +266,16 @@ importData(data) → Promise<void>
 ## 🔐 Security & Privacy
 
 ### **Data Storage**
-- **Local Only**: All data stored locally (IndexedDB/localStorage)
-- **No Cloud**: No external data transmission
+- **Hybrid Model**: Local storage with optional cloud backup (v9.89+)
+- **Local First**: All data stored locally (IndexedDB/localStorage)
+- **Cloud Optional**: Firebase sync can be enabled/disabled
 - **User Control**: Full export/import capability
 
 ### **Authentication**
 - **Local**: Simple local authentication system
 - **Demo Account**: Built-in demo@example.com for testing
-- **Device-Based**: Account data tied to specific device
+- **Firebase Auth**: Secure cloud authentication (optional)
+- **Privacy**: Cloud sync requires explicit user consent
 
 ## 🎨 Styling Architecture
 
@@ -267,9 +285,10 @@ importData(data) → Promise<void>
 - **pages.css**: Page layouts and responsive design
 
 ### **Design System**
-- **Themes**: Dark (default) and light with CSS custom properties
+- **Themes**: 23+ themes including dark (default), light, and pastel variations
 - **Responsive**: Mobile-first with progressive enhancement
 - **Performance**: CSS containment for complex components
+- **Custom Properties**: CSS variables for easy customization
 
 ### **Key Design Patterns**
 - **Cards**: Consistent card-based layout
