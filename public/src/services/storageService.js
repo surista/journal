@@ -1,7 +1,7 @@
 // src/services/storageService.js - Complete fixed version with all goal methods
 import {CompressionUtils} from '../utils/helpers.js';
 import {AuthService} from './authService.js';
-import {cloudStorage} from './firebaseService.js';
+import firebaseSyncService from './firebaseSyncService.js';
 
 export class StorageService {
     constructor(userId) {
@@ -12,6 +12,8 @@ export class StorageService {
         this.backupDebounceTimer = null;
         this.backupDebounceDelay = 5000;
         this.cloudSyncEnabled = true;
+        this.firebaseSync = firebaseSyncService;
+        this.setupCloudSync();
     }
 
     // Error recovery method
@@ -44,18 +46,39 @@ export class StorageService {
         return [];
     }
 
-    // Simplified cloud sync without subscription
-    async initializeCloudSync() {
+    // Set up cloud sync
+    async setupCloudSync() {
         if (!this.cloudSyncEnabled) return;
 
         try {
-            // Only sync if cloud storage is available
-            if (cloudStorage && cloudStorage.userId) {
-                await this.syncFromCloud();
-            }
+            // Wait for Firebase to initialize
+            await this.firebaseSync.waitForInitialization();
+            
+            // Listen for sync events
+            window.addEventListener('practiceSessionSync', (e) => this.handleSyncEvent('practice', e));
+            window.addEventListener('goalSync', (e) => this.handleSyncEvent('goal', e));
+            window.addEventListener('repertoireSync', (e) => this.handleSyncEvent('repertoire', e));
+            
+            console.log('✅ Cloud sync setup complete');
         } catch (error) {
-            console.warn('Cloud sync initialization failed, continuing in offline mode:', error);
+            console.warn('Cloud sync setup failed, continuing in offline mode:', error);
         }
+    }
+
+    handleSyncEvent(type, event) {
+        const { type: changeType, data } = event.detail;
+        console.log(`📨 Sync event: ${type} ${changeType}`, data);
+        
+        // For now, ignore sync events to prevent duplicates
+        // The data is already saved locally when we add it
+        // Real-time sync will be handled differently in the future
+        console.log('Ignoring real-time sync event to prevent duplicates');
+        return;
+        
+        // Dispatch UI update events
+        // window.dispatchEvent(new CustomEvent('dataUpdated', {
+        //     detail: { dataType: type, changeType, data }
+        // }));
     }
 
     // ===================
@@ -82,6 +105,15 @@ export class StorageService {
             const success = await this.saveGoals(goals);
 
             if (success) {
+                // Sync individual goal to Firebase
+                if (this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
+                    try {
+                        await this.firebaseSync.saveGoal(goal);
+                        console.log('☁️ Goal synced to cloud');
+                    } catch (cloudError) {
+                        console.warn('Goal cloud sync failed, saved locally:', cloudError);
+                    }
+                }
                 console.log('Goal saved successfully:', goal);
                 return true;
             } else {
@@ -112,6 +144,15 @@ export class StorageService {
             const success = await this.saveGoals(goals);
 
             if (success) {
+                // Sync update to Firebase
+                if (this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
+                    try {
+                        await this.firebaseSync.updateGoal(goalId, goals[goalIndex]);
+                        console.log('☁️ Goal update synced to cloud');
+                    } catch (cloudError) {
+                        console.warn('Goal update cloud sync failed:', cloudError);
+                    }
+                }
                 console.log('Goal updated successfully:', goals[goalIndex]);
                 return true;
             } else {
@@ -138,6 +179,15 @@ export class StorageService {
             const success = await this.saveGoals(filteredGoals);
 
             if (success) {
+                // Sync deletion to Firebase
+                if (this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
+                    try {
+                        await this.firebaseSync.deleteGoal(goalId);
+                        console.log('☁️ Goal deletion synced to cloud');
+                    } catch (cloudError) {
+                        console.warn('Goal deletion cloud sync failed:', cloudError);
+                    }
+                }
                 console.log('Goal deleted successfully:', goalId);
                 return true;
             } else {
@@ -166,15 +216,10 @@ export class StorageService {
             // Schedule backup
             this.scheduleBackup();
 
-            // Simple cloud sync
-            if (cloudStorage && cloudStorage.currentUser) {
-                try {
-                    await cloudStorage.saveData('goals', goals);
-                    console.log('Goals synced to cloud');
-                } catch (error) {
-                    console.warn('Cloud goal sync failed:', error);
-                    // Don't fail the entire operation if cloud sync fails
-                }
+            // Sync to Firebase - save each goal individually
+            if (this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
+                // Note: We don't sync all goals at once, individual saves handle their own sync
+                console.log('Goals saved locally, individual syncs handled separately');
             }
 
             console.log(`Successfully saved ${goals.length} goals`);
@@ -351,15 +396,9 @@ export class StorageService {
             // Schedule backup
             this.scheduleBackup();
 
-            // Simple cloud sync
-            if (cloudStorage && cloudStorage.currentUser) {
-                try {
-                    await cloudStorage.saveData('repertoire', repertoire);
-                    console.log('Repertoire synced to cloud');
-                } catch (error) {
-                    console.warn('Cloud repertoire sync failed:', error);
-                    // Don't fail the entire operation if cloud sync fails
-                }
+            // Sync to Firebase handled by individual song saves
+            if (this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
+                console.log('Repertoire saved locally, individual syncs handled separately');
             }
 
             console.log(`Successfully saved ${repertoire.length} songs to repertoire`);
@@ -390,6 +429,15 @@ export class StorageService {
             const success = await this.saveRepertoire(repertoire);
 
             if (success) {
+                // Sync individual song to Firebase
+                if (this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
+                    try {
+                        await this.firebaseSync.saveRepertoireSong(song);
+                        console.log('☁️ Repertoire song synced to cloud');
+                    } catch (cloudError) {
+                        console.warn('Repertoire song cloud sync failed:', cloudError);
+                    }
+                }
                 console.log('Song added to repertoire successfully:', song);
                 return true;
             } else {
@@ -446,6 +494,15 @@ export class StorageService {
             const success = await this.saveRepertoire(filteredRepertoire);
 
             if (success) {
+                // Sync deletion to Firebase
+                if (this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
+                    try {
+                        await this.firebaseSync.deleteRepertoireSong(songId);
+                        console.log('☁️ Song deletion synced to cloud');
+                    } catch (cloudError) {
+                        console.warn('Song deletion cloud sync failed:', cloudError);
+                    }
+                }
                 console.log('Song deleted successfully:', songId);
                 return true;
             } else {
@@ -575,10 +632,11 @@ export class StorageService {
             await this.updateStats(entry);
             this.scheduleBackup();
 
-            // Simple cloud sync without subscription
-            if (this.cloudSyncEnabled && cloudStorage && cloudStorage.currentUser) {
+            // Sync to Firebase
+            if (this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
                 try {
-                    await cloudStorage.savePracticeSession(entry);
+                    await this.firebaseSync.savePracticeSession(entry);
+                    console.log('☁️ Practice session synced to cloud');
                 } catch (cloudError) {
                     console.warn('Cloud sync failed, data saved locally:', cloudError);
                 }
@@ -634,6 +692,16 @@ export class StorageService {
                 }
             }
 
+            // Sync deletion to Firebase
+            if (this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
+                try {
+                    await this.firebaseSync.deletePracticeSession(entryId);
+                    console.log('☁️ Practice entry deletion synced to cloud');
+                } catch (cloudError) {
+                    console.warn('Practice entry deletion cloud sync failed:', cloudError);
+                }
+            }
+            
             console.log('✅ Practice entry deleted successfully');
             return true;
         } catch (error) {
@@ -1325,5 +1393,193 @@ export class StorageService {
         }
 
         return null;
+    }
+
+    // ===================
+    // CLOUD SYNC METHODS
+    // ===================
+
+    async migrateToFirebase() {
+        if (!this.firebaseSync || !this.firebaseSync.isAuthenticated()) {
+            console.error('Cannot migrate: Firebase not initialized or user not authenticated');
+            return false;
+        }
+
+        console.log('🚀 Starting migration to Firebase...');
+        
+        try {
+            // Migrate practice sessions
+            const sessions = await this.getPracticeEntries();
+            console.log(`📝 Migrating ${sessions.length} practice sessions...`);
+            
+            let successCount = 0;
+            for (const session of sessions) {
+                try {
+                    await this.firebaseSync.savePracticeSession(session);
+                    successCount++;
+                } catch (error) {
+                    console.error('Failed to migrate session:', session.id, error);
+                }
+            }
+            console.log(`✅ Migrated ${successCount}/${sessions.length} practice sessions`);
+
+            // Migrate goals
+            const goals = await this.getGoals();
+            console.log(`🎯 Migrating ${goals.length} goals...`);
+            
+            successCount = 0;
+            for (const goal of goals) {
+                try {
+                    await this.firebaseSync.saveGoal(goal);
+                    successCount++;
+                } catch (error) {
+                    console.error('Failed to migrate goal:', goal.id, error);
+                }
+            }
+            console.log(`✅ Migrated ${successCount}/${goals.length} goals`);
+
+            // Migrate repertoire
+            const repertoire = await this.getRepertoire();
+            console.log(`🎵 Migrating ${repertoire.length} repertoire songs...`);
+            
+            successCount = 0;
+            for (const song of repertoire) {
+                try {
+                    await this.firebaseSync.saveRepertoireSong(song);
+                    successCount++;
+                } catch (error) {
+                    console.error('Failed to migrate song:', song.id, error);
+                }
+            }
+            console.log(`✅ Migrated ${successCount}/${repertoire.length} repertoire songs`);
+
+            // Migrate settings
+            const settings = {
+                theme: localStorage.getItem('theme'),
+                metronomeSettings: localStorage.getItem('metronomeSettings'),
+                audioSettings: localStorage.getItem('audioSettings'),
+                practiceReminders: localStorage.getItem('practiceReminders'),
+                dailyGoal: localStorage.getItem('dailyGoal')
+            };
+            
+            try {
+                await this.firebaseSync.saveSettings(settings);
+                console.log('✅ Settings migrated successfully');
+            } catch (error) {
+                console.error('Failed to migrate settings:', error);
+            }
+
+            console.log('🎉 Migration to Firebase completed!');
+            return true;
+        } catch (error) {
+            console.error('❌ Migration failed:', error);
+            return false;
+        }
+    }
+
+    async syncFromFirebase() {
+        if (!this.firebaseSync || !this.firebaseSync.isAuthenticated()) {
+            console.error('Cannot sync: Firebase not initialized or user not authenticated');
+            return false;
+        }
+
+        console.log('🔄 Syncing data from Firebase...');
+        
+        try {
+            // Get data from Firebase
+            const cloudSessions = await this.firebaseSync.getPracticeSessions();
+            const cloudGoals = await this.firebaseSync.getGoals();
+            const cloudRepertoire = await this.firebaseSync.getRepertoire();
+            const cloudSettings = await this.firebaseSync.getSettings();
+
+            console.log(`📥 Found in cloud: ${cloudSessions.length} sessions, ${cloudGoals.length} goals, ${cloudRepertoire.length} songs`);
+
+            // Merge with local data (keeping newer versions)
+            const localSessions = await this.getPracticeEntries();
+            const localGoals = await this.getGoals();
+            const localRepertoire = await this.getRepertoire();
+
+            // Merge practice sessions
+            const mergedSessions = this.mergeData(localSessions, cloudSessions);
+            await this.savePracticeEntries(mergedSessions);
+
+            // Merge goals
+            const mergedGoals = this.mergeData(localGoals, cloudGoals);
+            await this.saveGoals(mergedGoals);
+
+            // Merge repertoire
+            const mergedRepertoire = this.mergeData(localRepertoire, cloudRepertoire);
+            await this.saveRepertoire(mergedRepertoire);
+
+            // Apply cloud settings if newer
+            if (cloudSettings && cloudSettings.updatedAt) {
+                const localSettingsTime = localStorage.getItem('settingsUpdatedAt');
+                if (!localSettingsTime || new Date(cloudSettings.updatedAt) > new Date(localSettingsTime)) {
+                    Object.entries(cloudSettings).forEach(([key, value]) => {
+                        if (value && key !== 'updatedAt') {
+                            localStorage.setItem(key, value);
+                        }
+                    });
+                    localStorage.setItem('settingsUpdatedAt', cloudSettings.updatedAt);
+                }
+            }
+
+            console.log('✅ Sync from Firebase completed!');
+            return true;
+        } catch (error) {
+            console.error('❌ Sync from Firebase failed:', error);
+            return false;
+        }
+    }
+
+    mergeData(localData, cloudData) {
+        const merged = new Map();
+        
+        // Add all cloud data first
+        cloudData.forEach(item => {
+            merged.set(item.id, item);
+        });
+
+        // Add or update with local data (keeping newer versions)
+        localData.forEach(item => {
+            const existing = merged.get(item.id);
+            if (!existing) {
+                merged.set(item.id, item);
+            } else {
+                // Compare timestamps
+                const localTime = new Date(item.updatedAt || item.date || item.createdAt);
+                const cloudTime = new Date(existing.updatedAt || existing.date || existing.createdAt);
+                
+                if (localTime > cloudTime) {
+                    merged.set(item.id, item);
+                }
+            }
+        });
+
+        return Array.from(merged.values()).sort((a, b) => {
+            const aTime = new Date(a.date || a.createdAt);
+            const bTime = new Date(b.date || b.createdAt);
+            return bTime - aTime; // Newest first
+        });
+    }
+
+    // Save practice entries array (used by sync)
+    async savePracticeEntries(entries) {
+        try {
+            const key = `${this.prefix}practice_entries`;
+            
+            if (this.useCompression) {
+                const compressed = CompressionUtils.compressObject(entries);
+                localStorage.setItem(key, compressed);
+            } else {
+                localStorage.setItem(key, JSON.stringify(entries));
+            }
+            
+            console.log(`✅ Saved ${entries.length} practice entries`);
+            return true;
+        } catch (error) {
+            console.error('Error saving practice entries:', error);
+            return false;
+        }
     }
 }

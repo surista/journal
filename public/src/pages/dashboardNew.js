@@ -20,13 +20,14 @@ export class DashboardPage {
     }
 
     async render() {
-        // Initialize cloud sync
-        try {
-            this.cloudSyncHandler = new CloudSyncHandler(this.storageService, this.authService);
-            await this.cloudSyncHandler.initialize();
-        } catch (error) {
-            console.warn('Cloud sync initialization failed:', error);
-        }
+        // DISABLED: Using firebaseSyncService instead of CloudSyncHandler
+        // The new sync is handled automatically by storageService
+        // try {
+        //     this.cloudSyncHandler = new CloudSyncHandler(this.storageService, this.authService);
+        //     await this.cloudSyncHandler.initialize();
+        // } catch (error) {
+        //     console.warn('Cloud sync initialization failed:', error);
+        // }
 
         // Tab titles for header
         const tabTitles = {

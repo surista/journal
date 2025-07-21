@@ -4,23 +4,36 @@ service cloud.firestore {
     // Users can only access their own profile
     match /users/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
+      
+      // Practice sessions subcollection
+      match /practice_sessions/{sessionId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      // Goals subcollection
+      match /goals/{goalId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      
+      // Repertoire subcollection
+      match /repertoire/{songId} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
     }
-
-    // Practice sessions - users can only access their own
+    
+    // Legacy rules for top-level collections (for backward compatibility)
     match /practiceSessions/{sessionId} {
       allow read, write: if request.auth != null &&
         (request.auth.uid == resource.data.userId ||
          request.auth.uid == request.resource.data.userId);
     }
 
-    // Goals - users can only access their own
     match /goals/{goalId} {
       allow read, write: if request.auth != null &&
         (request.auth.uid == resource.data.userId ||
          request.auth.uid == request.resource.data.userId);
     }
 
-    // Repertoire - users can only access their own
     match /repertoire/{songId} {
       allow read, write: if request.auth != null &&
         (request.auth.uid == resource.data.userId ||

@@ -1,0 +1,243 @@
+/* Cloud Sync Manager Styles */
+
+.cloud-sync-manager {
+    padding: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.cloud-sync-manager h3 {
+    margin-bottom: 20px;
+    color: var(--text-primary);
+}
+
+/* Sync Status */
+.sync-status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: var(--bg-card);
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+}
+
+.status-indicator i {
+    font-size: 10px;
+}
+
+.status-indicator.connected {
+    color: var(--success);
+}
+
+.status-indicator.disconnected {
+    color: var(--danger);
+}
+
+.pending-sync {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--warning);
+    font-size: 14px;
+}
+
+.pending-sync i {
+    animation: spin 2s linear infinite;
+}
+
+/* User Info */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 15px;
+    background: var(--bg-input);
+    border-radius: 6px;
+    margin-bottom: 20px;
+    color: var(--text-secondary);
+}
+
+/* Sync Actions */
+.sync-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.sync-actions button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 20px;
+}
+
+/* Sync Settings */
+.sync-settings {
+    padding: 20px;
+    background: var(--bg-card);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    margin-bottom: 20px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+/* Danger Zone */
+.danger-zone {
+    margin-top: 40px;
+    padding: 20px;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 8px;
+}
+
+.danger-zone h4 {
+    color: var(--danger);
+    margin-bottom: 15px;
+}
+
+/* Auth Section */
+.sync-auth {
+    text-align: center;
+    padding: 40px 20px;
+    background: var(--bg-card);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+}
+
+.sync-auth p {
+    margin-bottom: 20px;
+    color: var(--text-secondary);
+}
+
+.sync-auth button {
+    margin: 5px;
+}
+
+/* Auth Modal */
+.auth-modal {
+    max-width: 400px;
+}
+
+.auth-modal .form-group {
+    margin-bottom: 15px;
+}
+
+.auth-modal .form-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+/* Notifications */
+.sync-notifications {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 400px;
+}
+
+.notification {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    background: var(--bg-card);
+    border-radius: 8px;
+    box-shadow: var(--shadow-lg);
+    animation: slideIn 0.3s ease-out;
+}
+
+.notification.success {
+    border-left: 4px solid var(--success);
+    color: var(--success);
+}
+
+.notification.error {
+    border-left: 4px solid var(--danger);
+    color: var(--danger);
+}
+
+.notification.info {
+    border-left: 4px solid var(--info);
+    color: var(--info);
+}
+
+.notification.fade-out {
+    animation: slideOut 0.3s ease-out forwards;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .cloud-sync-manager {
+        padding: 15px;
+    }
+    
+    .sync-notifications {
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+    }
+    
+    .notification {
+        font-size: 14px;
+    }
+}

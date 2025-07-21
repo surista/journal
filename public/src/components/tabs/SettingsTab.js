@@ -1,5 +1,5 @@
 // Settings Tab Component
-import { CloudSyncSettings } from '../cloudSyncSettings.js';
+import { CloudSyncManager } from '../CloudSyncManager.js';
 
 export class SettingsTab {
     constructor(storageService, authService, cloudSyncService) {
@@ -187,10 +187,12 @@ export class SettingsTab {
             </div>
         `;
 
-        // Initialize cloud sync settings
+        // Initialize cloud sync manager
         const cloudSyncSection = document.getElementById('cloudSyncSection');
-        if (cloudSyncSection && this.cloudSyncService) {
-            new CloudSyncSettings(cloudSyncSection, this.cloudSyncService, this.authService);
+        if (cloudSyncSection) {
+            const cloudSyncManager = new CloudSyncManager(this.storageService);
+            await cloudSyncManager.init();
+            cloudSyncManager.render(cloudSyncSection);
         }
 
         // Make this tab globally accessible
