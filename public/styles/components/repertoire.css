@@ -58,25 +58,43 @@
 
 /* Stats */
 .repertoire-stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 columns for middle third */
-    gap: var(--space-md);
+    display: flex;
+    justify-content: space-around; /* Better spacing for smaller items */
+    align-items: center;
     margin-bottom: var(--space-xl);
+    /*background: var(--bg-card);*/
+    border: 0px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg) var(--space-xl); /* More horizontal padding */
+    box-sizing: border-box;
 }
 
 /* Adjust stats on smaller screens */
 @media (max-width: 600px) {
     .repertoire-stats {
-        grid-template-columns: 1fr;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--space-sm); /* Smaller gap on mobile */
+    }
+    
+    .repertoire-stats .stat-card {
+        width: 80%; /* Wider on mobile */
     }
 }
 
 .repertoire-stats .stat-card {
-    background: var(--bg-card);
-    padding: var(--space-lg);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--border);
+    /*background: var(--bg-secondary);*/
+    padding: var(--space-md) var(--space-xl);
     text-align: center;
+    border-radius: var(--radius);
+    flex: 0 0 auto; /* Let content determine width */
+    min-width: 225px;
+    max-width: 225px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
 }
 
 .repertoire-stats .stat-value {

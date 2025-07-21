@@ -450,7 +450,7 @@ export class CalendarPage {
 
                 return `
                     <div class="session-item">
-                        <div class="session-time">${time} - ${this.formatDuration(session.duration || 0)}</div>
+                        <div class="session-time">${time} - ${TimeUtils.formatDuration(session.duration || 0, true)}</div>
                         <div class="session-area">${session.practiceArea || 'General Practice'}</div>
                         ${session.notes ? `<div class="session-details">${session.notes}</div>` : ''}
                         ${session.bpm ? `<div class="session-details">Tempo: ${session.bpm} BPM</div>` : ''}
@@ -465,7 +465,7 @@ export class CalendarPage {
                 </div>
                 <div class="session-list">
                     <div style="margin-bottom: 1rem;">
-                        <strong>Total: ${this.formatDuration(practiceInfo.totalTime)}</strong> 
+                        <strong>Total: ${TimeUtils.formatDuration(practiceInfo.totalTime, true)}</strong> 
                         (${practiceInfo.sessions.length} session${practiceInfo.sessions.length > 1 ? 's' : ''})
                     </div>
                     ${sessionsHTML}
@@ -760,11 +760,6 @@ export class CalendarPage {
         });
     }
 
-    formatDuration(seconds) {
-        const hours = Math.floor(seconds / 3600);
-        const minutes = Math.floor((seconds % 3600) / 60);
-        return `${hours}h ${minutes}m`;
-    }
 
     // Modal methods
     showGoalModal() {

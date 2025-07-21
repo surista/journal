@@ -2,7 +2,63 @@
    Modal Component Styles
    ============================================ */
 
-/* Base Modal Styles */
+/* Centralized Modal Component Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.modal-overlay-active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-active {
+    transform: scale(1) !important;
+    opacity: 1 !important;
+}
+
+/* Modal Input Styles */
+.modal-input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg);
+    color: var(--text-primary);
+    font-size: 1rem;
+    margin-top: 0.5rem;
+}
+
+.modal-input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+}
+
+/* Modal Type Specific Styles */
+.modal-alert .modal-footer {
+    justify-content: center;
+}
+
+.modal-confirm .modal-footer,
+.modal-prompt .modal-footer {
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+/* Base Modal Styles (Legacy) */
 .modal {
     position: fixed;
     top: 0;

@@ -111,20 +111,12 @@ export class GoalsList {
 
             if (!goalText) {
                 // Use console.error instead of notificationManager if it's not available
-                if (typeof notificationManager !== 'undefined') {
-                    notificationManager.error('Please enter a goal!');
-                } else {
-                    alert('Please enter a goal!');
-                }
+                notificationManager.error('Please enter a goal!');
                 return;
             }
 
             if (goalType && !goalTarget) {
-                if (typeof notificationManager !== 'undefined') {
-                    notificationManager.error('Please enter a target value!');
-                } else {
-                    alert('Please enter a target value!');
-                }
+                notificationManager.error('Please enter a target value!');
                 return;
             }
 
@@ -165,11 +157,7 @@ export class GoalsList {
             }
         } catch (error) {
             console.error('Error adding goal:', error);
-            if (typeof notificationManager !== 'undefined') {
-                notificationManager.error('Failed to add goal. Please try again.');
-            } else {
-                alert('Failed to add goal: ' + error.message);
-            }
+            notificationManager.error('Failed to add goal. Please try again.');
         }
     }
 

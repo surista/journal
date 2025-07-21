@@ -445,19 +445,14 @@ export class AchievementBadges {
     }
 
     renderBadge(achievement, isEarned) {
-        const badgeClass = isEarned ? 'achievement-badge earned' : 'achievement-badge locked';
-        const iconOpacity = isEarned ? '1' : '0.3';
+        const badgeClass = isEarned ? 'badge earned' : 'badge';
+        // Format the name to add line breaks for better display
+        const formattedName = achievement.name.replace(' ', '\n');
 
         return `
             <div class="${badgeClass}" title="${achievement.description}">
-                <div class="badge-icon" style="opacity: ${iconOpacity};">
-                    ${achievement.icon}
-                </div>
-                <div class="badge-content">
-                    <div class="badge-name ${isEarned ? 'earned' : 'locked'}">${achievement.name}</div>
-                    <div class="badge-description">${achievement.description}</div>
-                    ${isEarned ? '<div class="badge-earned">✓ Earned</div>' : '<div class="badge-locked">🔒 Locked</div>'}
-                </div>
+                <span class="badge-icon">${achievement.icon}</span>
+                <span class="badge-label">${formattedName}</span>
             </div>
         `;
     }

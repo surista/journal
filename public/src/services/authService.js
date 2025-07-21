@@ -1,10 +1,10 @@
 // authService.js - Fixed with proper Firebase integration
-import {cloudStorage} from './firebaseService.js';
+import firebaseSyncService from './firebaseSyncService.js';
 
 export class AuthService {
     constructor() {
         console.log('🔧 AuthService: Initializing...');
-        this.cloudStorage = cloudStorage;
+        this.cloudStorage = firebaseSyncService;
         this.isCloudEnabled = false;
         this.initPromise = this.initialize();
     }

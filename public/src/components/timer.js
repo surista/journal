@@ -1,4 +1,6 @@
 // Timer Component - Fixed with proper DOM handling and error recovery
+import {notificationManager} from '../services/notificationManager.js';
+
 export class Timer {
     constructor(container) {
         this.container = container;
@@ -643,7 +645,7 @@ export class Timer {
                 if (window.app?.currentPage?.showNotification) {
                     window.app.currentPage.showNotification(message, 'success');
                 } else {
-                    alert(message);
+                    notificationManager.success(message);
                 }
 
                 // Dispatch event for other components to update
@@ -658,7 +660,7 @@ export class Timer {
             if (window.app?.currentPage?.showNotification) {
                 window.app.currentPage.showNotification('Failed to save practice session. Please try again.', 'error');
             } else {
-                alert('Failed to save practice session. Please try again.');
+                notificationManager.error('Failed to save practice session. Please try again.');
             }
         }
     }

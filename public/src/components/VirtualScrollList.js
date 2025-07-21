@@ -1,4 +1,5 @@
 // components/VirtualScrollList.js - Virtual scrolling for performance
+import { throttle } from '../utils/helpers.js';
 
 export class VirtualScrollList {
     constructor(container, options = {}) {
@@ -36,7 +37,7 @@ export class VirtualScrollList {
         this.container.appendChild(this.viewport);
 
         // Attach scroll listener with throttling
-        this.handleScroll = this.throttle(() => {
+        this.handleScroll = throttle(() => {
             this.onScroll();
         }, 16); // ~60fps
 
@@ -111,16 +112,6 @@ export class VirtualScrollList {
         this.container.scrollTop = scrollTop;
     }
 
-    throttle(func, limit) {
-        let inThrottle;
-        return function(...args) {
-            if (!inThrottle) {
-                func.apply(this, args);
-                inThrottle = true;
-                setTimeout(() => inThrottle = false, limit);
-            }
-        };
-    }
 
     destroy() {
         this.container.removeEventListener('scroll', this.handleScroll);

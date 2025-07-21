@@ -11,7 +11,7 @@
 
 /* Timer display */
 .timer-display {
-    font-size: var(--text-5xl);
+    font-size: var(--text-8xl);
     font-weight: 300;
     text-align: center;
     margin: var(--space-xl) auto;

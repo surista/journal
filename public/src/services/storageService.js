@@ -1,5 +1,5 @@
 // src/services/storageService.js - Complete fixed version with all goal methods
-import {CompressionUtils} from '../utils/helpers.js';
+import {CompressionUtils, TimeUtils} from '../utils/helpers.js';
 import {AuthService} from './authService.js';
 import firebaseSyncService from './firebaseSyncService.js';
 
@@ -1416,7 +1416,7 @@ export class StorageService {
                 goals: Array.isArray(goals) ? goals.length : 0,
                 audioSessions: totalAudioSessions,
                 totalTime: stats.totalSeconds || 0,
-                totalTimeFormatted: this.formatDuration(stats.totalSeconds || 0)
+                totalTimeFormatted: TimeUtils.formatDuration(stats.totalSeconds || 0, true)
             };
         } catch (error) {
             console.error('Error getting data summary:', error);
@@ -1430,16 +1430,6 @@ export class StorageService {
         }
     }
 
-    formatDuration(seconds) {
-        const hours = Math.floor(seconds / 3600);
-        const minutes = Math.floor((seconds % 3600) / 60);
-
-        if (hours > 0) {
-            return `${hours}h ${minutes}m`;
-        } else {
-            return `${minutes}m`;
-        }
-    }
 
     async debugStorageState() {
         console.log('🔍 Debugging Storage State...');

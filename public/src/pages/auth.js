@@ -1,6 +1,6 @@
 // Enhanced auth page with Firebase and debug logging
 import {AuthService} from '../services/authService.js';
-import {cloudStorage} from '../services/firebaseService.js';
+import firebaseSyncService from '../services/firebaseSyncService.js';
 
 class AuthPage {
     constructor() {

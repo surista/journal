@@ -208,7 +208,7 @@ export class PracticeForm {
                     }
 
                     if (isAudioPlaying) {
-                        alert("Can't save while audio is playing");
+                        notificationManager.error("Can't save while audio is playing");
                         return;
                     }
 

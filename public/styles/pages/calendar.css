@@ -433,9 +433,9 @@
 
 .badges {
     display: grid;
-    grid-template-columns: repeat(9, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     gap: var(--space-md);
-    max-width: 1200px;
+    max-width: 800px;
     margin: 0 auto;
 }
 
@@ -592,7 +592,7 @@
 @media (max-width: 1400px) {
     .badges {
         grid-template-columns: repeat(6, 1fr);
-        max-width: 900px;
+        max-width: 800px;
     }
 }
 

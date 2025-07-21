@@ -8,7 +8,7 @@ import {APP_VERSION, APP_CONFIG, BUILD_DATE, BUILD_NUMBER} from './config/versio
 // Import configuration and theme service first
 import appConfig from './config.js';
 import {ThemeService} from './services/themeService.js';
-import {cloudStorage} from './services/firebaseService.js';
+import firebaseSyncService from './services/firebaseSyncService.js';
 
 
 class App {
@@ -38,7 +38,7 @@ class App {
         console.log('Current location:', window.location.href);
 
         // Initialize cloud storage
-        window.cloudStorage = cloudStorage;
+        window.cloudStorage = firebaseSyncService;
 
         // Make storage service available globally for cloud sync
         window.app = this;

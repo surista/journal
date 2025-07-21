@@ -4,6 +4,7 @@ import { AudioPlayer } from './audioPlayer.js';
 import { AudioService } from '../services/audioService.js';
 import { sessionStateService } from '../services/sessionStateService.js';
 import { transposeAPI } from '../services/transposeExtensionAPI.js';
+import { notificationManager } from '../services/notificationManager.js';
 
 export class UnifiedPracticeMinimal {
     constructor(storageService) {
@@ -1283,7 +1284,7 @@ export class UnifiedPracticeMinimal {
 
         // Validate MP3 file type
         if (!file.type.includes('mp3') && !file.name.toLowerCase().endsWith('.mp3')) {
-            alert('Please select an MP3 file only. Other audio formats are not currently supported.');
+            notificationManager.error('Please select an MP3 file only. Other audio formats are not currently supported.');
             return;
         }
 
@@ -1414,7 +1415,7 @@ export class UnifiedPracticeMinimal {
             console.log('Audio file loaded successfully:', file.name);
         } catch (error) {
             console.error('Error loading audio file:', error);
-            alert('Failed to load audio file: ' + error.message);
+            notificationManager.error('Failed to load audio file: ' + error.message);
         }
     }
 
@@ -2661,7 +2662,7 @@ export class UnifiedPracticeMinimal {
 
             } catch (error) {
                 console.error('Error saving session:', error);
-                alert('Failed to save session. Please try again.');
+                notificationManager.error('Failed to save session. Please try again.');
             }
         });
     }

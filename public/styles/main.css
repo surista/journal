@@ -43,7 +43,6 @@
 
 /* Page-specific styles */
 @import url('./pages/auth.css');
-@import url('./pages/dashboard.css');
 @import url('./pages/dashboard-new.css');
 @import url('./pages/calendar.css');
 @import url('./pages/settings.css');

@@ -9,22 +9,22 @@ export class StatsPanel {
 
     render() {
         this.container.innerHTML = `
-            <div class="stats-panel">
+            <div class="goals-stats">
                 <div class="stat-card">
-                    <div class="stat-value" id="totalTime">0h 0m</div>
-                    <div class="stat-label">Total Practice Time</div>
+                    <span class="stat-value" id="totalTime">0h 0m</span>
+                    <span class="stat-label">Total Practice Time</span>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value" id="totalSessions">0</div>
-                    <div class="stat-label">Practice Sessions</div>
+                    <span class="stat-value" id="totalSessions">0</span>
+                    <span class="stat-label">Practice Sessions</span>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value" id="currentStreak">0</div>
-                    <div class="stat-label">Day Streak</div>
+                    <span class="stat-value" id="currentStreak">0</span>
+                    <span class="stat-label">Day Streak</span>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value" id="avgSession">0m</div>
-                    <div class="stat-label">Average Session</div>
+                    <span class="stat-value" id="avgSession">0m</span>
+                    <span class="stat-label">Average Session</span>
                 </div>
             </div>
         `;

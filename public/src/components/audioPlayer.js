@@ -3,6 +3,7 @@ import {WaveformVisualizer} from './waveform.js';
 import { SessionManager } from './audio/sessionManager.js';
 import { youtubeAudioProcessor } from '../services/youtubeAudioProcessor.js';
 import { StorageService } from '../services/storageService.js';
+import { TimeUtils } from '../utils/helpers.js';
 
 export class AudioPlayer {
     constructor(container, audioService) {
@@ -2329,9 +2330,7 @@ export class AudioPlayer {
 
     formatTime(seconds) {
         if (isNaN(seconds) || seconds === null) return '--:--';
-        const mins = Math.floor(seconds / 60);
-        const secs = Math.floor(seconds % 60);
-        return `${mins}:${secs.toString().padStart(2, '0')}`;
+        return TimeUtils.formatTime(seconds);
     }
 
     showNotification(message, type = 'info') {
