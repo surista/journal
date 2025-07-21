@@ -334,6 +334,57 @@
 .goal-actions {
     display: flex;
     gap: var(--space-sm);
+    align-items: center;
+}
+
+.goal-actions .btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.goal-actions .btn-icon:hover {
+    background: var(--bg-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.goal-actions .update-progress-btn {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.goal-actions .update-progress-btn:hover {
+    background: var(--primary-dark);
+    border-color: var(--primary-dark);
+}
+
+.goal-actions .complete-goal-btn {
+    font-size: 1.2rem;
+}
+
+.goal-actions .edit-goal-btn {
+    color: var(--primary);
+}
+
+.goal-actions .delete-goal-btn {
+    color: var(--danger);
+}
+
+.goal-actions .delete-goal-btn:hover {
+    background: var(--danger);
+    color: white;
+    border-color: var(--danger);
 }
 
 .goal-meta {
@@ -341,6 +392,56 @@
     gap: var(--space-md);
     margin-bottom: var(--space-md);
     font-size: var(--text-sm);
+}
+
+/* Progress Modal Styles */
+.progress-display {
+    margin-bottom: 1.5rem;
+}
+
+.progress-display .progress-bar-container {
+    height: 20px;
+    background: var(--bg-input);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.progress-display .progress-bar {
+    height: 100%;
+    background: var(--primary);
+    transition: width 0.3s ease;
+}
+
+#progressModal .modal-content {
+    max-width: 400px;
+}
+
+#progressInfo {
+    padding: var(--space-md);
+}
+
+.goal-description {
+    margin-top: var(--space-md);
+    color: var(--text-secondary);
+    font-size: var(--text-sm);
+    line-height: 1.5;
+}
+
+.goal-criteria {
+    margin-top: var(--space-md);
+    padding: var(--space-sm);
+    background: var(--bg-input);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+    border-left: 3px solid var(--primary);
+}
+
+.goal-completed-info {
+    margin-top: var(--space-md);
+    font-size: var(--text-sm);
+    color: var(--success);
+    font-style: italic;
 }
 
 .goal-category {

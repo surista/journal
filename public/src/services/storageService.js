@@ -100,6 +100,7 @@ export class StorageService {
 
             // Add new goal to the beginning of the array
             goals.unshift(goal);
+            console.log('📝 Saving goal with ID:', goal.id, 'Total goals:', goals.length);
 
             // Save back to storage
             const success = await this.saveGoals(goals);
@@ -128,7 +129,7 @@ export class StorageService {
     async updateGoal(goalId, updates) {
         try {
             const goals = await this.getGoals();
-            const goalIndex = goals.findIndex(g => g.id === goalId);
+            const goalIndex = goals.findIndex(g => g.id == goalId); // Use loose equality for number type compatibility
 
             if (goalIndex === -1) {
                 throw new Error(`Goal with ID ${goalId} not found`);
@@ -168,7 +169,7 @@ export class StorageService {
         try {
             const goals = await this.getGoals();
             const initialLength = goals.length;
-            const filteredGoals = goals.filter(g => g.id !== goalId);
+            const filteredGoals = goals.filter(g => g.id != goalId); // Use loose inequality for number type compatibility
 
             if (filteredGoals.length === initialLength) {
                 console.warn(`Goal with ID ${goalId} not found for deletion`);

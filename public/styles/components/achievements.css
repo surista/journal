@@ -75,9 +75,50 @@
     gap: var(--space-lg);
 }
 
+.achievements-section-header {
+    margin-top: var(--space-2xl);
+    margin-bottom: var(--space-lg);
+}
+
+.achievements-section-header h3 {
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Streak achievements - 9x2 grid */
+.streak-achievements {
+    grid-template-columns: repeat(9, 1fr) !important;
+    gap: var(--space-md);
+    margin-bottom: var(--space-2xl);
+}
+
+@media (max-width: 1400px) {
+    .streak-achievements {
+        grid-template-columns: repeat(6, 1fr) !important;
+    }
+}
+
 @media (min-width: 768px) {
     .achievements-grid {
         grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .achievements-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    }
+    
+    .streak-achievements {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: var(--space-sm);
+    }
+}
+
+@media (max-width: 480px) {
+    .streak-achievements {
+        grid-template-columns: repeat(2, 1fr) !important;
     }
 }
 

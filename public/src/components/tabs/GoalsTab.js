@@ -233,19 +233,19 @@ export class GoalsTab {
                 // Goal actions with proper delegation
                 else if (target.classList.contains('complete-goal-btn') || target.closest('.complete-goal-btn')) {
                     const btn = target.classList.contains('complete-goal-btn') ? target : target.closest('.complete-goal-btn');
-                    const goalId = parseInt(btn.dataset.id);
+                    const goalId = parseFloat(btn.dataset.id); // Use parseFloat to handle decimal IDs
                     await this.toggleGoalComplete(goalId);
                 } else if (target.classList.contains('delete-goal-btn') || target.closest('.delete-goal-btn')) {
                     const btn = target.classList.contains('delete-goal-btn') ? target : target.closest('.delete-goal-btn');
-                    const goalId = parseInt(btn.dataset.id);
+                    const goalId = parseFloat(btn.dataset.id); // Use parseFloat to handle decimal IDs
                     await this.deleteGoal(goalId);
                 } else if (target.classList.contains('edit-goal-btn') || target.closest('.edit-goal-btn')) {
                     const btn = target.classList.contains('edit-goal-btn') ? target : target.closest('.edit-goal-btn');
-                    const goalId = parseInt(btn.dataset.id);
+                    const goalId = parseFloat(btn.dataset.id); // Use parseFloat to handle decimal IDs
                     this.editGoal(goalId);
                 } else if (target.classList.contains('update-progress-btn') || target.closest('.update-progress-btn')) {
                     const btn = target.classList.contains('update-progress-btn') ? target : target.closest('.update-progress-btn');
-                    const goalId = parseInt(btn.dataset.id);
+                    const goalId = parseFloat(btn.dataset.id); // Use parseFloat to handle decimal IDs
                     this.showProgressModal(goalId);
                 }
             });
@@ -503,9 +503,9 @@ export class GoalsTab {
         // Reset and populate form
         if (goalId) {
             // Edit mode
-            const goal = this.goals.find(g => g.id === goalId);
+            const goal = this.goals.find(g => g.id == goalId); // Use loose equality to handle number type differences
             if (!goal) {
-                console.error('Goal not found:', goalId);
+                console.error('Goal not found:', goalId, 'Available goals:', this.goals.map(g => ({ id: g.id, title: g.title })));
                 return;
             }
 
@@ -633,7 +633,7 @@ export class GoalsTab {
     }
 
     async deleteGoal(goalId) {
-        const goal = this.goals.find(g => g.id === goalId);
+        const goal = this.goals.find(g => g.id == goalId); // Use loose equality
         if (!goal) return;
 
         if (confirm(`Are you sure you want to delete "${goal.title || goal.text}"?`)) {
@@ -649,14 +649,21 @@ export class GoalsTab {
     }
 
     async toggleGoalComplete(goalId) {
-        const goal = this.goals.find(g => g.id === goalId);
+        const goal = this.goals.find(g => g.id == goalId); // Use loose equality
         if (!goal) return;
 
         try {
             if (goal.completed) {
+                // Marking as incomplete - no confirmation needed
                 await this.storageService.markGoalIncomplete(goalId);
+                this.showNotification('Goal marked as active', 'success');
             } else {
+                // Marking as complete - ask for confirmation
+                const confirmed = confirm(`Are you sure you want to mark "${goal.title || goal.text}" as complete?`);
+                if (!confirmed) return;
+                
                 await this.storageService.markGoalComplete(goalId);
+                this.showNotification('🎉 Congratulations! Goal completed!', 'success');
             }
             await this.loadGoals();
         } catch (error) {
@@ -666,7 +673,7 @@ export class GoalsTab {
     }
 
     showProgressModal(goalId) {
-        const goal = this.goals.find(g => g.id === goalId);
+        const goal = this.goals.find(g => g.id == goalId); // Use loose equality
         if (!goal || !goal.type) return;
 
         const modal = document.getElementById('progressModal');
@@ -716,7 +723,7 @@ export class GoalsTab {
 
     async saveProgress() {
         const modal = document.getElementById('progressModal');
-        const goalId = parseInt(modal.dataset.goalId);
+        const goalId = parseFloat(modal.dataset.goalId); // Use parseFloat to handle decimal IDs
         const newValue = parseInt(document.getElementById('newProgressValue').value);
 
         if (isNaN(newValue) || newValue < 0) {

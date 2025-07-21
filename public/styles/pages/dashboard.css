@@ -182,7 +182,7 @@
 .stats-layout {
    display: grid;
    gap: var(--space-xl);
-   max-width: 700px; /* Match header/footer width */
+   max-width: 1000px; /* Match history and calendar tabs width */
    margin: 0 auto;
    padding: 2rem;
 }

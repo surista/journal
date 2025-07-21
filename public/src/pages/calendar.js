@@ -85,20 +85,47 @@ export class CalendarPage {
 
                 <div class="calendar-stats">
                     <div class="stat-card">
-                        <h3>This Month</h3>
-                        <div class="stat-value" id="monthPracticeDays">0 days</div>
-                        <div class="stat-label">practiced</div>
-                        <div class="stat-value" id="monthTotalTime">0h 0m</div>
-                        <div class="stat-label">total time</div>
+                        <div class="stat-header">
+                            <h3>THIS MONTH</h3>
+                        </div>
+                        <div class="stat-grid">
+                            <div class="stat-item">
+                                <div class="stat-value" id="monthPracticeDays">0</div>
+                                <div class="stat-sublabel">days</div>
+                                <div class="stat-label">PRACTICED</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-time">
+                                    <span class="stat-value" id="monthHours">0h</span>
+                                    <span class="stat-value" id="monthMinutes">0m</span>
+                                </div>
+                                <div class="stat-label">TOTAL<br/>TIME</div>
+                            </div>
+                        </div>
                     </div>
                     <div class="stat-card">
-                        <h3>All Time</h3>
-                        <div class="stat-value" id="totalPracticeDays">0 days</div>
-                        <div class="stat-label">practiced</div>
-                        <div class="stat-value" id="totalPracticeTime">0h 0m</div>
-                        <div class="stat-label">total time</div>
-                        <div class="stat-value" id="longestStreak">0 days</div>
-                        <div class="stat-label">longest streak</div>
+                        <div class="stat-header">
+                            <h3>ALL TIME</h3>
+                        </div>
+                        <div class="stat-grid">
+                            <div class="stat-item">
+                                <div class="stat-value" id="totalPracticeDays">0</div>
+                                <div class="stat-sublabel">days</div>
+                                <div class="stat-label">PRACTICED</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-time">
+                                    <span class="stat-value" id="totalHours">0h</span>
+                                    <span class="stat-value" id="totalMinutes">0m</span>
+                                </div>
+                                <div class="stat-label">TOTAL<br/>TIME</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="longestStreak">0</div>
+                                <div class="stat-sublabel">days</div>
+                                <div class="stat-label">LONGEST<br/>STREAK</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -535,19 +562,31 @@ export class CalendarPage {
 
         // Update display with null checks
         const monthPracticeDaysEl = document.getElementById('monthPracticeDays');
-        const monthTotalTimeEl = document.getElementById('monthTotalTime');
         const totalPracticeDaysEl = document.getElementById('totalPracticeDays');
-        const totalPracticeTimeEl = document.getElementById('totalPracticeTime');
         const longestStreakEl = document.getElementById('longestStreak');
 
-        if (monthPracticeDaysEl) monthPracticeDaysEl.textContent = `${monthDaysSet.size} days`;
-        if (monthTotalTimeEl) monthTotalTimeEl.textContent = this.formatDuration(monthTime);
-        if (totalPracticeDaysEl) totalPracticeDaysEl.textContent = `${allTimeDays.size} days`;
-        if (totalPracticeTimeEl) totalPracticeTimeEl.textContent = this.formatDuration(allTimeTotal);
+        if (monthPracticeDaysEl) monthPracticeDaysEl.textContent = monthDaysSet.size;
+        if (totalPracticeDaysEl) totalPracticeDaysEl.textContent = allTimeDays.size;
+
+        // Update month time (convert seconds to hours and minutes)
+        const monthHours = Math.floor(monthTime / 3600);
+        const monthMins = Math.floor((monthTime % 3600) / 60);
+        const monthHoursEl = document.getElementById('monthHours');
+        const monthMinutesEl = document.getElementById('monthMinutes');
+        if (monthHoursEl) monthHoursEl.textContent = `${monthHours}h`;
+        if (monthMinutesEl) monthMinutesEl.textContent = `${monthMins}m`;
+
+        // Update all time (convert seconds to hours and minutes)
+        const totalHours = Math.floor(allTimeTotal / 3600);
+        const totalMins = Math.floor((allTimeTotal % 3600) / 60);
+        const totalHoursEl = document.getElementById('totalHours');
+        const totalMinutesEl = document.getElementById('totalMinutes');
+        if (totalHoursEl) totalHoursEl.textContent = `${totalHours}h`;
+        if (totalMinutesEl) totalMinutesEl.textContent = `${totalMins}m`;
 
         // Calculate longest streak
         const streak = this.calculateLongestStreak();
-        if (longestStreakEl) longestStreakEl.textContent = `${streak} days`;
+        if (longestStreakEl) longestStreakEl.textContent = streak;
     }
 
     calculateLongestStreak() {
@@ -593,9 +632,9 @@ export class CalendarPage {
             <h3>Current Streak: ${currentStreak} days</h3>
             <div class="badges">
                 ${badges.map(badge => `
-                    <div class="badge ${badge.earned ? 'earned' : 'unearned'}">
+                    <div class="badge ${badge.earned ? 'earned' : ''}">
                         <span class="badge-icon">${badge.icon}</span>
-                        <span class="badge-label">${badge.label}</span>
+                        <span class="badge-label">${badge.label.replace('\n', '<br>')}</span>
                     </div>
                 `).join('')}
             </div>
@@ -638,16 +677,24 @@ export class CalendarPage {
 
     getStreakBadges(currentStreak) {
         const badges = [
-            {days: 1, icon: '🎸', label: '1 Day Streak'},
-            {days: 3, icon: '🔥', label: '3 Day Streak'},
-            {days: 7, icon: '🗓️', label: '7 Day Streak'},
-            {days: 14, icon: '💪', label: '14 Day Streak'},
-            {days: 21, icon: '💎', label: '21 Day Streak'},
-            {days: 30, icon: '📅', label: '30 Day Streak'},
-            {days: 45, icon: '🌟', label: '45 Day Streak'},
-            {days: 60, icon: '👑', label: '60 Day Streak'},
-            {days: 90, icon: '🏆', label: '90 Day Streak'},
-            {days: 365, icon: '🎖️', label: '365 Day Streak'}
+            {days: 1, icon: '🎸', label: '1 Day\nStreak'},
+            {days: 3, icon: '🔥', label: '3 Day\nStreak'},
+            {days: 7, icon: '🗓️', label: '7 Day\nStreak'},
+            {days: 10, icon: '🔟', label: '10 Day\nStreak'},
+            {days: 14, icon: '💪', label: '14 Day\nStreak'},
+            {days: 21, icon: '💎', label: '21 Day\nStreak'},
+            {days: 30, icon: '📅', label: '30 Day\nStreak'},
+            {days: 45, icon: '🌟', label: '45 Day\nStreak'},
+            {days: 60, icon: '👑', label: '60 Day\nStreak'},
+            {days: 90, icon: '🏆', label: '90 Day\nStreak'},
+            {days: 100, icon: '💫', label: '100 Day\nStreak'},
+            {days: 150, icon: '🏅', label: '150 Day\nStreak'},
+            {days: 180, icon: '🌟', label: '180 Day\nStreak'},
+            {days: 200, icon: '⚡', label: '200 Day\nStreak'},
+            {days: 250, icon: '🚀', label: '250 Day\nStreak'},
+            {days: 300, icon: '🌠', label: '300 Day\nStreak'},
+            {days: 365, icon: '🎖️', label: '365 Day\nStreak'},
+            {days: 500, icon: '🧘', label: '500 Day\nStreak'}
         ];
 
         return badges.map(badge => ({

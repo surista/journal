@@ -83,6 +83,62 @@ export class AchievementBadges {
                 description: '365 day practice streak',
                 check: (stats) => stats.currentStreak >= 365 || stats.longestStreak >= 365
             },
+            {
+                id: 'double-digit',
+                name: 'Double Digits',
+                icon: '🔟',
+                description: '10 day practice streak',
+                check: (stats) => stats.currentStreak >= 10 || stats.longestStreak >= 10
+            },
+            {
+                id: 'persistence-pro',
+                name: 'Persistence Pro',
+                icon: '💫',
+                description: '100 day practice streak',
+                check: (stats) => stats.currentStreak >= 100 || stats.longestStreak >= 100
+            },
+            {
+                id: 'half-year-hero',
+                name: 'Half Year Hero',
+                icon: '🌟',
+                description: '180 day practice streak',
+                check: (stats) => stats.currentStreak >= 180 || stats.longestStreak >= 180
+            },
+            {
+                id: 'consistency-champion',
+                name: 'Consistency Champion',
+                icon: '🏅',
+                description: '150 day practice streak',
+                check: (stats) => stats.currentStreak >= 150 || stats.longestStreak >= 150
+            },
+            {
+                id: 'dedication-deity',
+                name: 'Dedication Deity',
+                icon: '⚡',
+                description: '200 day practice streak',
+                check: (stats) => stats.currentStreak >= 200 || stats.longestStreak >= 200
+            },
+            {
+                id: 'unstoppable-force',
+                name: 'Unstoppable Force',
+                icon: '🚀',
+                description: '250 day practice streak',
+                check: (stats) => stats.currentStreak >= 250 || stats.longestStreak >= 250
+            },
+            {
+                id: 'legendary-discipline',
+                name: 'Legendary Discipline',
+                icon: '🌠',
+                description: '300 day practice streak',
+                check: (stats) => stats.currentStreak >= 300 || stats.longestStreak >= 300
+            },
+            {
+                id: 'zen-master',
+                name: 'Zen Master',
+                icon: '🧘',
+                description: '500 day practice streak',
+                check: (stats) => stats.currentStreak >= 500 || stats.longestStreak >= 500
+            },
 
             // Total Sessions
             {
@@ -257,8 +313,19 @@ export class AchievementBadges {
                         <button class="filter-btn" data-filter="earned">Earned</button>
                         <button class="filter-btn" data-filter="locked">Locked</button>
                     </div>
+                    
+                    <div class="achievements-section-header">
+                        <h3>Practice Streaks</h3>
+                    </div>
+                    <div class="achievements-grid streak-achievements" id="streakAchievementsGrid">
+                        ${this.renderStreakAchievements('all')}
+                    </div>
+                    
+                    <div class="achievements-section-header">
+                        <h3>Other Achievements</h3>
+                    </div>
                     <div class="achievements-grid" id="achievementsGrid">
-                        ${this.renderAchievements('all')}
+                        ${this.renderOtherAchievements('all')}
                     </div>
                 </div>
             `;
@@ -302,6 +369,81 @@ export class AchievementBadges {
         }
     }
 
+    renderStreakAchievements(filter = 'all') {
+        try {
+            // Get only streak-related achievements (first 18)
+            const streakIds = [
+                'first-day', 'streak-starter', 'week-warrior', 'double-digit', 'fortnight-hero',
+                'commitment-keeper', 'monthly-master', 'habit-builder',
+                'streak-master', 'quarterly-legend', 'persistence-pro', 'consistency-champion',
+                'half-year-hero', 'dedication-deity', 'unstoppable-force', 'legendary-discipline',
+                'year-master', 'zen-master'
+            ];
+            
+            let streakAchievements = this.achievements.filter(a => streakIds.includes(a.id));
+
+            if (filter === 'earned') {
+                streakAchievements = streakAchievements.filter(a =>
+                    this.earnedAchievements.includes(a.id)
+                );
+            } else if (filter === 'locked') {
+                streakAchievements = streakAchievements.filter(a =>
+                    !this.earnedAchievements.includes(a.id)
+                );
+            }
+
+            // Sort by streak days required
+            streakAchievements.sort((a, b) => {
+                const getDays = (achievement) => {
+                    const match = achievement.description.match(/(\d+) day/);
+                    return match ? parseInt(match[1]) : 0;
+                };
+                return getDays(a) - getDays(b);
+            });
+
+            return streakAchievements.map(achievement => {
+                const isEarned = this.earnedAchievements.includes(achievement.id);
+                return this.renderBadge(achievement, isEarned);
+            }).join('');
+        } catch (error) {
+            console.error('Error rendering streak achievements:', error);
+            return '<div style="color: #ef4444;">Error rendering streak achievements</div>';
+        }
+    }
+
+    renderOtherAchievements(filter = 'all') {
+        try {
+            // Get non-streak achievements
+            const streakIds = [
+                'first-day', 'streak-starter', 'week-warrior', 'double-digit', 'fortnight-hero',
+                'commitment-keeper', 'monthly-master', 'habit-builder',
+                'streak-master', 'quarterly-legend', 'persistence-pro', 'consistency-champion',
+                'half-year-hero', 'dedication-deity', 'unstoppable-force', 'legendary-discipline',
+                'year-master', 'zen-master'
+            ];
+            
+            let otherAchievements = this.achievements.filter(a => !streakIds.includes(a.id));
+
+            if (filter === 'earned') {
+                otherAchievements = otherAchievements.filter(a =>
+                    this.earnedAchievements.includes(a.id)
+                );
+            } else if (filter === 'locked') {
+                otherAchievements = otherAchievements.filter(a =>
+                    !this.earnedAchievements.includes(a.id)
+                );
+            }
+
+            return otherAchievements.map(achievement => {
+                const isEarned = this.earnedAchievements.includes(achievement.id);
+                return this.renderBadge(achievement, isEarned);
+            }).join('');
+        } catch (error) {
+            console.error('Error rendering other achievements:', error);
+            return '<div style="color: #ef4444;">Error rendering other achievements</div>';
+        }
+    }
+
     renderBadge(achievement, isEarned) {
         const badgeClass = isEarned ? 'achievement-badge earned' : 'achievement-badge locked';
         const iconOpacity = isEarned ? '1' : '0.3';
@@ -332,9 +474,13 @@ export class AchievementBadges {
 
                     // Re-render achievements
                     const filter = btn.dataset.filter;
-                    const grid = document.getElementById('achievementsGrid');
-                    if (grid) {
-                        grid.innerHTML = this.renderAchievements(filter);
+                    const streakGrid = document.getElementById('streakAchievementsGrid');
+                    const otherGrid = document.getElementById('achievementsGrid');
+                    if (streakGrid) {
+                        streakGrid.innerHTML = this.renderStreakAchievements(filter);
+                    }
+                    if (otherGrid) {
+                        otherGrid.innerHTML = this.renderOtherAchievements(filter);
                     }
                 });
             });

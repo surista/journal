@@ -180,6 +180,79 @@ display: flex;
     color: var(--text-secondary);
 }
 
+/* Solo Equivalents */
+.solo-equivalents {
+    background: var(--bg-input);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-xl);
+}
+
+.solo-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+}
+
+.solo-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    transition: all 0.2s ease;
+}
+
+.solo-item:hover {
+    transform: translateX(4px);
+    border-color: var(--primary);
+}
+
+.solo-emoji {
+    font-size: 2rem;
+    min-width: 40px;
+    text-align: center;
+}
+
+.solo-info {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-sm);
+    flex: 1;
+    flex-wrap: wrap;
+}
+
+.solo-count {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    min-width: 60px;
+}
+
+.solo-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    flex: 1;
+}
+
+.solo-artist {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+.solo-message {
+    text-align: center;
+    color: var(--text-secondary);
+    font-style: italic;
+    margin: 0;
+    padding-top: var(--space-sm);
+    border-top: 1px solid var(--border);
+}
+
 /* Stats export button */
 .stats-export {
     display: flex;

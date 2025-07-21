@@ -218,6 +218,9 @@ export class StatsPanel {
 
         const totalTime = this.stats?.totalTime || 1; // Prevent division by zero
 
+        // Get solo equivalents
+        const soloEquivalents = this.getSoloEquivalents(this.stats.totalTime || 0);
+
         return `
         <h4>Practice Time Analysis</h4>
         <div class="stat-breakdown">
@@ -233,6 +236,11 @@ export class StatsPanel {
                 <span class="breakdown-label">All time:</span>
                 <span class="breakdown-value">${this.formatDuration(this.stats.totalTime || 0)}</span>
             </div>
+        </div>
+        
+        <h4>🎸 Solo Equivalents</h4>
+        <div class="solo-equivalents">
+            ${soloEquivalents}
         </div>
         
         <h4>Top Practice Areas</h4>
@@ -493,6 +501,89 @@ export class StatsPanel {
             return `${hours}h ${minutes}m`;
         } else {
             return `${minutes}m`;
+        }
+    }
+
+    getSoloEquivalents(totalSeconds) {
+        // Famous guitar solos with their durations in seconds
+        const solos = [
+            { name: "Stairway to Heaven", artist: "Led Zeppelin", duration: 120, emoji: "🏔️" },
+            { name: "Hotel California", artist: "Eagles", duration: 125, emoji: "🏨" },
+            { name: "Bohemian Rhapsody", artist: "Queen", duration: 75, emoji: "👑" },
+            { name: "Comfortably Numb", artist: "Pink Floyd", duration: 240, emoji: "🌙" },
+            { name: "Sweet Child O' Mine", artist: "Guns N' Roses", duration: 55, emoji: "🌹" },
+            { name: "Eruption", artist: "Van Halen", duration: 102, emoji: "🌋" },
+            { name: "Free Bird", artist: "Lynyrd Skynyrd", duration: 300, emoji: "🦅" },
+            { name: "Fade to Black", artist: "Metallica", duration: 114, emoji: "🌑" },
+            { name: "While My Guitar Gently Weeps", artist: "The Beatles", duration: 106, emoji: "😢" },
+            { name: "Layla", artist: "Derek and the Dominos", duration: 180, emoji: "💔" },
+            { name: "All Along the Watchtower", artist: "Jimi Hendrix", duration: 90, emoji: "🏰" },
+            { name: "Sultans of Swing", artist: "Dire Straits", duration: 140, emoji: "👳" }
+        ];
+
+        // Sort by duration for better display
+        solos.sort((a, b) => b.duration - a.duration);
+
+        // Calculate how many times each solo could be played
+        const equivalents = solos.map(solo => {
+            const count = Math.floor(totalSeconds / solo.duration);
+            return { ...solo, count };
+        });
+
+        // Find the best fitting solos (ones that divide evenly or have interesting counts)
+        const interestingEquivalents = equivalents.filter(eq => 
+            eq.count > 0 && (eq.count === 1 || eq.count === 10 || eq.count === 25 || 
+            eq.count === 50 || eq.count === 100 || eq.count === 365 || eq.count === 1000)
+        );
+
+        // If no interesting equivalents, show the top 3 with highest counts
+        const displayEquivalents = interestingEquivalents.length > 0 
+            ? interestingEquivalents.slice(0, 3)
+            : equivalents.filter(eq => eq.count > 0).slice(0, 3);
+
+        if (displayEquivalents.length === 0) {
+            return `<p class="solo-message">Keep practicing! You're building up to your first solo equivalent! 🎸</p>`;
+        }
+
+        return `
+            <div class="solo-list">
+                ${displayEquivalents.map(solo => `
+                    <div class="solo-item">
+                        <span class="solo-emoji">${solo.emoji}</span>
+                        <div class="solo-info">
+                            <span class="solo-count">${solo.count}x</span>
+                            <span class="solo-name">${solo.name}</span>
+                            <span class="solo-artist">by ${solo.artist}</span>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+            <p class="solo-message">
+                ${this.getFunMessage(totalSeconds, equivalents)}
+            </p>
+        `;
+    }
+
+    getFunMessage(totalSeconds, equivalents) {
+        const totalHours = Math.floor(totalSeconds / 3600);
+        
+        // Find the most impressive stat
+        const freebird = equivalents.find(s => s.name === "Free Bird");
+        const eruption = equivalents.find(s => s.name === "Eruption");
+        const stairway = equivalents.find(s => s.name === "Stairway to Heaven");
+        
+        if (freebird && freebird.count >= 100) {
+            return `🎸 Epic! You could've played Free Bird ${freebird.count} times. Even Skynyrd would be impressed!`;
+        } else if (stairway && stairway.count >= 50) {
+            return `🏔️ You've practiced enough to climb ${stairway.count} Stairways to Heaven!`;
+        } else if (eruption && eruption.count >= 25) {
+            return `🌋 ${eruption.count} Eruptions worth of practice! Eddie Van Halen would approve!`;
+        } else if (totalHours >= 100) {
+            return `💪 Over ${totalHours} hours of practice! You're becoming a guitar legend!`;
+        } else if (totalHours >= 10) {
+            return `🌟 ${totalHours} hours of dedication! Keep rocking!`;
+        } else {
+            return `🎸 Every practice session brings you closer to mastery!`;
         }
     }
 
