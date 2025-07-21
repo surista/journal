@@ -236,6 +236,22 @@ export class StorageService {
             const key = `${this.prefix}goals`;
             const stored = localStorage.getItem(key);
 
+            // If no local data but user is authenticated, try to load from Firebase
+            if (!stored && this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
+                console.log('No local goals found, loading from cloud...');
+                try {
+                    const cloudGoals = await this.firebaseSync.getGoals();
+                    if (cloudGoals && cloudGoals.length > 0) {
+                        console.log(`☁️ Loaded ${cloudGoals.length} goals from cloud`);
+                        // Save to local storage for next time
+                        await this.saveGoals(cloudGoals);
+                        return cloudGoals;
+                    }
+                } catch (cloudError) {
+                    console.warn('Failed to load goals from cloud:', cloudError);
+                }
+            }
+
             if (!stored) {
                 console.log('No goals found, returning empty array');
                 return [];
@@ -346,6 +362,22 @@ export class StorageService {
         try {
             const key = `${this.prefix}repertoire`;
             const stored = localStorage.getItem(key);
+
+            // If no local data but user is authenticated, try to load from Firebase
+            if (!stored && this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
+                console.log('No local repertoire found, loading from cloud...');
+                try {
+                    const cloudRepertoire = await this.firebaseSync.getRepertoire();
+                    if (cloudRepertoire && cloudRepertoire.length > 0) {
+                        console.log(`☁️ Loaded ${cloudRepertoire.length} songs from cloud`);
+                        // Save to local storage for next time
+                        await this.saveRepertoire(cloudRepertoire);
+                        return cloudRepertoire;
+                    }
+                } catch (cloudError) {
+                    console.warn('Failed to load repertoire from cloud:', cloudError);
+                }
+            }
 
             if (!stored) {
                 console.log('No repertoire found, returning empty array');
@@ -833,6 +865,22 @@ export class StorageService {
             // console.log('🔍 Loading practice entries...');
             // console.log('🔑 Using key:', key);
             // console.log('📦 Raw data exists:', !!stored);
+
+            // If no local data but user is authenticated, try to load from Firebase
+            if (!stored && this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
+                console.log('No local practice entries found, loading from cloud...');
+                try {
+                    const cloudSessions = await this.firebaseSync.getPracticeSessions();
+                    if (cloudSessions && cloudSessions.length > 0) {
+                        console.log(`☁️ Loaded ${cloudSessions.length} practice sessions from cloud`);
+                        // Save to local storage for next time
+                        await this.savePracticeEntries(cloudSessions);
+                        return cloudSessions;
+                    }
+                } catch (cloudError) {
+                    console.warn('Failed to load practice sessions from cloud:', cloudError);
+                }
+            }
 
             if (!stored) {
                 // console.log('📭 No stored data found, returning empty array');

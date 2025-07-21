@@ -87,20 +87,23 @@ class App {
                 throw new Error('getCurrentUser method not found on AuthService instance');
             }
 
-            // Step 2: Check if user is logged in
+            // Step 2: Check if user is logged in - wait for Firebase auth state
             let user = null;
             try {
-                if (this.authService && typeof this.authService.getCurrentUser === 'function') {
+                if (this.authService && typeof this.authService.waitForAuthState === 'function') {
+                    console.log('⏳ Waiting for Firebase auth state...');
+                    user = await this.authService.waitForAuthState();
+                } else if (this.authService && typeof this.authService.getCurrentUser === 'function') {
                     user = this.authService.getCurrentUser();
                 } else {
                     console.warn('getCurrentUser method not available, using demo mode');
                     user = null;
                 }
             } catch (e) {
-                console.error('Error calling getCurrentUser:', e);
+                console.error('Error checking auth state:', e);
                 user = null;
             }
-            console.log('👤 Current user:', user ? 'Logged in' : 'Not logged in');
+            console.log('👤 Current user:', user ? `Logged in as ${user.email}` : 'Not logged in');
 
             if (!user) {
                 console.log('🔓 No user found, loading auth page');

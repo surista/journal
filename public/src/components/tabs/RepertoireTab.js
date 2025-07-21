@@ -703,7 +703,7 @@ export class RepertoireTab {
             }
             const urlObj = new URL(url);
             return urlObj.hostname.replace('www.', '');
-        } catch {
+        } catch (error) {
             return url.substring(0, 30) + '...';
         }
     }

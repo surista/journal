@@ -305,7 +305,8 @@ export class GoalsTab {
                         document.getElementById('goalTarget').required = false;
                     }
                 }
-            };
+            });
+
 
         // Add the click handler to the container
         if (this.container) {
@@ -625,18 +626,17 @@ export class GoalsTab {
             }
 
             const goalData = {
-            title,
-            category,
-            type: type || null,
-            current: current,
-            target: target,
-            targetDate: targetDate || null,
-            description,
-            criteria,
-            completed: false
-        };
+                title,
+                category,
+                type: type || null,
+                current: current,
+                target: target,
+                targetDate: targetDate || null,
+                description,
+                criteria,
+                completed: false
+            };
 
-        try {
             if (this.editingGoalId) {
                 await this.storageService.updateGoal(this.editingGoalId, goalData);
                 this.showNotification('Goal updated successfully', 'success');

@@ -133,6 +133,36 @@ export class AuthService {
         }
     }
 
+    async waitForAuthState() {
+        await this.ensureInitialized();
+        
+        // Wait for Firebase auth state to be determined
+        return new Promise((resolve) => {
+            if (typeof firebase !== 'undefined' && firebase.auth) {
+                const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+                    unsubscribe(); // Unsubscribe after first call
+                    if (user) {
+                        // Update local storage with Firebase user
+                        const userData = {
+                            id: user.uid,
+                            email: user.email,
+                            isCloudEnabled: true,
+                            lastLogin: new Date().toISOString()
+                        };
+                        localStorage.setItem('currentUser', JSON.stringify(userData));
+                        resolve(userData);
+                    } else {
+                        // Check local storage for offline user
+                        resolve(this.getCurrentUser());
+                    }
+                });
+            } else {
+                // No Firebase, use local auth
+                resolve(this.getCurrentUser());
+            }
+        });
+    }
+
     isLoggedIn() {
         return this.getCurrentUser() !== null;
     }
