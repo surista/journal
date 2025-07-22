@@ -1,6 +1,6 @@
 // service-worker.js - Updated with proper cache management
-const CACHE_NAME = 'guitar-practice-journal-v7.7.2'; // Update version
-const CACHE_VERSION = '7.7.2';
+const CACHE_NAME = 'guitar-practice-journal-v10.61'; // Update version
+const CACHE_VERSION = '10.61';
 
 // Files to cache - be specific about what we cache
 const STATIC_CACHE_URLS = [
@@ -37,9 +37,9 @@ const STATIC_CACHE_URLS = [
     './src/components/tabs/GoalsTab.js',
     './src/components/tabs/CalendarTab.js',
     './src/components/tabs/SettingsTab.js',
-    './src/services/cloudSyncHandler.js',
     './src/components/tabs/AudioTab.js',
     './src/components/tabs/PracticeTab.js',
+    './src/components/tabs/PracticeTabSimple.js',
     './src/components/tabs/MetronomeTab.js',
 
 

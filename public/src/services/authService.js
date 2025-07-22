@@ -12,7 +12,7 @@ export class AuthService {
     async initialize() {
         try {
             // Wait for Firebase to be ready
-            await this.cloudStorage.ensureInitialized();
+            await this.cloudStorage.waitForInitialization();
             const isReady = !!this.cloudStorage.currentUser || true; // Allow auth attempts
             this.isCloudEnabled = isReady;
             console.log('✅ AuthService: Firebase ready:', isReady);

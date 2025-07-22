@@ -121,6 +121,22 @@ console.log(\`📅 Built: \${BUILD_DATE}\`);`;
             pkg.version = VERSION;
             return JSON.stringify(pkg, null, 2);
         }
+    },
+    {
+        path: 'service-worker.js',
+        update: (content) => {
+            // Update CACHE_NAME
+            let updated = content.replace(
+                /const CACHE_NAME = 'guitar-practice-journal-v[\d.]+';/,
+                `const CACHE_NAME = 'guitar-practice-journal-v${VERSION}';`
+            );
+            // Update CACHE_VERSION
+            updated = updated.replace(
+                /const CACHE_VERSION = '[\d.]+';/,
+                `const CACHE_VERSION = '${VERSION}';`
+            );
+            return updated;
+        }
     }
 ];
 

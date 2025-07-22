@@ -414,43 +414,41 @@ export class GoalsTab {
             }
 
             return `
-                <div class="goal-card ${goal.completed ? 'completed' : ''} ${isOverdue ? 'overdue' : ''}" data-id="${goal.id}">
-                    <div class="goal-header">
-                        <h4 class="goal-title">${this.escapeHtml(goal.title || goal.text || 'Untitled Goal')}</h4>
-                        <div class="goal-actions">
+                <div class="goal-card ${goal.completed ? 'completed' : ''} ${isOverdue ? 'overdue' : ''}" data-id="${goal.id}" style="background: #1a2744; border-radius: var(--radius-md); padding: 0.75rem 1.5rem; margin-bottom: 0.5rem;">
+                    <div class="goal-header" style="display: flex; align-items: center; width: 100%;">
+                        <h4 class="goal-title" style="margin: 0; font-size: 1rem; font-weight: 500; color: #ffffff;">${this.escapeHtml(goal.title || goal.text || 'Untitled Goal')}</h4>
+                        <span class="goal-category" style="margin-left: 1.5rem; color: #ffffff; font-size: 0.875rem;">
+                            ${this.formatCategory(goal.category)}
+                        </span>
+                        ${goal.type ? `
+                            <span class="goal-type" style="margin-left: 1.5rem; color: #ffffff; font-size: 0.875rem;">
+                                ${this.getUnitLabel(goal.type)}
+                            </span>
+                        ` : ''}
+                        ${goal.targetDate ? `
+                            <span class="goal-date ${isOverdue ? 'overdue' : ''}" style="margin-left: 1.5rem; color: #ffffff; font-size: 0.875rem; display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="icon">📅</i> ${this.formatDateShort(goal.targetDate)}
+                            </span>
+                        ` : ''}
+                        <div style="flex: 1;"></div>
+                        <div class="goal-actions" style="display: flex; gap: 0.5rem;">
                             ${goal.type && !goal.completed ? `
                                 <button class="btn-icon update-progress-btn" data-id="${goal.id}" 
-                                        title="Update progress" style="background: var(--primary); color: white; padding: 4px 8px; border-radius: 4px;">
-                                    📈
+                                        title="Update progress" style="background: transparent; border: none; color: #ffffff; cursor: pointer; padding: 0.25rem;">
+                                    📊
                                 </button>
                             ` : ''}
                             <button class="btn-icon complete-goal-btn" data-id="${goal.id}" 
-                                    title="${goal.completed ? 'Mark as incomplete' : 'Mark as complete'}">
+                                    title="${goal.completed ? 'Mark as incomplete' : 'Mark as complete'}" style="background: transparent; border: none; color: #ffffff; cursor: pointer; padding: 0.25rem;">
                                 ${goal.completed ? '✅' : '⭕'}
                             </button>
-                            <button class="btn-icon edit-goal-btn" data-id="${goal.id}" title="Edit goal">
+                            <button class="btn-icon edit-goal-btn" data-id="${goal.id}" title="Edit goal" style="background: transparent; border: none; color: #ffffff; cursor: pointer; padding: 0.25rem;">
                                 ✏️
                             </button>
-                            <button class="btn-icon delete-goal-btn" data-id="${goal.id}" title="Delete goal">
+                            <button class="btn-icon delete-goal-btn" data-id="${goal.id}" title="Delete goal" style="background: transparent; border: none; color: #ffffff; cursor: pointer; padding: 0.25rem;">
                                 🗑️
                             </button>
                         </div>
-                    </div>
-                    
-                    <div class="goal-meta">
-                        <span class="goal-category category-${goal.category || 'other'}">
-                            ${this.formatCategory(goal.category)}
-                        </span>
-                        ${goal.targetDate ? `
-                            <span class="goal-date ${isOverdue ? 'overdue' : ''}">
-                                <i class="icon">📅</i> ${this.formatDate(goal.targetDate)}
-                            </span>
-                        ` : ''}
-                        ${goal.type ? `
-                            <span class="goal-type">
-                                <i class="icon">📊</i> ${this.getUnitLabel(goal.type)}
-                            </span>
-                        ` : ''}
                     </div>
                     
                     ${progressHTML}
@@ -814,6 +812,15 @@ export class GoalsTab {
             month: 'short',
             day: 'numeric'
         });
+    }
+
+    formatDateShort(dateString) {
+        const date = new Date(dateString);
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = months[date.getMonth()];
+        const year = date.getFullYear().toString().slice(-2);
+        return `${day}-${month}-${year}`;
     }
 
     escapeHtml(text) {

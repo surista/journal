@@ -6,6 +6,7 @@
 @import url('./base/variables.css');
 @import url('./base/typography.css');
 @import url('./base/animations.css');
+@import url('./base/mobile-enhancements.css');
 
 /* Layout styles */
 @import url('./layout/grid.css');
@@ -36,6 +37,12 @@
 @import './components/practice-log-modal.css';
 @import './components/repertoire.css';
 @import './components/unified-practice.css';
+
+/* Mobile-specific component styles */
+@import url('./components/mobile-timer.css');
+@import url('./components/mobile-audio-player.css');
+@import url('./components/mobile-navigation.css');
+@import url('./components/mobile-practice-tabs.css');
 @import './components/recent-sessions.css';
 @import './components/calendar-stats.css';
 @import './minimal-practice.css';

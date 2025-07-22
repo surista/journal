@@ -47,6 +47,10 @@ export class GoalsList {
                             <label for="goalCurrent">Current</label>
                             <input type="number" id="goalCurrent" placeholder="e.g., 80" min="0" max="999">
                         </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label for="goalTargetDate">Target Date</label>
+                            <input type="date" id="goalTargetDate">
+                        </div>
                     </div>
                     <button class="btn btn-primary" id="addGoalBtn" style="width: 100%; margin-top: 10px;">
                         ➕ Add Goal
@@ -108,6 +112,7 @@ export class GoalsList {
             const goalTarget = document.getElementById('goalTarget')?.value;
             const goalType = document.getElementById('goalType')?.value;
             const goalCurrent = document.getElementById('goalCurrent')?.value;
+            const goalTargetDate = document.getElementById('goalTargetDate')?.value;
 
             if (!goalText) {
                 // Use console.error instead of notificationManager if it's not available
@@ -129,7 +134,8 @@ export class GoalsList {
                 current: goalCurrent ? parseInt(goalCurrent) : 0,
                 type: goalType || null,
                 category: this.categorizeGoal(goalText),
-                priority: this.calculatePriority(goalText, goalType)
+                priority: this.calculatePriority(goalText, goalType),
+                targetDate: goalTargetDate || null
             };
 
             // Use the fixed saveGoal method
@@ -147,6 +153,8 @@ export class GoalsList {
             if (typeSelect) typeSelect.value = '';
             const currentInput = document.getElementById('goalCurrent');
             if (currentInput) currentInput.value = '';
+            const targetDateInput = document.getElementById('goalTargetDate');
+            if (targetDateInput) targetDateInput.value = '';
 
             await this.loadGoals();
 
@@ -301,57 +309,63 @@ export class GoalsList {
 
     renderGoalItem(goal) {
         try {
-            let progressHtml = '';
-            let metricHtml = '';
-
-            if (goal.type && goal.target) {
-                const progress = Math.min(100, Math.round((goal.current / goal.target) * 100));
-                const unit = this.getUnitLabel(goal.type);
-
-                metricHtml = `<span class="goal-metric">${goal.current || 0}/${goal.target} ${unit}</span>`;
-
-                progressHtml = `
-                    <div class="goal-progress">
-                        <div class="progress-bar-container">
-                            <div class="progress-bar" style="width: ${progress}%"></div>
-                        </div>
-                        <span class="progress-text">${progress}% complete</span>
-                    </div>
-                `;
+            console.log('Rendering goal:', goal);
+            
+            // Format target date as dd-mmm-yy
+            let targetDateFormatted = '';
+            if (goal.targetDate) {
+                const date = new Date(goal.targetDate);
+                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                const day = date.getDate().toString().padStart(2, '0');
+                const month = months[date.getMonth()];
+                const year = date.getFullYear().toString().slice(-2);
+                targetDateFormatted = `${day}-${month}-${year}`;
+                console.log('Date formatting:', { original: goal.targetDate, formatted: targetDateFormatted });
             }
 
-            const createdDate = goal.createdAt ? TimeUtils.getRelativeTime(goal.createdAt) : 'Unknown';
-            const categoryIcon = this.getCategoryIcon(goal.category);
+            // Get type symbol
+            const typeSymbol = goal.type ? this.getTypeSymbol(goal.type) : '';
 
-            return `
-                <div class="goal-item fade-in ${goal.completed ? 'completed' : ''}" data-goal-id="${goal.id}" data-priority="${goal.priority}">
-                    <div class="goal-content">
-                        <input type="checkbox" 
-                               class="goal-checkbox" 
-                               ${goal.completed ? 'checked' : ''} 
-                               data-goal-id="${goal.id}">
-                        <div class="goal-info">
-                            <div class="goal-header">
-                                <span class="goal-category-icon">${categoryIcon}</span>
-                                <span class="goal-text ${goal.completed ? 'completed' : ''}">
-                                    ${goal.text}
-                                </span>
-                                ${metricHtml}
-                            </div>
-                            ${progressHtml}
-                            <div class="goal-meta">
-                                <span class="goal-date">Created ${createdDate}</span>
-                            </div>
-                        </div>
-                        <div class="goal-actions">
-                            ${goal.type ? `<button class="btn btn-update" data-goal-id="${goal.id}" title="Update progress">📈</button>` : ''}
-                            <button class="btn btn-danger" style="padding: 8px 16px;" data-goal-id="${goal.id}" title="Delete goal">
-                                🗑️
-                            </button>
+            // Category (area) - default to category or 'General'
+            const area = goal.category ? goal.category.charAt(0).toUpperCase() + goal.category.slice(1) : 'General';
+            
+            console.log('Goal data:', {
+                text: goal.text,
+                area: area,
+                type: goal.type,
+                targetDate: targetDateFormatted
+            });
+
+            // Progress bar for measurable goals - we'll put this inline
+            let progressHtml = '';
+            if (goal.type && goal.target) {
+                const progress = Math.min(100, Math.round((goal.current / goal.target) * 100));
+                // For now, let's skip the progress bar to debug the layout
+                // progressHtml = `...`;
+            }
+
+            const goalHtml = `
+                <div class="goal-item fade-in ${goal.completed ? 'completed' : ''}" data-goal-id="${goal.id}" data-priority="${goal.priority}" style="background: #1a2744; border-radius: var(--radius-md); padding: 0.75rem 1.5rem; margin-bottom: 0.5rem;">
+                    <div class="goal-content" style="display: flex; align-items: center; width: 100%;">
+                        <span style="color: #ffffff; font-weight: 500; margin-right: 1.5rem;">${goal.text}</span>
+                        <span style="color: #ffffff; margin-right: 1.5rem;">${area}</span>
+                        <span style="color: #ffffff; margin-right: 1.5rem;">${goal.type ? this.getUnitLabel(goal.type) : '-'}</span>
+                        <span style="color: #ffffff; display: flex; align-items: center; gap: 0.5rem;">
+                            📅 ${targetDateFormatted || '-'}
+                        </span>
+                        <div style="flex: 1;"></div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            ${goal.type ? `<button data-goal-id="${goal.id}" data-action="update" title="Update progress" style="background: transparent; border: none; color: #ffffff; cursor: pointer; padding: 0.25rem;">📊</button>` : ''}
+                            <button data-goal-id="${goal.id}" data-action="complete" title="Mark complete" style="background: transparent; border: none; color: #ffffff; cursor: pointer; padding: 0.25rem;">⭕</button>
+                            <button data-goal-id="${goal.id}" data-action="edit" title="Edit goal" style="background: transparent; border: none; color: #ffffff; cursor: pointer; padding: 0.25rem;">✏️</button>
+                            <button data-goal-id="${goal.id}" data-action="delete" title="Delete goal" style="background: transparent; border: none; color: #ffffff; cursor: pointer; padding: 0.25rem;">🗑️</button>
                         </div>
                     </div>
                 </div>
             `;
+            
+            console.log('Generated HTML:', goalHtml);
+            return goalHtml;
         } catch (error) {
             console.error('Error rendering goal item:', error);
             return `<div style="color: #ef4444;">Error rendering goal</div>`;
@@ -366,6 +380,26 @@ export class GoalsList {
             sessions: 'sessions'
         };
         return units[type] || '';
+    }
+
+    getTypeLabel(type) {
+        const labels = {
+            bpm: 'Speed',
+            percent: 'Accuracy',
+            minutes: 'Duration',
+            sessions: 'Practice'
+        };
+        return labels[type] || type;
+    }
+
+    getTypeSymbol(type) {
+        const symbols = {
+            bpm: '🎵',
+            percent: '%',
+            minutes: '⏱️',
+            sessions: '📊'
+        };
+        return symbols[type] || '';
     }
 
     getCategoryIcon(category) {
@@ -383,25 +417,34 @@ export class GoalsList {
 
     attachGoalItemListeners() {
         try {
-            // Checkbox listeners
-            const checkboxes = this.container.querySelectorAll('.goal-checkbox');
-            checkboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', (e) => {
-                    const goalId = parseInt(e.target.dataset.goalId);
-                    this.toggleGoal(goalId);
-                });
-            });
-
-            // Update button listeners
-            const updateBtns = this.container.querySelectorAll('.btn-update');
-            updateBtns.forEach(btn => {
+            // Action button listeners - use data-action attribute
+            const actionBtns = this.container.querySelectorAll('.goal-actions button');
+            actionBtns.forEach(btn => {
                 btn.addEventListener('click', (e) => {
-                    const goalId = parseInt(e.target.dataset.goalId);
-                    this.updateGoalProgress(goalId);
+                    const button = e.target.closest('button');
+                    if (!button) return;
+                    
+                    const goalId = parseInt(button.dataset.goalId);
+                    const action = button.dataset.action;
+                    
+                    switch(action) {
+                        case 'update':
+                            this.updateGoalProgress(goalId);
+                            break;
+                        case 'complete':
+                            this.markGoalComplete(goalId);
+                            break;
+                        case 'edit':
+                            this.editGoal(goalId);
+                            break;
+                        case 'delete':
+                            this.deleteGoal(goalId);
+                            break;
+                    }
                 });
             });
 
-            // Delete button listeners
+            // Legacy delete button listeners (for backward compatibility)
             const deleteBtns = this.container.querySelectorAll('.btn-danger');
             deleteBtns.forEach(btn => {
                 btn.addEventListener('click', (e) => {
@@ -484,6 +527,48 @@ export class GoalsList {
         } catch (error) {
             console.error('Error deleting goal:', error);
             notificationManager.error('Failed to delete goal. Please try again.');
+        }
+    }
+
+    async markGoalComplete(goalId) {
+        try {
+            const goal = this.goals.find(g => g.id === goalId);
+            if (!goal) return;
+            
+            // Toggle completion status
+            goal.completed = !goal.completed;
+            goal.completedAt = goal.completed ? new Date().toISOString() : null;
+            
+            await this.storageService.updateGoal(goal);
+            await this.loadGoals();
+            
+            notificationManager.success(goal.completed ? 'Goal marked as complete!' : 'Goal marked as incomplete');
+        } catch (error) {
+            console.error('Error marking goal complete:', error);
+            notificationManager.error('Failed to update goal status');
+        }
+    }
+
+    async editGoal(goalId) {
+        try {
+            const goal = this.goals.find(g => g.id === goalId);
+            if (!goal) return;
+            
+            // For now, just allow editing the goal text
+            const newText = prompt('Edit goal:', goal.text);
+            if (newText && newText.trim() && newText !== goal.text) {
+                goal.text = newText.trim();
+                goal.category = this.categorizeGoal(newText);
+                goal.priority = this.calculatePriority(newText, goal.type);
+                
+                await this.storageService.updateGoal(goal);
+                await this.loadGoals();
+                
+                notificationManager.success('Goal updated successfully');
+            }
+        } catch (error) {
+            console.error('Error editing goal:', error);
+            notificationManager.error('Failed to edit goal');
         }
     }
 

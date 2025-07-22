@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Module Test</title>
+</head>
+<body>
+    <h1>Testing Module Loading</h1>
+    <div id="results"></div>
+    
+    <script type="module">
+        const results = document.getElementById('results');
+        
+        async function testModuleLoading() {
+            try {
+                // Test 1: Load test.js
+                const test1 = await import('./test.js');
+                results.innerHTML += '<p>✅ Test.js loaded successfully</p>';
+                
+                // Test 2: Load PracticeTab.js directly
+                const test2 = await import('./src/components/tabs/PracticeTab.js');
+                results.innerHTML += '<p>✅ PracticeTab.js loaded successfully</p>';
+                
+            } catch (error) {
+                results.innerHTML += `<p>❌ Error: ${error.message}</p>`;
+                console.error('Module loading error:', error);
+            }
+        }
+        
+        testModuleLoading();
+    </script>
+</body>
+</html>

@@ -1,0 +1,198 @@
+/* Mobile-Optimized Timer Component */
+
+@media (max-width: 768px) {
+    /* Timer display optimization */
+    .timer-container,
+    .timer-widget,
+    .timer-display-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+
+    .timer-container {
+        background: var(--bg-secondary);
+        border-radius: 20px;
+        padding: 24px 16px;
+        margin: 16px 0;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .timer-display {
+        font-size: 42px;
+        font-weight: 600;
+        text-align: center;
+        letter-spacing: 1px;
+        margin: 16px auto;
+        font-variant-numeric: tabular-nums;
+        line-height: 1.2;
+        width: 100%;
+    }
+
+    /* Timer controls */
+    .timer-controls,
+    .timer-controls-row {
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+        margin-top: 24px;
+        width: 100%;
+    }
+
+    .timer-controls .button {
+        flex: 1;
+        max-width: 140px;
+        height: 48px;
+        font-size: 16px;
+        font-weight: 500;
+        border-radius: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+    }
+
+    .timer-controls .button:active {
+        transform: scale(0.95);
+    }
+
+    /* Primary timer button */
+    .timer-controls .button-primary {
+        background: var(--color-primary);
+        color: white;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+
+    .timer-controls .button-primary:active {
+        box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+    }
+
+    /* Session info display */
+    .session-info {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+    .session-info-item {
+        background: var(--bg-tertiary);
+        padding: 12px;
+        border-radius: 12px;
+        text-align: center;
+    }
+
+    .session-info-label {
+        font-size: 12px;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+    }
+
+    .session-info-value {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    /* Quick actions */
+    .timer-quick-actions {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .quick-action {
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        padding: 8px;
+        min-width: 60px;
+        transition: color 0.2s ease;
+    }
+
+    .quick-action:active {
+        color: var(--color-primary);
+    }
+
+    .quick-action-icon {
+        width: 24px;
+        height: 24px;
+    }
+
+    .quick-action-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+}
+
+    /* Timer sync row */
+    .timer-sync-row {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 16px;
+        width: 100%;
+    }
+
+    /* Timer control buttons for unified practice */
+    .timer-control-btn {
+        min-width: 120px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+}
+
+/* Small phones */
+@media (max-width: 375px) {
+    .timer-display {
+        font-size: 36px;
+    }
+
+    .timer-controls {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .timer-controls .button {
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .session-info {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Landscape mode adjustments */
+@media (max-width: 768px) and (orientation: landscape) {
+    .timer-container {
+        padding: 16px;
+    }
+
+    .timer-display {
+        font-size: 32px;
+        margin: 8px 0;
+    }
+
+    .timer-controls {
+        margin-top: 16px;
+    }
+
+    .session-info {
+        display: none; /* Hide on landscape to save space */
+    }
+}

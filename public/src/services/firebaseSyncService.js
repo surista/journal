@@ -819,6 +819,17 @@ class FirebaseSyncService {
         }
     }
 
+    async resetPassword(email) {
+        try {
+            await this.auth.sendPasswordResetEmail(email);
+            console.log('✅ Password reset email sent to:', email);
+            return { success: true, message: 'Password reset email sent' };
+        } catch (error) {
+            console.error('Password reset error:', error);
+            return { success: false, error: error.message };
+        }
+    }
+
     // ===================
     // Utility Methods
     // ===================

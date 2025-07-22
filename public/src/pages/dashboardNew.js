@@ -2,7 +2,7 @@
 import { Header } from '../components/header.js';
 import { TopNavigation } from '../components/topNavigation.js';
 import { Footer } from '../components/footer.js';
-import { CloudSyncHandler } from '../services/cloudSyncHandler.js';
+// import { CloudSyncHandler } from '../services/cloudSyncHandler.js';
 
 export class DashboardPage {
     constructor(storageService, authService) {

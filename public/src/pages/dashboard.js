@@ -2,7 +2,7 @@
 import { Header } from '../components/header.js';
 import { TopNavigation } from '../components/topNavigation.js';
 import { Footer } from '../components/footer.js';
-import { CloudSyncHandler } from '../services/cloudSyncHandler.js';
+// import { CloudSyncHandler } from '../services/cloudSyncHandler.js';
 
 export class DashboardPage {
     constructor(storageService, authService) {
@@ -28,6 +28,14 @@ export class DashboardPage {
         // } catch (error) {
         //     console.warn('Cloud sync initialization failed:', error);
         // }
+
+        // Initialize mobile enhancements
+        if (!this.mobileEnhancements) {
+            const { mobileEnhancements } = await import('../utils/mobileEnhancements.js');
+            this.mobileEnhancements = mobileEnhancements;
+            this.mobileEnhancements.initialize();
+            this.mobileEnhancements.setCurrentTab(this.currentTab);
+        }
 
         // Tab titles for header
         const tabTitles = {
@@ -99,6 +107,20 @@ export class DashboardPage {
             this.switchTab(tab);
         });
 
+        // Mobile navigation events
+        window.addEventListener('mobile-tab-navigate', (e) => {
+            this.switchTab(e.detail.tab);
+        });
+
+        // Pull to refresh event
+        window.addEventListener('pull-refresh', async () => {
+            await this.loadDashboardData();
+            // Provide haptic feedback
+            if (this.mobileEnhancements) {
+                this.mobileEnhancements.vibrate();
+            }
+        });
+
         // Initialize practice tab
         this.loadTabContent('practice');
 
@@ -117,6 +139,12 @@ export class DashboardPage {
 
     async switchTab(tab) {
         this.currentTab = tab;
+
+        // Update mobile enhancements
+        if (this.mobileEnhancements) {
+            this.mobileEnhancements.setCurrentTab(tab);
+            this.mobileEnhancements.vibrate();
+        }
 
         // Update URL hash
         window.location.hash = tab;

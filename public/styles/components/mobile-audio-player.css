@@ -1,0 +1,272 @@
+/* Mobile-Optimized Audio Player Component */
+
+@media (max-width: 768px) {
+    /* Audio player container */
+    .audio-player {
+        background: var(--bg-secondary);
+        border-radius: 20px;
+        padding: 20px 16px;
+        margin: 16px 0;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Song info section */
+    .audio-info {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .audio-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .audio-artist {
+        font-size: 14px;
+        color: var(--text-muted);
+    }
+
+    /* Waveform visualization */
+    .waveform-container {
+        height: 80px;
+        background: var(--bg-tertiary);
+        border-radius: 12px;
+        margin: 16px 0;
+        position: relative;
+        overflow: hidden;
+        touch-action: pan-y;
+    }
+
+    .waveform-progress {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        background: rgba(99, 102, 241, 0.2);
+        pointer-events: none;
+    }
+
+    /* Time display */
+    .audio-time {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-bottom: 20px;
+        font-variant-numeric: tabular-nums;
+    }
+
+    /* Main playback controls */
+    .audio-controls {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        margin-bottom: 24px;
+    }
+
+    .audio-control-button {
+        background: none;
+        border: none;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        transition: all 0.2s ease;
+    }
+
+    .audio-control-button:active {
+        background: var(--bg-tertiary);
+        transform: scale(0.9);
+    }
+
+    .audio-play-button {
+        width: 64px;
+        height: 64px;
+        background: var(--color-primary);
+        color: white;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+
+    .audio-play-button:active {
+        box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+    }
+
+    /* Speed and pitch controls */
+    .audio-adjustments {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .adjustment-control {
+        background: var(--bg-tertiary);
+        border-radius: 12px;
+        padding: 12px;
+    }
+
+    .adjustment-label {
+        font-size: 12px;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+        text-align: center;
+    }
+
+    .adjustment-value {
+        font-size: 16px;
+        font-weight: 600;
+        text-align: center;
+        margin-bottom: 8px;
+    }
+
+    .adjustment-slider {
+        width: 100%;
+        height: 32px;
+        -webkit-appearance: none;
+        appearance: none;
+        background: transparent;
+        cursor: pointer;
+    }
+
+    .adjustment-slider::-webkit-slider-track {
+        width: 100%;
+        height: 4px;
+        background: var(--bg-secondary);
+        border-radius: 2px;
+    }
+
+    .adjustment-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 24px;
+        height: 24px;
+        background: var(--color-primary);
+        border-radius: 50%;
+        cursor: pointer;
+        margin-top: -10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Quick adjustment buttons */
+    .quick-adjustments {
+        display: flex;
+        gap: 8px;
+        margin-top: 8px;
+        justify-content: center;
+    }
+
+    .quick-adjust-btn {
+        font-size: 11px;
+        padding: 6px 12px;
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        color: var(--text-muted);
+        transition: all 0.2s ease;
+    }
+
+    .quick-adjust-btn:active {
+        background: var(--color-primary);
+        color: white;
+        border-color: var(--color-primary);
+    }
+
+    /* A-B Loop controls */
+    .ab-loop-controls {
+        display: flex;
+        gap: 12px;
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .ab-loop-button {
+        flex: 1;
+        padding: 12px;
+        background: var(--bg-tertiary);
+        border: none;
+        border-radius: 12px;
+        font-size: 14px;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+    }
+
+    .ab-loop-button:active {
+        background: var(--color-primary);
+        color: white;
+    }
+
+    .ab-loop-button.active {
+        background: var(--color-primary);
+        color: white;
+    }
+}
+
+/* Small phones */
+@media (max-width: 375px) {
+    .audio-player {
+        padding: 16px 12px;
+    }
+
+    .audio-title {
+        font-size: 16px;
+    }
+
+    .audio-controls {
+        gap: 16px;
+    }
+
+    .audio-control-button {
+        width: 40px;
+        height: 40px;
+    }
+
+    .audio-play-button {
+        width: 56px;
+        height: 56px;
+    }
+
+    .adjustment-control {
+        padding: 10px;
+    }
+
+    .quick-adjustments {
+        flex-wrap: wrap;
+    }
+}
+
+/* Landscape mode */
+@media (max-width: 768px) and (orientation: landscape) {
+    .audio-player {
+        padding: 16px;
+    }
+
+    .waveform-container {
+        height: 60px;
+    }
+
+    .audio-adjustments {
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+    }
+
+    .ab-loop-controls {
+        margin-top: 12px;
+        padding-top: 12px;
+    }
+}
