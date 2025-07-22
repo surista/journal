@@ -1,0 +1,138 @@
+/* Save Session Image Preview Styles */
+
+/* Image preview section in save popup */
+.session-image-preview {
+    margin: 20px 0;
+    padding: 16px;
+    background: rgba(99, 102, 241, 0.05);
+    border: 2px solid rgba(99, 102, 241, 0.2);
+    border-radius: 12px;
+}
+
+.image-preview-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-primary);
+    margin-bottom: 12px;
+}
+
+.image-preview-label .icon {
+    font-size: 18px;
+}
+
+/* Thumbnail container */
+.image-thumbnail-container {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background: white;
+}
+
+.session-image-thumbnail {
+    width: 100%;
+    height: auto;
+    max-height: 200px;
+    object-fit: contain;
+    display: block;
+    cursor: zoom-in;
+    transition: transform 0.2s ease;
+}
+
+.session-image-thumbnail:hover {
+    transform: scale(1.02);
+}
+
+/* Add visual emphasis */
+.save-session-popup .session-image-preview {
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .session-image-preview {
+    background: rgba(99, 102, 241, 0.1);
+    border-color: rgba(99, 102, 241, 0.3);
+}
+
+[data-theme="dark"] .image-thumbnail-container {
+    background: var(--bg-secondary);
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+    .session-image-preview {
+        margin: 16px 0;
+        padding: 12px;
+    }
+    
+    .image-preview-label {
+        font-size: 13px;
+    }
+    
+    .image-thumbnail-container {
+        max-width: 100%;
+    }
+    
+    .session-image-thumbnail {
+        max-height: 150px;
+    }
+}
+
+/* Small notification for save success */
+.session-saved-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #10b981;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: slideInRight 0.3s ease, slideOutRight 0.3s ease 2.7s;
+    z-index: 10000;
+}
+
+.session-saved-notification .icon {
+    font-size: 20px;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}

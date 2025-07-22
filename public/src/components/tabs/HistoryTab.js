@@ -74,6 +74,38 @@ export class HistoryTab {
                     }
                 }
             }
+            
+            const practiceBtn = e.target.closest('.practice-again-btn');
+            if (practiceBtn) {
+                e.preventDefault();
+                e.stopPropagation();
+                const sessionId = practiceBtn.dataset.id;
+                if (sessionId) {
+                    const numericId = Number(sessionId);
+                    if (!isNaN(numericId)) {
+                        await this.handlePracticeAgain(numericId);
+                    }
+                }
+            }
+            
+            // Handle clicking on session item (but not on buttons or links)
+            const sessionItem = e.target.closest('.history-item');
+            if (sessionItem && !e.target.closest('button') && !e.target.closest('a') && !e.target.closest('.history-thumbnail')) {
+                const sessionId = sessionItem.dataset.id;
+                if (sessionId) {
+                    const numericId = Number(sessionId);
+                    if (!isNaN(numericId)) {
+                        await this.handleLoadSession(numericId);
+                    }
+                }
+            }
+            
+            // Handle thumbnail clicks
+            const thumbnail = e.target.closest('.history-thumbnail');
+            if (thumbnail) {
+                e.preventDefault();
+                this.showImageLightbox(thumbnail.src);
+            }
         });
     }
 
@@ -144,6 +176,96 @@ export class HistoryTab {
         }
     }
 
+    async handlePracticeAgain(sessionId) {
+        try {
+            // Find the session in our list
+            const session = this.allSessions.find(s => s.id === sessionId);
+            if (!session || !session.sheetMusicImage) {
+                this.showNotification('Session or sheet music not found', 'error');
+                return;
+            }
+
+            // Store the session data in sessionStorage for the practice tab to pick up
+            sessionStorage.setItem('loadPracticeSession', JSON.stringify({
+                mode: 'metronome',
+                sheetMusicImage: session.sheetMusicImage,
+                tempo: session.tempo || session.bpm || 120,
+                timeSignature: session.timeSignature || '4/4',
+                practiceArea: session.practiceArea || session.area || ''
+            }));
+
+            // Navigate to practice tab
+            window.location.hash = '#practice';
+            
+            // Dispatch event to load the session
+            setTimeout(() => {
+                window.dispatchEvent(new CustomEvent('loadPracticeSession', {
+                    detail: { sessionId }
+                }));
+            }, 100);
+            
+        } catch (error) {
+            console.error('Error loading practice session:', error);
+            this.showNotification('Failed to load practice session', 'error');
+        }
+    }
+
+    async handleLoadSession(sessionId) {
+        try {
+            // Find the session in our list
+            const session = this.allSessions.find(s => s.id === sessionId);
+            if (!session) {
+                this.showNotification('Session not found', 'error');
+                return;
+            }
+
+            // Determine the mode based on session data
+            let mode = 'metronome'; // default
+            if (session.audioFile) {
+                mode = 'audio';
+            } else if (session.youtubeUrl) {
+                mode = 'youtube';
+            }
+
+            // Prepare session data for loading
+            const loadData = {
+                mode: mode,
+                tempo: session.tempo || session.bpm || 120,
+                timeSignature: session.timeSignature || '4/4',
+                practiceArea: session.practiceArea || session.area || ''
+            };
+
+            // Add mode-specific data
+            if (session.sheetMusicImage) {
+                loadData.sheetMusicImage = session.sheetMusicImage;
+            }
+            if (session.audioFile) {
+                loadData.audioFile = session.audioFile;
+            }
+            if (session.youtubeUrl) {
+                loadData.youtubeUrl = session.youtubeUrl;
+                loadData.youtubeTitle = session.youtubeTitle;
+            }
+
+            // Store the session data in sessionStorage
+            sessionStorage.setItem('loadPracticeSession', JSON.stringify(loadData));
+
+            // Navigate to practice tab
+            window.location.hash = '#practice';
+            
+            // Dispatch event to load the session
+            setTimeout(() => {
+                window.dispatchEvent(new CustomEvent('loadPracticeSession', {
+                    detail: { sessionId }
+                }));
+            }, 100);
+            
+        } catch (error) {
+            console.error('Error loading session:', error);
+            this.showNotification('Failed to load session', 'error');
+        }
+    }
+
     async loadHistory() {
         try {
             console.log('Loading practice history...');
@@ -203,11 +325,22 @@ export class HistoryTab {
             }
 
             return `
-                        <div class="history-item" data-id="${session.id}">
-                            <div class="history-item-header">
-                                <h4>${this.escapeHtml(session.practiceArea || 'Practice Session')}</h4>
+                        <div class="history-item ${session.sheetMusicImage ? 'has-image' : ''}" data-id="${session.id}">
+                            ${session.sheetMusicImage ? `
+                                <div class="history-item-thumbnail">
+                                    <img src="${session.sheetMusicImage}" alt="Sheet music" class="history-thumbnail" />
+                                </div>
+                            ` : ''}
+                            <div class="history-item-content">
+                                <div class="history-item-header">
+                                    <h4>${this.escapeHtml(session.name || session.practiceArea || 'Practice Session')}</h4>
                                 <div class="history-item-actions">
                                     <span class="history-date">${dateStr}</span>
+                                    ${session.sheetMusicImage ? `
+                                        <button class="btn-icon practice-again-btn" data-id="${session.id}" title="Practice again with this sheet music">
+                                            🎸
+                                        </button>
+                                    ` : ''}
                                     <button class="btn-icon delete-session-btn" data-id="${session.id}" title="Delete session">
                                         🗑️
                                     </button>
@@ -221,6 +354,7 @@ export class HistoryTab {
                                 ${session.tempoPercentage ? `<span class="history-tempo"><i class="icon">📊</i> ${session.tempoPercentage}% speed</span>` : ''}
                                 ${session.key ? `<span class="history-key"><i class="icon">🎼</i> ${this.escapeHtml(session.key)}</span>` : ''}
                                 ${session.audioFile ? `<span class="history-audio"><i class="icon">🎧</i> Audio: ${this.escapeHtml(session.audioFile)}</span>` : ''}
+                                ${session.sheetMusicImage ? `<span class="history-sheet-music"><i class="icon">📄</i> Sheet Music</span>` : ''}
                                 ${session.youtubeTitle ? `
                                 <span class="history-audio">
                                     <i class="icon">📺</i> 
@@ -233,8 +367,9 @@ export class HistoryTab {
             }
                                 </span>
                             ` : ''}
+                                </div>
+                                ${session.notes ? `<div class="history-notes">${this.escapeHtml(session.notes)}</div>` : ''}
                             </div>
-                            ${session.notes ? `<div class="history-notes">${this.escapeHtml(session.notes)}</div>` : ''}
                         </div>
                     `;
         }).join('')}
@@ -364,6 +499,46 @@ export class HistoryTab {
         return [headers, ...rows]
             .map(row => row.map(cell => `"${cell}"`).join(','))
             .join('\n');
+    }
+
+    showImageLightbox(imageSrc) {
+        // Create lightbox elements
+        const lightbox = document.createElement('div');
+        lightbox.className = 'image-lightbox';
+        
+        const img = document.createElement('img');
+        img.src = imageSrc;
+        img.alt = 'Sheet music';
+        
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'image-lightbox-close';
+        closeBtn.innerHTML = '×';
+        
+        // Close on click
+        const closeLightbox = () => {
+            lightbox.remove();
+        };
+        
+        closeBtn.addEventListener('click', closeLightbox);
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) {
+                closeLightbox();
+            }
+        });
+        
+        // Close on escape key
+        const handleEscape = (e) => {
+            if (e.key === 'Escape') {
+                closeLightbox();
+                document.removeEventListener('keydown', handleEscape);
+            }
+        };
+        document.addEventListener('keydown', handleEscape);
+        
+        // Assemble and show
+        lightbox.appendChild(img);
+        lightbox.appendChild(closeBtn);
+        document.body.appendChild(lightbox);
     }
 
     showNotification(message, type = 'info') {

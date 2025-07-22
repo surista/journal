@@ -1,0 +1,145 @@
+/* History Item Thumbnails */
+
+/* History item with image */
+.history-item.has-image {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+/* Make history items clickable */
+.history-item {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.history-item:hover {
+    background: var(--bg-hover);
+    transform: translateX(4px);
+}
+
+/* Don't apply hover to buttons inside */
+.history-item button {
+    cursor: pointer;
+}
+
+/* Thumbnail container */
+.history-item-thumbnail {
+    flex-shrink: 0;
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    cursor: zoom-in;
+    transition: transform 0.2s ease;
+}
+
+.history-item-thumbnail:hover {
+    transform: scale(1.05);
+}
+
+.history-thumbnail {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Content area adjustment */
+.history-item.has-image .history-item-content {
+    flex: 1;
+    min-width: 0; /* Allow text truncation */
+}
+
+/* Session name styling */
+.history-item-header h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 8px 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Highlight sessions with custom names */
+.history-item-header h4:not(:contains("Practice Session")) {
+    color: var(--color-primary);
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    .history-item.has-image {
+        gap: 12px;
+    }
+    
+    .history-item-thumbnail {
+        width: 60px;
+        height: 60px;
+        border-radius: 6px;
+    }
+    
+    .history-item-header h4 {
+        font-size: 14px;
+    }
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .history-item-thumbnail {
+    background: var(--bg-secondary);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Loading state for thumbnails */
+.history-item-thumbnail.loading {
+    background: var(--bg-secondary);
+    position: relative;
+}
+
+.history-item-thumbnail.loading::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border-color);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Session name input in save popup */
+#sessionName {
+    font-size: 16px;
+    padding: 12px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+}
+
+#sessionName:focus {
+    border-color: var(--color-primary);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+#sessionName::placeholder {
+    color: var(--text-muted);
+    opacity: 0.7;
+}
+
+/* Visual indicator for sessions with custom names */
+.history-item:has(h4:not(:contains("Practice Session"))) {
+    border-left: 3px solid var(--color-primary);
+    padding-left: 12px;
+}

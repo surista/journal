@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Practice Tab</title>
+    <script src="https://unpkg.com/tone@14.8.49/build/Tone.js"></script>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/components.css">
+</head>
+<body>
+    <h1>Testing Practice Tab Loading</h1>
+    <div id="results"></div>
+    <div id="practice-container"></div>
+    
+    <script type="module">
+        const results = document.getElementById('results');
+        
+        async function testPracticeTab() {
+            try {
+                // Test the import chain
+                results.innerHTML += '<p>Testing PracticeTab import...</p>';
+                const { PracticeTab } = await import('./src/components/tabs/PracticeTab.js');
+                results.innerHTML += '<p style="color: green;">✓ PracticeTab imported successfully</p>';
+                
+                results.innerHTML += '<p>Testing StorageService import...</p>';
+                const { StorageService } = await import('./src/services/storageService.js');
+                results.innerHTML += '<p style="color: green;">✓ StorageService imported successfully</p>';
+                
+                results.innerHTML += '<p>Creating StorageService instance...</p>';
+                const storageService = new StorageService();
+                results.innerHTML += '<p style="color: green;">✓ StorageService instance created</p>';
+                
+                results.innerHTML += '<p>Creating PracticeTab instance...</p>';
+                const practiceTab = new PracticeTab(storageService);
+                results.innerHTML += '<p style="color: green;">✓ PracticeTab instance created</p>';
+                
+                results.innerHTML += '<p>Rendering PracticeTab...</p>';
+                const container = document.getElementById('practice-container');
+                await practiceTab.render(container);
+                results.innerHTML += '<p style="color: green;">✓ PracticeTab rendered successfully</p>';
+                
+                results.innerHTML += '<h2 style="color: green;">All tests passed! The practice tab loads correctly.</h2>';
+                
+            } catch (error) {
+                results.innerHTML += `<p style="color: red;">✗ Error: ${error.message}</p>`;
+                results.innerHTML += `<pre style="color: red;">${error.stack}</pre>`;
+            }
+        }
+        
+        testPracticeTab();
+    </script>
+</body>
+</html>

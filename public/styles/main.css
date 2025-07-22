@@ -47,6 +47,9 @@
 @import url('./components/mobile-unified-practice.css');
 @import './components/recent-sessions.css';
 @import './components/calendar-stats.css';
+@import url('./components/history-practice-again.css');
+@import url('./components/save-session-image.css');
+@import url('./components/history-thumbnails.css');
 @import './minimal-practice.css';
 
 

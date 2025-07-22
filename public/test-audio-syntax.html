@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Audio Player Syntax</title>
+    <script src="https://unpkg.com/tone@14.8.49/build/Tone.js"></script>
+</head>
+<body>
+    <h1>Testing Audio Player Syntax</h1>
+    <div id="results"></div>
+    
+    <script type="module">
+        const results = document.getElementById('results');
+        
+        async function testImports() {
+            try {
+                results.innerHTML += '<p>Testing AudioService import...</p>';
+                const { AudioService } = await import('./src/services/audioService.js');
+                results.innerHTML += '<p style="color: green;">✓ AudioService imported successfully</p>';
+                
+                results.innerHTML += '<p>Testing AudioPlayer import...</p>';
+                const { AudioPlayer } = await import('./src/components/audioPlayer.js');
+                results.innerHTML += '<p style="color: green;">✓ AudioPlayer imported successfully</p>';
+                
+                results.innerHTML += '<p>Creating AudioService instance...</p>';
+                const audioService = new AudioService();
+                results.innerHTML += '<p style="color: green;">✓ AudioService instance created</p>';
+                
+                results.innerHTML += '<p>Creating AudioPlayer instance...</p>';
+                const container = document.createElement('div');
+                const audioPlayer = new AudioPlayer(container, audioService);
+                results.innerHTML += '<p style="color: green;">✓ AudioPlayer instance created</p>';
+                
+                results.innerHTML += '<h2 style="color: green;">All tests passed! The syntax error is fixed.</h2>';
+                
+            } catch (error) {
+                results.innerHTML += `<p style="color: red;">✗ Error: ${error.message}</p>`;
+                results.innerHTML += `<pre style="color: red;">${error.stack}</pre>`;
+            }
+        }
+        
+        testImports();
+    </script>
+</body>
+</html>

@@ -94,10 +94,10 @@ export class UnifiedPracticeMinimal {
                                 </div>
                                 <div class="image-upload-controls">
                                     <input type="file" id="imageUpload" accept="image/jpeg,image/jpg,image/png" style="display: none;">
-                                    <button class="upload-image-btn" id="uploadImageBtn">
+                                    <button class="upload-image-btn" id="uploadImageBtn" title="Upload sheet music (JPEG/PNG, max 5MB)">
                                         <span>📷</span> Add Sheet Music
                                     </button>
-                                    <div class="paste-hint">or paste screenshot (Ctrl+V)</div>
+                                    <div class="paste-hint">or paste screenshot (Ctrl+V) • Max 5MB</div>
                                 </div>
                             </div>
                             
@@ -407,6 +407,9 @@ export class UnifiedPracticeMinimal {
         // Set initial metronome display state
         const stopBtn = document.getElementById('metronomeStop');
         if (stopBtn) stopBtn.style.display = 'none';
+        
+        // Check if we need to load a saved session
+        this.checkForSessionToLoad();
 
         // Debug: Check if YouTube panel exists
         const youtubePanel = document.getElementById('youtubePanel');
@@ -696,18 +699,39 @@ export class UnifiedPracticeMinimal {
         if (imageUpload) {
             imageUpload.addEventListener('change', (e) => {
             const file = e.target.files[0];
-            if (file && (file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/jpg')) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    this.currentImage = e.target.result;
-                    previewImg.src = this.currentImage;
-                    imagePreview.style.display = 'block';
-                    uploadBtn.style.display = 'none';
-                    const pasteHint = document.querySelector('.paste-hint');
-                    if (pasteHint) pasteHint.style.display = 'none';
-                };
-                reader.readAsDataURL(file);
+            if (!file) return;
+            
+            // Validate file type
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+            if (!validTypes.includes(file.type)) {
+                this.showNotification('Please upload only JPEG or PNG images', 'error');
+                e.target.value = ''; // Clear the input
+                return;
             }
+            
+            // Validate file size (5MB = 5 * 1024 * 1024 bytes)
+            const maxSize = 5 * 1024 * 1024; // 5MB
+            if (file.size > maxSize) {
+                this.showNotification('Image size must be less than 5MB', 'error');
+                e.target.value = ''; // Clear the input
+                return;
+            }
+            
+            // If validation passes, read the file
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                this.currentImage = e.target.result;
+                previewImg.src = this.currentImage;
+                imagePreview.style.display = 'block';
+                uploadBtn.style.display = 'none';
+                const pasteHint = document.querySelector('.paste-hint');
+                if (pasteHint) pasteHint.style.display = 'none';
+            };
+            reader.onerror = () => {
+                this.showNotification('Failed to read image file', 'error');
+                e.target.value = ''; // Clear the input
+            };
+            reader.readAsDataURL(file);
             });
         }
 
@@ -743,6 +767,21 @@ export class UnifiedPracticeMinimal {
                 if (item.type.indexOf('image') !== -1) {
                     e.preventDefault();
                     const blob = item.getAsFile();
+                    
+                    // Validate file size (5MB limit)
+                    const maxSize = 5 * 1024 * 1024; // 5MB
+                    if (blob.size > maxSize) {
+                        this.showNotification('Pasted image is too large. Maximum size is 5MB', 'error');
+                        return;
+                    }
+                    
+                    // Validate image type
+                    const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+                    if (!validTypes.includes(blob.type)) {
+                        this.showNotification('Please paste only JPEG or PNG images', 'error');
+                        return;
+                    }
+                    
                     const reader = new FileReader();
                     
                     reader.onload = (event) => {
@@ -752,6 +791,10 @@ export class UnifiedPracticeMinimal {
                         uploadBtn.style.display = 'none';
                         const pasteHint = document.querySelector('.paste-hint');
                     if (pasteHint) pasteHint.style.display = 'none';
+                    };
+                    
+                    reader.onerror = () => {
+                        this.showNotification('Failed to read pasted image', 'error');
                     };
                     
                     reader.readAsDataURL(blob);
@@ -2635,6 +2678,13 @@ export class UnifiedPracticeMinimal {
                     </div>
                     
                     <div class="popup-body">
+                        <div class="form-group">
+                            <label for="sessionName">Session Name</label>
+                            <input type="text" id="sessionName" class="form-input" 
+                                placeholder="Practice Session" 
+                                value="${this.generateSessionName()}" />
+                        </div>
+                        
                         <div class="session-info">
                             <div class="info-row">
                                 <span class="info-label">Duration:</span>
@@ -2650,6 +2700,17 @@ export class UnifiedPracticeMinimal {
                             </div>
                             ${modeInfo}
                         </div>
+                        
+                        ${this.currentMode === 'metronome' && this.currentImage ? `
+                            <div class="session-image-preview">
+                                <div class="image-preview-label">
+                                    <span class="icon">📄</span> Sheet Music will be saved
+                                </div>
+                                <div class="image-thumbnail-container">
+                                    <img src="${this.currentImage}" alt="Sheet music" class="session-image-thumbnail" />
+                                </div>
+                            </div>
+                        ` : ''}
                         
                         <div class="form-group">
                             <label for="sessionArea">Session Area</label>
@@ -2695,6 +2756,14 @@ export class UnifiedPracticeMinimal {
         const closeBtn = document.getElementById('popupCloseBtn');
         const cancelBtn = document.getElementById('popupCancelBtn');
         const saveBtn = document.getElementById('popupSaveBtn');
+        
+        // Add click handler for thumbnail
+        const thumbnail = document.querySelector('.session-image-thumbnail');
+        if (thumbnail) {
+            thumbnail.addEventListener('click', () => {
+                this.showImageLightbox(thumbnail.src);
+            });
+        }
 
         const closePopup = () => {
             overlay?.remove();
@@ -2710,15 +2779,18 @@ export class UnifiedPracticeMinimal {
         });
 
         saveBtn?.addEventListener('click', async () => {
+            const sessionName = document.getElementById('sessionName')?.value || 'Practice Session';
             const sessionArea = document.getElementById('sessionArea')?.value || 'Other';
             const notes = document.getElementById('sessionNotes')?.value || '';
 
             const sessionData = {
+                name: sessionName,
                 duration: duration,
                 mode: this.currentMode,
                 tempo: this.metronomeState.bpm,
                 date: new Date().toISOString(),
                 area: sessionArea,
+                practiceArea: sessionArea, // Keep both for compatibility
                 notes: notes
             };
 
@@ -2752,9 +2824,15 @@ export class UnifiedPracticeMinimal {
                 // Show success feedback on the save button
                 const saveSessionBtn = document.getElementById('saveSessionBtn');
                 const originalText = saveSessionBtn.textContent;
-                saveSessionBtn.textContent = '✓ Saved!';
+                const savedWithImage = this.currentMode === 'metronome' && this.currentImage;
+                saveSessionBtn.textContent = savedWithImage ? '✓ Saved with image!' : '✓ Saved!';
                 saveSessionBtn.style.background = '#10b981';
                 saveSessionBtn.style.borderColor = '#10b981';
+
+                // Also show a notification if image was saved
+                if (savedWithImage) {
+                    this.showNotification('Session saved with sheet music! 📄', 'success');
+                }
 
                 setTimeout(() => {
                     saveSessionBtn.textContent = originalText;
@@ -2769,6 +2847,13 @@ export class UnifiedPracticeMinimal {
         });
     }
 
+    generateSessionName() {
+        const mode = this.currentMode.charAt(0).toUpperCase() + this.currentMode.slice(1);
+        const date = new Date();
+        const timeStr = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+        return `${mode} Practice - ${timeStr}`;
+    }
+
     formatDuration(seconds) {
         const hours = Math.floor(seconds / 3600);
         const minutes = Math.floor((seconds % 3600) / 60);
@@ -2781,6 +2866,55 @@ export class UnifiedPracticeMinimal {
         } else {
             return `${secs}s`;
         }
+    }
+
+    checkForSessionToLoad() {
+        // Check sessionStorage for a session to load
+        const sessionData = sessionStorage.getItem('loadPracticeSession');
+        if (sessionData) {
+            try {
+                const session = JSON.parse(sessionData);
+                sessionStorage.removeItem('loadPracticeSession'); // Clear it after loading
+                
+                // Load the session data
+                if (session.mode === 'metronome' && session.sheetMusicImage) {
+                    // Switch to metronome mode
+                    this.currentMode = 'metronome';
+                    this.switchMode('metronome');
+                    
+                    // Load the sheet music image
+                    setTimeout(() => {
+                        const imagePreview = document.getElementById('imagePreview');
+                        const previewImg = document.getElementById('previewImg');
+                        const uploadBtn = document.getElementById('uploadImageBtn');
+                        const pasteHint = document.querySelector('.paste-hint');
+                        
+                        if (imagePreview && previewImg) {
+                            this.currentImage = session.sheetMusicImage;
+                            previewImg.src = this.currentImage;
+                            imagePreview.style.display = 'block';
+                            if (uploadBtn) uploadBtn.style.display = 'none';
+                            if (pasteHint) pasteHint.style.display = 'none';
+                        }
+                        
+                        // Set tempo
+                        if (session.tempo) {
+                            this.setBpm(session.tempo);
+                        }
+                        
+                        // Show notification
+                        this.showNotification('Practice session loaded!', 'success');
+                    }, 100);
+                }
+            } catch (error) {
+                console.error('Error loading session:', error);
+            }
+        }
+        
+        // Also listen for load events
+        window.addEventListener('loadPracticeSession', (e) => {
+            this.checkForSessionToLoad();
+        });
     }
 
     showImageLightbox(imageSrc) {

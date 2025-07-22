@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Sync Test - Guitar Practice Journal</title>
+    <link rel="stylesheet" href="./styles/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body data-theme="dark">
+    <div class="container">
+        <h1>Cloud Sync Test</h1>
+        
+        <div id="testResults" class="test-results">
+            <h2>Test Results</h2>
+            <div id="results"></div>
+        </div>
+        
+        <div id="cloudSyncContainer" style="margin-top: 40px;">
+            <!-- Cloud sync manager will be rendered here -->
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+    <script type="module">
+        import { StorageService } from './src/services/storageService.js';
+        import { AuthService } from './src/services/authService.js';
+        import firebaseSyncService from './src/services/firebaseSyncService.js';
+        import { CloudSyncManager } from './src/components/CloudSyncManager.js';
+        
+        async function runTests() {
+            const results = document.getElementById('results');
+            
+            function log(message, type = 'info') {
+                const div = document.createElement('div');
+                div.className = `test-result ${type}`;
+                div.innerHTML = `<strong>${new Date().toLocaleTimeString()}:</strong> ${message}`;
+                results.appendChild(div);
+                console.log(message);
+            }
+            
+            try {
+                // Test 1: Firebase initialization
+                log('Testing Firebase initialization...');
+                await firebaseSyncService.waitForInitialization();
+                log('✅ Firebase initialized successfully', 'success');
+                
+                // Test 2: Check authentication
+                log('Checking authentication status...');
+                const isAuth = firebaseSyncService.isAuthenticated();
+                log(isAuth ? '✅ User is authenticated' : '❌ User not authenticated', isAuth ? 'success' : 'error');
+                
+                if (isAuth) {
+                    const user = firebaseSyncService.getCurrentUser();
+                    log(`User: ${user.email}`, 'info');
+                    
+                    // Test 3: Save test data
+                    log('Testing data save...');
+                    const testSession = {
+                        date: new Date().toISOString(),
+                        duration: 30,
+                        practiceArea: 'Cloud Sync Test',
+                        notes: 'Testing cloud sync functionality',
+                        songsPracticed: 1
+                    };
+                    
+                    const sessionId = await firebaseSyncService.savePracticeSession(testSession);
+                    log(`✅ Test session saved with ID: ${sessionId}`, 'success');
+                    
+                    // Test 4: Retrieve data
+                    log('Testing data retrieval...');
+                    const sessions = await firebaseSyncService.getPracticeSessions();
+                    log(`✅ Retrieved ${sessions.length} practice sessions`, 'success');
+                    
+                    // Test 5: Check offline queue
+                    const pendingWrites = firebaseSyncService.getPendingWritesCount();
+                    log(`Pending writes: ${pendingWrites}`, pendingWrites > 0 ? 'warning' : 'success');
+                }
+                
+                // Initialize cloud sync manager
+                const storageService = new StorageService('test_user');
+                const cloudSyncManager = new CloudSyncManager(storageService);
+                await cloudSyncManager.init();
+                cloudSyncManager.render(document.getElementById('cloudSyncContainer'));
+                
+            } catch (error) {
+                log(`❌ Error: ${error.message}`, 'error');
+                console.error(error);
+            }
+        }
+        
+        // Run tests when page loads
+        window.addEventListener('load', runTests);
+    </script>
+    
+    <style>
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .test-results {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .test-result {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        
+        .test-result.info {
+            background: var(--bg-input);
+            color: var(--text-primary);
+        }
+        
+        .test-result.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+        
+        .test-result.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+        
+        .test-result.warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+    </style>
+</body>
+</html>
