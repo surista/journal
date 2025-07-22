@@ -209,6 +209,7 @@
     background: transparent;
     border-radius: 0;
     border: none;
+    overflow: visible;
 }
 
 /* BPM Display - Centralized */

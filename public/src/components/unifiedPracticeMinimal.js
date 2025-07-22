@@ -17,6 +17,8 @@ export class UnifiedPracticeMinimal {
         this.saveSessionPopup = null; // Temporarily disabled
         this.onSaveCallback = null;
         this.sessionStateService = sessionStateService;
+        this.currentImage = null; // For storing sheet music image
+        this.pasteHandler = null; // Store reference for cleanup
 
         // YouTube properties
         this.youtubePlayer = null;
@@ -83,6 +85,21 @@ export class UnifiedPracticeMinimal {
                         <div class="metronome-minimal-container">
                             <!-- Simplified metronome controls -->
                             <!-- Removed status for more compact design -->
+                            
+                            <!-- Image upload section -->
+                            <div class="metronome-image-section">
+                                <div id="imagePreview" class="image-preview" style="display: none;">
+                                    <img id="previewImg" src="" alt="Practice sheet" />
+                                    <button class="remove-image-btn" id="removeImageBtn">×</button>
+                                </div>
+                                <div class="image-upload-controls">
+                                    <input type="file" id="imageUpload" accept="image/jpeg,image/jpg,image/png" style="display: none;">
+                                    <button class="upload-image-btn" id="uploadImageBtn">
+                                        <span>📷</span> Add Sheet Music
+                                    </button>
+                                    <div class="paste-hint">or paste screenshot (Ctrl+V)</div>
+                                </div>
+                            </div>
                             
                             <div class="bpm-section">
                                 <div class="bpm-display-minimal">
@@ -663,6 +680,89 @@ export class UnifiedPracticeMinimal {
     }
 
     attachMetronomeListeners() {
+        // Image upload functionality
+        const imageUpload = document.getElementById('imageUpload');
+        const uploadBtn = document.getElementById('uploadImageBtn');
+        const removeBtn = document.getElementById('removeImageBtn');
+        const imagePreview = document.getElementById('imagePreview');
+        const previewImg = document.getElementById('previewImg');
+
+        if (uploadBtn) {
+            uploadBtn.addEventListener('click', () => {
+                if (imageUpload) imageUpload.click();
+            });
+        }
+
+        if (imageUpload) {
+            imageUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file && (file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/jpg')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    this.currentImage = e.target.result;
+                    previewImg.src = this.currentImage;
+                    imagePreview.style.display = 'block';
+                    uploadBtn.style.display = 'none';
+                    const pasteHint = document.querySelector('.paste-hint');
+                    if (pasteHint) pasteHint.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+            });
+        }
+
+        if (removeBtn) {
+            removeBtn.addEventListener('click', () => {
+            this.currentImage = null;
+            previewImg.src = '';
+            imagePreview.style.display = 'none';
+            uploadBtn.style.display = 'block';
+            imageUpload.value = '';
+            const pasteHint2 = document.querySelector('.paste-hint');
+            if (pasteHint2) pasteHint2.style.display = 'block';
+            });
+        }
+
+        // Add click handler to preview image for lightbox
+        if (previewImg) {
+            previewImg.addEventListener('click', () => {
+                this.showImageLightbox(previewImg.src);
+            });
+        }
+
+        // Handle paste events for screenshots
+        this.pasteHandler = (e) => {
+            // Only handle paste when metronome tab is active
+            if (this.currentMode !== 'metronome') return;
+
+            const items = e.clipboardData?.items;
+            if (!items) return;
+
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                if (item.type.indexOf('image') !== -1) {
+                    e.preventDefault();
+                    const blob = item.getAsFile();
+                    const reader = new FileReader();
+                    
+                    reader.onload = (event) => {
+                        this.currentImage = event.target.result;
+                        previewImg.src = this.currentImage;
+                        imagePreview.style.display = 'block';
+                        uploadBtn.style.display = 'none';
+                        const pasteHint = document.querySelector('.paste-hint');
+                    if (pasteHint) pasteHint.style.display = 'none';
+                    };
+                    
+                    reader.readAsDataURL(blob);
+                    break;
+                }
+            }
+        };
+
+        // Add paste listener to the document
+        document.addEventListener('paste', this.pasteHandler);
+
         // BPM adjustment buttons
         document.querySelectorAll('.bpm-btn[data-adjust]').forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -2629,6 +2729,8 @@ export class UnifiedPracticeMinimal {
                 sessionData.youtubeTitle = this.youtubeVideoTitle || 'Unknown Video';
                 sessionData.youtubeUrl = this.youtubeVideoUrl || '';
                 sessionData.youtubeId = this.youtubeVideoId || '';
+            } else if (this.currentMode === 'metronome' && this.currentImage) {
+                sessionData.sheetMusicImage = this.currentImage;
             }
 
             try {
@@ -2681,10 +2783,56 @@ export class UnifiedPracticeMinimal {
         }
     }
 
+    showImageLightbox(imageSrc) {
+        // Create lightbox elements
+        const lightbox = document.createElement('div');
+        lightbox.className = 'image-lightbox';
+        
+        const img = document.createElement('img');
+        img.src = imageSrc;
+        img.alt = 'Sheet music';
+        
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'image-lightbox-close';
+        closeBtn.innerHTML = '×';
+        
+        // Close on click
+        const closeLightbox = () => {
+            lightbox.remove();
+        };
+        
+        closeBtn.addEventListener('click', closeLightbox);
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) {
+                closeLightbox();
+            }
+        });
+        
+        // Close on escape key
+        const handleEscape = (e) => {
+            if (e.key === 'Escape') {
+                closeLightbox();
+                document.removeEventListener('keydown', handleEscape);
+            }
+        };
+        document.addEventListener('keydown', handleEscape);
+        
+        // Assemble and show
+        lightbox.appendChild(img);
+        lightbox.appendChild(closeBtn);
+        document.body.appendChild(lightbox);
+    }
+
     destroy() {
         // Clear any pending timeouts
         if (this.fileNameUpdateTimeout) {
             clearTimeout(this.fileNameUpdateTimeout);
+        }
+
+        // Remove paste event listener
+        if (this.pasteHandler) {
+            document.removeEventListener('paste', this.pasteHandler);
+            this.pasteHandler = null;
         }
 
         if (this.timer) {

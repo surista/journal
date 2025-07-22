@@ -13,21 +13,23 @@
 
     .timer-container {
         background: var(--bg-secondary);
-        border-radius: 20px;
-        padding: 24px 16px;
-        margin: 16px 0;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        border-radius: 16px;
+        padding: 20px 16px;
+        margin: 12px auto;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        max-width: 400px;
     }
 
     .timer-display {
-        font-size: 42px;
-        font-weight: 600;
+        font-size: 36px;
+        font-weight: 500;
         text-align: center;
-        letter-spacing: 1px;
-        margin: 16px auto;
+        letter-spacing: 0.5px;
+        margin: 12px auto;
         font-variant-numeric: tabular-nums;
-        line-height: 1.2;
+        line-height: 1;
         width: 100%;
+        display: block;
     }
 
     /* Timer controls */
@@ -35,23 +37,25 @@
     .timer-controls-row {
         display: flex;
         justify-content: center;
-        gap: 16px;
-        margin-top: 24px;
+        gap: 12px;
+        margin-top: 16px;
         width: 100%;
     }
 
-    .timer-controls .button {
+    .timer-controls .button,
+    .timer-control-btn {
         flex: 1;
-        max-width: 140px;
-        height: 48px;
-        font-size: 16px;
+        max-width: 130px;
+        height: 44px;
+        font-size: 15px;
         font-weight: 500;
-        border-radius: 24px;
+        border-radius: 22px;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 8px;
+        gap: 6px;
         transition: all 0.2s ease;
+        padding: 0 20px;
     }
 
     .timer-controls .button:active {
@@ -141,8 +145,21 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-top: 16px;
+        margin-top: 12px;
         width: 100%;
+    }
+
+    .sync-checkbox {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        color: var(--text-muted);
+    }
+
+    .sync-checkbox input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
     }
 
     /* Timer control buttons for unified practice */

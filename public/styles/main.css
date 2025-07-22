@@ -22,6 +22,7 @@
 @import url('./components/timer.css');
 @import url('./components/audio-player.css');
 @import url('./components/metronome.css');
+@import url('./components/metronome-image.css');
 @import url('./components/achievements.css');
 @import url('./components/goals.css');
 @import url('./components/stats.css');
@@ -43,6 +44,7 @@
 @import url('./components/mobile-audio-player.css');
 @import url('./components/mobile-navigation.css');
 @import url('./components/mobile-practice-tabs.css');
+@import url('./components/mobile-unified-practice.css');
 @import './components/recent-sessions.css';
 @import './components/calendar-stats.css';
 @import './minimal-practice.css';
