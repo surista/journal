@@ -1,15 +1,9 @@
 // Firebase Sync Service - Proper implementation with automatic cloud sync
 // Uses Firebase compat SDK for compatibility with existing setup
 
-const firebaseConfig = {
-    apiKey: "AIzaSyACB5lnRzzgIKR1toEXVKGkBfadk6KB_g0",
-    authDomain: "guitar-practice-journal-9f064.firebaseapp.com",
-    projectId: "guitar-practice-journal-9f064",
-    storageBucket: "guitar-practice-journal-9f064.firebasestorage.app",
-    messagingSenderId: "657026172181",
-    appId: "1:657026172181:web:3a41e0793d0763e229d51c",
-    measurementId: "G-XRW7J1FY1M"
-};
+import { firebaseConfig, validateFirebaseConfig } from '../config/firebaseConfig.js';
+import { initializeAppCheck } from './appCheckService.js';
+import { validatePracticeSession, validateGoal, validateRepertoireSong } from '../utils/validation.js';
 
 class FirebaseSyncService {
     constructor() {
@@ -40,6 +34,11 @@ class FirebaseSyncService {
                 throw new Error('Firebase SDK not loaded');
             }
 
+            // Validate configuration before initializing
+            if (!validateFirebaseConfig()) {
+                throw new Error('Invalid Firebase configuration');
+            }
+
             // Initialize Firebase app
             if (!firebase.apps.length) {
                 this.app = firebase.initializeApp(firebaseConfig);
@@ -49,6 +48,9 @@ class FirebaseSyncService {
 
             this.auth = firebase.auth();
             this.db = firebase.firestore();
+            
+            // Initialize App Check for additional security
+            await initializeAppCheck(this.app);
 
             // Enable offline persistence
             try {
@@ -64,17 +66,22 @@ class FirebaseSyncService {
 
             // Set up auth state listener
             this.auth.onAuthStateChanged(async (user) => {
-                this.currentUser = user;
-                if (user) {
-                    console.log('✅ User authenticated:', user.email);
-                    await this.ensureUserDocument();
-                    this.processPendingWrites();
-                    // Temporarily disable real-time listeners to avoid permission errors
-                    // this.setupRealtimeListeners();
-                    console.log('⚠️ Real-time listeners disabled for now');
-                } else {
-                    console.log('❌ User not authenticated');
-                    this.removeRealtimeListeners();
+                try {
+                    this.currentUser = user;
+                    if (user) {
+                        console.log('✅ User authenticated:', user.email);
+                        await this.ensureUserDocument();
+                        this.processPendingWrites();
+                        // Temporarily disable real-time listeners to avoid permission errors
+                        // this.setupRealtimeListeners();
+                        console.log('⚠️ Real-time listeners disabled for now');
+                    } else {
+                        console.log('❌ User not authenticated');
+                        this.removeRealtimeListeners();
+                    }
+                } catch (error) {
+                    console.error('Auth state change error:', error);
+                    // Don't let auth errors prevent app from loading
                 }
             });
 
@@ -101,26 +108,37 @@ class FirebaseSyncService {
     async ensureUserDocument() {
         if (!this.currentUser) return;
 
-        const userRef = this.db.collection('users').doc(this.currentUser.uid);
-        const userDoc = await userRef.get();
+        try {
+            const userRef = this.db.collection('users').doc(this.currentUser.uid);
+            const userDoc = await userRef.get();
 
-        if (!userDoc.exists) {
-            await userRef.set({
-                email: this.currentUser.email,
-                displayName: this.currentUser.displayName || '',
-                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                lastLoginAt: firebase.firestore.FieldValue.serverTimestamp(),
-                preferences: {
-                    theme: 'dark',
-                    notifications: true,
-                    autoSync: true
-                }
-            });
-            console.log('✅ User document created');
-        } else {
-            await userRef.update({
-                lastLoginAt: firebase.firestore.FieldValue.serverTimestamp()
-            });
+            if (!userDoc.exists) {
+                await userRef.set({
+                    email: this.currentUser.email,
+                    displayName: this.currentUser.displayName || '',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    lastLoginAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    preferences: {
+                        theme: 'dark',
+                        notifications: true,
+                        autoSync: true
+                    }
+                });
+                console.log('✅ User document created');
+            } else {
+                await userRef.update({
+                    lastLoginAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            }
+        } catch (error) {
+            // Handle offline scenarios gracefully
+            if (error.code === 'unavailable') {
+                console.log('⚠️ Offline mode: User document check skipped');
+                // Don't throw - this is expected when offline
+            } else {
+                console.error('Error ensuring user document:', error);
+                // Still don't throw - allow app to continue
+            }
         }
     }
 
@@ -129,16 +147,25 @@ class FirebaseSyncService {
     // ===================
     
     async savePracticeSession(session) {
-        if (!session.id) {
-            session.id = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        // Validate the session data first
+        let validatedSession;
+        try {
+            validatedSession = validatePracticeSession(session);
+        } catch (validationError) {
+            console.error('❌ Practice session validation failed:', validationError.message);
+            throw validationError;
+        }
+
+        if (!validatedSession.id) {
+            validatedSession.id = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         }
 
         // Add metadata
         const sessionData = {
-            ...session,
+            ...validatedSession,
             userId: this.currentUser?.uid,
             updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-            createdAt: session.createdAt || firebase.firestore.FieldValue.serverTimestamp()
+            createdAt: validatedSession.createdAt || firebase.firestore.FieldValue.serverTimestamp()
         };
 
         if (!this.currentUser || !this.isInitialized) {
@@ -261,15 +288,24 @@ class FirebaseSyncService {
     // ===================
 
     async saveGoal(goal) {
-        if (!goal.id) {
-            goal.id = `goal_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        // Validate the goal data first
+        let validatedGoal;
+        try {
+            validatedGoal = validateGoal(goal);
+        } catch (validationError) {
+            console.error('❌ Goal validation failed:', validationError.message);
+            throw validationError;
+        }
+
+        if (!validatedGoal.id) {
+            validatedGoal.id = `goal_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         }
 
         const goalData = {
-            ...goal,
+            ...validatedGoal,
             userId: this.currentUser?.uid,
             updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-            createdAt: goal.createdAt || firebase.firestore.FieldValue.serverTimestamp()
+            createdAt: validatedGoal.createdAt || firebase.firestore.FieldValue.serverTimestamp()
         };
 
         if (!this.currentUser || !this.isInitialized) {
@@ -391,15 +427,24 @@ class FirebaseSyncService {
     // ===================
 
     async saveRepertoireSong(song) {
-        if (!song.id) {
-            song.id = `song_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        // Validate the song data first
+        let validatedSong;
+        try {
+            validatedSong = validateRepertoireSong(song);
+        } catch (validationError) {
+            console.error('❌ Repertoire song validation failed:', validationError.message);
+            throw validationError;
+        }
+
+        if (!validatedSong.id) {
+            validatedSong.id = `song_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         }
 
         const songData = {
-            ...song,
+            ...validatedSong,
             userId: this.currentUser?.uid,
             updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-            createdAt: song.createdAt || firebase.firestore.FieldValue.serverTimestamp()
+            createdAt: validatedSong.createdAt || firebase.firestore.FieldValue.serverTimestamp()
         };
 
         if (!this.currentUser || !this.isInitialized) {

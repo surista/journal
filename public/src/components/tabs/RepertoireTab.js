@@ -1,4 +1,6 @@
 // src/components/tabs/RepertoireTab.js
+import { escapeHtml, sanitizeUrl } from '../../utils/sanitizer.js';
+
 export class RepertoireTab {
     constructor(storageService) {
         this.storageService = storageService;
@@ -435,14 +437,14 @@ export class RepertoireTab {
             <div class="song-card" data-id="${song.id}" style="padding: 10px 20px; border-bottom: 1px solid var(--border);">
                 <div class="song-row" style="display: flex; align-items: center; gap: 16px;">
                     <span class="song-title" style="font-weight: 600; color: var(--text-primary); white-space: nowrap;">
-                        ${this.escapeHtml(song.title)}
+                        ${escapeHtml(song.title)}
                     </span>
                     <span class="song-artist" style="color: var(--text-secondary); white-space: nowrap; opacity: 0.8;">
-                        ${song.artist ? this.escapeHtml(song.artist) : ''}
+                        ${song.artist ? escapeHtml(song.artist) : ''}
                     </span>
                     ${song.videoLink ? `
-                        <a href="#" class="youtube-link load-youtube-link" data-url="${song.videoLink}" style="color: var(--primary); text-decoration: none; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; display: inline-block; opacity: 0.9;" title="${song.videoLink}">
-                            🔗 ${this.extractYouTubeDomain(song.videoLink)}
+                        <a href="#" class="youtube-link load-youtube-link" data-url="${sanitizeUrl(song.videoLink) || ''}" style="color: var(--primary); text-decoration: none; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; display: inline-block; opacity: 0.9;" title="${escapeHtml(song.videoLink)}">
+                            🔗 ${escapeHtml(this.extractYouTubeDomain(song.videoLink))}
                         </a>
                     ` : ''}
                     <span class="song-status status-${song.status}" style="padding: 3px 8px; font-size: 11px; font-weight: 600; text-transform: uppercase; border-radius: 4px; white-space: nowrap;">
@@ -688,12 +690,7 @@ export class RepertoireTab {
         }
     }
 
-    // Utility methods
-    escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
+    // Utility methods - using imported escapeHtml from sanitizer.js
 
     extractYouTubeDomain(url) {
         try {

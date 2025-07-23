@@ -1,4 +1,6 @@
 // src/components/audio/sessionManager.js
+import { escapeHtml } from '../../utils/sanitizer.js';
+
 export class SessionManager {
     constructor(audioPlayer) {
         this.player = audioPlayer;
@@ -245,9 +247,9 @@ export class SessionManager {
         console.log('showSaveLoopModal called');
         // Get current source information (works for both audio files and YouTube)
         const isYouTubeMode = this.player.isYouTubeMode;
-        const sourceName = isYouTubeMode
+        const sourceName = escapeHtml(isYouTubeMode
             ? (this.player.youtubeVideoTitle || `YouTube: ${this.player.youtubeVideoId}` || 'YouTube Video')
-            : (this.player.currentFileName || 'Unknown');
+            : (this.player.currentFileName || 'Unknown'));
 
         const sourceType = isYouTubeMode ? 'YouTube Video' : 'Audio File';
         const sourceIcon = isYouTubeMode ? '🎬' : '🎵';
@@ -302,31 +304,31 @@ export class SessionManager {
                     ${isYouTubeMode ? `
                     <div class="save-loop-info-row">
                         <span class="save-loop-info-label">URL:</span>
-                        <span class="save-loop-info-value" style="font-size: 9px; word-break: break-all;">${this.player.youtubeVideoUrl || 'Unknown'}</span>
+                        <span class="save-loop-info-value" style="font-size: 9px; word-break: break-all;">${escapeHtml(this.player.youtubeVideoUrl || 'Unknown')}</span>
                     </div>
                     ` : ''}
                     <div class="save-loop-info-row">
                         <span class="save-loop-info-label">Loop Start:</span>
-                        <span class="save-loop-info-value">${loopStart !== null ? this.player.formatTime(loopStart) : 'Not set'}</span>
+                        <span class="save-loop-info-value">${loopStart !== null ? escapeHtml(this.player.formatTime(loopStart)) : 'Not set'}</span>
                     </div>
                     <div class="save-loop-info-row">
                         <span class="save-loop-info-label">Loop End:</span>
-                        <span class="save-loop-info-value">${loopEnd !== null ? this.player.formatTime(loopEnd) : 'Not set'}</span>
+                        <span class="save-loop-info-value">${loopEnd !== null ? escapeHtml(this.player.formatTime(loopEnd)) : 'Not set'}</span>
                     </div>
                     <div class="save-loop-info-row">
                         <span class="save-loop-info-label">Speed:</span>
-                        <span class="save-loop-info-value">${currentSpeed}%</span>
+                        <span class="save-loop-info-value">${escapeHtml(currentSpeed)}%</span>
                     </div>
                     <div class="save-loop-info-row">
                         <span class="save-loop-info-label">Pitch:</span>
-                        <span class="save-loop-info-value">${currentPitch > 0 ? '+' : ''}${currentPitch} semitones</span>
+                        <span class="save-loop-info-value">${currentPitch > 0 ? '+' : ''}${escapeHtml(currentPitch)} semitones</span>
                     </div>
                 </div>
 
                 <div class="save-loop-form-group">
                     <label for="loopSessionName">Session Name:</label>
                     <input type="text" id="loopSessionName" placeholder="e.g., Intro, Solo, Verse, Chorus" 
-                           value="${this.generateDefaultSessionName()}" maxlength="50">
+                           value="${escapeHtml(this.generateDefaultSessionName())}" maxlength="50">
                 </div>
 
                 <div class="save-loop-form-group">

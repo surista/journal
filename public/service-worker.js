@@ -1,6 +1,6 @@
 // service-worker.js - Updated with proper cache management
-const CACHE_NAME = 'guitar-practice-journal-v10.66'; // Update version
-const CACHE_VERSION = '10.66';
+const CACHE_NAME = 'guitar-practice-journal-v10.70'; // Update version
+const CACHE_VERSION = '10.70';
 
 // Files to cache - be specific about what we cache
 const STATIC_CACHE_URLS = [
@@ -41,7 +41,9 @@ const STATIC_CACHE_URLS = [
     './src/components/tabs/PracticeTab.js',
     './src/components/tabs/PracticeTabSimple.js',
     './src/components/tabs/MetronomeTab.js',
-
+    
+    // New daily suggestion component
+    './src/components/dailyPracticeSuggestion.js',
 
     // Page files
     './src/pages/dashboard.js',

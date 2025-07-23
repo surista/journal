@@ -187,11 +187,17 @@ class App {
 
             // Show loading state
             const app = document.getElementById('app');
-            app.innerHTML = `
-                <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh;">
-                    <div class="loading-spinner" style="width: 50px; height: 50px;"></div>
-                </div>
-            `;
+            app.textContent = ''; // Clear content safely
+            
+            const loadingContainer = document.createElement('div');
+            loadingContainer.style.cssText = 'display: flex; align-items: center; justify-content: center; min-height: 100vh;';
+            
+            const spinner = document.createElement('div');
+            spinner.className = 'loading-spinner';
+            spinner.style.cssText = 'width: 50px; height: 50px;';
+            
+            loadingContainer.appendChild(spinner);
+            app.appendChild(loadingContainer);
 
             // Load dashboard module - using new dashboard
             const dashboardModule = await import('./pages/dashboard.js');
@@ -239,16 +245,22 @@ class App {
         toast.style.borderLeftWidth = '4px';
         toast.style.borderLeftColor = colors[type] || colors.info;
 
-        toast.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 0.75rem;">
-                <span style="font-size: 1.25rem;">${
-            type === 'success' ? '✅' :
-                type === 'error' ? '❌' :
-                    type === 'warning' ? '⚠️' : 'ℹ️'
-        }</span>
-                <span style="color: var(--text-primary);">${message}</span>
-            </div>
-        `;
+        const toastContent = document.createElement('div');
+        toastContent.style.cssText = 'display: flex; align-items: center; gap: 0.75rem;';
+        
+        const icon = document.createElement('span');
+        icon.style.fontSize = '1.25rem';
+        icon.textContent = type === 'success' ? '✅' :
+            type === 'error' ? '❌' :
+            type === 'warning' ? '⚠️' : 'ℹ️';
+        
+        const messageSpan = document.createElement('span');
+        messageSpan.style.color = 'var(--text-primary)';
+        messageSpan.textContent = message;
+        
+        toastContent.appendChild(icon);
+        toastContent.appendChild(messageSpan);
+        toast.appendChild(toastContent);
 
         document.body.appendChild(toast);
 
@@ -296,22 +308,30 @@ class App {
             z-index: 9999;
         `;
 
-        notification.innerHTML = `
-            <div style="display: flex; align-items: center; justify-content: space-between;">
-                <div>
-                    <h4 style="margin: 0 0 0.25rem 0; color: var(--text-primary);">Update Available</h4>
-                    <p style="margin: 0; color: var(--text-secondary); font-size: 0.875rem;">
-                        A new version of Guitar Practice Journal is available.
-                    </p>
-                </div>
-                <button 
-                    onclick="location.reload()" 
-                    style="padding: 0.5rem 1rem; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;"
-                >
-                    Update Now
-                </button>
-            </div>
-        `;
+        const notificationContent = document.createElement('div');
+        notificationContent.style.cssText = 'display: flex; align-items: center; justify-content: space-between;';
+        
+        const textContainer = document.createElement('div');
+        
+        const title = document.createElement('h4');
+        title.style.cssText = 'margin: 0 0 0.25rem 0; color: var(--text-primary);';
+        title.textContent = 'Update Available';
+        
+        const description = document.createElement('p');
+        description.style.cssText = 'margin: 0; color: var(--text-secondary); font-size: 0.875rem;';
+        description.textContent = 'A new version of Guitar Practice Journal is available.';
+        
+        textContainer.appendChild(title);
+        textContainer.appendChild(description);
+        
+        const updateButton = document.createElement('button');
+        updateButton.textContent = 'Update Now';
+        updateButton.style.cssText = 'padding: 0.5rem 1rem; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;';
+        updateButton.addEventListener('click', () => location.reload());
+        
+        notificationContent.appendChild(textContainer);
+        notificationContent.appendChild(updateButton);
+        notification.appendChild(notificationContent);
 
         document.body.appendChild(notification);
     }
@@ -325,30 +345,75 @@ class App {
         console.error('❌ Showing error:', message, error);
 
         const app = document.getElementById('app');
-        app.innerHTML = `
-            <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--bg-dark); padding: 20px;">
-                <div style="background: var(--bg-card); padding: 2rem; border-radius: 12px; border: 1px solid var(--danger); max-width: 600px; width: 100%;">
-                    <h2 style="color: var(--danger); margin-bottom: 1rem;">⚠️ Application Error</h2>
-                    <p style="color: var(--text-primary); margin-bottom: 1rem;">${message}</p>
-                    
-                    ${error ? `
-                    <details style="margin-bottom: 1rem;">
-                        <summary style="color: var(--text-secondary); cursor: pointer;">Technical Details</summary>
-                        <pre style="background: var(--bg-input); padding: 1rem; border-radius: 6px; overflow-x: auto; margin-top: 1rem; color: var(--text-primary); font-size: 0.875rem;">${error.stack || error.message}</pre>
-                    </details>
-                    ` : ''}
-                    
-                    <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
-                        <button onclick="location.reload()" style="padding: 0.75rem 1.5rem; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer;">
-                            Reload Page
-                        </button>
-                        <button onclick="clearCacheAndReload()" style="padding: 0.75rem 1.5rem; background: var(--danger); color: white; border: none; border-radius: 6px; cursor: pointer;">
-                            Clear Cache & Reload
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `;
+        app.textContent = ''; // Clear content safely
+        
+        const errorContainer = document.createElement('div');
+        errorContainer.style.cssText = 'min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--bg-dark); padding: 20px;';
+        
+        const errorCard = document.createElement('div');
+        errorCard.style.cssText = 'background: var(--bg-card); padding: 2rem; border-radius: 12px; border: 1px solid var(--danger); max-width: 600px; width: 100%;';
+        
+        const title = document.createElement('h2');
+        title.style.cssText = 'color: var(--danger); margin-bottom: 1rem;';
+        title.textContent = '⚠️ Application Error';
+        
+        const messageP = document.createElement('p');
+        messageP.style.cssText = 'color: var(--text-primary); margin-bottom: 1rem;';
+        messageP.textContent = message;
+        
+        errorCard.appendChild(title);
+        errorCard.appendChild(messageP);
+        
+        if (error) {
+            const details = document.createElement('details');
+            details.style.cssText = 'margin-bottom: 1rem;';
+            
+            const summary = document.createElement('summary');
+            summary.style.cssText = 'color: var(--text-secondary); cursor: pointer;';
+            summary.textContent = 'Technical Details';
+            
+            const pre = document.createElement('pre');
+            pre.style.cssText = 'background: var(--bg-input); padding: 1rem; border-radius: 6px; overflow-x: auto; margin-top: 1rem; color: var(--text-primary); font-size: 0.875rem;';
+            pre.textContent = error.stack || error.message || String(error);
+            
+            details.appendChild(summary);
+            details.appendChild(pre);
+            errorCard.appendChild(details);
+        }
+        
+        const buttonContainer = document.createElement('div');
+        buttonContainer.style.cssText = 'display: flex; gap: 1rem; margin-top: 1.5rem;';
+        
+        const reloadButton = document.createElement('button');
+        reloadButton.textContent = 'Reload Page';
+        reloadButton.style.cssText = 'padding: 0.75rem 1.5rem; background: var(--primary); color: white; border: none; border-radius: 6px; cursor: pointer;';
+        reloadButton.addEventListener('click', () => location.reload());
+        
+        const clearCacheButton = document.createElement('button');
+        clearCacheButton.textContent = 'Clear Cache & Reload';
+        clearCacheButton.style.cssText = 'padding: 0.75rem 1.5rem; background: var(--danger); color: white; border: none; border-radius: 6px; cursor: pointer;';
+        clearCacheButton.addEventListener('click', () => {
+            if (typeof clearCacheAndReload === 'function') {
+                clearCacheAndReload();
+            } else {
+                // Fallback if function not available
+                if ('caches' in window) {
+                    caches.keys().then(names => {
+                        Promise.all(names.map(name => caches.delete(name)))
+                            .then(() => location.reload());
+                    });
+                } else {
+                    location.reload();
+                }
+            }
+        });
+        
+        buttonContainer.appendChild(reloadButton);
+        buttonContainer.appendChild(clearCacheButton);
+        errorCard.appendChild(buttonContainer);
+        
+        errorContainer.appendChild(errorCard);
+        app.appendChild(errorContainer);
 
         // Add animation styles if not present
         if (!document.getElementById('appAnimations')) {

@@ -1,6 +1,7 @@
 // Practice Form Component - Fixed with proper form synchronization
 import {debounce, TimeUtils} from '../utils/helpers.js';
 import {notificationManager} from '../services/notificationManager.js';
+import { sanitizeInput, escapeHtml } from '../utils/sanitizer.js';
 
 export class PracticeForm {
     constructor(container, storageService) {
@@ -579,13 +580,13 @@ export class PracticeForm {
             const form = event.target;
             const formData = new FormData(form);
 
-            // Get values from form data
-            let practiceArea = formData.get('practiceArea') || '';
-            const customArea = formData.get('customArea') || '';
-            const audioFileValue = formData.get('audioFileName') || '';
-            const tempoValue = formData.get('tempoValue') || '';
-            const key = formData.get('key') || '';
-            const notes = formData.get('notes') || '';
+            // Get values from form data and sanitize
+            let practiceArea = sanitizeInput(formData.get('practiceArea') || '');
+            const customArea = sanitizeInput(formData.get('customArea') || '');
+            const audioFileValue = sanitizeInput(formData.get('audioFileName') || '');
+            const tempoValue = sanitizeInput(formData.get('tempoValue') || '');
+            const key = sanitizeInput(formData.get('key') || '');
+            const notes = sanitizeInput(formData.get('notes') || '');
 
             // Parse media info
             let audioFile = null;
@@ -619,6 +620,11 @@ export class PracticeForm {
             if (practiceArea === 'custom') {
                 if (customArea && customArea.trim() !== '') {
                     practiceArea = customArea.trim();
+                    // Validate length
+                    if (practiceArea.length > 50) {
+                        notificationManager.error('Practice area name must be less than 50 characters!');
+                        return;
+                    }
                     // Add the custom area to localStorage for future use
                     this.addCustomPracticeArea(practiceArea);
                 } else {
@@ -702,6 +708,12 @@ export class PracticeForm {
                         return;
                     }
                 }
+            }
+            
+            // Validate notes length
+            if (notes && notes.length > 500) {
+                notificationManager.error('Notes must be less than 500 characters!');
+                return;
             }
 
             const practiceEntry = {

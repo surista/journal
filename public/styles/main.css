@@ -38,6 +38,7 @@
 @import './components/practice-log-modal.css';
 @import './components/repertoire.css';
 @import './components/unified-practice.css';
+@import './components/daily-suggestion.css';
 
 /* Mobile-specific component styles */
 @import url('./components/mobile-timer.css');

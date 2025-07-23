@@ -14,7 +14,26 @@
       "Bash(firebase deploy:*)",
       "Bash(firebase projects:list:*)",
       "Bash(rm:*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(git rm:*)",
+      "Bash(mv:*)",
+      "Bash(if [ -f \"package.json\" ])",
+      "Bash(then echo \"Found root package.json\")",
+      "Bash(else echo \"No root package.json\")",
+      "Bash(fi)",
+      "Bash(if [ -d northern-lights ])",
+      "Bash(then echo \"It''s a directory\")",
+      "Bash(elif [ -f northern-lights ])",
+      "Bash(then echo \"It''s a file without extension\")",
+      "Bash(git log:*)",
+      "Bash(powershell:*)",
+      "Bash(ls:*)",
+      "Bash(npm run build:*)",
+      "Bash(wc:*)",
+      "Bash(tail:*)",
+      "Bash(npm run bump-minor:*)",
+      "Bash(del \"C:\\Users\\suris\\IdeaProjects\\journal\\test-spotify.html\")",
+      "Bash(find:*)"
     ],
     "deny": []
   }

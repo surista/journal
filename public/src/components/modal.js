@@ -36,17 +36,43 @@ export class Modal {
         modal.style.width = width;
         modal.style.maxWidth = maxWidth;
 
-        // Modal structure
-        modal.innerHTML = `
-            <div class="modal-header">
-                <h3 class="modal-title">${title}</h3>
-                ${closeable ? '<button class="modal-close" aria-label="Close">&times;</button>' : ''}
-            </div>
-            <div class="modal-body">
-                ${content}
-            </div>
-            ${footer ? `<div class="modal-footer">${footer}</div>` : ''}
-        `;
+        // Modal structure - build safely
+        const modalHeader = document.createElement('div');
+        modalHeader.className = 'modal-header';
+        
+        const modalTitle = document.createElement('h3');
+        modalTitle.className = 'modal-title';
+        modalTitle.textContent = title;
+        modalHeader.appendChild(modalTitle);
+        
+        if (closeable) {
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'modal-close';
+            closeBtn.setAttribute('aria-label', 'Close');
+            closeBtn.innerHTML = '&times;'; // Safe - hardcoded entity
+            modalHeader.appendChild(closeBtn);
+        }
+        
+        const modalBody = document.createElement('div');
+        modalBody.className = 'modal-body';
+        // If content is HTML string, use innerHTML (caller's responsibility to sanitize)
+        // If content is plain text, use textContent
+        if (typeof content === 'string' && content.includes('<')) {
+            modalBody.innerHTML = content; // Preserve for backwards compatibility
+        } else {
+            modalBody.textContent = content;
+        }
+        
+        modal.appendChild(modalHeader);
+        modal.appendChild(modalBody);
+        
+        if (footer) {
+            const modalFooter = document.createElement('div');
+            modalFooter.className = 'modal-footer';
+            // Footer often contains buttons, so preserve innerHTML
+            modalFooter.innerHTML = footer;
+            modal.appendChild(modalFooter);
+        }
 
         // Add to overlay
         overlay.appendChild(modal);

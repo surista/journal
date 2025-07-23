@@ -1,6 +1,7 @@
 // Goals List Component - Fixed to handle async storage properly
 import {debounce, TimeUtils} from '../utils/helpers.js';
 import {notificationManager} from '../services/notificationManager.js';
+import { sanitizeInput, escapeHtml } from '../utils/sanitizer.js';
 
 export class GoalsList {
     constructor(container, storageService) {
@@ -108,15 +109,21 @@ export class GoalsList {
     async addGoal() {
         try {
             const input = document.getElementById('newGoal');
-            const goalText = input?.value?.trim();
-            const goalTarget = document.getElementById('goalTarget')?.value;
-            const goalType = document.getElementById('goalType')?.value;
-            const goalCurrent = document.getElementById('goalCurrent')?.value;
-            const goalTargetDate = document.getElementById('goalTargetDate')?.value;
+            const goalText = sanitizeInput(input?.value?.trim() || '');
+            const goalTarget = sanitizeInput(document.getElementById('goalTarget')?.value || '');
+            const goalType = sanitizeInput(document.getElementById('goalType')?.value || '');
+            const goalCurrent = sanitizeInput(document.getElementById('goalCurrent')?.value || '');
+            const goalTargetDate = sanitizeInput(document.getElementById('goalTargetDate')?.value || '');
 
             if (!goalText) {
                 // Use console.error instead of notificationManager if it's not available
                 notificationManager.error('Please enter a goal!');
+                return;
+            }
+            
+            // Validate goal text length
+            if (goalText.length > 100) {
+                notificationManager.error('Goal must be less than 100 characters!');
                 return;
             }
 
@@ -276,7 +283,7 @@ export class GoalsList {
                 const message = this.goals.length === 0
                     ? 'No goals yet. Set your first practice goal!'
                     : 'No goals match your search.';
-                goalsList.innerHTML = `<p style="text-align: center; color: var(--text-secondary);">${message}</p>`;
+                goalsList.innerHTML = `<p style="text-align: center; color: var(--text-secondary);">${escapeHtml(message)}</p>`;
                 return;
             }
 

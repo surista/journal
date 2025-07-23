@@ -5,6 +5,8 @@ export class CalendarTab {
         this.container = null;
         this.calendar = null;
         this.statsPanel = null;
+        this.practiceSessionListener = null;
+        this.practiceDeleteListener = null;
     }
 
     render(container) {
@@ -30,6 +32,24 @@ export class CalendarTab {
 
                 // Initialize calendar in the container
                 await this.calendar.init(calendarContainer);
+                
+                // Set up event listener for practice session saves
+                this.practiceSessionListener = (event) => {
+                    console.log('Practice session saved, refreshing calendar...');
+                    if (this.calendar) {
+                        this.calendar.loadPracticeData();
+                    }
+                };
+                window.addEventListener('practiceSessionSaved', this.practiceSessionListener);
+                
+                // Set up event listener for practice session deletes
+                this.practiceDeleteListener = (event) => {
+                    console.log('Practice session deleted, refreshing calendar...');
+                    if (this.calendar) {
+                        this.calendar.loadPracticeData();
+                    }
+                };
+                window.addEventListener('practiceSessionDeleted', this.practiceDeleteListener);
 
                 // Force re-attach event listeners after a small delay
                 setTimeout(() => {
@@ -106,6 +126,16 @@ export class CalendarTab {
     }
 
     destroy() {
+        // Remove event listeners
+        if (this.practiceSessionListener) {
+            window.removeEventListener('practiceSessionSaved', this.practiceSessionListener);
+            this.practiceSessionListener = null;
+        }
+        if (this.practiceDeleteListener) {
+            window.removeEventListener('practiceSessionDeleted', this.practiceDeleteListener);
+            this.practiceDeleteListener = null;
+        }
+        
         if (this.calendar?.destroy) {
             this.calendar.destroy();
         }

@@ -7,15 +7,37 @@
     <list default="true" id="26bd4cab-c121-4726-98e5-b7c42f2fd2f8" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.claude/settings.local.json" beforeDir="false" afterPath="$PROJECT_DIR$/.claude/settings.local.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CLAUDE.md" beforeDir="false" afterPath="$PROJECT_DIR$/CLAUDE.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/firebase.json" beforeDir="false" afterPath="$PROJECT_DIR$/firebase.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/firestore.rules" beforeDir="false" afterPath="$PROJECT_DIR$/firestore.rules" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/build-info.json" beforeDir="false" afterPath="$PROJECT_DIR$/public/build-info.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/public/manifest.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/public/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/service-worker.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/service-worker.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/app.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/audio/sessionManager.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/audio/sessionManager.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/src/components/audioPlayer.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/audioPlayer.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/src/components/tabs/GoalsTab.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/tabs/GoalsTab.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/goalsList.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/goalsList.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/modal.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/modal.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/practiceForm.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/practiceForm.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/tabs/CalendarTab.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/tabs/CalendarTab.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/tabs/HistoryTab.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/tabs/HistoryTab.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/src/components/tabs/PracticeTab.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/tabs/PracticeTab.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/src/components/tabs/RepertoireTab.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/tabs/RepertoireTab.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/src/components/unifiedPracticeMinimal.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/unifiedPracticeMinimal.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/config.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/config/version.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/config/version.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/pages/auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/pages/auth.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/pages/calendar.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/pages/calendar.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/pages/courses.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/pages/courses.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/src/pages/dashboard.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/pages/dashboard.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/src/services/highQualityPitchShifter.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/services/highQualityPitchShifter.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/services/authService.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/services/authService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/services/firebaseSyncService.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/services/firebaseSyncService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/services/recommendationService.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/services/recommendationService.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/src/services/storageService.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/services/storageService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/utils/toast.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/utils/toast.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/main.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/main.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/pages/calendar.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/pages/calendar.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -88,7 +110,7 @@
       <option name="presentableId" value="Default" />
       <updated>1752995192998</updated>
       <workItem from="1752995194544" duration="27742000" />
-      <workItem from="1753053746720" duration="31149000" />
+      <workItem from="1753053746720" duration="110079000" />
     </task>
     <servers />
   </component>

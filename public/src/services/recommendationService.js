@@ -127,6 +127,12 @@ export class RecommendationService {
     }
 
     getGoalRecommendation(goal) {
+        // Ensure goal has the required properties
+        if (!goal || !goal.goal || typeof goal.goal !== 'string') {
+            console.warn('Invalid goal object:', goal);
+            return null;
+        }
+
         const exercisesByArea = {
             'Master barre chords': ['chords', 'intermediate'],
             'Improve speed': ['technique', 'intermediate'],
@@ -141,8 +147,9 @@ export class RecommendationService {
         let category = 'technique';
         let difficulty = 'intermediate';
 
+        const goalText = goal.goal.toLowerCase();
         for (const [keyword, [cat, diff]] of Object.entries(exercisesByArea)) {
-            if (goal.goal.toLowerCase().includes(keyword.toLowerCase())) {
+            if (goalText.includes(keyword.toLowerCase())) {
                 category = cat;
                 difficulty = diff;
                 break;

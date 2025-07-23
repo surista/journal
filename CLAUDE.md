@@ -23,9 +23,9 @@ Guitar Practice Journal is a Progressive Web App (PWA) for tracking guitar pract
 ### Directory Structure
 - `/public/` - Main application root (all code is under this directory)
 - `/public/src/` - JavaScript source files
-  - `components/` - Reusable UI components (timer, audioPlayer, metronome, etc.)
+  - `components/` - Reusable UI components (timer, audioPlayer, metronome, CloudSyncManager, etc.)
   - `pages/` - Main views (dashboard.js, calendar.js, auth.js)
-  - `services/` - Business logic (storageService.js, audioService.js, authService.js)
+  - `services/` - Business logic (storageService.js, audioService.js, authService.js, firebaseSyncService.js, cloudSyncService.js)
   - `utils/` - Helper functions
   - `config/` - Configuration files including version.js
 - `/public/styles/` - CSS organized by purpose (main.css, components.css, pages.css)
@@ -64,14 +64,18 @@ Guitar Practice Journal is a Progressive Web App (PWA) for tracking guitar pract
 - Goal setting and achievement badges
 - Statistics and GitHub-style practice streak heatmap
 - Calendar view for practice history
-- 17+ themes including dark/light modes
+- 23+ themes including dark/light modes, pastel themes
 - Repertoire management system (as of v9.4)
 - YouTube integration for practice along with videos
 - PWA capabilities (offline support, installable)
+- Cloud sync with Firebase (beta - v9.89+)
+  - Automatic data backup to cloud
+  - Cross-device synchronization
+  - Offline support with automatic sync when online
 
 ### Known Limitations
 
 1. No automated testing framework
 2. No linting or code formatting tools configured
-3. All data is stored locally (no cloud sync implemented yet)
-4. Limited to MP3 audio format support
+3. Limited to MP3 audio format support
+4. Cloud sync is in beta - Firebase integration implemented but may need refinement

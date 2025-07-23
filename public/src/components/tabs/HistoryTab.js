@@ -1,5 +1,6 @@
 // HistoryTab Component - Handles the practice history tab
 import { TimeUtils } from '../../utils/helpers.js';
+import { sanitizeUrl, escapeHtml } from '../../utils/sanitizer.js';
 
 export class HistoryTab {
     constructor(storageService) {
@@ -333,7 +334,7 @@ export class HistoryTab {
                             ` : ''}
                             <div class="history-item-content">
                                 <div class="history-item-header">
-                                    <h4>${this.escapeHtml(session.name || session.practiceArea || 'Practice Session')}</h4>
+                                    <h4>${escapeHtml(session.name || session.practiceArea || 'Practice Session')}</h4>
                                 <div class="history-item-actions">
                                     <span class="history-date">${dateStr}</span>
                                     ${session.sheetMusicImage ? `
@@ -352,23 +353,23 @@ export class HistoryTab {
                                 </span>
                                 ${session.bpm ? `<span class="history-tempo"><i class="icon">🎵</i> ${session.bpm} BPM</span>` : ''}
                                 ${session.tempoPercentage ? `<span class="history-tempo"><i class="icon">📊</i> ${session.tempoPercentage}% speed</span>` : ''}
-                                ${session.key ? `<span class="history-key"><i class="icon">🎼</i> ${this.escapeHtml(session.key)}</span>` : ''}
-                                ${session.audioFile ? `<span class="history-audio"><i class="icon">🎧</i> Audio: ${this.escapeHtml(session.audioFile)}</span>` : ''}
+                                ${session.key ? `<span class="history-key"><i class="icon">🎼</i> ${escapeHtml(session.key)}</span>` : ''}
+                                ${session.audioFile ? `<span class="history-audio"><i class="icon">🎧</i> Audio: ${escapeHtml(session.audioFile)}</span>` : ''}
                                 ${session.sheetMusicImage ? `<span class="history-sheet-music"><i class="icon">📄</i> Sheet Music</span>` : ''}
                                 ${session.youtubeTitle ? `
                                 <span class="history-audio">
                                     <i class="icon">📺</i> 
                                     YouTube: 
                                     ${session.youtubeUrl ?
-                `<a href="#" class="youtube-practice-link" data-url="${this.escapeHtml(session.youtubeUrl)}" style="color: var(--primary); text-decoration: underline;">
-                                            ${this.escapeHtml(session.youtubeTitle)}
+                `<a href="#" class="youtube-practice-link" data-url="${sanitizeUrl(session.youtubeUrl) || ''}" style="color: var(--primary); text-decoration: underline;">
+                                            ${escapeHtml(session.youtubeTitle)}
                                         </a>` :
-                this.escapeHtml(session.youtubeTitle)
+                escapeHtml(session.youtubeTitle)
             }
                                 </span>
                             ` : ''}
                                 </div>
-                                ${session.notes ? `<div class="history-notes">${this.escapeHtml(session.notes)}</div>` : ''}
+                                ${session.notes ? `<div class="history-notes">${escapeHtml(session.notes)}</div>` : ''}
                             </div>
                         </div>
                     `;
@@ -394,12 +395,7 @@ export class HistoryTab {
         }
     }
 
-    escapeHtml(text) {
-        if (!text) return '';
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
+    // Using imported escapeHtml from sanitizer.js instead of local implementation
 
     groupSessionsByMonth(sessions) {
         const grouped = {};

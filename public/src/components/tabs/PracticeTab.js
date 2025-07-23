@@ -1,14 +1,14 @@
 // PracticeTab Component - Handles the main practice tab
 import { TimeUtils } from '../../utils/helpers.js';
 import { UnifiedPracticeMinimal } from '../unifiedPracticeMinimal.js';
-import { PracticeRecommendations } from '../practiceRecommendations.js';
+import { DailyPracticeSuggestion } from '../dailyPracticeSuggestion.js?v=10.68';
 
 export class PracticeTab {
     constructor(storageService) {
         this.storageService = storageService;
         this.container = null;
         this.unifiedPractice = null;
-        this.recommendations = null;
+        this.dailySuggestion = null;
     }
 
     render(container) {
@@ -17,8 +17,8 @@ export class PracticeTab {
         this.container.innerHTML = `
             <div class="practice-page-layout-single">
                 <div class="practice-main-content">
-                    <!-- Practice Recommendations -->
-                    <div id="practiceRecommendationsContainer"></div>
+                    <!-- Daily Practice Suggestion -->
+                    <div id="dailySuggestionContainer"></div>
                     
                     <!-- Unified Practice Component - Full Width -->
                     <div class="practice-container-wrapper">
@@ -51,11 +51,11 @@ export class PracticeTab {
 
     async initializeComponents() {
         try {
-            // Initialize recommendations
-            const recommendationsContainer = document.getElementById('practiceRecommendationsContainer');
-            if (recommendationsContainer) {
-                this.recommendations = new PracticeRecommendations(this.storageService);
-                await this.recommendations.init(recommendationsContainer);
+            // Initialize daily suggestion
+            const suggestionContainer = document.getElementById('dailySuggestionContainer');
+            if (suggestionContainer) {
+                this.dailySuggestion = new DailyPracticeSuggestion(this.storageService);
+                await this.dailySuggestion.init(suggestionContainer);
             }
 
             // Initialize unified practice component
@@ -71,9 +71,9 @@ export class PracticeTab {
                 this.unifiedPractice.setOnSaveCallback(async (sessionData) => {
                     await this.loadPracticeData();
                     
-                    // Refresh recommendations
-                    if (this.recommendations) {
-                        await this.recommendations.refresh();
+                    // Refresh daily suggestion
+                    if (this.dailySuggestion) {
+                        await this.dailySuggestion.refresh();
                     }
 
                     // Update header status if available

@@ -1,23 +1,85 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Helper functions for validation
+    function isValidSession(data) {
+      return data.keys().hasAll(['date', 'duration', 'userId']) &&
+        data.duration is number &&
+        data.duration >= 0 &&
+        data.duration <= 86400 && // Max 24 hours
+        data.date is string &&
+        (data.name == null || (data.name is string && data.name.size() <= 200)) &&
+        (data.notes == null || (data.notes is string && data.notes.size() <= 5000)) &&
+        (data.bpm == null || (data.bpm is number && data.bpm >= 20 && data.bpm <= 300));
+    }
+    
+    function isValidGoal(data) {
+      return data.keys().hasAll(['title', 'type', 'userId']) &&
+        data.title is string &&
+        data.title.size() > 0 &&
+        data.title.size() <= 200 &&
+        data.type in ['practice', 'technique', 'repertoire', 'custom'] &&
+        (data.description == null || (data.description is string && data.description.size() <= 1000)) &&
+        (data.targetValue == null || (data.targetValue is number && data.targetValue >= 0));
+    }
+    
+    function isValidSong(data) {
+      return data.keys().hasAll(['title', 'userId']) &&
+        data.title is string &&
+        data.title.size() > 0 &&
+        data.title.size() <= 200 &&
+        (data.artist == null || (data.artist is string && data.artist.size() <= 200)) &&
+        (data.notes == null || (data.notes is string && data.notes.size() <= 1000)) &&
+        (data.difficulty == null || data.difficulty in ['beginner', 'intermediate', 'advanced', 'expert']) &&
+        (data.status == null || data.status in ['learning', 'practicing', 'mastered', 'on-hold']);
+    }
+    
     // Users can only access their own profile
     match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if request.auth != null && request.auth.uid == userId &&
+        (request.resource.data.email == null || request.resource.data.email == request.auth.token.email);
       
-      // Practice sessions subcollection
+      // Practice sessions subcollection with validation
       match /practice_sessions/{sessionId} {
-        allow read, write: if request.auth != null && request.auth.uid == userId;
+        allow read: if request.auth != null && request.auth.uid == userId;
+        allow create: if request.auth != null && 
+          request.auth.uid == userId &&
+          request.resource.data.userId == userId &&
+          isValidSession(request.resource.data);
+        allow update: if request.auth != null && 
+          request.auth.uid == userId &&
+          request.resource.data.userId == userId &&
+          isValidSession(request.resource.data);
+        allow delete: if request.auth != null && request.auth.uid == userId;
       }
       
-      // Goals subcollection
+      // Goals subcollection with validation
       match /goals/{goalId} {
-        allow read, write: if request.auth != null && request.auth.uid == userId;
+        allow read: if request.auth != null && request.auth.uid == userId;
+        allow create: if request.auth != null && 
+          request.auth.uid == userId &&
+          request.resource.data.userId == userId &&
+          isValidGoal(request.resource.data);
+        allow update: if request.auth != null && 
+          request.auth.uid == userId &&
+          request.resource.data.userId == userId &&
+          isValidGoal(request.resource.data);
+        allow delete: if request.auth != null && request.auth.uid == userId;
       }
       
-      // Repertoire subcollection
+      // Repertoire subcollection with validation
       match /repertoire/{songId} {
-        allow read, write: if request.auth != null && request.auth.uid == userId;
+        allow read: if request.auth != null && request.auth.uid == userId;
+        allow create: if request.auth != null && 
+          request.auth.uid == userId &&
+          request.resource.data.userId == userId &&
+          isValidSong(request.resource.data);
+        allow update: if request.auth != null && 
+          request.auth.uid == userId &&
+          request.resource.data.userId == userId &&
+          isValidSong(request.resource.data);
+        allow delete: if request.auth != null && request.auth.uid == userId;
       }
     }
     

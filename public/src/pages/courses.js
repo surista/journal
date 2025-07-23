@@ -1,5 +1,6 @@
 import courseService from '../services/courseService.js';
 import { showToast } from '../utils/toast.js';
+import { escapeHtml, sanitizeUrl } from '../utils/sanitizer.js';
 
 class CoursesPage {
     constructor(storageService, authService) {
@@ -75,30 +76,30 @@ class CoursesPage {
 
         courseList.innerHTML = this.courses.map(course => {
             const progress = this.userProgress[course.id];
-            const progressPercent = progress?.percentComplete || 0;
+            const progressPercent = Math.min(100, Math.max(0, progress?.percentComplete || 0));
             
             return `
-                <div class="course-card" data-course-id="${course.id}">
+                <div class="course-card" data-course-id="${escapeHtml(course.id)}">
                     <div class="course-thumbnail">
                         ${course.thumbnail 
-                            ? `<img src="${course.thumbnail}" alt="${course.title}">`
+                            ? `<img src="${sanitizeUrl(course.thumbnail) || ''}" alt="${escapeHtml(course.title)}">`
                             : `<div class="placeholder-thumb">${this.getIcon(course.category)}</div>`
                         }
-                        <div class="course-difficulty ${course.difficulty}">${course.difficulty}</div>
+                        <div class="course-difficulty ${escapeHtml(course.difficulty)}">${escapeHtml(course.difficulty)}</div>
                     </div>
                     <div class="course-info">
-                        <h3>${course.title}</h3>
-                        <p>${course.description}</p>
+                        <h3>${escapeHtml(course.title)}</h3>
+                        <p>${escapeHtml(course.description)}</p>
                         <div class="course-meta">
-                            <span class="lesson-count">${course.lessons.length} lessons</span>
-                            <span class="duration">~${course.estimatedHours}h</span>
+                            <span class="lesson-count">${escapeHtml(course.lessons.length)} lessons</span>
+                            <span class="duration">~${escapeHtml(course.estimatedHours)}h</span>
                         </div>
                         ${progress ? `
                             <div class="course-progress">
                                 <div class="progress-bar">
                                     <div class="progress-fill" style="width: ${progressPercent}%"></div>
                                 </div>
-                                <span class="progress-text">${progress.completedLessons}/${progress.totalLessons} completed</span>
+                                <span class="progress-text">${escapeHtml(progress.completedLessons)}/${escapeHtml(progress.totalLessons)} completed</span>
                             </div>
                         ` : ''}
                     </div>

@@ -41,94 +41,191 @@ export class CalendarPage {
     render(container = null) {
         const targetContainer = container || document.getElementById('app');
 
-        targetContainer.innerHTML = `
-            <div class="calendar-page">
-                <div class="calendar-header">
-                    <h1>Practice Calendar</h1>
-                    <div class="calendar-actions">
-                        <button class="btn btn-primary" id="addGoalBtn" onclick="window.calendarInstance?.showGoalModal()">
-                            <i class="icon">🎯</i> Set Daily Goals
-                        </button>
-                    </div>
-                </div>
+        // Clear container
+        targetContainer.textContent = '';
 
-                <div class="calendar-container">
-                    <div class="calendar-navigation">
-                        <button class="nav-btn" onclick="window.calendarInstance?.previousMonth()">
-                            <i class="icon">◀</i>
-                        </button>
-                        <h2 id="currentMonth">${this.getMonthName(this.currentMonth)} ${this.currentYear}</h2>
-                        <button class="nav-btn" onclick="window.calendarInstance?.nextMonth()">
-                            <i class="icon">▶</i>
-                        </button>
-                    </div>
+        // Create main calendar page
+        const calendarPage = document.createElement('div');
+        calendarPage.className = 'calendar-page';
 
-                    <div class="calendar-grid" id="calendarGrid">
-                        <!-- Calendar days will be generated here -->
-                    </div>
+        // Create header
+        const header = document.createElement('div');
+        header.className = 'calendar-header';
+        
+        const h1 = document.createElement('h1');
+        h1.textContent = 'Practice Calendar';
+        header.appendChild(h1);
 
-                    <div class="calendar-legend">
-                        <span class="legend-item">
-                            <span class="legend-box" style="background: var(--success-light);"></span>
-                            Practiced
-                        </span>
-                        <span class="legend-item">
-                            <span class="legend-box" style="background: var(--primary-light);"></span>
-                            Goal Met
-                        </span>
-                        <span class="legend-item">
-                            <span class="legend-box" style="background: var(--warning-light);"></span>
-                            Partial Goal
-                        </span>
-                    </div>
-                </div>
+        const actions = document.createElement('div');
+        actions.className = 'calendar-actions';
+        
+        const addGoalBtn = document.createElement('button');
+        addGoalBtn.className = 'btn btn-primary';
+        addGoalBtn.id = 'addGoalBtn';
+        addGoalBtn.onclick = () => window.calendarInstance?.showGoalModal();
+        
+        const icon = document.createElement('i');
+        icon.className = 'icon';
+        icon.textContent = '🎯';
+        addGoalBtn.appendChild(icon);
+        addGoalBtn.appendChild(document.createTextNode(' Set Daily Goals'));
+        
+        actions.appendChild(addGoalBtn);
+        header.appendChild(actions);
+        calendarPage.appendChild(header);
 
-                <div class="calendar-stats">
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <h3>THIS MONTH</h3>
-                        </div>
-                        <div class="stat-grid">
-                            <div class="stat-item">
-                                <div class="stat-value" id="monthPracticeDays">0</div>
-                                <div class="stat-sublabel">days</div>
-                                <div class="stat-label">PRACTICED</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-time">
-                                    <span class="stat-value" id="monthHours">0h</span>
-                                    <span class="stat-value" id="monthMinutes">0m</span>
-                                </div>
-                                <div class="stat-label">TOTAL TIME</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-header">
-                            <h3>ALL TIME</h3>
-                        </div>
-                        <div class="stat-grid">
-                            <div class="stat-item">
-                                <div class="stat-value" id="totalPracticeDays">0</div>
-                                <div class="stat-sublabel">days</div>
-                                <div class="stat-label">PRACTICED</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-time">
-                                    <span class="stat-value" id="totalHours">0h</span>
-                                    <span class="stat-value" id="totalMinutes">0m</span>
-                                </div>
-                                <div class="stat-label">TOTAL TIME</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        // Create calendar container
+        const calendarContainer = document.createElement('div');
+        calendarContainer.className = 'calendar-container';
 
-                <div class="streak-display" id="streakDisplay">
-                    <!-- Streak badges will be displayed here -->
-                </div>
-            </div>
-        `;
+        // Create navigation
+        const nav = document.createElement('div');
+        nav.className = 'calendar-navigation';
+        
+        const prevBtn = document.createElement('button');
+        prevBtn.className = 'nav-btn';
+        prevBtn.onclick = () => window.calendarInstance?.previousMonth();
+        const prevIcon = document.createElement('i');
+        prevIcon.className = 'icon';
+        prevIcon.textContent = '◀';
+        prevBtn.appendChild(prevIcon);
+        
+        const currentMonth = document.createElement('h2');
+        currentMonth.id = 'currentMonth';
+        currentMonth.textContent = `${this.getMonthName(this.currentMonth)} ${this.currentYear}`;
+        
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'nav-btn';
+        nextBtn.onclick = () => window.calendarInstance?.nextMonth();
+        const nextIcon = document.createElement('i');
+        nextIcon.className = 'icon';
+        nextIcon.textContent = '▶';
+        nextBtn.appendChild(nextIcon);
+        
+        nav.appendChild(prevBtn);
+        nav.appendChild(currentMonth);
+        nav.appendChild(nextBtn);
+        calendarContainer.appendChild(nav);
+
+        // Create calendar grid
+        const grid = document.createElement('div');
+        grid.className = 'calendar-grid';
+        grid.id = 'calendarGrid';
+        calendarContainer.appendChild(grid);
+
+        // Create legend
+        const legend = document.createElement('div');
+        legend.className = 'calendar-legend';
+        
+        const legendItems = [
+            { color: 'var(--success-light)', text: 'Practiced' },
+            { color: 'var(--primary-light)', text: 'Goal Met' },
+            { color: 'var(--warning-light)', text: 'Partial Goal' }
+        ];
+        
+        legendItems.forEach(item => {
+            const span = document.createElement('span');
+            span.className = 'legend-item';
+            
+            const box = document.createElement('span');
+            box.className = 'legend-box';
+            box.style.background = item.color;
+            
+            span.appendChild(box);
+            span.appendChild(document.createTextNode(item.text));
+            legend.appendChild(span);
+        });
+        
+        calendarContainer.appendChild(legend);
+        calendarPage.appendChild(calendarContainer);
+
+        // Create stats section
+        const stats = document.createElement('div');
+        stats.className = 'calendar-stats';
+        
+        // Create stat cards
+        const createStatCard = (title, items) => {
+            const card = document.createElement('div');
+            card.className = 'stat-card';
+            
+            const header = document.createElement('div');
+            header.className = 'stat-header';
+            const h3 = document.createElement('h3');
+            h3.textContent = title;
+            header.appendChild(h3);
+            card.appendChild(header);
+            
+            const grid = document.createElement('div');
+            grid.className = 'stat-grid';
+            
+            items.forEach(item => {
+                const statItem = document.createElement('div');
+                statItem.className = 'stat-item';
+                
+                if (item.type === 'days') {
+                    const value = document.createElement('div');
+                    value.className = 'stat-value';
+                    value.id = item.id;
+                    value.textContent = '0';
+                    statItem.appendChild(value);
+                    
+                    const sublabel = document.createElement('div');
+                    sublabel.className = 'stat-sublabel';
+                    sublabel.textContent = 'days';
+                    statItem.appendChild(sublabel);
+                } else if (item.type === 'time') {
+                    const time = document.createElement('div');
+                    time.className = 'stat-time';
+                    
+                    const hours = document.createElement('span');
+                    hours.className = 'stat-value';
+                    hours.id = item.hoursId;
+                    hours.textContent = '0h';
+                    time.appendChild(hours);
+                    
+                    time.appendChild(document.createTextNode(' '));
+                    
+                    const minutes = document.createElement('span');
+                    minutes.className = 'stat-value';
+                    minutes.id = item.minutesId;
+                    minutes.textContent = '0m';
+                    time.appendChild(minutes);
+                    
+                    statItem.appendChild(time);
+                }
+                
+                const label = document.createElement('div');
+                label.className = 'stat-label';
+                label.textContent = item.label;
+                statItem.appendChild(label);
+                
+                grid.appendChild(statItem);
+            });
+            
+            card.appendChild(grid);
+            return card;
+        };
+        
+        stats.appendChild(createStatCard('THIS MONTH', [
+            { type: 'days', id: 'monthPracticeDays', label: 'PRACTICED' },
+            { type: 'time', hoursId: 'monthHours', minutesId: 'monthMinutes', label: 'TOTAL TIME' }
+        ]));
+        
+        stats.appendChild(createStatCard('ALL TIME', [
+            { type: 'days', id: 'totalPracticeDays', label: 'PRACTICED' },
+            { type: 'time', hoursId: 'totalHours', minutesId: 'totalMinutes', label: 'TOTAL TIME' }
+        ]));
+        
+        calendarPage.appendChild(stats);
+
+        // Create streak display
+        const streakDisplay = document.createElement('div');
+        streakDisplay.className = 'streak-display';
+        streakDisplay.id = 'streakDisplay';
+        calendarPage.appendChild(streakDisplay);
+
+        // Append to container
+        targetContainer.appendChild(calendarPage);
 
         // Set global reference for onclick handlers
         window.calendarInstance = this;
@@ -145,43 +242,101 @@ export class CalendarPage {
         if (existingGoalModal) existingGoalModal.remove();
         if (existingDayModal) existingDayModal.remove();
 
-        // Create fresh modals
-        const modalHTML = `
-            <div class="modal" id="goalModal">
-                <div class="modal-content">
-                    <span class="close-btn" onclick="window.calendarInstance?.hideGoalModal()">&times;</span>
-                    <h3>Set Daily Practice Goals</h3>
-                    <p>Set up to 4 practice area goals. Each completed goal will fill one quadrant of the calendar day.</p>
-                    
-                    <div id="goalForm">
-                        <div class="goal-inputs" id="goalInputs">
-                            <!-- Goal inputs will be generated here -->
-                        </div>
-                        
-                        <div class="goal-form-actions">
-                            <button class="btn btn-secondary" onclick="window.calendarInstance?.addGoalInput()" type="button">
-                                <i class="icon">➕</i> Add Practice Area
-                            </button>
-                        </div>
-                        
-                        <div class="modal-actions">
-                            <button class="btn btn-primary" onclick="window.calendarInstance?.saveGoals()" type="button">Save Goals</button>
-                            <button class="btn btn-secondary" onclick="window.calendarInstance?.hideGoalModal()" type="button">Cancel</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="modal" id="dayDetailModal">
-                <div class="modal-content">
-                    <span class="close-btn" onclick="window.calendarInstance?.hideDayModal()">&times;</span>
-                    <h3 id="modalDate"></h3>
-                    <div id="modalContent"></div>
-                </div>
-            </div>
-        `;
-
-        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        // Create goal modal
+        const goalModal = document.createElement('div');
+        goalModal.className = 'modal';
+        goalModal.id = 'goalModal';
+        
+        const goalContent = document.createElement('div');
+        goalContent.className = 'modal-content';
+        
+        const goalCloseBtn = document.createElement('span');
+        goalCloseBtn.className = 'close-btn';
+        goalCloseBtn.textContent = '×';
+        goalCloseBtn.onclick = () => window.calendarInstance?.hideGoalModal();
+        goalContent.appendChild(goalCloseBtn);
+        
+        const goalH3 = document.createElement('h3');
+        goalH3.textContent = 'Set Daily Practice Goals';
+        goalContent.appendChild(goalH3);
+        
+        const goalP = document.createElement('p');
+        goalP.textContent = 'Set up to 4 practice area goals. Each completed goal will fill one quadrant of the calendar day.';
+        goalContent.appendChild(goalP);
+        
+        const goalForm = document.createElement('div');
+        goalForm.id = 'goalForm';
+        
+        const goalInputs = document.createElement('div');
+        goalInputs.className = 'goal-inputs';
+        goalInputs.id = 'goalInputs';
+        goalForm.appendChild(goalInputs);
+        
+        const goalFormActions = document.createElement('div');
+        goalFormActions.className = 'goal-form-actions';
+        
+        const addBtn = document.createElement('button');
+        addBtn.className = 'btn btn-secondary';
+        addBtn.type = 'button';
+        addBtn.onclick = () => window.calendarInstance?.addGoalInput();
+        
+        const addIcon = document.createElement('i');
+        addIcon.className = 'icon';
+        addIcon.textContent = '➕';
+        addBtn.appendChild(addIcon);
+        addBtn.appendChild(document.createTextNode(' Add Practice Area'));
+        
+        goalFormActions.appendChild(addBtn);
+        goalForm.appendChild(goalFormActions);
+        
+        const modalActions = document.createElement('div');
+        modalActions.className = 'modal-actions';
+        
+        const saveBtn = document.createElement('button');
+        saveBtn.className = 'btn btn-primary';
+        saveBtn.type = 'button';
+        saveBtn.textContent = 'Save Goals';
+        saveBtn.onclick = () => window.calendarInstance?.saveGoals();
+        modalActions.appendChild(saveBtn);
+        
+        const cancelBtn = document.createElement('button');
+        cancelBtn.className = 'btn btn-secondary';
+        cancelBtn.type = 'button';
+        cancelBtn.textContent = 'Cancel';
+        cancelBtn.onclick = () => window.calendarInstance?.hideGoalModal();
+        modalActions.appendChild(cancelBtn);
+        
+        goalForm.appendChild(modalActions);
+        goalContent.appendChild(goalForm);
+        goalModal.appendChild(goalContent);
+        
+        // Create day detail modal
+        const dayModal = document.createElement('div');
+        dayModal.className = 'modal';
+        dayModal.id = 'dayDetailModal';
+        
+        const dayContent = document.createElement('div');
+        dayContent.className = 'modal-content';
+        
+        const dayCloseBtn = document.createElement('span');
+        dayCloseBtn.className = 'close-btn';
+        dayCloseBtn.textContent = '×';
+        dayCloseBtn.onclick = () => window.calendarInstance?.hideDayModal();
+        dayContent.appendChild(dayCloseBtn);
+        
+        const modalDate = document.createElement('h3');
+        modalDate.id = 'modalDate';
+        dayContent.appendChild(modalDate);
+        
+        const modalContent = document.createElement('div');
+        modalContent.id = 'modalContent';
+        dayContent.appendChild(modalContent);
+        
+        dayModal.appendChild(dayContent);
+        
+        // Append modals to body
+        document.body.appendChild(goalModal);
+        document.body.appendChild(dayModal);
     }
 
     // Navigation methods
@@ -208,7 +363,7 @@ export class CalendarPage {
         if (!grid) return;
 
         // Clear existing days
-        grid.innerHTML = '';
+        grid.textContent = '';
 
         // Add day headers
         const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -255,6 +410,17 @@ export class CalendarPage {
             // Calculate percentage for progress circle
             const progressPercentage = totalGoalMinutes > 0 ?
                 Math.min((totalPracticeMinutes / totalGoalMinutes) * 100, 100) : 0;
+            
+            // Debug logging for progress circle
+            if (dateStr === this.getLocalDateString(new Date()) && totalGoalMinutes > 0) {
+                console.log('Progress Circle Debug:', {
+                    date: dateStr,
+                    totalGoalMinutes,
+                    totalPracticeMinutes,
+                    progressPercentage,
+                    dailyGoals: this.dailyGoals
+                });
+            }
 
             // Add day number (always at top-left, not in wrapper)
             const dayNumber = document.createElement('div');
@@ -290,8 +456,12 @@ export class CalendarPage {
                 const minutesText = document.createElement('div');
                 minutesText.className = 'practice-minutes';
                 minutesText.textContent = totalPracticeMinutes;
-                minutesText.style.position = 'relative'; // Make it relative to wrapper
-                minutesText.style.transform = 'none'; // Remove transform since wrapper handles positioning
+                minutesText.style.cssText = `
+                    position: relative;
+                    z-index: 2;
+                    font-weight: bold;
+                    font-size: 14px;
+                `;
 
                 // Color based on goal completion
                 if (totalGoalMinutes > 0) {
@@ -360,11 +530,20 @@ export class CalendarPage {
         const radius = (size - strokeWidth) / 2;
         const circumference = 2 * Math.PI * radius;
         const offset = circumference - (percentage / 100) * circumference;
+        
+        // Debug log
+        console.log('Progress Circle Debug:', {
+            percentage,
+            circumference,
+            offset,
+            radius
+        });
 
         const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         svg.setAttribute('class', 'progress-circle');
         svg.setAttribute('width', size);
         svg.setAttribute('height', size);
+        svg.style.cssText = 'position: absolute; top: 0; left: 0; z-index: 1;';
 
         // Background circle (gray)
         const bgCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
@@ -388,6 +567,7 @@ export class CalendarPage {
         progressCircle.setAttribute('stroke-dashoffset', offset);
         progressCircle.setAttribute('stroke-linecap', 'round');
         progressCircle.setAttribute('transform', `rotate(-90 ${size / 2} ${size / 2})`);
+        progressCircle.style.transition = 'stroke-dashoffset 0.3s ease';
 
         svg.appendChild(bgCircle);
         svg.appendChild(progressCircle);
@@ -434,45 +614,106 @@ export class CalendarPage {
         });
 
         if (!practiceInfo.practiced) {
-            popup.innerHTML = `
-                <div class="session-popup-header">
-                    <h4>${dateFormatted}</h4>
-                    <button class="session-popup-close" onclick="document.querySelector('.session-popup-overlay')?.remove(); this.parentElement.parentElement.remove()">&times;</button>
-                </div>
-                <p style="color: var(--text-secondary); text-align: center; padding: 1rem;">
-                    No practice recorded for this day
-                </p>
-            `;
+            // Clear popup
+            popup.textContent = '';
+            
+            // Create header
+            const header = document.createElement('div');
+            header.className = 'session-popup-header';
+            
+            const h4 = document.createElement('h4');
+            h4.textContent = dateFormatted;
+            header.appendChild(h4);
+            
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'session-popup-close';
+            closeBtn.textContent = '×';
+            closeBtn.onclick = () => {
+                document.querySelector('.session-popup-overlay')?.remove();
+                popup.remove();
+            };
+            header.appendChild(closeBtn);
+            popup.appendChild(header);
+            
+            // Create no practice message
+            const p = document.createElement('p');
+            p.style.cssText = 'color: var(--text-secondary); text-align: center; padding: 1rem;';
+            p.textContent = 'No practice recorded for this day';
+            popup.appendChild(p);
         } else {
-            const sessionsHTML = practiceInfo.sessions.map(session => {
+            // Clear popup
+            popup.textContent = '';
+            
+            // Create header
+            const header = document.createElement('div');
+            header.className = 'session-popup-header';
+            
+            const h4 = document.createElement('h4');
+            h4.textContent = dateFormatted;
+            header.appendChild(h4);
+            
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'session-popup-close';
+            closeBtn.textContent = '×';
+            closeBtn.onclick = () => {
+                document.querySelector('.session-popup-overlay')?.remove();
+                popup.remove();
+            };
+            header.appendChild(closeBtn);
+            popup.appendChild(header);
+            
+            // Create session list
+            const sessionList = document.createElement('div');
+            sessionList.className = 'session-list';
+            
+            // Create summary
+            const summary = document.createElement('div');
+            summary.style.marginBottom = '1rem';
+            
+            const strong = document.createElement('strong');
+            strong.textContent = `Total: ${TimeUtils.formatDuration(practiceInfo.totalTime, true)}`;
+            summary.appendChild(strong);
+            summary.appendChild(document.createTextNode(` (${practiceInfo.sessions.length} session${practiceInfo.sessions.length > 1 ? 's' : ''})`))
+            sessionList.appendChild(summary);
+            
+            // Create session items
+            practiceInfo.sessions.forEach(session => {
                 const time = new Date(session.date).toLocaleTimeString('en-US', {
                     hour: 'numeric',
                     minute: '2-digit'
                 });
-
-                return `
-                    <div class="session-item">
-                        <div class="session-time">${time} - ${TimeUtils.formatDuration(session.duration || 0, true)}</div>
-                        <div class="session-area">${session.practiceArea || 'General Practice'}</div>
-                        ${session.notes ? `<div class="session-details">${session.notes}</div>` : ''}
-                        ${session.bpm ? `<div class="session-details">Tempo: ${session.bpm} BPM</div>` : ''}
-                    </div>
-                `;
-            }).join('');
-
-            popup.innerHTML = `
-                <div class="session-popup-header">
-                    <h4>${dateFormatted}</h4>
-                    <button class="session-popup-close" onclick="document.querySelector('.session-popup-overlay')?.remove(); this.parentElement.parentElement.remove()">&times;</button>
-                </div>
-                <div class="session-list">
-                    <div style="margin-bottom: 1rem;">
-                        <strong>Total: ${TimeUtils.formatDuration(practiceInfo.totalTime, true)}</strong> 
-                        (${practiceInfo.sessions.length} session${practiceInfo.sessions.length > 1 ? 's' : ''})
-                    </div>
-                    ${sessionsHTML}
-                </div>
-            `;
+                
+                const sessionItem = document.createElement('div');
+                sessionItem.className = 'session-item';
+                
+                const sessionTime = document.createElement('div');
+                sessionTime.className = 'session-time';
+                sessionTime.textContent = `${time} - ${TimeUtils.formatDuration(session.duration || 0, true)}`;
+                sessionItem.appendChild(sessionTime);
+                
+                const sessionArea = document.createElement('div');
+                sessionArea.className = 'session-area';
+                sessionArea.textContent = session.practiceArea || 'General Practice';
+                sessionItem.appendChild(sessionArea);
+                
+                if (session.notes) {
+                    const details = document.createElement('div');
+                    details.className = 'session-details';
+                    details.textContent = session.notes;
+                    sessionItem.appendChild(details);
+                }
+                
+                if (session.bpm) {
+                    const tempoDetails = document.createElement('div');
+                    tempoDetails.className = 'session-details';
+                    tempoDetails.textContent = `Tempo: ${session.bpm} BPM`;
+                    sessionItem.appendChild(tempoDetails);
+                }
+                
+                sessionList.appendChild(sessionItem);
+            });
+            
+            popup.appendChild(sessionList);
         }
 
         document.body.appendChild(overlay);
@@ -620,17 +861,48 @@ export class CalendarPage {
         const currentStreak = this.calculateCurrentStreak();
         const badges = this.getStreakBadges(currentStreak);
 
-        container.innerHTML = `
-            <h3>Current Streak: ${currentStreak} days</h3>
-            <div class="badges">
-                ${badges.map(badge => `
-                    <div class="badge ${badge.earned ? 'earned' : ''}">
-                        <span class="badge-icon">${badge.icon}</span>
-                        <span class="badge-label">${badge.label.replace('\n', '<br>')}</span>
-                    </div>
-                `).join('')}
-            </div>
-        `;
+        // Clear container
+        container.textContent = '';
+        
+        // Create streak header
+        const h3 = document.createElement('h3');
+        h3.textContent = `Current Streak: ${currentStreak} days`;
+        container.appendChild(h3);
+        
+        // Create badges container
+        const badgesDiv = document.createElement('div');
+        badgesDiv.className = 'badges';
+        
+        // Create each badge
+        badges.forEach(badge => {
+            const badgeDiv = document.createElement('div');
+            badgeDiv.className = 'badge';
+            if (badge.earned) {
+                badgeDiv.classList.add('earned');
+            }
+            
+            const icon = document.createElement('span');
+            icon.className = 'badge-icon';
+            icon.textContent = badge.icon;
+            badgeDiv.appendChild(icon);
+            
+            const labelSpan = document.createElement('span');
+            labelSpan.className = 'badge-label';
+            
+            // Handle line breaks in label
+            const labelParts = badge.label.split('\n');
+            labelParts.forEach((part, index) => {
+                if (index > 0) {
+                    labelSpan.appendChild(document.createElement('br'));
+                }
+                labelSpan.appendChild(document.createTextNode(part));
+            });
+            
+            badgeDiv.appendChild(labelSpan);
+            badgesDiv.appendChild(badgeDiv);
+        });
+        
+        container.appendChild(badgesDiv);
     }
 
     calculateCurrentStreak() {
@@ -654,19 +926,25 @@ export class CalendarPage {
         yesterday.setDate(yesterday.getDate() - 1);
         const yesterdayStr = this.getLocalDateString(yesterday);
         
-        // Check if practiced yesterday
+        // Check if practiced today or yesterday
+        const practicedToday = practiceDates.has(today);
         const practicedYesterday = practiceDates.has(yesterdayStr);
         
-        // If didn't practice yesterday, streak is 0
-        if (!practicedYesterday) {
+        // If didn't practice today or yesterday, streak is 0
+        if (!practicedToday && !practicedYesterday) {
             return 0;
         }
         
-        // If practiced yesterday, count consecutive days backwards
+        // Start counting from the most recent practice day (today or yesterday)
         let streak = 0;
-        let checkDate = new Date(yesterday);
+        let checkDate = new Date();
         
-        // Count backwards from yesterday
+        // If practiced today, start from today; otherwise start from yesterday
+        if (!practicedToday) {
+            checkDate.setDate(checkDate.getDate() - 1);
+        }
+        
+        // Count backwards from the starting date
         while (practiceDates.has(this.getLocalDateString(checkDate))) {
             streak++;
             checkDate.setDate(checkDate.getDate() - 1);
@@ -715,6 +993,20 @@ export class CalendarPage {
 
         const totalTime = sessions.reduce((sum, session) => sum + (session.duration || 0), 0);
         const areas = {};
+        
+        // Debug logging for today's practice
+        if (dateStr === this.getLocalDateString(new Date())) {
+            console.log('Practice Info Debug:', {
+                date: dateStr,
+                sessions: sessions.map(s => ({
+                    duration: s.duration,
+                    durationMinutes: Math.floor(s.duration / 60),
+                    practiceArea: s.practiceArea
+                })),
+                totalTimeSeconds: totalTime,
+                totalTimeMinutes: Math.floor(totalTime / 60)
+            });
+        }
 
         // Calculate total time per practice area (case-insensitive)
         sessions.forEach(session => {
@@ -777,7 +1069,7 @@ export class CalendarPage {
         }
 
         // Clear and populate inputs
-        container.innerHTML = '';
+        container.textContent = '';
 
         // Add goal inputs
         if (this.dailyGoals.length > 0) {
@@ -836,21 +1128,50 @@ export class CalendarPage {
         const goalDiv = document.createElement('div');
         goalDiv.className = 'goal-input-row';
 
-        goalDiv.innerHTML = `
-        <input type="number" 
-               class="goal-minutes-input" 
-               placeholder="Min" 
-               min="1" 
-               max="180" 
-               value="${existingGoal ? existingGoal.minutes : ''}" />
-        <select class="goal-area-select">
-            <option value="">Select practice area</option>
-            ${this.practiceAreas.map(area =>
-            `<option value="${area}" ${existingGoal && existingGoal.area === area ? 'selected' : ''}>${area}</option>`
-        ).join('')}
-        </select>
-        <button class="btn btn-sm btn-danger remove-goal-btn" type="button" onclick="this.parentElement.remove(); window.calendarInstance?.updateAddButton()">✕</button>
-    `;
+        // Create minutes input
+        const minutesInput = document.createElement('input');
+        minutesInput.type = 'number';
+        minutesInput.className = 'goal-minutes-input';
+        minutesInput.placeholder = 'Min';
+        minutesInput.min = '1';
+        minutesInput.max = '180';
+        if (existingGoal) {
+            minutesInput.value = existingGoal.minutes;
+        }
+        goalDiv.appendChild(minutesInput);
+        
+        // Create select element
+        const select = document.createElement('select');
+        select.className = 'goal-area-select';
+        
+        // Create default option
+        const defaultOption = document.createElement('option');
+        defaultOption.value = '';
+        defaultOption.textContent = 'Select practice area';
+        select.appendChild(defaultOption);
+        
+        // Create options for each practice area
+        this.practiceAreas.forEach(area => {
+            const option = document.createElement('option');
+            option.value = area;
+            option.textContent = area;
+            if (existingGoal && existingGoal.area === area) {
+                option.selected = true;
+            }
+            select.appendChild(option);
+        });
+        goalDiv.appendChild(select);
+        
+        // Create remove button
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'btn btn-sm btn-danger remove-goal-btn';
+        removeBtn.type = 'button';
+        removeBtn.textContent = '✕';
+        removeBtn.onclick = () => {
+            goalDiv.remove();
+            window.calendarInstance?.updateAddButton();
+        };
+        goalDiv.appendChild(removeBtn);
 
         container.appendChild(goalDiv);
         this.updateAddButton();

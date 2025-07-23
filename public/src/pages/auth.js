@@ -1,6 +1,7 @@
 // Enhanced auth page with Firebase and debug logging
 import {AuthService} from '../services/authService.js';
 import firebaseSyncService from '../services/firebaseSyncService.js';
+import rateLimitService from '../services/rateLimitService.js';
 
 class AuthPage {
     constructor() {
@@ -85,6 +86,14 @@ class AuthPage {
             return;
         }
 
+        // Check rate limit before attempting login
+        const rateLimit = rateLimitService.checkRateLimit(email, 'login');
+        if (!rateLimit.allowed) {
+            this.showStatus(rateLimit.message, 'error');
+            this.showRateLimitInfo(rateLimit);
+            return;
+        }
+
         this.showStatus('Signing in...', 'info');
 
         try {
@@ -102,6 +111,12 @@ class AuthPage {
             } else {
                 console.error('❌ AuthPage: Login failed:', result.error);
                 this.showStatus(result.error || 'Login failed', 'error');
+                
+                // Show remaining attempts if rate limit is close
+                const updatedLimit = rateLimitService.checkRateLimit(email, 'login');
+                if (updatedLimit.remainingAttempts <= 2) {
+                    this.showRateLimitInfo(updatedLimit);
+                }
             }
         } catch (error) {
             console.error('💥 AuthPage: Login error:', error);
@@ -126,6 +141,14 @@ class AuthPage {
             return;
         }
 
+        // Check rate limit before attempting signup
+        const rateLimit = rateLimitService.checkRateLimit(email, 'signup');
+        if (!rateLimit.allowed) {
+            this.showStatus(rateLimit.message, 'error');
+            this.showRateLimitInfo(rateLimit);
+            return;
+        }
+
         this.showStatus('Creating account...', 'info');
 
         try {
@@ -136,6 +159,12 @@ class AuthPage {
                 setTimeout(() => this.redirectToDashboard(), 1000);
             } else {
                 this.showStatus(result.error || 'Signup failed', 'error');
+                
+                // Show remaining attempts if rate limit is close
+                const updatedLimit = rateLimitService.checkRateLimit(email, 'signup');
+                if (updatedLimit.remainingAttempts <= 2) {
+                    this.showRateLimitInfo(updatedLimit);
+                }
             }
         } catch (error) {
             console.error('💥 AuthPage: Signup error:', error);
@@ -196,6 +225,41 @@ class AuthPage {
         const statusEl = document.getElementById('authStatus');
         if (statusEl) {
             statusEl.style.display = 'none';
+        }
+    }
+
+    showRateLimitInfo(rateLimit) {
+        const statusEl = document.getElementById('authStatus');
+        if (!statusEl) return;
+
+        // Create or update rate limit info
+        let rateLimitEl = document.getElementById('rateLimitInfo');
+        if (!rateLimitEl) {
+            rateLimitEl = document.createElement('div');
+            rateLimitEl.id = 'rateLimitInfo';
+            rateLimitEl.style.cssText = 'margin-top: 10px; font-size: 0.9em; color: #fbbf24;';
+            statusEl.parentNode.insertBefore(rateLimitEl, statusEl.nextSibling);
+        }
+
+        if (rateLimit.remainingAttempts > 0) {
+            rateLimitEl.textContent = `⚠️ ${rateLimit.remainingAttempts} attempt${rateLimit.remainingAttempts > 1 ? 's' : ''} remaining`;
+        } else {
+            const timeUntilReset = rateLimitService.getTimeUntilReset(rateLimit.resetTime);
+            rateLimitEl.textContent = `🔒 Account locked. Try again in ${timeUntilReset}`;
+        }
+        
+        rateLimitEl.style.display = 'block';
+        
+        // Auto-hide after reset time
+        if (rateLimit.resetTime) {
+            const hideTimeout = rateLimit.resetTime - new Date();
+            if (hideTimeout > 0) {
+                setTimeout(() => {
+                    if (rateLimitEl) {
+                        rateLimitEl.style.display = 'none';
+                    }
+                }, hideTimeout);
+            }
         }
     }
 

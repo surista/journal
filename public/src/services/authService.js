@@ -1,5 +1,6 @@
 // authService.js - Fixed with proper Firebase integration
 import firebaseSyncService from './firebaseSyncService.js';
+import rateLimitService from './rateLimitService.js';
 
 export class AuthService {
     constructor() {
@@ -30,6 +31,13 @@ export class AuthService {
         console.log('🔐 AuthService: Login attempt for:', email);
         await this.ensureInitialized();
 
+        // Check rate limit
+        const rateLimit = rateLimitService.checkRateLimit(email, 'login');
+        if (!rateLimit.allowed) {
+            console.warn('🚫 AuthService: Rate limit exceeded for:', email);
+            throw new Error(rateLimit.message);
+        }
+
         try {
             // Handle demo login
             if (email === 'demo@example.com' && password === 'demo123') {
@@ -52,8 +60,15 @@ export class AuthService {
 
                     localStorage.setItem('currentUser', JSON.stringify(user));
                     window.dispatchEvent(new CustomEvent('userLoggedIn', {detail: user}));
+                    
+                    // Clear rate limit on successful login
+                    rateLimitService.recordAttempt(email, 'login', true);
+                    
                     return {success: true, user};
                 }
+                
+                // Record failed attempt
+                rateLimitService.recordAttempt(email, 'login', false);
                 return result;
             }
 
@@ -61,12 +76,25 @@ export class AuthService {
             return this.localLogin(email, password);
         } catch (error) {
             console.error('💥 AuthService: Login error:', error);
+            
+            // Record failed attempt unless it's a rate limit error
+            if (!error.message.includes('Too many attempts')) {
+                rateLimitService.recordAttempt(email, 'login', false);
+            }
+            
             return {success: false, error: error.message};
         }
     }
 
     async signup(email, password) {
         await this.ensureInitialized();
+
+        // Check rate limit
+        const rateLimit = rateLimitService.checkRateLimit(email, 'signup');
+        if (!rateLimit.allowed) {
+            console.warn('🚫 AuthService: Rate limit exceeded for signup:', email);
+            throw new Error(rateLimit.message);
+        }
 
         if (!this.isCloudEnabled) {
             return {
@@ -75,21 +103,35 @@ export class AuthService {
             };
         }
 
-        const result = await this.cloudStorage.signUp(email, password);
+        try {
+            const result = await this.cloudStorage.signUp(email, password);
 
-        if (result.success) {
-            const user = {
-                id: result.user.uid,
-                email: result.user.email,
-                isCloudEnabled: true,
-                createdAt: new Date().toISOString()
-            };
+            if (result.success) {
+                const user = {
+                    id: result.user.uid,
+                    email: result.user.email,
+                    isCloudEnabled: true,
+                    createdAt: new Date().toISOString()
+                };
 
-            localStorage.setItem('currentUser', JSON.stringify(user));
-            return {success: true, user};
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                
+                // Clear rate limit on successful signup
+                rateLimitService.recordAttempt(email, 'signup', true);
+                
+                return {success: true, user};
+            }
+
+            // Record failed attempt
+            rateLimitService.recordAttempt(email, 'signup', false);
+            return result;
+        } catch (error) {
+            // Record failed attempt unless it's a rate limit error
+            if (!error.message.includes('Too many attempts')) {
+                rateLimitService.recordAttempt(email, 'signup', false);
+            }
+            throw error;
         }
-
-        return result;
     }
 
     localLogin(email, password) {

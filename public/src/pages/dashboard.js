@@ -247,13 +247,29 @@ export class DashboardPage {
             // Log the actual error type
             console.error('Error type:', error.constructor.name);
             console.error('Full error object:', error);
-            tabContainer.innerHTML = `
-                <div class="error-state">
-                    <p>Failed to load ${tab} content</p>
-                    <p class="error-details">${error.message || 'Unknown error'}</p>
-                    <button class="retry-btn" onclick="location.reload()">Retry</button>
-                </div>
-            `;
+            // Clear container safely
+            tabContainer.innerHTML = '';
+            
+            // Create error state using DOM methods
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-state';
+            
+            const errorMsg = document.createElement('p');
+            errorMsg.textContent = `Failed to load ${tab} content`;
+            errorDiv.appendChild(errorMsg);
+            
+            const errorDetails = document.createElement('p');
+            errorDetails.className = 'error-details';
+            errorDetails.textContent = error.message || 'Unknown error';
+            errorDiv.appendChild(errorDetails);
+            
+            const retryBtn = document.createElement('button');
+            retryBtn.className = 'retry-btn';
+            retryBtn.textContent = 'Retry';
+            retryBtn.onclick = () => location.reload();
+            errorDiv.appendChild(retryBtn);
+            
+            tabContainer.appendChild(errorDiv);
         }
     }
 

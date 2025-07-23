@@ -710,6 +710,12 @@ export class StorageService {
             }
 
             console.log('✅ Practice entry saved successfully:', entry);
+            
+            // Dispatch event to notify UI components
+            window.dispatchEvent(new CustomEvent('practiceSessionSaved', {
+                detail: { entry }
+            }));
+            
             return true;
         } catch (error) {
             console.error('❌ Error saving practice entry:', error);
@@ -770,6 +776,12 @@ export class StorageService {
             }
             
             console.log('✅ Practice entry deleted successfully');
+            
+            // Dispatch event to notify UI components
+            window.dispatchEvent(new CustomEvent('practiceSessionDeleted', {
+                detail: { entryId }
+            }));
+            
             return true;
         } catch (error) {
             console.error('❌ Error deleting practice entry:', error);
