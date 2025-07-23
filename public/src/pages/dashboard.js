@@ -189,18 +189,12 @@ export class DashboardPage {
         try {
             switch (tab) {
                 case 'practice':
-                    console.log('Loading PracticeTab module...');
                     try {
                         const practiceModule = await import('../components/tabs/PracticeTab.js');
-                        console.log('PracticeTab module loaded:', practiceModule);
                         const { PracticeTab } = practiceModule;
-                        console.log('Creating PracticeTab instance...');
                         this.tabs[tab] = new PracticeTab(this.storageService);
-                        console.log('PracticeTab instance created');
                     } catch (innerError) {
                         console.error('Inner error loading practice tab:', innerError);
-                        console.error('Inner error message:', innerError.message);
-                        console.error('Inner error stack:', innerError.stack);
                         throw innerError;
                     }
                     break;
@@ -240,13 +234,6 @@ export class DashboardPage {
             }
         } catch (error) {
             console.error(`Failed to load ${tab} tab:`, error);
-            console.error('Error details:', error.message);
-            if (error.stack) {
-                console.error('Stack trace:', error.stack);
-            }
-            // Log the actual error type
-            console.error('Error type:', error.constructor.name);
-            console.error('Full error object:', error);
             // Clear container safely
             tabContainer.innerHTML = '';
             
@@ -290,7 +277,6 @@ export class DashboardPage {
             this.reminderService = getReminderService(this.storageService);
             await this.reminderService.init();
         } catch (error) {
-            console.warn('Failed to initialize reminder service:', error);
             // Continue without reminders rather than breaking the dashboard
         }
 

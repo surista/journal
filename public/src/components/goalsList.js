@@ -168,7 +168,6 @@ export class GoalsList {
             if (typeof notificationManager !== 'undefined') {
                 notificationManager.success('Goal added! You got this! 🎯');
             } else {
-                console.log('Goal added successfully!');
             }
         } catch (error) {
             console.error('Error adding goal:', error);
@@ -202,18 +201,15 @@ export class GoalsList {
 
     async loadGoals() {
         try {
-            console.log('Loading goals...');
 
             // Get goals from storage (this is async)
             this.goals = await this.storageService.getGoals();
 
             // Ensure goals is an array
             if (!Array.isArray(this.goals)) {
-                console.warn('Goals is not an array:', this.goals);
                 this.goals = [];
             }
 
-            console.log('Loaded goals:', this.goals);
 
             this.filteredGoals = [...this.goals];
             this.updateStats();
@@ -316,7 +312,6 @@ export class GoalsList {
 
     renderGoalItem(goal) {
         try {
-            console.log('Rendering goal:', goal);
             
             // Format target date as dd-mmm-yy
             let targetDateFormatted = '';
@@ -327,7 +322,6 @@ export class GoalsList {
                 const month = months[date.getMonth()];
                 const year = date.getFullYear().toString().slice(-2);
                 targetDateFormatted = `${day}-${month}-${year}`;
-                console.log('Date formatting:', { original: goal.targetDate, formatted: targetDateFormatted });
             }
 
             // Get type symbol
@@ -336,12 +330,6 @@ export class GoalsList {
             // Category (area) - default to category or 'General'
             const area = goal.category ? goal.category.charAt(0).toUpperCase() + goal.category.slice(1) : 'General';
             
-            console.log('Goal data:', {
-                text: goal.text,
-                area: area,
-                type: goal.type,
-                targetDate: targetDateFormatted
-            });
 
             // Progress bar for measurable goals - we'll put this inline
             let progressHtml = '';
@@ -371,7 +359,6 @@ export class GoalsList {
                 </div>
             `;
             
-            console.log('Generated HTML:', goalHtml);
             return goalHtml;
         } catch (error) {
             console.error('Error rendering goal item:', error);

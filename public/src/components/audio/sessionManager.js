@@ -8,7 +8,6 @@ export class SessionManager {
 
     attachEventListeners() {
         // Event listener is now attached in audioPlayer.js to avoid duplication
-        console.log('SessionManager event listeners ready');
     }
 
     loadSavedSessions() {
@@ -23,18 +22,13 @@ export class SessionManager {
         if (this.player.isYouTubeMode) {
             // Use the same logic as saving: video ID as primary key
             fileName = this.player.youtubeVideoId || 'youtube_video';
-            console.log('Loading sessions for YouTube video ID:', fileName);
         } else if (this.player.currentFileName) {
             fileName = this.player.currentFileName;
-            console.log('Loading sessions for file:', fileName);
         } else {
-            console.log('No file loaded, cannot load sessions');
             return; // No file loaded
         }
 
-        console.log('Attempting to load sessions for fileName:', fileName);
         const sessions = this.player.storageService.getAudioSessions?.(fileName) || [];
-        console.log('Found sessions:', sessions);
 
         const container = document.getElementById('savedSessionsList');
         if (!container) {
@@ -43,12 +37,9 @@ export class SessionManager {
         }
 
         if (sessions.length === 0) {
-            console.log('No sessions found, showing empty state');
             container.innerHTML = '<p class="empty-state" style="color: var(--text-secondary); text-align: center; font-size: 11px; margin: 0; padding: 8px;">No saved loops</p>';
             return;
         }
-
-        console.log('Rendering', sessions.length, 'sessions');
 
         // Create compact session display
         container.innerHTML = sessions.map((session, index) => `
@@ -88,7 +79,6 @@ export class SessionManager {
         container.querySelectorAll('.load-session-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const index = parseInt(e.target.dataset.index);
-                console.log('Loading session at index:', index);
                 this.loadSession(index);
             });
         });
@@ -96,12 +86,9 @@ export class SessionManager {
         container.querySelectorAll('.delete-session-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const index = parseInt(e.target.dataset.index);
-                console.log('Deleting session at index:', index);
                 this.deleteSession(index);
             });
         });
-
-        console.log('Sessions rendered and event listeners attached');
     }
 
     loadSession(index) {
@@ -123,7 +110,6 @@ export class SessionManager {
             return;
         }
 
-        console.log('Loading session:', session);
 
         // Stop current playback
         this.player.stop();
@@ -207,14 +193,6 @@ export class SessionManager {
     }
 
     saveCurrentSession() {
-        console.log('Save button clicked - starting saveCurrentSession');
-        console.log('Current state:', {
-            loopStart: this.player.loopStart,
-            loopEnd: this.player.loopEnd,
-            currentFileName: this.player.currentFileName,
-            isYouTubeMode: this.player.isYouTubeMode,
-            storageService: !!this.player.storageService
-        });
 
         // Check if we have any audio source loaded
         const hasAudioSource = this.player.currentFileName || this.player.isYouTubeMode;
@@ -227,24 +205,19 @@ export class SessionManager {
         // Loop validation - now optional
         if (this.player.loopStart === null && this.player.loopEnd === null) {
             this.player.showNotification('No loop points set. Setting full track as loop.', 'info');
-            console.log('No loop points set, will use full track');
             // Don't return - allow saving without loop points
         }
 
         if (!this.player.ensureStorageService()) {
             this.player.showNotification('Storage service not available. Please refresh the page.', 'error');
-            console.error('Storage service check failed');
             return;
         }
-        
-        console.log('Storage service check passed, showing modal...');
 
         // Show save modal for BOTH audio files AND YouTube videos
         this.showSaveLoopModal();
     }
 
     showSaveLoopModal() {
-        console.log('showSaveLoopModal called');
         // Get current source information (works for both audio files and YouTube)
         const isYouTubeMode = this.player.isYouTubeMode;
         const sourceName = escapeHtml(isYouTubeMode
@@ -258,17 +231,6 @@ export class SessionManager {
         const loopEnd = this.player.loopEnd;
         const currentSpeed = Math.round(this.player.playbackRate * 100);
         const currentPitch = this.player.pitchShiftAmount;
-        
-        console.log('Modal info:', {
-            isYouTubeMode,
-            sourceName,
-            loopStart,
-            loopEnd,
-            currentSpeed,
-            currentPitch,
-            playbackRate: this.player.playbackRate,
-            pitchShiftAmount: this.player.pitchShiftAmount
-        });
 
         // Create modal HTML with inline styles as fallback
         const modalHTML = `
@@ -353,16 +315,13 @@ export class SessionManager {
             const existingModal = document.getElementById('saveLoopModal');
             if (existingModal) {
                 existingModal.remove();
-                console.log('Removed existing modal');
             }
             
             // Add modal to page
             document.body.insertAdjacentHTML('beforeend', modalHTML);
-            console.log('Modal HTML inserted');
             
             // Verify modal was added
             const newModal = document.getElementById('saveLoopModal');
-            console.log('Modal found after insert:', !!newModal);
 
             // Add event listeners
             this.attachModalEventListeners();
@@ -377,7 +336,6 @@ export class SessionManager {
             }, 100);
         } catch (error) {
             console.error('Error creating save loop modal:', error);
-            console.error('Modal HTML:', modalHTML);
         }
     }
 
@@ -386,14 +344,7 @@ export class SessionManager {
         const confirmBtn = document.getElementById('confirmSaveLoop');
         const nameInput = document.getElementById('loopSessionName');
 
-        console.log('Attaching modal event listeners:', {
-            modal: !!modal,
-            confirmBtn: !!confirmBtn,
-            nameInput: !!nameInput
-        });
-
         if (!modal || !confirmBtn || !nameInput) {
-            console.error('Modal elements not found');
             return;
         }
 
@@ -421,7 +372,6 @@ export class SessionManager {
 
         // Save button click
         confirmBtn.addEventListener('click', () => {
-            console.log('Save button clicked in modal');
             this.confirmSaveLoop();
         });
         
@@ -436,29 +386,18 @@ export class SessionManager {
 
     confirmSaveLoop() {
         // Loop points are now optional - we can save without them
-        console.log('Confirming save loop...');
         const modal = document.getElementById('saveLoopModal');
         const nameInput = document.getElementById('loopSessionName');
         const notesInput = document.getElementById('loopSessionNotes');
 
-        console.log('Modal elements in confirmSaveLoop:', {
-            modal: !!modal,
-            nameInput: !!nameInput,
-            notesInput: !!notesInput
-        });
-
         if (!modal || !nameInput) {
-            console.error('Required modal elements not found');
             return;
         }
 
         const sessionName = nameInput.value.trim();
         const sessionNotes = notesInput ? notesInput.value.trim() : '';
 
-        console.log('Session details:', { sessionName, sessionNotes });
-
         if (!sessionName) {
-            console.log('No session name provided');
             nameInput.focus();
             nameInput.style.borderColor = 'var(--danger)';
             setTimeout(() => {
@@ -509,16 +448,8 @@ export class SessionManager {
         }
 
         try {
-            console.log('Attempting to save session:', {
-                fileName,
-                session,
-                hasStorageService: !!this.player.storageService,
-                hasSaveMethod: !!(this.player.storageService?.saveAudioSession)
-            });
-            
             if (this.player.storageService && this.player.storageService.saveAudioSession) {
                 const result = this.player.storageService.saveAudioSession(fileName, session);
-                console.log('Save result:', result);
                 
                 this.loadSavedSessions();
 
@@ -526,10 +457,6 @@ export class SessionManager {
                 this.player.showNotification(`${sourceType} "${sessionName}" saved successfully! 💾`, 'success');
                 modal.remove();
             } else {
-                console.error('Storage service or save method not available:', {
-                    storageService: this.player.storageService,
-                    saveMethod: this.player.storageService?.saveAudioSession
-                });
                 throw new Error('Storage service not available');
             }
         } catch (error) {
@@ -581,16 +508,11 @@ export class SessionManager {
     // Add this method to SessionManager for debugging
     debugStoredSessions() {
         if (!this.player.storageService) {
-            console.log('No storage service available');
             return;
         }
 
-        // Check what's actually stored
-        console.log('=== STORAGE DEBUG ===');
-
         // Get all audio sessions
         const allSessions = this.player.storageService.getAllAudioSessions?.() || {};
-        console.log('All stored audio sessions:', allSessions);
 
         // Check for various possible keys
         const possibleKeys = [
@@ -604,7 +526,6 @@ export class SessionManager {
         possibleKeys.forEach(key => {
             if (key) {
                 const sessions = this.player.storageService.getAudioSessions?.(key) || [];
-                console.log(`Sessions for key "${key}":`, sessions);
             }
         });
     }

@@ -2,7 +2,6 @@
 export class PracticeTab {
     constructor(storageService) {
         this.storageService = storageService;
-        console.log('PracticeTab constructor called');
     }
 
     render(container) {
@@ -10,10 +9,8 @@ export class PracticeTab {
     }
 
     onActivate() {
-        console.log('PracticeTab activated');
     }
 
     destroy() {
-        console.log('PracticeTab destroyed');
     }
 }

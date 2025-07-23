@@ -89,7 +89,6 @@ export class MetronomeTab {
                     this.metronome.setTimer(this.timer);
                 }
 
-                console.log('Metronome initialized successfully');
             } catch (error) {
                 console.error('Error initializing Metronome:', error);
                 metronomeContainer.innerHTML = `

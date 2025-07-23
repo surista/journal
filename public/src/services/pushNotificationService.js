@@ -46,7 +46,6 @@ export class PushNotificationService {
 
         // Only analyze if we have entries
         if (entries.length === 0) {
-            console.log('No practice entries found, using default notification times');
             return;
         }
 
@@ -77,7 +76,6 @@ export class PushNotificationService {
                 this.commonPracticeHours = sortedHours;
             }
 
-            console.log('Practice patterns analyzed:', this.commonPracticeHours);
 
         } catch (error) {
             console.error('Error analyzing practice patterns:', error);
@@ -118,7 +116,6 @@ export class PushNotificationService {
             });
 
             localStorage.setItem('guitarJournalNotifications', JSON.stringify(notifications));
-            console.log('Notifications scheduled:', notifications.length);
 
         } catch (error) {
             console.error('Error scheduling notifications:', error);

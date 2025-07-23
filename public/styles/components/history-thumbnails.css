@@ -4,13 +4,15 @@
 .history-item.has-image {
     display: flex;
     gap: 16px;
-    align-items: flex-start;
+    align-items: center; /* Changed from flex-start to center for vertical alignment */
 }
 
 /* Make history items clickable */
 .history-item {
     cursor: pointer;
     transition: all 0.2s ease;
+    display: flex;
+    align-items: center; /* Ensure vertical alignment for all history items */
 }
 
 .history-item:hover {
@@ -51,6 +53,13 @@
 .history-item.has-image .history-item-content {
     flex: 1;
     min-width: 0; /* Allow text truncation */
+}
+
+.history-item-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center content vertically */
+    width: 100%;
 }
 
 /* Session name styling */
@@ -142,4 +151,51 @@
 .history-item:has(h4:not(:contains("Practice Session"))) {
     border-left: 3px solid var(--color-primary);
     padding-left: 12px;
+}
+
+/* Ensure history-item-details content is vertically aligned */
+.history-item-details {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center; /* Vertically align all detail items */
+    gap: var(--space-md, 12px);
+}
+
+.history-item-details span {
+    display: inline-flex;
+    align-items: center; /* Ensure icons and text are aligned */
+    gap: 4px;
+}
+
+/* Ensure history-item-actions buttons are aligned */
+.history-item-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Ensure YouTube links are properly aligned inline */
+.history-audio .youtube-practice-link {
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+    line-height: inherit;
+}
+
+/* Remove any extra spacing or alignment issues for history audio spans */
+.history-audio {
+    display: inline-flex;
+    align-items: center;
+    line-height: 1.5;
+}
+
+/* Ensure all elements within history-audio are vertically centered */
+.history-audio > * {
+    vertical-align: middle;
+}
+
+/* Ensure icons in history items are properly aligned */
+.history-item-details .icon {
+    vertical-align: middle;
+    line-height: 1;
 }

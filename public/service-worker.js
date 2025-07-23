@@ -1,6 +1,6 @@
 // service-worker.js - Updated with proper cache management
-const CACHE_NAME = 'guitar-practice-journal-v10.85'; // Update version
-const CACHE_VERSION = '10.85';
+const CACHE_NAME = 'guitar-practice-journal-v10.86.2'; // Update version
+const CACHE_VERSION = '10.86.2';
 
 // Files to cache - be specific about what we cache
 const STATIC_CACHE_URLS = [
@@ -57,14 +57,10 @@ const STATIC_CACHE_URLS = [
 
 // Install event - cache resources
 self.addEventListener('install', (event) => {
-    console.log('Service Worker: Installing version', CACHE_VERSION);
-
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
-            console.log('Service Worker: Caching files');
             return cache.addAll(STATIC_CACHE_URLS);
         }).then(() => {
-            console.log('Service Worker: Installation complete, skipping waiting');
             // Force the waiting service worker to become the active service worker
             return self.skipWaiting();
         }).catch((error) => {
@@ -75,8 +71,6 @@ self.addEventListener('install', (event) => {
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-    console.log('Service Worker: Activating version', CACHE_VERSION);
-
     event.waitUntil(
         Promise.all([
             // Clear old caches
@@ -84,7 +78,6 @@ self.addEventListener('activate', (event) => {
                 return Promise.all(
                     cacheNames.map((cacheName) => {
                         if (cacheName !== CACHE_NAME) {
-                            console.log('Service Worker: Deleting old cache', cacheName);
                             return caches.delete(cacheName);
                         }
                     })
@@ -93,8 +86,6 @@ self.addEventListener('activate', (event) => {
             // Take control of all clients immediately
             self.clients.claim()
         ]).then(() => {
-            console.log('Service Worker: Activation complete');
-
             // Notify all clients about the update
             return self.clients.matchAll().then((clients) => {
                 clients.forEach((client) => {
@@ -153,13 +144,11 @@ async function networkFirstStrategy(request) {
             const cache = await caches.open(CACHE_NAME);
             cache.put(request, responseClone);
 
-            // console.log('Service Worker: Updated cache for', request.url);
             return response;
         }
 
         throw new Error('Network response not ok');
     } catch (error) {
-        console.log('Service Worker: Network failed, trying cache for', request.url);
 
         // If network fails, try cache
         const cachedResponse = await caches.match(request);
@@ -212,7 +201,6 @@ self.addEventListener('message', (event) => {
     if (event.data && event.data.type) {
         switch (event.data.type) {
             case 'SKIP_WAITING':
-                console.log('Service Worker: Received SKIP_WAITING message');
                 self.skipWaiting();
                 break;
 
@@ -225,7 +213,6 @@ self.addEventListener('message', (event) => {
                 break;
 
             case 'CLEAR_CACHE':
-                console.log('Service Worker: Clearing cache');
                 caches.delete(CACHE_NAME).then(() => {
                     event.ports[0].postMessage({
                         type: 'CACHE_CLEARED'
@@ -245,7 +232,6 @@ self.addEventListener('sync', (event) => {
 
 async function syncPracticeData() {
     // Implementation for syncing practice data when back online
-    console.log('Service Worker: Syncing practice data');
     // This would sync any pending practice session data
 }
 
@@ -293,4 +279,3 @@ self.addEventListener('notificationclick', (event) => {
     }
 });
 
-console.log('Service Worker script loaded, version:', CACHE_VERSION);

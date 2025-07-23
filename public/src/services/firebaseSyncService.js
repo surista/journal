@@ -49,19 +49,40 @@ class FirebaseSyncService {
             this.auth = firebase.auth();
             this.db = firebase.firestore();
             
-            // Initialize App Check for additional security
-            await initializeAppCheck(this.app);
+            // Initialize App Check for additional security (non-blocking)
+            initializeAppCheck(this.app).catch(err => {
+                // App Check failure is non-critical
+            });
 
             // Enable offline persistence
+            // Note: enablePersistence() is deprecated but still works with compat mode
+            // To remove the warning completely, we would need to migrate to modular SDK
             try {
-                await this.db.enablePersistence();
-                console.log('✅ Firestore offline persistence enabled');
+                // Temporarily suppress the deprecation warning
+                const originalWarn = console.warn;
+                console.warn = (...args) => {
+                    if (args[0] && args[0].includes && args[0].includes('enableIndexedDbPersistence')) {
+                        return; // Suppress this specific warning
+                    }
+                    originalWarn.apply(console, args);
+                };
+                
+                await this.db.enablePersistence({
+                    synchronizeTabs: true
+                });
+                
+                // Restore console.warn
+                console.warn = originalWarn;
             } catch (err) {
+                // Common persistence errors:
+                // - failed-precondition: app already open in another tab
+                // - unimplemented: browser doesn't support persistence
                 if (err.code === 'failed-precondition') {
-                    console.warn('⚠️ Multiple tabs open, persistence already enabled');
+                    // Multiple tabs open, persistence can only be enabled in one tab at a time
                 } else if (err.code === 'unimplemented') {
-                    console.warn('⚠️ Browser doesn\'t support offline persistence');
+                    // The current browser doesn't support persistence
                 }
+                // Persistence errors are non-critical - app works without it
             }
 
             // Set up auth state listener
@@ -69,14 +90,11 @@ class FirebaseSyncService {
                 try {
                     this.currentUser = user;
                     if (user) {
-                        console.log('✅ User authenticated:', user.email);
                         await this.ensureUserDocument();
                         this.processPendingWrites();
                         // Temporarily disable real-time listeners to avoid permission errors
                         // this.setupRealtimeListeners();
-                        console.log('⚠️ Real-time listeners disabled for now');
                     } else {
-                        console.log('❌ User not authenticated');
                         this.removeRealtimeListeners();
                     }
                 } catch (error) {
@@ -91,14 +109,13 @@ class FirebaseSyncService {
             this.db.collection('.info').doc('connected').onSnapshot((snapshot) => {
                 const isConnected = snapshot.data()?.connected || false;
                 if (isConnected && this.currentUser) {
-                    console.log('🔗 Connected to Firestore');
+                    // Connected to Firestore
                     this.processPendingWrites();
                 }
             });
             */
 
             this.isInitialized = true;
-            console.log('✅ Firebase Sync Service initialized');
         } catch (error) {
             console.error('❌ Failed to initialize Firebase:', error);
             this.isInitialized = false;
@@ -124,7 +141,6 @@ class FirebaseSyncService {
                         autoSync: true
                     }
                 });
-                console.log('✅ User document created');
             } else {
                 await userRef.update({
                     lastLoginAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -132,13 +148,10 @@ class FirebaseSyncService {
             }
         } catch (error) {
             // Handle offline scenarios gracefully
-            if (error.code === 'unavailable') {
-                console.log('⚠️ Offline mode: User document check skipped');
-                // Don't throw - this is expected when offline
-            } else {
+            if (error.code !== 'unavailable') {
                 console.error('Error ensuring user document:', error);
-                // Still don't throw - allow app to continue
             }
+            // Don't throw - allow app to continue
         }
     }
 
@@ -185,7 +198,6 @@ class FirebaseSyncService {
                 .doc(String(session.id))
                 .set(sessionData);
             
-            console.log('✅ Practice session saved to cloud:', session.id);
             return session.id;
         } catch (error) {
             console.error('❌ Failed to save practice session:', error);
@@ -241,7 +253,6 @@ class FirebaseSyncService {
                 .doc(String(sessionId))
                 .update(updateData);
             
-            console.log('✅ Practice session updated:', sessionId);
         } catch (error) {
             console.error('❌ Failed to update practice session:', error);
             this.pendingWrites.push({
@@ -271,7 +282,6 @@ class FirebaseSyncService {
                 .doc(String(sessionId))
                 .delete();
             
-            console.log('✅ Practice session deleted:', sessionId);
         } catch (error) {
             console.error('❌ Failed to delete practice session:', error);
             this.pendingWrites.push({
@@ -324,7 +334,6 @@ class FirebaseSyncService {
                 .doc(String(goal.id))
                 .set(goalData);
             
-            console.log('✅ Goal saved to cloud:', goal.id);
             return goal.id;
         } catch (error) {
             console.error('❌ Failed to save goal:', error);
@@ -380,7 +389,6 @@ class FirebaseSyncService {
                 .doc(String(goalId))
                 .update(updateData);
             
-            console.log('✅ Goal updated:', goalId);
         } catch (error) {
             console.error('❌ Failed to update goal:', error);
             this.pendingWrites.push({
@@ -410,7 +418,6 @@ class FirebaseSyncService {
                 .doc(String(goalId))
                 .delete();
             
-            console.log('✅ Goal deleted:', goalId);
         } catch (error) {
             console.error('❌ Failed to delete goal:', error);
             this.pendingWrites.push({
@@ -463,7 +470,6 @@ class FirebaseSyncService {
                 .doc(String(song.id))
                 .set(songData);
             
-            console.log('✅ Repertoire song saved to cloud:', song.id);
             return song.id;
         } catch (error) {
             console.error('❌ Failed to save repertoire song:', error);
@@ -519,7 +525,6 @@ class FirebaseSyncService {
                 .doc(String(songId))
                 .update(updateData);
             
-            console.log('✅ Repertoire song updated:', songId);
         } catch (error) {
             console.error('❌ Failed to update repertoire song:', error);
             this.pendingWrites.push({
@@ -549,7 +554,6 @@ class FirebaseSyncService {
                 .doc(String(songId))
                 .delete();
             
-            console.log('✅ Repertoire song deleted:', songId);
         } catch (error) {
             console.error('❌ Failed to delete repertoire song:', error);
             this.pendingWrites.push({
@@ -583,7 +587,6 @@ class FirebaseSyncService {
                     'settings.updatedAt': firebase.firestore.FieldValue.serverTimestamp()
                 });
             
-            console.log('✅ Settings saved to cloud');
         } catch (error) {
             console.error('❌ Failed to save settings:', error);
             this.pendingWrites.push({
@@ -684,14 +687,11 @@ class FirebaseSyncService {
             });
 
         this.listeners.set('repertoire', repertoireUnsubscribe);
-
-        console.log('✅ Real-time listeners set up');
     }
 
     removeRealtimeListeners() {
         this.listeners.forEach((unsubscribe, key) => {
             unsubscribe();
-            console.log(`⏹️ Removed listener: ${key}`);
         });
         this.listeners.clear();
     }
@@ -703,7 +703,6 @@ class FirebaseSyncService {
     async processPendingWrites() {
         if (this.pendingWrites.length === 0 || !this.currentUser) return;
 
-        console.log(`🔄 Processing ${this.pendingWrites.length} pending writes...`);
         const writes = [...this.pendingWrites];
         this.pendingWrites = [];
 
@@ -774,12 +773,9 @@ class FirebaseSyncService {
             return false;
         }
 
-        console.log('🔄 Starting migration from local storage to Firebase...');
-
         try {
             // Migrate practice sessions
             const localSessions = await storageService.getPracticeEntries();
-            console.log(`Found ${localSessions.length} practice sessions to migrate`);
             
             for (const session of localSessions) {
                 try {
@@ -791,7 +787,6 @@ class FirebaseSyncService {
 
             // Migrate goals
             const localGoals = await storageService.getGoals();
-            console.log(`Found ${localGoals.length} goals to migrate`);
             
             for (const goal of localGoals) {
                 try {
@@ -803,7 +798,6 @@ class FirebaseSyncService {
 
             // Migrate repertoire
             const localRepertoire = await storageService.getRepertoire();
-            console.log(`Found ${localRepertoire.length} repertoire songs to migrate`);
             
             for (const song of localRepertoire) {
                 try {
@@ -813,7 +807,6 @@ class FirebaseSyncService {
                 }
             }
 
-            console.log('✅ Migration completed successfully');
             return true;
         } catch (error) {
             console.error('❌ Migration failed:', error);
@@ -857,7 +850,6 @@ class FirebaseSyncService {
             this.removeRealtimeListeners();
             await this.auth.signOut();
             this.currentUser = null;
-            console.log('✅ Signed out successfully');
         } catch (error) {
             console.error('Sign out error:', error);
             throw error;
@@ -867,7 +859,6 @@ class FirebaseSyncService {
     async resetPassword(email) {
         try {
             await this.auth.sendPasswordResetEmail(email);
-            console.log('✅ Password reset email sent to:', email);
             return { success: true, message: 'Password reset email sent' };
         } catch (error) {
             console.error('Password reset error:', error);

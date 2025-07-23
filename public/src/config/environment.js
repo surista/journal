@@ -146,8 +146,3 @@ export const getAuthRateLimit = () => {
 
 // Export current environment for debugging
 export const currentEnvironment = detectEnvironment();
-
-if (isDebugEnabled()) {
-    console.log('🌍 Environment:', currentEnvironment);
-    console.log('🔧 Configuration:', getEnvironmentConfig());
-}

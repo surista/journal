@@ -125,7 +125,6 @@ export class HistoryTab {
 
 
     async handleDeleteSession(sessionId) {
-        console.log('Delete button clicked for session ID:', sessionId);
 
         // Find the session to get details for confirmation
         // Use == instead of === to handle potential type mismatches
@@ -368,9 +367,7 @@ export class HistoryTab {
 
     async loadHistory() {
         try {
-            console.log('Loading practice history...');
             const sessions = await this.storageService.getPracticeEntries();
-            console.log('Loaded sessions:', sessions);
 
             // Sort sessions by date (newest first)
             this.allSessions = sessions.sort((a, b) => {
@@ -391,7 +388,6 @@ export class HistoryTab {
         const container = document.getElementById('historyList');
         if (!container) return;
 
-        console.log('Displaying sessions:', sessions.length);
 
         if (sessions.length === 0) {
             container.innerHTML = '<p class="empty-state">No practice sessions found</p>';
@@ -462,13 +458,9 @@ export class HistoryTab {
                                 ${session.sheetMusicImage ? `<span class="history-sheet-music"><i class="icon">📄</i> Sheet Music</span>` : ''}
                                 ${session.youtubeTitle ? `
                                 <span class="history-audio">
-                                    <i class="icon">📺</i> 
-                                    YouTube: 
-                                    ${session.youtubeUrl ?
-                `<a href="#" class="youtube-practice-link" data-url="${sanitizeUrl(session.youtubeUrl) || ''}" style="color: var(--primary); text-decoration: underline;">
-                                            ${escapeHtml(session.youtubeTitle)}
-                                        </a>` :
-                escapeHtml(session.youtubeTitle)
+                                    <i class="icon">📺</i> YouTube: ${session.youtubeUrl ?
+                `<a href="#" class="youtube-practice-link" data-url="${sanitizeUrl(session.youtubeUrl) || ''}" style="color: var(--primary); text-decoration: underline;">${escapeHtml(session.youtubeTitle.length > 50 ? session.youtubeTitle.substring(0, 50) + '...' : session.youtubeTitle)}</a>` :
+                escapeHtml(session.youtubeTitle.length > 50 ? session.youtubeTitle.substring(0, 50) + '...' : session.youtubeTitle)
             }
                                 </span>
                             ` : ''}
@@ -644,8 +636,6 @@ export class HistoryTab {
     showNotification(message, type = 'info') {
         if (window.app?.currentPage?.showNotification) {
             window.app.currentPage.showNotification(message, type);
-        } else {
-            console.log(`[${type}] ${message}`);
         }
     }
 

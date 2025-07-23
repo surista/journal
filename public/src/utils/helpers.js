@@ -178,7 +178,6 @@ export const CompressionUtils = {
                 return JSON.parse(decompressed);
             } catch (parseError) {
                 console.error('JSON parse error after decompression:', parseError);
-                console.error('Decompressed string preview:', decompressed.substring(0, 200));
                 return null;
             }
         } catch (error) {
@@ -704,7 +703,6 @@ export const PerformanceUtils = {
         const start = performance.now();
         const result = await fn();
         const end = performance.now();
-        console.log(`${label}: ${(end - start).toFixed(2)}ms`);
         return result;
     },
 

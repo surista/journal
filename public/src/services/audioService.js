@@ -43,12 +43,10 @@ export class AudioService {
                 if (this.audioContext.state === 'suspended') {
                     this.audioContext.resume().then(() => {
                         this.isInitialized = true;
-                        console.log('✅ AudioContext initialized and resumed');
                         resolve(this.audioContext);
                     }).catch(reject);
                 } else {
                     this.isInitialized = true;
-                    console.log('✅ AudioContext initialized');
                     resolve(this.audioContext);
                 }
             } catch (error) {

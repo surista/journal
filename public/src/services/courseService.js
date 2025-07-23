@@ -232,7 +232,6 @@ class CourseService {
     async initializeDefaultCourses() {
         try {
             const existingCourses = await this.getAllCourses();
-            console.log('Existing courses:', existingCourses.length);
             
             // Always update the courses to get latest changes
             const pentatonicCourse = await this.getPentatonicScaleCourse();
@@ -241,7 +240,6 @@ class CourseService {
             const sweepPickingCourse = await this.getSweepPickingCourse();
             await this.saveCourse(sweepPickingCourse);
             
-            console.log('Courses updated with latest data');
         } catch (error) {
             console.error('Error initializing courses:', error);
         }

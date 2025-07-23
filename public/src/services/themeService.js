@@ -223,7 +223,6 @@ export class ThemeService {
             }
         }));
 
-        console.log(`✨ Theme applied: ${this.themes[theme].name}`);
     }
 
     updateThemeDisplay() {

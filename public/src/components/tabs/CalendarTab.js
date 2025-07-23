@@ -35,7 +35,6 @@ export class CalendarTab {
                 
                 // Set up event listener for practice session saves
                 this.practiceSessionListener = (event) => {
-                    console.log('Practice session saved, refreshing calendar...');
                     if (this.calendar) {
                         this.calendar.loadPracticeData();
                     }
@@ -44,7 +43,6 @@ export class CalendarTab {
                 
                 // Set up event listener for practice session deletes
                 this.practiceDeleteListener = (event) => {
-                    console.log('Practice session deleted, refreshing calendar...');
                     if (this.calendar) {
                         this.calendar.loadPracticeData();
                     }
@@ -104,7 +102,6 @@ export class CalendarTab {
 
     // Fix for CalendarTab.js - attachEventListeners method
     attachEventListeners() {
-        console.log('CalendarTab attachEventListeners called');
         // Don't attach listeners here - let the calendar handle its own
     }
 

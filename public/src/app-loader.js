@@ -7,13 +7,11 @@ handleAuthRedirect();
 detectBasePath();
 setAppVersion();
 
-console.log('🚀 Starting app initialization...');
 
 const debugInfo = document.getElementById('debug-info');
 const errorDiv = document.getElementById('error-message');
 
 function showDebugInfo(message) {
-    console.log('🔧 Debug:', message);
     if (debugInfo) {
         debugInfo.style.display = 'block';
         debugInfo.textContent = `Debug: ${message}`;
@@ -97,7 +95,6 @@ async function initializeApp() {
         const appConfig = configModule.default;
 
         showDebugInfo('Configuration loaded successfully');
-        console.log('📋 Config loaded:', appConfig.basePath);
 
         showDebugInfo('Loading main application...');
 
@@ -111,7 +108,6 @@ async function initializeApp() {
         const {App} = appModule;
 
         showDebugInfo('Application module loaded, initializing...');
-        console.log('🎸 App class loaded, creating instance...');
 
         // Create and initialize app
         window.app = new App();
@@ -119,7 +115,6 @@ async function initializeApp() {
         showDebugInfo('Calling app.init()...');
         await window.app.init();
 
-        console.log('✅ App initialized successfully!');
 
         // Hide loading screen
         const loader = document.querySelector('.app-loading');

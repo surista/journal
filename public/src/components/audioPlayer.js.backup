@@ -63,14 +63,18 @@ export class AudioPlayer {
             // Try multiple fallback locations
             if (window.app?.currentPage?.storageService) {
                 this.storageService = window.app.currentPage.storageService;
+                console.log('Storage service obtained from currentPage');
             } else if (window.app?.storageService) {
                 this.storageService = window.app.storageService;
+                console.log('Storage service obtained from app');
             } else if (window.storageService) {
                 this.storageService = window.storageService;
+                console.log('Storage service obtained from window');
             } else {
                 // Try to create a new instance as a last resort
                 try {
                     this.storageService = new StorageService();
+                    console.log('Storage service created new instance');
 
                     // Make it available globally for other components
                     if (window.app) {
@@ -90,11 +94,14 @@ export class AudioPlayer {
     }
 
 
-    async init() {
+    init() {
         if (this.isInitialized) {
+            console.log('Audio player already initialized');
             return;
         }
 
+        console.log('Initializing audio player...');
+        console.log('Storage service available at init:', !!this.storageService);
 
         // Ensure storage service is available
         if (!this.storageService) {
@@ -107,8 +114,9 @@ export class AudioPlayer {
         try {
             this.render();
             this.attachEventListeners();
-            await this.initializeTone(); // Make this await to ensure proper initialization
+            this.initializeTone();
             this.isInitialized = true;
+            console.log('Audio player initialized successfully with storage service:', !!this.storageService);
 
             // Make sure the audio player is globally accessible for onclick handlers
             if (typeof window !== 'undefined') {
@@ -155,23 +163,16 @@ export class AudioPlayer {
             // Reset retry count on success
             this.toneRetryCount = 0;
             
-            // Check if Tone context is already running
-            if (Tone.context.state !== 'running') {
-                // Start Tone.js
-                await Tone.start();
-            }
-            
-            // Note: latencyHint can only be set before context starts
-            // lookAhead can be adjusted after start
-            if (Tone.context.lookAhead !== undefined) {
-                Tone.context.lookAhead = 0.1; // Reduce look-ahead time for lower latency
-            }
+            // Start Tone.js
+            await Tone.start();
+            console.log('Tone.js initialized');
 
             // Set the destination volume to ensure it's at unity gain
             Tone.Destination.volume.value = 0; // 0 dB
 
             // Note: We're now using GrainPlayer's built-in detune for pitch shifting
             // which provides much better quality than the PitchShift effect
+            console.log('Using GrainPlayer detune for high-quality pitch shifting');
 
             // Add a master gain node for volume control
             // Start at 1.0 gain which corresponds to 100% on the exponentially-scaled volume slider
@@ -187,6 +188,7 @@ export class AudioPlayer {
                 // Try to get it from the global app
                 if (window.app?.audioService) {
                     this.audioService = window.app.audioService;
+                    console.log('AudioService retrieved from global app');
                 }
             }
 
@@ -547,11 +549,13 @@ export class AudioPlayer {
             return;
         }
 
+        console.log('Rendering audio player UI...');
 
         // Use DOM-based rendering
         renderAudioPlayerDOM(this.container);
         
         // Attach event listeners after rendering
+        console.log('Audio player UI rendered successfully');
         this.attachEventListeners();
         
         // Add styles if not already added
@@ -641,14 +645,17 @@ export class AudioPlayer {
     attachEventListeners() {
         // Prevent duplicate event listeners
         if (this.eventListenersAttached) {
+            console.log('Event listeners already attached, skipping...');
             return;
         }
 
+        console.log('Attaching event listeners...');
 
         // File input
         const fileInput = document.getElementById('audioFileInput');
         if (fileInput) {
             fileInput.addEventListener('change', (e) => this.handleFileSelect(e));
+            console.log('File input listener attached');
         } else {
             console.error('File input element not found');
         }
@@ -804,8 +811,14 @@ export class AudioPlayer {
         const playPauseBtn = document.getElementById('audioPlayPauseBtn');
         const stopBtn = document.getElementById('audioStopBtn');
 
+        console.log('Audio player buttons found:', {
+            playPauseBtn: !!playPauseBtn,
+            stopBtn: !!stopBtn
+        });
+
         if (playPauseBtn) {
             playPauseBtn.addEventListener('click', () => {
+                console.log('Play button clicked');
                 this.togglePlayPause();
             });
         } else {
@@ -814,6 +827,7 @@ export class AudioPlayer {
 
         if (stopBtn) {
             stopBtn.addEventListener('click', () => {
+                console.log('Stop button clicked');
                 this.stop();
             });
         } else {
@@ -833,6 +847,7 @@ export class AudioPlayer {
         if (loopControlsSection) {
             loopControlsSection.addEventListener('click', (e) => {
                 if (e.target && e.target.id === 'saveLoopBtn') {
+                    console.log('Save loop button clicked via delegation!');
                     if (this.sessionManager && this.sessionManager.saveCurrentSession) {
                         this.sessionManager.saveCurrentSession();
                     }
@@ -844,6 +859,7 @@ export class AudioPlayer {
         const saveBtn = document.getElementById('saveLoopBtn');
         if (saveBtn) {
             saveBtn.addEventListener('click', () => {
+                console.log('Save loop button clicked directly!');
                 if (this.sessionManager && this.sessionManager.saveCurrentSession) {
                     this.sessionManager.saveCurrentSession();
                 }
@@ -998,6 +1014,7 @@ export class AudioPlayer {
         }
 
         this.sessionManager.attachEventListeners();
+        console.log('All event listeners attached successfully');
         this.eventListenersAttached = true;
 
     }
@@ -1006,6 +1023,7 @@ export class AudioPlayer {
         const file = event.target.files[0];
         if (!file) return;
 
+        console.log('Loading audio file:', file.name);
 
         try {
             // Stop any current playback
@@ -1058,6 +1076,7 @@ export class AudioPlayer {
                     this.duration = this.basicAudio.duration;
                     this.audioLoaded = true;
                     this.updateWaveform();
+                    console.log('Basic audio loaded successfully');
                 });
                 
                 this.basicAudio.addEventListener('error', (e) => {
@@ -1084,31 +1103,21 @@ export class AudioPlayer {
                 return;
             }
             
-            // Create GrainPlayer with settings optimized for performance
-            // Adjust grain settings based on quality mode
-            const grainSettings = this.qualityMode === 'high' ? {
-                grainSize: 0.05,    // 50ms grains for higher quality
-                overlap: 0.25       // 25% overlap for smoother sound
-            } : this.qualityMode === 'low' ? {
-                grainSize: 0.2,     // 200ms grains for better performance
-                overlap: 0.1        // 10% overlap for less CPU usage
-            } : {
-                grainSize: 0.1,     // 100ms grains - balanced
-                overlap: 0.2        // 20% overlap - balanced
-            };
-            
+            // Create GrainPlayer with settings optimized for tempo changes
+            // Key insight: For tempo changes, we need consistent grain timing
             this.grainPlayer = new Tone.GrainPlayer({
                 url: audioUrl,
                 loop: false,
                 playbackRate: 1.0,
-                grainSize: grainSettings.grainSize,
-                overlap: grainSettings.overlap,
+                grainSize: 0.1,     // 100ms grains - good balance
+                overlap: 0.2,       // 20% overlap - reduces phasing artifacts
                 reverse: false,
                 volume: -12,        // Start at reasonable level
                 fadeIn: 0,
                 fadeOut: 0,
                 onload: () => {
                     try {
+                        console.log('Audio loaded in Tone.js GrainPlayer');
                         this.duration = this.grainPlayer.buffer.duration;
 
                         // Mark as loaded in our own property
@@ -1118,12 +1127,7 @@ export class AudioPlayer {
                         this.grainPlayer.detune = 0;
 
                         // Connect to master gain before setting volume
-                        if (this.masterGain) {
-                            this.grainPlayer.connect(this.masterGain);
-                        } else {
-                            console.error('Master gain not initialized, connecting directly to destination');
-                            this.grainPlayer.toDestination();
-                        }
+                        this.grainPlayer.connect(this.masterGain);
                         
                         // Set master gain to current volume slider value
                         const volumeSlider = document.getElementById('volumeSlider');
@@ -1134,6 +1138,7 @@ export class AudioPlayer {
                             this.masterGain.gain.setValueAtTime(gainValue, Tone.now());
                         }
 
+                        console.log('Audio chain connected: GrainPlayer -> MasterGain -> Destination');
 
                         // Show controls with loading state
                         const controlsSection = document.getElementById('audioControlsSection');
@@ -1166,6 +1171,7 @@ export class AudioPlayer {
                             detail: {fileName: file.name}
                         }));
 
+                        console.log('Audio player setup complete');
 
                     } catch (error) {
                         console.error('Error in onload callback:', error);
@@ -1218,6 +1224,7 @@ export class AudioPlayer {
     }
 
     onYouTubePlayerReady(event) {
+        console.log('YouTube player ready');
 
         // Enable controls
         const controlsSection = document.getElementById('audioControlsSection');
@@ -1265,6 +1272,7 @@ export class AudioPlayer {
             return;
         }
 
+        console.log('Loading YouTube video:', { videoId, url });
 
         // SET YOUTUBE STATE IMMEDIATELY
         this.youtubeVideoId = videoId;
@@ -1335,6 +1343,7 @@ export class AudioPlayer {
         // Debug: Check the actual HTML structure
         const loopControlsCheck = document.querySelector('.loop-controls-section');
         if (loopControlsCheck) {
+            console.log('Loop controls HTML:', loopControlsCheck.outerHTML.substring(0, 200));
         } else {
             console.error('Loop controls section not found!');
             const unifiedCheck = document.querySelector('.loop-controls-unified');
@@ -1342,6 +1351,12 @@ export class AudioPlayer {
                 console.error('Found unified controls instead - clearing cache required!');
             }
         }
+
+        console.log('YouTube video setup complete:', {
+            videoId: this.youtubeVideoId,
+            isYouTubeMode: this.isYouTubeMode,
+            url: this.youtubeVideoUrl
+        });
     }
 
     onVideoLoaded() {
@@ -1377,6 +1392,7 @@ export class AudioPlayer {
             if (videoData && videoData.title) {
                 this.youtubeVideoTitle = videoData.title;
 
+                console.log('YouTube title fetched:', this.youtubeVideoTitle);
 
                 // Update display
                 // Filename display is now managed by the parent component
@@ -1618,7 +1634,7 @@ export class AudioPlayer {
                         left: 0;
                         top: 0;
                         bottom: 0;
-                        width: 0;
+                        width: 0%;
                         background: linear-gradient(90deg, #6366f1, #8b5cf6);
                         opacity: 0.6;
                         transition: width 0.1s ease;
@@ -1631,7 +1647,7 @@ export class AudioPlayer {
                         bottom: -2px;
                         width: 3px;
                         background: linear-gradient(180deg, #ffffff, #6366f1);
-                        left: 0;
+                        left: 0%;
                         box-shadow: 0 0 8px rgba(99, 102, 241, 0.8);
                         border-radius: 2px;
                         z-index: 15;
@@ -1741,6 +1757,7 @@ export class AudioPlayer {
 
                 if (this.youtubePlayer && this.youtubePlayer.seekTo) {
                     this.youtubePlayer.seekTo(seekTime, true);
+                    console.log(`Seeking to ${seekTime.toFixed(2)}s (${(percentage * 100).toFixed(1)}%)`);
                 }
             });
 
@@ -1755,6 +1772,7 @@ export class AudioPlayer {
             });
         }
 
+        console.log('YouTube progress bar setup complete');
     }
 
     setupTimeUpdate() {
@@ -1816,14 +1834,23 @@ export class AudioPlayer {
         }
 
         try {
+            console.log('Initializing waveform for file:', file.name);
 
             // Load file into audioService for visualization
             await this.audioService.loadAudioFile(file);
+
+            console.log('Audio buffer loaded:', {
+                hasBuffer: !!this.audioService.audioBuffer,
+                bufferDuration: this.audioService.audioBuffer?.duration,
+                bufferChannels: this.audioService.audioBuffer?.numberOfChannels,
+                bufferSampleRate: this.audioService.audioBuffer?.sampleRate
+            });
 
             // Create waveform visualizer
             // The WaveformVisualizer constructor automatically calls init() -> resizeCanvas() -> draw()
             // No need for additional initialization calls
             this.waveformVisualizer = new WaveformVisualizer(canvas, this.audioService);
+            console.log('Waveform visualizer created and initialized');
 
             // Override audioService methods
             this.audioService.getDuration = () => this.duration;
@@ -1876,6 +1903,7 @@ export class AudioPlayer {
 
             // Removed duplicate draw call - resizeCanvas is already called above
 
+            console.log('Waveform visualizer initialized');
         } catch (error) {
             console.error('Error initializing waveform:', error);
         }
@@ -1917,6 +1945,12 @@ export class AudioPlayer {
         }
 
         // Original file-based code
+        console.log('=== AUDIO PLAY DEBUG ===');
+        console.log('GrainPlayer exists:', !!this.grainPlayer);
+        console.log('AudioLoaded flag:', this.audioLoaded);
+        console.log('GrainPlayer state:', this.grainPlayer?.state);
+        console.log('GrainPlayer buffer:', !!this.grainPlayer?.buffer);
+        console.log('Current isPlaying:', this.isPlaying);
 
         if (!this.grainPlayer) {
             console.error('No audio player initialized');
@@ -1926,7 +1960,12 @@ export class AudioPlayer {
 
         // Check if audio is loaded using our custom flag
         if (!this.audioLoaded) {
-            console.error('Audio not yet loaded');
+            console.error('Audio not yet loaded', {
+                grainPlayer: !!this.grainPlayer,
+                audioLoaded: this.audioLoaded,
+                grainPlayerState: this.grainPlayer?.state,
+                buffer: !!this.grainPlayer?.buffer
+            });
             this.showNotification('Audio is still loading. Please wait...', 'error');
             return;
         }
@@ -1935,6 +1974,7 @@ export class AudioPlayer {
         if (Tone.context.state !== 'running') {
             try {
                 await Tone.start();
+                console.log('Tone.js audio context started');
             } catch (error) {
                 console.error('Failed to start Tone.js:', error);
                 this.showNotification('Failed to start audio. Please try again.', 'error');
@@ -2004,11 +2044,14 @@ export class AudioPlayer {
 
     syncTimerStart() {
         try {
+            console.log('Audio player: Attempting to sync timer start...');
 
             // Check if sync is enabled by reading the checkbox directly
             const syncCheckbox = document.getElementById('syncMetronome');
+            console.log('Sync checkbox found:', !!syncCheckbox, 'Checked:', syncCheckbox?.checked);
 
             if (!syncCheckbox || !syncCheckbox.checked) {
+                console.log('Timer sync is disabled - checkbox not checked');
                 return;
             }
 
@@ -2018,30 +2061,47 @@ export class AudioPlayer {
             // First, try to find the UnifiedPracticeMinimal instance
             if (window.unifiedPracticeMinimal?.timer) {
                 timer = window.unifiedPracticeMinimal.timer;
+                console.log('Found timer via window.unifiedPracticeMinimal');
             } else if (window.currentTimer) {
                 timer = window.currentTimer;
+                console.log('Found timer via window.currentTimer');
             } else if (window.app?.currentPage?.timer) {
                 timer = window.app.currentPage.timer;
+                console.log('Found timer via window.app.currentPage.timer');
             } else if (window.app?.currentPage?.components?.timer) {
                 timer = window.app.currentPage.components.timer;
+                console.log('Found timer via window.app.currentPage.components.timer');
             } else if (window.app?.currentPage?.sharedTimer) {
                 timer = window.app.currentPage.sharedTimer;
+                console.log('Found timer via window.app.currentPage.sharedTimer');
             }
 
+            console.log('Timer search result:', !!timer);
+            console.log('Available window properties:', {
+                'window.unifiedPracticeMinimal': !!window.unifiedPracticeMinimal,
+                'window.currentTimer': !!window.currentTimer,
+                'window.app': !!window.app
+            });
+
             if (timer) {
+                console.log('Timer found, sync enabled, Timer running:', timer.isRunning);
 
                 if (!timer.isRunning) {
+                    console.log('Starting timer due to audio sync');
                     // For YouTube, we want to continue from where we left off
                     if (this.isYouTubeMode && timer.elapsedTime > 0) {
+                        console.log('Resuming timer from elapsed time:', timer.elapsedTime);
                     }
                     timer.start();
                 } else {
+                    console.log('Timer already running, no action needed');
                 }
             } else {
                 console.warn('Timer component not found for sync');
                 // Try to directly click the play button as a fallback
                 const playBtn = document.getElementById('playPauseBtn');
                 if (playBtn && !playBtn.classList.contains('playing')) {
+                    console.log('Attempting to click timer play button directly');
                     playBtn.click();
                 }
             }
@@ -2052,10 +2112,12 @@ export class AudioPlayer {
 
     syncTimerStop() {
         try {
+            console.log('Audio player: Attempting to sync timer stop...');
 
             // Check if sync is enabled by reading the checkbox directly
             const syncCheckbox = document.getElementById('syncMetronome');
             if (!syncCheckbox || !syncCheckbox.checked) {
+                console.log('Timer sync is disabled - checkbox not checked');
                 return;
             }
 
@@ -2065,6 +2127,7 @@ export class AudioPlayer {
             // First check the global reference
             if (window.currentTimer) {
                 timer = window.currentTimer;
+                console.log('Found timer via window.currentTimer');
             } else if (window.app?.currentPage?.timer) {
                 timer = window.app.currentPage.timer;
             } else if (window.app?.currentPage?.components?.timer) {
@@ -2074,10 +2137,13 @@ export class AudioPlayer {
             }
 
             if (timer) {
+                console.log('Timer found for stop, sync enabled, Timer running:', timer.isRunning);
 
                 if (timer.isRunning) {
+                    console.log('Pausing timer due to audio sync');
                     timer.pause();
                 } else {
+                    console.log('Timer already stopped');
                 }
             } else {
                 console.warn('Timer component not found for sync stop');
@@ -2088,6 +2154,7 @@ export class AudioPlayer {
     }
 
     stop() {
+        console.log('Stop button clicked');
 
         if (this.isYouTubeMode && this.youtubePlayer) {
             this.youtubePlayer.stopVideo();
@@ -2468,6 +2535,7 @@ export class AudioPlayer {
             this.grainPlayer.overlap = settings.overlap;
         }
 
+        console.log(`Audio quality mode set to: ${mode}`);
     }
 
     updatePitchButtonStates() {
@@ -2557,11 +2625,13 @@ export class AudioPlayer {
         if (window.app?.currentPage?.showNotification) {
             window.app.currentPage.showNotification(message, type);
         } else {
+            console.log(`[${type}] ${message}`);
         }
     }
 
 
     destroy() {
+        console.log('=== DESTROYING AUDIO PLAYER ===');
 
         // Stop any playback first
         this.stop();
@@ -2621,5 +2691,6 @@ export class AudioPlayer {
         this.duration = 0;
         this.isInitialized = false;
 
+        console.log('Audio player destroyed');
     }
 }

@@ -18,7 +18,6 @@ export function handleAuthRedirect() {
 export function detectBasePath() {
     // Simple version tracking
     window.APP_VERSION = '9.7';
-    console.log('🎸 Loading Guitar Practice Journal version:', window.APP_VERSION);
 
     // Simplified base path detection
     const currentPath = window.location.pathname;
@@ -36,7 +35,6 @@ export function detectBasePath() {
     }
 
     window.__APP_BASE_PATH__ = basePath;
-    console.log('📁 Base path detected:', basePath);
 }
 
 export function setAppVersion() {

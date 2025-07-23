@@ -13,7 +13,7 @@ export const firebaseConfig = getEnvFirebaseConfig();
 
 // Log environment info in development
 if (isDebugEnabled()) {
-    console.log(`🔥 Firebase configured for ${currentEnvironment} environment`);
+    // Environment info available but not logged
 }
 
 // Helper to validate Firebase is properly configured

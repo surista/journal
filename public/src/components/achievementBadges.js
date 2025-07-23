@@ -275,7 +275,6 @@ export class AchievementBadges {
 
     async render() {
         try {
-            console.log('Rendering achievement badges...');
 
             // Show loading state first
             this.container.innerHTML = `
@@ -292,7 +291,6 @@ export class AchievementBadges {
             const entries = await this.storageService.getPracticeEntries();
             const goals = await this.storageService.getGoals();
 
-            console.log('Achievement data loaded:', {stats, entriesCount: entries.length, goalsCount: goals.length});
 
             this.earnedAchievements = await this.getEarnedAchievements(stats, entries, goals);
             const totalEarned = this.earnedAchievements.length;
@@ -331,7 +329,6 @@ export class AchievementBadges {
             `;
 
             this.attachEventListeners();
-            console.log('Achievement badges rendered successfully');
         } catch (error) {
             console.error('Error rendering achievement badges:', error);
             this.container.innerHTML = `
@@ -500,11 +497,6 @@ export class AchievementBadges {
 
     async getEarnedAchievements(stats, entries, goals) {
         try {
-            console.log('Checking achievements with data:', {
-                stats,
-                entriesCount: entries?.length,
-                goalsCount: goals?.length
-            });
 
             const earned = JSON.parse(localStorage.getItem('guitarJournalAchievements') || '[]');
             const newlyEarned = [];
@@ -522,7 +514,6 @@ export class AchievementBadges {
                         if (isEarned) {
                             earned.push(achievement.id);
                             newlyEarned.push(achievement);
-                            console.log('New achievement earned:', achievement.name);
                         }
                     } catch (error) {
                         console.error(`Error checking achievement ${achievement.id}:`, error);

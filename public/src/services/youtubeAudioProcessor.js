@@ -8,7 +8,6 @@ export const youtubeAudioProcessor = {
     },
 
     stopProcessing() {
-        console.log('YouTube audio processing stopped');
     },
 
     async startTabAudioCapture() {
@@ -17,7 +16,6 @@ export const youtubeAudioProcessor = {
     },
 
     setPitch(pitchAmount) {
-        console.log('Set pitch to:', pitchAmount);
     },
 
     // Additional methods that might be needed

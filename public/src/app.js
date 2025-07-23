@@ -1,5 +1,4 @@
 // src/app.js - Optimized Application Entry Point with Theme Support
-console.log('🎸 Loading app.js...');
 
 // Import at the top of the file
 import {APP_VERSION, APP_CONFIG, BUILD_DATE, BUILD_NUMBER} from './config/version.js';
@@ -13,7 +12,6 @@ import firebaseSyncService from './services/firebaseSyncService.js';
 
 class App {
     constructor() {
-        console.log('🏗️ Creating App instance...');
         this.config = appConfig;
         this.authService = null;
         this.storageService = null;
@@ -30,19 +28,14 @@ class App {
         window.APP_CONFIG = APP_CONFIG;
         window.BUILD_DATE = BUILD_DATE;
         window.BUILD_NUMBER = BUILD_NUMBER;
-        console.log('✅ App instance created with base path:', this.config.basePath);
     }
 
     async init() {
-        console.log('🚀 Starting app initialization...');
-        console.log('Current location:', window.location.href);
-
         // Check for mobile test mode
         const urlParams = new URLSearchParams(window.location.search);
         const isMobileTest = urlParams.get('mobile-test') === 'true' || window.MOBILE_TEST_MODE;
         
         if (isMobileTest) {
-            console.log('📱 Mobile test mode enabled');
             // Load mobile improvements CSS
             const link = document.createElement('link');
             link.rel = 'stylesheet';
@@ -69,9 +62,7 @@ class App {
 
         try {
             // Initialize theme service FIRST to apply saved theme immediately
-            console.log('🎨 Initializing theme service...');
             this.themeService = new ThemeService();
-            console.log('✅ Theme initialized:', this.themeService.getTheme());
 
             // Add global ESC key handler for modals
             document.addEventListener('keydown', (e) => {
@@ -92,9 +83,7 @@ class App {
             });
 
             // Step 1: Load authentication service
-            console.log('🔐 Loading authentication service...');
             const authModule = await import('./services/authService.js');
-            console.log('Auth module loaded:', authModule);
 
             // Check if AuthService exists in the module
             if (!authModule.AuthService) {
@@ -103,7 +92,6 @@ class App {
             }
 
             this.authService = new authModule.AuthService();
-            console.log('✅ Authentication service instantiated');
 
             // Verify authService has required methods
             if (typeof this.authService.getCurrentUser !== 'function') {
@@ -115,73 +103,58 @@ class App {
             let user = null;
             try {
                 if (this.authService && typeof this.authService.waitForAuthState === 'function') {
-                    console.log('⏳ Waiting for Firebase auth state...');
                     user = await this.authService.waitForAuthState();
                 } else if (this.authService && typeof this.authService.getCurrentUser === 'function') {
                     user = this.authService.getCurrentUser();
                 } else {
-                    console.warn('getCurrentUser method not available, using demo mode');
                     user = null;
                 }
             } catch (e) {
                 console.error('Error checking auth state:', e);
                 user = null;
             }
-            console.log('👤 Current user:', user ? `Logged in as ${user.email}` : 'Not logged in');
-
             if (!user) {
-                console.log('🔓 No user found, loading auth page');
                 await this.loadAuthPage();
                 return;
             }
 
             // Step 3: Load storage service
-            console.log('💾 Loading storage service...');
             const storageModule = await import('./services/storageService.js');
             this.storageService = new storageModule.StorageService(user.id);
-            console.log('✅ Storage service loaded');
 
             // // Step 4: Load notification service
             try {
-                console.log('🔔 Loading notification service...');
                 const notificationModule = await import('./services/notificationManager.js');
                 this.notificationManager = new notificationModule.NotificationManager();
                 window.notificationManager = this.notificationManager; // Make globally accessible
-                console.log('✅ Notification service loaded');
             } catch (error) {
-                console.warn('⚠️ Notification service failed to load:', error);
+                console.error('Notification service failed to load:', error);
             }
 
             // Step 5: Load main dashboard
-            console.log('🏠 Loading dashboard...');
             await this.loadDashboardPage();
 
             // Step 6: Mark as initialized
             this.isInitialized = true;
-            console.log('🎉 App initialization complete!');
 
             // Step 7: Check for service worker updates
             this.checkForUpdates();
 
         } catch (error) {
-            console.error('💥 App initialization failed:', error);
+            console.error('App initialization failed:', error);
             this.handleInitError(error);
             throw error;
         }
     }
 
     async loadAuthPage() {
-        console.log('🔓 No user found, redirecting to login page...');
         window.location.replace('./login.html');
     }
 
     async loadDashboardPage() {
-        console.log('🏠 Loading dashboard page...');
-
         try {
             // Clean up any existing page
             if (this.currentPage && typeof this.currentPage.destroy === 'function') {
-                console.log('🧹 Cleaning up previous page...');
                 this.currentPage.destroy();
             }
 
@@ -210,10 +183,8 @@ class App {
             await dashboard.render();
             this.currentPage = dashboard;
 
-            console.log('✅ Dashboard loaded successfully');
-
         } catch (error) {
-            console.error('❌ Failed to load dashboard:', error);
+            console.error('Failed to load dashboard:', error);
             this.showError('Failed to load dashboard', error);
         }
     }
@@ -286,7 +257,7 @@ class App {
                     });
                 });
             } catch (error) {
-                console.warn('Service worker update check failed:', error);
+                // Service worker update check failed
             }
         }
     }
@@ -337,13 +308,10 @@ class App {
     }
 
     handleInitError(error) {
-        console.error('💥 Handling initialization error:', error);
         this.showError('App initialization failed', error);
     }
 
     showError(message, error = null) {
-        console.error('❌ Showing error:', message, error);
-
         const app = document.getElementById('app');
         app.textContent = ''; // Clear content safely
         
@@ -434,14 +402,11 @@ class App {
     }
 
     destroy() {
-        console.log('🧹 Cleaning up app...');
         if (this.currentPage && typeof this.currentPage.destroy === 'function') {
             this.currentPage.destroy();
         }
     }
 }
-
-console.log('✅ App class defined successfully');
 
 // Export the App class
 export {App};

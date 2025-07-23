@@ -5,19 +5,16 @@ import rateLimitService from '../services/rateLimitService.js';
 
 class AuthPage {
     constructor() {
-        console.log('🔧 AuthPage: Initializing...');
         this.authService = new AuthService();
         this.isLoginMode = true;
         this.init();
     }
 
     init() {
-        console.log('🔧 AuthPage: Setting up event listeners...');
         this.attachEventListeners();
 
         // Check if already logged in
         if (this.authService.isLoggedIn()) {
-            console.log('✅ AuthPage: User already logged in, redirecting...');
             this.redirectToDashboard();
         }
     }
@@ -56,7 +53,6 @@ class AuthPage {
     }
 
     switchToLogin() {
-        console.log('🔄 AuthPage: Switching to login mode');
         this.isLoginMode = true;
         document.getElementById('loginTab').classList.add('active');
         document.getElementById('signupTab').classList.remove('active');
@@ -66,7 +62,6 @@ class AuthPage {
     }
 
     switchToSignup() {
-        console.log('🔄 AuthPage: Switching to signup mode');
         this.isLoginMode = false;
         document.getElementById('signupTab').classList.add('active');
         document.getElementById('loginTab').classList.remove('active');
@@ -79,7 +74,6 @@ class AuthPage {
         const email = document.getElementById('loginEmail').value;
         const password = document.getElementById('loginPassword').value;
 
-        console.log('🔐 AuthPage: Handling login for:', email);
 
         if (!email || !password) {
             this.showStatus('Please enter both email and password', 'error');
@@ -97,13 +91,10 @@ class AuthPage {
         this.showStatus('Signing in...', 'info');
 
         try {
-            console.log('📞 AuthPage: Calling authService.login...');
             const result = await this.authService.login(email, password);
-            console.log('📥 AuthPage: Login result:', result);
 
             if (result.success) {
                 this.showStatus('Success! Redirecting...', 'success');
-                console.log('✅ AuthPage: Login successful, redirecting...');
                 // Small delay to show success message
                 setTimeout(() => {
                     this.redirectToDashboard();
@@ -129,7 +120,6 @@ class AuthPage {
         const password = document.getElementById('signupPassword').value;
         const confirmPassword = document.getElementById('signupPasswordConfirm').value;
 
-        console.log('📝 AuthPage: Handling signup for:', email);
 
         if (password !== confirmPassword) {
             this.showStatus('Passwords do not match', 'error');
@@ -173,18 +163,14 @@ class AuthPage {
     }
 
     async handleDemoLogin() {
-        console.log('🎭 AuthPage: Handling demo login');
 
         this.showStatus('Loading demo mode...', 'info');
 
         try {
-            console.log('📞 AuthPage: Calling demo login...');
             const result = await this.authService.login('demo@example.com', 'demo123');
-            console.log('📥 AuthPage: Demo login result:', result);
 
             if (result.success) {
                 this.showStatus('Demo mode activated!', 'success');
-                console.log('✅ AuthPage: Demo login successful, redirecting...');
                 setTimeout(() => this.redirectToDashboard(), 1000);
             } else {
                 console.error('❌ AuthPage: Demo login failed:', result.error);
@@ -212,7 +198,6 @@ class AuthPage {
     }
 
     showStatus(message, type) {
-        console.log(`📢 AuthPage: Status [${type}]:`, message);
         const statusEl = document.getElementById('authStatus');
         if (!statusEl) return;
 
@@ -264,13 +249,11 @@ class AuthPage {
     }
 
     redirectToDashboard() {
-        console.log('🏠 AuthPage: Redirecting to dashboard...');
         window.location.href = './index.html';
     }
 }
 
 // Initialize auth page
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('🚀 AuthPage: DOM loaded, initializing...');
     new AuthPage();
 });

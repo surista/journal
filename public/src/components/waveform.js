@@ -51,7 +51,6 @@ export class WaveformVisualizer {
     resizeCanvas() {
         // Check if the canvas is visible before trying to resize
         if (this.canvas.offsetParent === null) {
-            console.log('Canvas is not visible, skipping resize');
             return;
         }
 
@@ -93,20 +92,11 @@ export class WaveformVisualizer {
         this.displayWidth = Math.max(1, rect.width);
         this.displayHeight = 150;
 
-        console.log('Canvas resized:', {
-            displayWidth: this.displayWidth,
-            displayHeight: this.displayHeight,
-            canvasWidth: this.canvas.width,
-            canvasHeight: this.canvas.height,
-            dpr: dpr
-        });
 
         // Redraw if we have data (use immediate flag to skip debouncing)
         if (this.audioService && this.audioService.audioBuffer) {
-            console.log('Redrawing after resize - buffer available');
             this.draw(true);
         } else {
-            console.log('No audio buffer available for redraw after resize');
         }
     }
 
@@ -124,23 +114,11 @@ export class WaveformVisualizer {
     _performDraw() {
         // Prevent multiple simultaneous draws
         if (this.isDrawing) {
-            console.log('Already drawing, marking pending draw');
             this.pendingDraw = true;
             return;
         }
 
         this.isDrawing = true;
-        console.log('=== WAVEFORM DRAW START ===');
-        console.log('Canvas state:', {
-            canvasElement: !!this.canvas,
-            canvasId: this.canvas?.id,
-            width: this.canvas?.width,
-            height: this.canvas?.height,
-            displayWidth: this.displayWidth,
-            displayHeight: this.displayHeight,
-            visible: this.canvas?.offsetParent !== null,
-            style: this.canvas?.style?.cssText
-        });
 
         const buffer = this.audioService.audioBuffer;
         if (!buffer) {
@@ -161,16 +139,6 @@ export class WaveformVisualizer {
             return;
         }
 
-        console.log('Drawing waveform:', {
-            bufferLength: buffer.length,
-            sampleRate: buffer.sampleRate,
-            duration: buffer.duration,
-            canvasWidth: this.canvas.width,
-            canvasHeight: this.canvas.height,
-            displayWidth: this.displayWidth,
-            displayHeight: this.displayHeight,
-            channelData: buffer.getChannelData(0).length
-        });
 
         // Ensure canvas is visible
         if (this.canvas.style.display === 'none' || this.canvas.style.visibility === 'hidden') {
@@ -255,7 +223,6 @@ export class WaveformVisualizer {
             waveformCanvas.style.opacity = '1';
         }
 
-        console.log('=== WAVEFORM DRAW COMPLETE ===');
         this.isDrawing = false;
 
         // If there was a pending draw request, execute it after a short delay

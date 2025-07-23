@@ -180,8 +180,6 @@ export class RepertoireTab {
 
     // Fix for RepertoireTab.js - attachEventListeners method
     attachEventListeners() {
-        console.log('🎸 RepertoireTab: attachEventListeners called');
-        console.log('🎸 Container exists:', !!this.container);
 
         if (this.container) {
             // Remove previous event listener if it exists
@@ -194,11 +192,8 @@ export class RepertoireTab {
 
             // Add debugging for the Add Song button
             const addSongBtn = this.container.querySelector('#addSongBtn');
-            console.log('🎸 Add Song button found:', !!addSongBtn);
             if (addSongBtn) {
-                console.log('🎸 Add Song button element:', addSongBtn);
                 this.addSongClickHandler = (e) => {
-                    console.log('🎸 Add Song button clicked directly!');
                     e.preventDefault();
                     this.showSongModal();
                 };
@@ -210,7 +205,6 @@ export class RepertoireTab {
                 if (e.key === 'Escape') {
                     const modal = document.getElementById('songModal');
                     if (modal && (modal.style.display === 'flex' || modal.style.visibility === 'visible')) {
-                        console.log('🎸 ESC key pressed, closing modal');
                         this.hideSongModal();
                     }
                 }
@@ -219,15 +213,11 @@ export class RepertoireTab {
 
             // Event delegation with extensive debugging
             this.container.addEventListener('click', async (e) => {
-                console.log('🎸 Container click detected:', e.target);
-                console.log('🎸 Target ID:', e.target.id);
-                console.log('🎸 Target classes:', e.target.className);
 
                 const target = e.target;
 
                 // Handle YouTube link click
                 if (target.classList.contains('load-youtube-link') || target.closest('.load-youtube-link')) {
-                    console.log('🎸 YouTube link clicked');
                     e.preventDefault();
                     e.stopPropagation();
                     const link = target.classList.contains('load-youtube-link') ? target : target.closest('.load-youtube-link');
@@ -240,7 +230,6 @@ export class RepertoireTab {
 
                 // Handle quick edit button
                 if (target.classList.contains('edit-song-quick') || target.closest('.edit-song-quick')) {
-                    console.log('🎸 Quick edit button clicked');
                     e.stopPropagation();
                     const btn = target.classList.contains('edit-song-quick') ? target : target.closest('.edit-song-quick');
                     const songId = btn.dataset.id;
@@ -250,7 +239,6 @@ export class RepertoireTab {
 
                 // Handle quick delete button
                 if (target.classList.contains('delete-song-quick') || target.closest('.delete-song-quick')) {
-                    console.log('🎸 Quick delete button clicked');
                     e.stopPropagation();
                     const btn = target.classList.contains('delete-song-quick') ? target : target.closest('.delete-song-quick');
                     const songId = btn.dataset.id;
@@ -261,7 +249,6 @@ export class RepertoireTab {
                 // Handle collapsible song cards
                 const songHeaderContent = target.closest('.song-header-content[data-toggle="collapse"]');
                 if (songHeaderContent) {
-                    console.log('🎸 Song header clicked');
                     const targetId = songHeaderContent.getAttribute('data-target');
                     const targetElement = document.getElementById(targetId);
                     const songHeader = songHeaderContent.closest('.song-header');
@@ -281,14 +268,12 @@ export class RepertoireTab {
 
                 // Add Song button - improved detection with debugging
                 if (target.id === 'addSongBtn') {
-                    console.log('🎸 Add Song button clicked via event delegation (direct match)!');
                     e.preventDefault();
                     this.showSongModal();
                     return;
                 }
 
                 if (target.closest('#addSongBtn')) {
-                    console.log('🎸 Add Song button clicked via event delegation (closest match)!');
                     e.preventDefault();
                     this.showSongModal();
                     return;
@@ -296,7 +281,6 @@ export class RepertoireTab {
 
                 // Debug other potential matches
                 if (target.textContent && target.textContent.includes('Add Song')) {
-                    console.log('🎸 Found element with "Add Song" text:', target);
                     e.preventDefault();
                     this.showSongModal();
                     return;
@@ -307,7 +291,6 @@ export class RepertoireTab {
                     target.id === 'cancelSongBtn' ||
                     target.classList.contains('close-btn') ||
                     target.classList.contains('close-modal')) {
-                    console.log('🎸 Close modal button clicked');
                     e.preventDefault();
                     this.hideSongModal();
                     return;
@@ -315,7 +298,6 @@ export class RepertoireTab {
 
                 // Song actions
                 if (target.classList.contains('edit-song-btn') || target.closest('.edit-song-btn')) {
-                    console.log('🎸 Edit song button clicked');
                     const btn = target.classList.contains('edit-song-btn') ? target : target.closest('.edit-song-btn');
                     const songId = btn.dataset.id;
                     this.editSong(songId);
@@ -323,7 +305,6 @@ export class RepertoireTab {
                 }
 
                 if (target.classList.contains('delete-song-btn') || target.closest('.delete-song-btn')) {
-                    console.log('🎸 Delete song button clicked');
                     const btn = target.classList.contains('delete-song-btn') ? target : target.closest('.delete-song-btn');
                     const songId = btn.dataset.id;
                     await this.deleteSong(songId);
@@ -331,7 +312,6 @@ export class RepertoireTab {
                 }
 
                 if (target.classList.contains('practice-song-btn') || target.closest('.practice-song-btn')) {
-                    console.log('🎸 Practice song button clicked');
                     const btn = target.classList.contains('practice-song-btn') ? target : target.closest('.practice-song-btn');
                     const songId = btn.dataset.id;
                     this.logPractice(songId);
@@ -345,7 +325,6 @@ export class RepertoireTab {
             }
             
             this.submitHandler = async (e) => {
-                console.log('🎸 Form submission detected:', e.target.id);
                 if (e.target.id === 'songForm') {
                     e.preventDefault();
                     await this.saveSong();
@@ -356,7 +335,6 @@ export class RepertoireTab {
 
             // Filter and search changes
             this.container.addEventListener('change', (e) => {
-                console.log('🎸 Change event:', e.target.id, e.target.value);
                 if (e.target.id === 'difficultyFilter') {
                     this.currentFilter.difficulty = e.target.value;
                     this.applyFilters();
@@ -476,7 +454,6 @@ export class RepertoireTab {
     }
 
     showSongModal(songId = null) {
-        console.log('🎸 showSongModal called with songId:', songId);
 
         const modal = document.getElementById('songModal');
         if (!modal) {
@@ -523,7 +500,6 @@ export class RepertoireTab {
     }
 
     hideSongModal() {
-        console.log('🎸 hideSongModal called');
         const modal = document.getElementById('songModal');
         if (modal) {
             modal.style.display = 'none';
@@ -540,7 +516,6 @@ export class RepertoireTab {
     async saveSong() {
         // Prevent double saves
         if (this.isSaving) {
-            console.log('🎸 Save already in progress, ignoring duplicate request');
             return;
         }
         
@@ -645,7 +620,6 @@ export class RepertoireTab {
     }
 
     loadYouTubeInPracticeTab(url) {
-        console.log('🎸 Loading YouTube URL in practice tab:', url);
         
         // Switch to practice tab
         if (window.app && window.app.currentPage) {
@@ -653,40 +627,47 @@ export class RepertoireTab {
             
             // Wait for tab to load, then switch to YouTube mode and load the video
             setTimeout(() => {
-                // Find and click the YouTube source tab
-                const youtubeTab = document.querySelector('.source-tab[data-source="youtube"]');
+                // Find and click the YouTube mode tab
+                const youtubeTab = document.querySelector('.mode-tab[data-mode="youtube"]');
                 if (youtubeTab) {
                     youtubeTab.click();
                     
-                    // Wait for YouTube input to be visible
+                    // Wait for YouTube panel to be visible and input to be ready
                     setTimeout(() => {
                         // Set the URL in the input field
-                        const youtubeInput = document.getElementById('youtubeUrlInput');
+                        const youtubeInput = document.getElementById('youtubeUrl');
                         const loadBtn = document.getElementById('loadYoutubeBtn');
                         
                         if (youtubeInput && loadBtn) {
                             youtubeInput.value = url;
-                            loadBtn.click();
-                            
-                            this.showNotification('Loading YouTube video in practice tab...', 'info');
+                            // Focus the input to ensure it's ready
+                            youtubeInput.focus();
+                            // Small delay before clicking to ensure value is set
+                            setTimeout(() => {
+                                loadBtn.click();
+                                this.showNotification('Loading YouTube video in practice tab...', 'info');
+                            }, 100);
                         } else {
                             console.error('YouTube input elements not found');
                             // Try again with longer delay
                             setTimeout(() => {
-                                const retryInput = document.getElementById('youtubeUrlInput');
+                                const retryInput = document.getElementById('youtubeUrl');
                                 const retryBtn = document.getElementById('loadYoutubeBtn');
                                 if (retryInput && retryBtn) {
                                     retryInput.value = url;
-                                    retryBtn.click();
-                                    this.showNotification('Loading YouTube video...', 'info');
+                                    retryInput.focus();
+                                    setTimeout(() => {
+                                        retryBtn.click();
+                                        this.showNotification('Loading YouTube video...', 'info');
+                                    }, 100);
                                 }
                             }, 500);
                         }
-                    }, 200);
+                    }, 300);
                 } else {
-                    console.error('YouTube source tab not found');
+                    console.error('YouTube mode tab not found');
                 }
-            }, 500);
+            }, 800);
         }
     }
 

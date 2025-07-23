@@ -443,7 +443,6 @@ export class Metronome {
 
     setTimer(timer) {
         this.timer = timer;
-        console.log('Timer connected to metronome');
     }
 
     destroy() {

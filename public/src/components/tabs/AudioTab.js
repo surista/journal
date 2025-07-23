@@ -108,7 +108,6 @@ export class AudioTab {
     }
 
     onActivate() {
-        console.log('Audio tab activated');
 
         // Ensure components are accessible
         this.ensureComponentsReady();
@@ -145,7 +144,6 @@ export class AudioTab {
     }
 
     destroy() {
-        console.log('Destroying Audio tab');
 
         // Cleanup timer
         if (this.timer) {

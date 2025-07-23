@@ -413,9 +413,7 @@ export class UnifiedPracticeMinimal {
 
         // Debug: Check if YouTube panel exists
         const youtubePanel = document.getElementById('youtubePanel');
-        console.log('YouTube panel found:', !!youtubePanel);
         if (youtubePanel) {
-            console.log('YouTube panel initial display:', window.getComputedStyle(youtubePanel).display);
         }
 
         // Setup session state persistence
@@ -543,7 +541,6 @@ export class UnifiedPracticeMinimal {
         document.querySelectorAll('.mode-tab').forEach(tab => {
             tab.addEventListener('click', (e) => {
                 const mode = e.currentTarget.dataset.mode;
-                console.log('Mode tab clicked:', mode);
                 this.switchMode(mode);
 
                 // Force YouTube panel visibility if YouTube mode
@@ -553,11 +550,9 @@ export class UnifiedPracticeMinimal {
                     if (youtubePanel) {
                         youtubePanel.style.display = 'block';
                         youtubePanel.style.visibility = 'visible';
-                        console.log('Forced YouTube panel visible');
                     }
                     if (youtubeInput) {
                         youtubeInput.style.display = 'block';
-                        console.log('Forced YouTube input visible');
                     }
                 }
             });
@@ -582,7 +577,6 @@ export class UnifiedPracticeMinimal {
                 if (syncCheckbox?.checked) {
                     // Start appropriate playback based on current mode
                     if (this.currentMode === 'metronome' && !this.metronomeState.isPlaying) {
-                        console.log('Starting metronome with timer');
                         this.startMetronome();
                     } else if (this.currentMode === 'audio' && this.audioPlayer && !this.audioPlayer.isPlaying) {
                         this.audioPlayer.togglePlayPause();
@@ -990,7 +984,6 @@ export class UnifiedPracticeMinimal {
         const browseBtn = document.getElementById('browseAudioBtn');
 
         browseBtn?.addEventListener('click', () => {
-            console.log('Browse button clicked');
 
             // Clear any existing audio BEFORE opening file picker
             this.clearAudioPlayer();
@@ -1017,7 +1010,6 @@ export class UnifiedPracticeMinimal {
     }
 
     clearAudioPlayer() {
-        console.log('=== CLEARING AUDIO PLAYER ===');
 
         // Clear any pending file name update timeout FIRST
         if (this.fileNameUpdateTimeout) {
@@ -1032,7 +1024,6 @@ export class UnifiedPracticeMinimal {
 
         // Stop and destroy current audio player if it exists
         if (this.audioPlayer) {
-            console.log('Stopping and destroying audio player');
             try {
                 this.audioPlayer.stop();
                 if (this.audioPlayer.destroy) {
@@ -1054,7 +1045,6 @@ export class UnifiedPracticeMinimal {
         // Clear the audio player container completely
         const audioContainer = document.getElementById('audioPlayerContainer');
         if (audioContainer) {
-            console.log('Clearing audio container HTML');
             // Remove all event listeners by cloning
             const newContainer = audioContainer.cloneNode(false);
             audioContainer.parentNode.replaceChild(newContainer, audioContainer);
@@ -1068,7 +1058,6 @@ export class UnifiedPracticeMinimal {
         }
         const fileNameEl = document.getElementById('currentFileName');
         if (fileNameEl) {
-            console.log('Clearing filename display, was:', fileNameEl.textContent);
             fileNameEl.textContent = '';
             fileNameEl.style.color = '';
             fileNameEl.className = 'current-file-name'; // Reset to original class
@@ -1098,7 +1087,6 @@ export class UnifiedPracticeMinimal {
             }
         }
 
-        console.log('Audio player cleared completely');
     }
 
     attachYouTubeListeners() {
@@ -1161,7 +1149,6 @@ export class UnifiedPracticeMinimal {
     }
 
     async startMetronome() {
-        console.log('startMetronome called, audioReady:', this.metronomeState.audioReady);
         if (!this.metronomeState.audioReady) {
             this.showAudioWarning();
             return;
@@ -1188,7 +1175,6 @@ export class UnifiedPracticeMinimal {
         // Start timer if sync is enabled
         const syncCheckbox = document.getElementById('syncMetronome');
         if (syncCheckbox?.checked && !this.timer.isRunning) {
-            console.log('Starting timer with metronome (sync enabled)');
             this.timer.start();
             // Update play/pause button
             const playPauseBtn = document.getElementById('playPauseBtn');
@@ -1214,7 +1200,6 @@ export class UnifiedPracticeMinimal {
         // Pause timer if sync is enabled (don't reset it)
         const syncCheckbox = document.getElementById('syncMetronome');
         if (syncCheckbox?.checked && this.timer.isRunning) {
-            console.log('Pausing timer with metronome stop (sync enabled)');
             this.timer.pause();  // Changed from stop() to pause() to preserve timer state
             // Update play/pause button
             const playPauseBtn = document.getElementById('playPauseBtn');
@@ -1330,7 +1315,6 @@ export class UnifiedPracticeMinimal {
     }
 
     switchMode(mode) {
-        console.log('Switching to mode:', mode);
         const previousMode = this.currentMode;
         this.currentMode = mode;
 
@@ -1397,7 +1381,6 @@ export class UnifiedPracticeMinimal {
                 if (waveformContainer) {
                     // Clear YouTube progress bar and restore canvas for waveform
                     waveformContainer.innerHTML = '<canvas id="waveformCanvas" style="width: 100%; height: 100%; display: block;"></canvas>';
-                    console.log('Waveform container reset for audio mode');
                 }
             }
         }
@@ -1414,7 +1397,6 @@ export class UnifiedPracticeMinimal {
         // Update panels
         document.querySelectorAll('.mode-panel').forEach(panel => {
             const panelId = `${mode}Panel`;
-            console.log('Panel:', panel.id, 'Target:', panelId, 'Match:', panel.id === panelId);
 
             if (panel.id === panelId) {
                 panel.classList.add('active');
@@ -1427,8 +1409,6 @@ export class UnifiedPracticeMinimal {
     }
 
     async loadAudioFile(file) {
-        console.log('=== LOADING NEW AUDIO FILE ===');
-        console.log('File:', file.name, file.type, file.size);
 
         // Validate MP3 file type
         if (!file.type.includes('mp3') && !file.name.toLowerCase().endsWith('.mp3')) {
@@ -1462,23 +1442,21 @@ export class UnifiedPracticeMinimal {
 
             // Create a new AudioPlayer instance
             try {
-                console.log('Creating AudioPlayer instance in UnifiedPracticeMinimal...');
                 this.audioPlayer = new AudioPlayer(container, this.audioService);
-                console.log('AudioPlayer instance created, calling init...');
                 
                 // Initialize the audio player (this will call initializeTone)
-                this.audioPlayer.init();
-                console.log('AudioPlayer initialized successfully');
+                await this.audioPlayer.init();
             } catch (error) {
                 console.error('Error creating/initializing AudioPlayer:', error);
-                throw error;
+                // Don't throw - try to continue without audio player
+                this.audioPlayer = null;
+                return;
             }
 
             // CRITICAL: Hide the AudioPlayer's own UI elements that we don't want
             // Hide the entire audio source section from AudioPlayer
             const audioSourceSection = container.querySelector('.audio-source-section');
             if (audioSourceSection) {
-                console.log('Hiding AudioPlayer audio source section');
                 audioSourceSection.style.display = 'none';
             }
 
@@ -1528,14 +1506,12 @@ export class UnifiedPracticeMinimal {
                 let canvas = waveformContainer.querySelector('#waveformCanvas');
                 if (!canvas) {
                     // YouTube mode may have replaced the canvas with progress bar
-                    console.log('Canvas not found, recreating...');
                     waveformContainer.innerHTML = '<canvas id="waveformCanvas" style="width: 100%; height: 100%; display: block;"></canvas>';
                     canvas = waveformContainer.querySelector('#waveformCanvas');
                 }
 
                 if (canvas) {
                     canvas.style.display = 'block';
-                    console.log('Waveform canvas ready');
                 }
             }
 
@@ -1551,7 +1527,6 @@ export class UnifiedPracticeMinimal {
             this.fileNameUpdateTimeout = setTimeout(() => {
                 const fileNameEl = document.getElementById('currentFileName');
                 if (fileNameEl) {
-                    console.log('Setting filename to:', file.name);
                     fileNameEl.textContent = `Loaded: ${file.name}`;
                     fileNameEl.style.color = 'var(--success)';
                 }
@@ -1560,7 +1535,6 @@ export class UnifiedPracticeMinimal {
             // The waveform is already initialized in audioPlayer.handleFileSelect,
             // so we don't need to re-initialize it here
 
-            console.log('Audio file loaded successfully:', file.name);
         } catch (error) {
             console.error('Error loading audio file:', error);
             notificationManager.error('Failed to load audio file: ' + error.message);
@@ -1568,8 +1542,6 @@ export class UnifiedPracticeMinimal {
     }
 
     async loadYouTubeVideo(urlOrId) {
-        console.log('=== LOADING YOUTUBE VIDEO ===');
-        console.log('Input:', urlOrId);
 
         // Reset pitch value
         this.youtubePitchShift = 0;
@@ -1593,22 +1565,18 @@ export class UnifiedPracticeMinimal {
             const match = urlOrId.match(pattern);
             if (match && match[1]) {
                 videoId = match[1];
-                console.log('Extracted video ID:', videoId);
                 extracted = true;
                 break;
             }
         }
 
         if (!extracted) {
-            console.log('Could not extract video ID, using input as-is:', videoId);
         }
 
         // Hide input and show player wrapper
         const youtubeInput = document.querySelector('.youtube-input-minimal');
         const playerWrapper = document.getElementById('youtubePlayerWrapper');
 
-        console.log('YouTube input element:', !!youtubeInput);
-        console.log('Player wrapper element:', !!playerWrapper);
 
         if (youtubeInput) youtubeInput.style.display = 'none';
         if (playerWrapper) playerWrapper.style.display = 'block';
@@ -1663,12 +1631,10 @@ export class UnifiedPracticeMinimal {
     }
 
     onYouTubePlayerReady(event) {
-        console.log('YouTube player ready');
         
         // Delay setting ready flag to ensure player is fully initialized
         setTimeout(() => {
             this.youtubeReady = true;
-            console.log('YouTube player fully ready for interactions');
         }, 500);
 
         // Ensure video is paused on load
@@ -1680,7 +1646,6 @@ export class UnifiedPracticeMinimal {
                 const videoData = this.youtubePlayer.getVideoData();
                 if (videoData && videoData.title) {
                     this.youtubeVideoTitle = videoData.title;
-                    console.log('YouTube video title:', this.youtubeVideoTitle);
                 } else {
                     this.youtubeVideoTitle = 'YouTube Video';
                 }
@@ -1744,7 +1709,6 @@ export class UnifiedPracticeMinimal {
             }
             // Start timer sync if enabled
             if (this.timer && syncCheckbox?.checked && !this.timer.isRunning) {
-                console.log('Starting timer with YouTube playback (sync enabled)');
                 this.timer.start();
                 // Update timer play/pause button
                 const timerPlayPauseBtn = document.getElementById('playPauseBtn');
@@ -1759,7 +1723,6 @@ export class UnifiedPracticeMinimal {
             }
             // Pause timer sync if enabled
             if (this.timer && syncCheckbox?.checked && this.timer.isRunning) {
-                console.log('Pausing timer with YouTube pause (sync enabled)');
                 this.timer.pause();
                 // Update timer play/pause button
                 const timerPlayPauseBtn = document.getElementById('playPauseBtn');
@@ -1815,27 +1778,22 @@ export class UnifiedPracticeMinimal {
         const loopEnabled = document.getElementById('youtubeLoopEnabled');
 
         loopStart?.addEventListener('click', () => {
-            console.log('Loop start clicked', this.youtubePlayer, this.youtubeReady);
             if (this.youtubePlayer && this.youtubeReady) {
                 this.youtubeLoopStart = this.youtubePlayer.getCurrentTime();
-                console.log('Set loop start to:', this.youtubeLoopStart);
                 document.getElementById('youtubeLoopStartTime').textContent = this.formatTime(this.youtubeLoopStart);
                 this.updateYouTubeWaveform(this.youtubeLoopStart, this.youtubePlayer.getDuration());
             }
         });
 
         loopEnd?.addEventListener('click', () => {
-            console.log('Loop end clicked', this.youtubePlayer, this.youtubeReady);
             if (this.youtubePlayer && this.youtubeReady) {
                 this.youtubeLoopEnd = this.youtubePlayer.getCurrentTime();
-                console.log('Set loop end to:', this.youtubeLoopEnd);
                 document.getElementById('youtubeLoopEndTime').textContent = this.formatTime(this.youtubeLoopEnd);
                 this.updateYouTubeWaveform(this.youtubePlayer.getCurrentTime(), this.youtubePlayer.getDuration());
             }
         });
 
         loopClear?.addEventListener('click', () => {
-            console.log('Loop clear clicked');
             this.youtubeLoopStart = null;
             this.youtubeLoopEnd = null;
             document.getElementById('youtubeLoopStartTime').textContent = '--:--';
@@ -1863,9 +1821,7 @@ export class UnifiedPracticeMinimal {
         
         // Save Loop button
         const saveLoopBtn = document.getElementById('youtubeSaveLoopBtn');
-        console.log('Save Loop button found:', !!saveLoopBtn);
         saveLoopBtn?.addEventListener('click', () => {
-            console.log('Save Loop button clicked!');
             this.saveYouTubeLoop();
         });
 
@@ -2039,7 +1995,6 @@ export class UnifiedPracticeMinimal {
     }
 
     async setYouTubePitchViaExtension(semitones) {
-        console.log('Setting YouTube pitch via extension to:', semitones);
 
         // Import and use the transposeExtensionAPI
         const { transposeAPI } = await import('../services/transposeExtensionAPI.js');
@@ -2047,7 +2002,6 @@ export class UnifiedPracticeMinimal {
         try {
             // Try to set pitch using the extension API
             const success = await transposeAPI.setPitch(semitones);
-            console.log('Transpose setPitch result:', success);
 
             // Update our internal state
             this.youtubePitchShift = semitones;
@@ -2212,11 +2166,6 @@ export class UnifiedPracticeMinimal {
     // Removed old pitch control methods - now using Transpose extension integration
     
     saveYouTubeLoop() {
-        console.log('saveYouTubeLoop called', {
-            videoId: this.youtubeVideoId,
-            loopStart: this.youtubeLoopStart,
-            loopEnd: this.youtubeLoopEnd
-        });
         
         if (!this.youtubeVideoId) {
             this.showNotification('No YouTube video loaded', 'error');
@@ -3168,7 +3117,6 @@ export class UnifiedPracticeMinimal {
         const savedState = this.sessionStateService.getState();
         if (!savedState) return;
 
-        console.log('Restoring session state:', savedState);
 
         // Show notification
         this.showRestorationNotification();
@@ -3186,7 +3134,6 @@ export class UnifiedPracticeMinimal {
             this.setBpm(savedState.metronome.bpm);
             if (savedState.metronome.isPlaying) {
                 // Don't auto-start metronome to avoid unexpected sound
-                console.log('Metronome was playing, but not auto-starting');
             }
         }
 

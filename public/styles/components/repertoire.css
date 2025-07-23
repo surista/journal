@@ -127,6 +127,21 @@
     overflow: hidden;
 }
 
+/* Song Row - ensure vertical alignment */
+.song-row {
+    display: flex !important;
+    align-items: center !important;
+    gap: 16px;
+    min-height: 44px; /* Ensure consistent height */
+}
+
+/* Ensure all items in song row are vertically centered */
+.song-row > * {
+    display: flex;
+    align-items: center;
+    margin: 0; /* Remove any default margins */
+}
+
 .song-card:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-lg);
@@ -226,6 +241,17 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
     white-space: nowrap;
+    display: inline-flex !important;
+    align-items: center;
+    height: fit-content;
+}
+
+/* YouTube Link */
+.youtube-link,
+.load-youtube-link {
+    display: inline-flex !important;
+    align-items: center;
+    height: fit-content;
 }
 
 .status-learning {
@@ -310,6 +336,16 @@
     display: flex;
     gap: var(--space-sm);
     flex-wrap: wrap;
+}
+
+/* Icon buttons in song row */
+.btn-icon {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    width: 32px;
+    padding: 0;
 }
 
 .song-actions .btn {

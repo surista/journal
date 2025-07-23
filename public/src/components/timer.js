@@ -118,7 +118,6 @@ export class Timer {
                 this.syncWithAudio = e.target.checked;
                 try {
                     localStorage.setItem('timerSyncWithAudio', String(this.syncWithAudio));
-                    console.log('Timer sync preference saved:', this.syncWithAudio);
                 } catch (error) {
                     console.warn('Failed to save timer sync preference:', error);
                 }
@@ -126,7 +125,6 @@ export class Timer {
 
             // Set initial state
             syncCheckbox.checked = this.syncWithAudio;
-            console.log('Timer sync checkbox initialized:', this.syncWithAudio);
         } else {
             console.error('Timer sync checkbox not found! ID:', `timerSyncCheckbox_${this.displayId}`);
 
@@ -143,7 +141,6 @@ export class Timer {
                         }
                     });
                     retryCheckbox.checked = this.syncWithAudio;
-                    console.log('Timer sync checkbox found on retry');
                 }
             }, 500);
         }
@@ -196,12 +193,6 @@ export class Timer {
             return;
         }
 
-        console.log('Starting timer - current state:', {
-            isRunning: this.isRunning,
-            elapsedTime: this.elapsedTime,
-            startTime: this.startTime,
-            displayId: this.displayId
-        });
 
         this.isRunning = true;
         this.startTime = Date.now() - this.elapsedTime;
@@ -228,13 +219,11 @@ export class Timer {
             }));
         }
 
-        console.log('Timer started successfully');
     }
 
     pause() {
         if (this.isDestroyed || !this.isRunning) return;
 
-        console.log('Pausing timer');
         this.isRunning = false;
 
         if (this.interval) {
@@ -260,7 +249,6 @@ export class Timer {
     reset() {
         if (this.isDestroyed) return;
 
-        console.log('Resetting timer');
         this.pause();
         this.elapsedTime = 0;
         this.startTime = null;
@@ -350,11 +338,6 @@ export class Timer {
             audioPlayer = window.app.currentPage.tabs.audio.audioPlayer;
         }
 
-        console.log('Found audio player:', audioPlayer);
-        console.log('Audio player playing:', audioPlayer?.isPlaying);
-        console.log('Current file:', audioPlayer?.currentFileName);
-        console.log('YouTube mode:', audioPlayer?.isYouTubeMode);
-        console.log('YouTube title:', audioPlayer?.youtubeVideoTitle);
 
         if (audioPlayer) {
             // Always capture current file info, whether playing or not
@@ -402,7 +385,6 @@ export class Timer {
             }
         }
 
-        console.log('Final context data:', contextData);
 
         // Create and show modal
         this.createPracticeLogModal(contextData);
@@ -668,14 +650,12 @@ export class Timer {
 
     // Sync methods for metronome integration
     syncStart(source) {
-        console.log(`Timer sync started by ${source}`);
         if (this.syncWithAudio && !this.isRunning) {
             this.start();
         }
     }
 
     syncStop(source) {
-        console.log(`Timer sync stopped by ${source}`);
         if (this.syncWithAudio && this.isRunning) {
             this.pause();
         }
@@ -701,7 +681,6 @@ export class Timer {
     }
 
     destroy() {
-        console.log('Destroying timer...');
         this.isDestroyed = true;
 
         this.cleanup();
@@ -716,6 +695,5 @@ export class Timer {
             window.currentTimer = null;
         }
 
-        console.log('Timer destroyed successfully');
     }
 }

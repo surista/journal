@@ -165,7 +165,6 @@ export class GoalsTab {
 
     // Fix for GoalsTab.js - attachEventListeners method
     attachEventListeners() {
-        console.log('🎯 GoalsTab attachEventListeners called');
 
         // Remove any existing click handler to prevent duplicates
         if (this.clickHandler) {
@@ -174,26 +173,16 @@ export class GoalsTab {
 
         // Create the click handler function
         this.clickHandler = async (e) => {
-                console.log('🎯 Click detected on:', e.target);
                 const target = e.target;
 
                 // Add goal button - check for exact ID and nested elements
                 if (target.id === 'addGoalBtn' || target.closest('#addGoalBtn')) {
-                    console.log('🎯 Add New Goal button clicked');
-                    console.log('Button element:', target);
-                    console.log('Button position:', target.getBoundingClientRect());
-                    console.log('Button z-index:', window.getComputedStyle(target).zIndex);
-                    console.log('Button visibility:', window.getComputedStyle(target).visibility);
-                    console.log('Button display:', window.getComputedStyle(target).display);
-                    console.log('Event propagation stopped:', e.defaultPrevented);
 
                     e.preventDefault();
                     e.stopPropagation();
 
                     try {
-                        console.log('🎯 Calling showGoalModal...');
                         this.showGoalModal();
-                        console.log('🎯 showGoalModal completed');
 
                         // Double-check modal is visible
                         const modal = document.getElementById('goalModal');
@@ -224,7 +213,6 @@ export class GoalsTab {
                 else if (target.id === 'closeGoalModal' || target.id === 'cancelGoalBtn') {
                     e.preventDefault();
                     e.stopPropagation();
-                    console.log('🎯 Close button clicked:', target.id);
                     this.hideGoalModal();
                 } else if (target.id === 'closeProgressModal' || target.id === 'cancelProgressBtn') {
                     e.preventDefault();
@@ -493,13 +481,11 @@ export class GoalsTab {
     }
 
     showGoalModal(goalId = null) {
-        console.log('🎯 showGoalModal called with goalId:', goalId);
 
         const modal = document.getElementById('goalModal');
         const modalTitle = document.getElementById('goalModalTitle');
         const form = document.getElementById('goalForm');
 
-        console.log('🎯 Modal elements found:', { modal, modalTitle, form });
 
         if (!modal || !modalTitle || !form) {
             console.error('Goal modal elements not found');
@@ -587,10 +573,6 @@ export class GoalsTab {
             }
         }, 200);
 
-        console.log('🎯 Modal display:', modal.style.display);
-        console.log('🎯 Modal classes:', modal.className);
-        console.log('🎯 Modal computed style:', window.getComputedStyle(modal).display);
-        console.log('🎯 Modal should now be visible');
     }
 
     hideGoalModal() {
@@ -611,7 +593,6 @@ export class GoalsTab {
     async saveGoal() {
         // Prevent double saves
         if (this.isSaving) {
-            console.log('🎯 Save already in progress, ignoring duplicate request');
             return;
         }
         

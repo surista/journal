@@ -12,7 +12,6 @@ export class Footer {
         const buildNumber = window.BUILD_NUMBER || 'unknown';
         const buildDate = window.BUILD_DATE || new Date().toISOString();
 
-        console.log('Footer render - version info:', { version, buildNumber, buildDate });
 
         return `
             <footer class="app-footer">

@@ -1,7 +1,7 @@
 // PracticeTab Component - Handles the main practice tab
 import { TimeUtils } from '../../utils/helpers.js';
 import { UnifiedPracticeMinimal } from '../unifiedPracticeMinimal.js';
-import { DailyPracticeSuggestion } from '../dailyPracticeSuggestion.js?v=10.68';
+import { DailyPracticeSuggestion } from '../dailyPracticeSuggestion.js';
 
 export class PracticeTab {
     constructor(storageService) {
@@ -61,11 +61,8 @@ export class PracticeTab {
             // Initialize unified practice component
             const container = document.getElementById('unifiedPracticeContainer');
             if (container) {
-                console.log('Creating UnifiedPracticeMinimal instance...');
                 this.unifiedPractice = new UnifiedPracticeMinimal(this.storageService);
-                console.log('UnifiedPracticeMinimal instance created, calling init...');
                 this.unifiedPractice.init(container);
-                console.log('UnifiedPracticeMinimal initialized');
 
                 // Set callback for when sessions are saved
                 this.unifiedPractice.setOnSaveCallback(async (sessionData) => {

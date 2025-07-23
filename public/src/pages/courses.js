@@ -117,7 +117,6 @@ class CoursesPage {
                 if (this.isOpening) return;
                 
                 const courseId = card.dataset.courseId;
-                console.log('Course card clicked:', courseId);
                 await this.openCourse(courseId);
             });
         });
@@ -128,7 +127,6 @@ class CoursesPage {
         this.isOpening = true;
         
         try {
-            console.log('Opening course:', courseId);
             this.selectedCourse = await courseService.getCourse(courseId);
             
             if (!this.selectedCourse) {
@@ -137,7 +135,6 @@ class CoursesPage {
                 return;
             }
 
-            console.log('Course loaded:', this.selectedCourse);
 
             const modal = document.getElementById('courseModal');
             const title = document.getElementById('courseTitle');
@@ -152,24 +149,11 @@ class CoursesPage {
             const courseDetailsHTML = await this.renderCourseDetails();
             content.innerHTML = courseDetailsHTML;
             
-            console.log('Course details HTML length:', courseDetailsHTML.length);
-            console.log('Modal content:', content);
 
             modal.classList.add('open');
             modal.style.display = 'flex';
             modal.style.visibility = 'visible';
             modal.style.opacity = '1';
-            console.log('Modal opened successfully');
-            console.log('Modal element:', modal);
-            console.log('Modal classes:', modal.className);
-            console.log('Modal display style:', window.getComputedStyle(modal).display);
-            console.log('Modal visibility:', window.getComputedStyle(modal).visibility);
-            console.log('Modal opacity:', window.getComputedStyle(modal).opacity);
-            console.log('Modal z-index:', window.getComputedStyle(modal).zIndex);
-            console.log('Modal dimensions:', {
-                width: modal.offsetWidth,
-                height: modal.offsetHeight
-            });
         } catch (error) {
             console.error('Error opening course:', error);
             showToast('Failed to open course', 'error');

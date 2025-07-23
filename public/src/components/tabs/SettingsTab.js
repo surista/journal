@@ -21,7 +21,7 @@ export class SettingsTab {
                 appVersion = buildInfo.version;
             }
         } catch (error) {
-            console.log('Could not load build info, using default version');
+            // Could not load build info, using default version
         }
 
         this.container.innerHTML = `

@@ -33,7 +33,6 @@ export class StorageService {
                 if (backup) {
                     const data = JSON.parse(backup);
                     if (Array.isArray(data)) {
-                        console.log(`Recovered ${data.length} entries from ${key}`);
                         return data;
                     }
                 }
@@ -42,7 +41,6 @@ export class StorageService {
             }
         }
 
-        console.log('No recoverable data found, starting fresh');
         return [];
     }
 
@@ -59,7 +57,6 @@ export class StorageService {
             window.addEventListener('goalSync', (e) => this.handleSyncEvent('goal', e));
             window.addEventListener('repertoireSync', (e) => this.handleSyncEvent('repertoire', e));
             
-            console.log('✅ Cloud sync setup complete');
         } catch (error) {
             console.warn('Cloud sync setup failed, continuing in offline mode:', error);
         }
@@ -67,12 +64,9 @@ export class StorageService {
 
     handleSyncEvent(type, event) {
         const { type: changeType, data } = event.detail;
-        console.log(`📨 Sync event: ${type} ${changeType}`, data);
-        
         // For now, ignore sync events to prevent duplicates
         // The data is already saved locally when we add it
         // Real-time sync will be handled differently in the future
-        console.log('Ignoring real-time sync event to prevent duplicates');
         return;
         
         // Dispatch UI update events
@@ -100,8 +94,6 @@ export class StorageService {
 
             // Add new goal to the beginning of the array
             goals.unshift(goal);
-            console.log('📝 Saving goal with ID:', goal.id, 'Total goals:', goals.length);
-
             // Save back to storage
             const success = await this.saveGoals(goals);
 
@@ -110,12 +102,10 @@ export class StorageService {
                 if (this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
                     try {
                         await this.firebaseSync.saveGoal(goal);
-                        console.log('☁️ Goal synced to cloud');
                     } catch (cloudError) {
                         console.warn('Goal cloud sync failed, saved locally:', cloudError);
                     }
                 }
-                console.log('Goal saved successfully:', goal);
                 return true;
             } else {
                 throw new Error('Failed to save goals to storage');
@@ -149,12 +139,10 @@ export class StorageService {
                 if (this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
                     try {
                         await this.firebaseSync.updateGoal(goalId, goals[goalIndex]);
-                        console.log('☁️ Goal update synced to cloud');
                     } catch (cloudError) {
                         console.warn('Goal update cloud sync failed:', cloudError);
                     }
                 }
-                console.log('Goal updated successfully:', goals[goalIndex]);
                 return true;
             } else {
                 throw new Error('Failed to save updated goals to storage');
@@ -184,12 +172,10 @@ export class StorageService {
                 if (this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
                     try {
                         await this.firebaseSync.deleteGoal(goalId);
-                        console.log('☁️ Goal deletion synced to cloud');
                     } catch (cloudError) {
                         console.warn('Goal deletion cloud sync failed:', cloudError);
                     }
                 }
-                console.log('Goal deleted successfully:', goalId);
                 return true;
             } else {
                 throw new Error('Failed to save goals after deletion');
@@ -220,10 +206,7 @@ export class StorageService {
             // Sync to Firebase - save each goal individually
             if (this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
                 // Note: We don't sync all goals at once, individual saves handle their own sync
-                console.log('Goals saved locally, individual syncs handled separately');
             }
-
-            console.log(`Successfully saved ${goals.length} goals`);
             return true;
         } catch (error) {
             console.error('Error saving goals:', error);
@@ -240,18 +223,14 @@ export class StorageService {
             if (!stored && this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
                 // Check if we're already loading to prevent duplicate loads
                 if (this._loadingGoals) {
-                    console.log('Already loading goals from cloud, waiting...');
                     return this._loadingGoalsPromise || [];
                 }
                 
                 this._loadingGoals = true;
-                console.log('No local goals found, loading from cloud...');
-                
                 this._loadingGoalsPromise = (async () => {
                     try {
                         const cloudGoals = await this.firebaseSync.getGoals();
                         if (cloudGoals && cloudGoals.length > 0) {
-                            console.log(`☁️ Loaded ${cloudGoals.length} goals from cloud`);
                             // Save to local storage for next time
                             await this.saveGoals(cloudGoals);
                             return cloudGoals;
@@ -270,7 +249,6 @@ export class StorageService {
             }
 
             if (!stored) {
-                console.log('No goals found, returning empty array');
                 return [];
             }
 
@@ -283,7 +261,6 @@ export class StorageService {
                 return [];
             }
 
-            console.log(`Loaded ${goals.length} goals from storage`);
             return goals;
         } catch (error) {
             console.error('Error loading goals:', error);
@@ -384,18 +361,14 @@ export class StorageService {
             if (!stored && this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
                 // Check if we're already loading to prevent duplicate loads
                 if (this._loadingRepertoire) {
-                    console.log('Already loading repertoire from cloud, waiting...');
                     return this._loadingRepertoirePromise || [];
                 }
                 
                 this._loadingRepertoire = true;
-                console.log('No local repertoire found, loading from cloud...');
-                
                 this._loadingRepertoirePromise = (async () => {
                     try {
                         const cloudRepertoire = await this.firebaseSync.getRepertoire();
                         if (cloudRepertoire && cloudRepertoire.length > 0) {
-                            console.log(`☁️ Loaded ${cloudRepertoire.length} songs from cloud`);
                             // Save to local storage for next time
                             await this.saveRepertoire(cloudRepertoire);
                             return cloudRepertoire;
@@ -414,7 +387,6 @@ export class StorageService {
             }
 
             if (!stored) {
-                console.log('No repertoire found, returning empty array');
                 return [];
             }
 
@@ -427,7 +399,6 @@ export class StorageService {
                 return [];
             }
 
-            console.log(`Loaded ${repertoire.length} songs from repertoire`);
             return repertoire;
         } catch (error) {
             console.error('Error loading repertoire:', error);
@@ -465,10 +436,7 @@ export class StorageService {
 
             // Sync to Firebase handled by individual song saves
             if (this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
-                console.log('Repertoire saved locally, individual syncs handled separately');
             }
-
-            console.log(`Successfully saved ${repertoire.length} songs to repertoire`);
             return true;
         } catch (error) {
             console.error('Error saving repertoire:', error);
@@ -500,12 +468,10 @@ export class StorageService {
                 if (this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
                     try {
                         await this.firebaseSync.saveRepertoireSong(song);
-                        console.log('☁️ Repertoire song synced to cloud');
                     } catch (cloudError) {
                         console.warn('Repertoire song cloud sync failed:', cloudError);
                     }
                 }
-                console.log('Song added to repertoire successfully:', song);
                 return true;
             } else {
                 throw new Error('Failed to save repertoire to storage');
@@ -535,7 +501,6 @@ export class StorageService {
             const success = await this.saveRepertoire(repertoire);
 
             if (success) {
-                console.log('Song updated successfully:', repertoire[songIndex]);
                 return true;
             } else {
                 throw new Error('Failed to save updated repertoire to storage');
@@ -565,12 +530,10 @@ export class StorageService {
                 if (this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
                     try {
                         await this.firebaseSync.deleteRepertoireSong(songId);
-                        console.log('☁️ Song deletion synced to cloud');
                     } catch (cloudError) {
                         console.warn('Song deletion cloud sync failed:', cloudError);
                     }
                 }
-                console.log('Song deleted successfully:', songId);
                 return true;
             } else {
                 throw new Error('Failed to save repertoire after deletion');
@@ -602,7 +565,6 @@ export class StorageService {
             const success = await this.saveRepertoire(repertoire);
 
             if (success) {
-                console.log('Song practice stats updated:', song);
                 return true;
             } else {
                 throw new Error('Failed to save updated song stats');
@@ -623,12 +585,8 @@ export class StorageService {
 
     async savePracticeEntry(entry) {
         try {
-            console.log('📝 Attempting to save practice entry:', entry);
-
             // Prevent duplicate entries by checking if an identical entry was just saved
             const entries = await this.getPracticeEntries();
-            console.log('📚 Current entries count:', entries.length);
-
             // Check for duplicate entry within the last 5 seconds
             if (entries.length > 0) {
                 const lastEntry = entries[0];
@@ -640,7 +598,6 @@ export class StorageService {
                 if (timeDiff < 5000 &&
                     lastEntry.practiceArea === entry.practiceArea &&
                     lastEntry.duration === entry.duration) {
-                    console.warn('⚠️ Duplicate entry detected, skipping save');
                     return true; // Return success but don't save
                 }
             }
@@ -655,8 +612,6 @@ export class StorageService {
             }
 
             entries.unshift(entry);
-            console.log('📝 New entries count after adding:', entries.length);
-
             if (entries.length > 1000) {
                 entries.length = 1000;
             }
@@ -667,17 +622,13 @@ export class StorageService {
             if (entries.length % 10 === 0) {
                 try {
                     localStorage.setItem(`${this.prefix}practice_entries_backup`, JSON.stringify(entries));
-                    console.log('Practice entries backup saved');
                 } catch (backupError) {
                     console.warn('Failed to save backup:', backupError);
                 }
             }
 
             // Try saving without compression first to debug
-            console.log('💾 Attempting to save to localStorage...');
-
             if (this.useCompression) {
-                console.log('🗜️ Using compression...');
                 const compressed = CompressionUtils.compressObject(entries);
                 if (!compressed) {
                     console.error('❌ Compression failed!');
@@ -685,16 +636,13 @@ export class StorageService {
                     localStorage.setItem(key, JSON.stringify(entries));
                 } else {
                     localStorage.setItem(key, compressed);
-                    console.log('✅ Saved compressed data');
                 }
             } else {
                 localStorage.setItem(key, JSON.stringify(entries));
-                console.log('✅ Saved uncompressed data');
             }
 
             // Verify save
             const savedData = localStorage.getItem(key);
-            console.log('🔍 Verification - data exists in localStorage:', !!savedData);
 
             await this.updateStats(entry);
             this.scheduleBackup();
@@ -703,14 +651,11 @@ export class StorageService {
             if (this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
                 try {
                     await this.firebaseSync.savePracticeSession(entry);
-                    console.log('☁️ Practice session synced to cloud');
                 } catch (cloudError) {
                     console.warn('Cloud sync failed, data saved locally:', cloudError);
                 }
             }
 
-            console.log('✅ Practice entry saved successfully:', entry);
-            
             // Dispatch event to notify UI components
             window.dispatchEvent(new CustomEvent('practiceSessionSaved', {
                 detail: { entry }
@@ -725,8 +670,6 @@ export class StorageService {
 
     async deletePracticeEntry(entryId) {
         try {
-            console.log('🗑️ Attempting to delete practice entry:', entryId);
-
             // Get current entries
             const entries = await this.getPracticeEntries();
             const entryToDelete = entries.find(e => e.id === entryId);
@@ -769,13 +712,10 @@ export class StorageService {
             if (this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
                 try {
                     await this.firebaseSync.deletePracticeSession(entryId);
-                    console.log('☁️ Practice entry deletion synced to cloud');
                 } catch (cloudError) {
                     console.warn('Practice entry deletion cloud sync failed:', cloudError);
                 }
             }
-            
-            console.log('✅ Practice entry deleted successfully');
             
             // Dispatch event to notify UI components
             window.dispatchEvent(new CustomEvent('practiceSessionDeleted', {
@@ -791,8 +731,6 @@ export class StorageService {
 
     async updatePracticeEntry(entryId, updates) {
         try {
-            console.log('✏️ Attempting to update practice entry:', entryId);
-
             // Get current entries
             const entries = await this.getPracticeEntries();
             const entryIndex = entries.findIndex(e => e.id === entryId);
@@ -814,13 +752,10 @@ export class StorageService {
                 localStorage.setItem(key, JSON.stringify(entries));
             }
 
-            console.log('✅ Practice entry updated successfully');
-
             // Sync to Firebase
             if (this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
                 try {
                     await this.firebaseSync.updatePracticeEntry(entryId, entries[entryIndex]);
-                    console.log('☁️ Practice entry update synced to cloud');
                 } catch (cloudError) {
                     console.warn('Practice entry update cloud sync failed:', cloudError);
                 }
@@ -871,7 +806,6 @@ export class StorageService {
             const key = `${this.prefix}stats`;
             localStorage.setItem(key, JSON.stringify(stats));
 
-            console.log('📊 Stats recalculated:', stats);
             return stats;
         } catch (error) {
             console.error('Error recalculating stats:', error);
@@ -945,7 +879,6 @@ export class StorageService {
 
             // Save updated repertoire
             await this.saveRepertoire(repertoire);
-            console.log('🎸 Song stats recalculated:', song);
         } catch (error) {
             console.error('Error recalculating song stats:', error);
         }
@@ -956,27 +889,18 @@ export class StorageService {
             const key = `${this.prefix}practice_entries`;
             const stored = localStorage.getItem(key);
 
-            // Reduced logging - this method is called frequently by multiple components
-            // console.log('🔍 Loading practice entries...');
-            // console.log('🔑 Using key:', key);
-            // console.log('📦 Raw data exists:', !!stored);
-
             // If no local data but user is authenticated, try to load from Firebase
             if (!stored && this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
                 // Check if we're already loading to prevent duplicate loads
                 if (this._loadingPracticeEntries) {
-                    console.log('Already loading practice entries from cloud, waiting...');
                     return this._loadingPracticeEntriesPromise || [];
                 }
                 
                 this._loadingPracticeEntries = true;
-                console.log('No local practice entries found, loading from cloud...');
-                
                 this._loadingPracticeEntriesPromise = (async () => {
                     try {
                         const cloudSessions = await this.firebaseSync.getPracticeSessions();
                         if (cloudSessions && cloudSessions.length > 0) {
-                            console.log(`☁️ Loaded ${cloudSessions.length} practice sessions from cloud`);
                             // Save to local storage for next time
                             await this.savePracticeEntries(cloudSessions);
                             return cloudSessions;
@@ -995,13 +919,11 @@ export class StorageService {
             }
 
             if (!stored) {
-                // console.log('📭 No stored data found, returning empty array');
                 return [];
             }
 
             let entries;
             if (this.useCompression) {
-                // console.log('🗜️ Attempting to decompress...');
                 const decompressed = CompressionUtils.decompressObject(stored);
                 if (!decompressed) {
                     console.warn('❌ Failed to decompress practice entries');
@@ -1009,7 +931,6 @@ export class StorageService {
                     // Try parsing as regular JSON in case it's not compressed
                     try {
                         entries = JSON.parse(stored);
-                        console.log('✅ Parsed as uncompressed JSON successfully');
                     } catch (e) {
                         console.error('❌ Failed to parse as JSON:', e);
                         localStorage.removeItem(key);
@@ -1017,15 +938,10 @@ export class StorageService {
                     }
                 } else {
                     entries = decompressed;
-                    // console.log('✅ Decompressed successfully');
                 }
             } else {
                 entries = JSON.parse(stored);
-                // console.log('✅ Parsed uncompressed data');
             }
-
-            // console.log('📚 Loaded entries count:', entries.length);
-            // console.log('📋 First entry:', entries[0]);
 
             return entries;
         } catch (error) {
@@ -1401,7 +1317,6 @@ export class StorageService {
                     localStorage.removeItem(key);
                 }
             });
-            console.log('All user data cleared successfully');
             return true;
         } catch (error) {
             console.error('Error clearing data:', error);
@@ -1417,7 +1332,6 @@ export class StorageService {
         if (!cloudStorage || !cloudStorage.userId) return;
 
         try {
-            console.log('Syncing data from cloud...');
             // Only sync if methods are available
             if (typeof cloudStorage.getPracticeSessions === 'function') {
                 const sessions = await cloudStorage.getPracticeSessions(100);
@@ -1493,39 +1407,26 @@ export class StorageService {
 
 
     async debugStorageState() {
-        console.log('🔍 Debugging Storage State...');
-        console.log('User ID:', this.userId);
-        console.log('Prefix:', this.prefix);
-
         // Check all localStorage keys
         const allKeys = Object.keys(localStorage);
         const relevantKeys = allKeys.filter(key => key.includes('guitarpractice'));
-        console.log('📦 All guitar practice keys:', relevantKeys);
 
         // Try to load data with different approaches
         const key = `${this.prefix}practice_entries`;
         const rawData = localStorage.getItem(key);
 
         if (rawData) {
-            console.log('Raw data length:', rawData.length);
-            console.log('First 100 chars:', rawData.substring(0, 100));
-
             // Try different parsing methods
             try {
                 // Method 1: Direct JSON parse
                 const parsed = JSON.parse(rawData);
-                console.log('✅ Direct JSON parse successful:', parsed.length, 'entries');
                 return parsed;
             } catch (e1) {
-                console.log('❌ Direct JSON parse failed:', e1.message);
-
                 try {
                     // Method 2: Decompress
                     const decompressed = CompressionUtils.decompressObject(rawData);
-                    console.log('✅ Decompression successful:', decompressed?.length, 'entries');
                     return decompressed;
                 } catch (e2) {
-                    console.log('❌ Decompression failed:', e2.message);
                 }
             }
         }
@@ -1536,10 +1437,8 @@ export class StorageService {
         if (backupData) {
             try {
                 const backup = JSON.parse(backupData);
-                console.log('📦 Found backup with', backup.length, 'entries');
                 return backup;
             } catch (e) {
-                console.log('❌ Backup parse failed:', e.message);
             }
         }
 
@@ -1556,13 +1455,9 @@ export class StorageService {
             return false;
         }
 
-        console.log('🚀 Starting migration to Firebase...');
-        
         try {
             // Migrate practice sessions
             const sessions = await this.getPracticeEntries();
-            console.log(`📝 Migrating ${sessions.length} practice sessions...`);
-            
             let successCount = 0;
             for (const session of sessions) {
                 try {
@@ -1572,12 +1467,8 @@ export class StorageService {
                     console.error('Failed to migrate session:', session.id, error);
                 }
             }
-            console.log(`✅ Migrated ${successCount}/${sessions.length} practice sessions`);
-
             // Migrate goals
             const goals = await this.getGoals();
-            console.log(`🎯 Migrating ${goals.length} goals...`);
-            
             successCount = 0;
             for (const goal of goals) {
                 try {
@@ -1587,12 +1478,8 @@ export class StorageService {
                     console.error('Failed to migrate goal:', goal.id, error);
                 }
             }
-            console.log(`✅ Migrated ${successCount}/${goals.length} goals`);
-
             // Migrate repertoire
             const repertoire = await this.getRepertoire();
-            console.log(`🎵 Migrating ${repertoire.length} repertoire songs...`);
-            
             successCount = 0;
             for (const song of repertoire) {
                 try {
@@ -1602,8 +1489,6 @@ export class StorageService {
                     console.error('Failed to migrate song:', song.id, error);
                 }
             }
-            console.log(`✅ Migrated ${successCount}/${repertoire.length} repertoire songs`);
-
             // Migrate settings
             const settings = {
                 theme: localStorage.getItem('theme'),
@@ -1615,12 +1500,10 @@ export class StorageService {
             
             try {
                 await this.firebaseSync.saveSettings(settings);
-                console.log('✅ Settings migrated successfully');
             } catch (error) {
                 console.error('Failed to migrate settings:', error);
             }
 
-            console.log('🎉 Migration to Firebase completed!');
             return true;
         } catch (error) {
             console.error('❌ Migration failed:', error);
@@ -1634,16 +1517,12 @@ export class StorageService {
             return false;
         }
 
-        console.log('🔄 Syncing data from Firebase...');
-        
         try {
             // Get data from Firebase
             const cloudSessions = await this.firebaseSync.getPracticeSessions();
             const cloudGoals = await this.firebaseSync.getGoals();
             const cloudRepertoire = await this.firebaseSync.getRepertoire();
             const cloudSettings = await this.firebaseSync.getSettings();
-
-            console.log(`📥 Found in cloud: ${cloudSessions.length} sessions, ${cloudGoals.length} goals, ${cloudRepertoire.length} songs`);
 
             // Merge with local data (keeping newer versions)
             const localSessions = await this.getPracticeEntries();
@@ -1675,7 +1554,6 @@ export class StorageService {
                 }
             }
 
-            console.log('✅ Sync from Firebase completed!');
             return true;
         } catch (error) {
             console.error('❌ Sync from Firebase failed:', error);
@@ -1726,7 +1604,6 @@ export class StorageService {
                 localStorage.setItem(key, JSON.stringify(entries));
             }
             
-            console.log(`✅ Saved ${entries.length} practice entries`);
             return true;
         } catch (error) {
             console.error('Error saving practice entries:', error);

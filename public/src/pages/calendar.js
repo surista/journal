@@ -143,79 +143,91 @@ export class CalendarPage {
         const stats = document.createElement('div');
         stats.className = 'calendar-stats';
         
-        // Create stat cards
-        const createStatCard = (title, items) => {
-            const card = document.createElement('div');
-            card.className = 'stat-card';
+        // Create headers row
+        const statsHeaders = document.createElement('div');
+        statsHeaders.className = 'stats-headers';
+        
+        const monthHeader = document.createElement('h3');
+        monthHeader.className = 'stat-header-title';
+        monthHeader.textContent = 'THIS MONTH';
+        
+        const allTimeHeader = document.createElement('h3');
+        allTimeHeader.className = 'stat-header-title';
+        allTimeHeader.textContent = 'ALL TIME';
+        
+        statsHeaders.appendChild(monthHeader);
+        statsHeaders.appendChild(allTimeHeader);
+        stats.appendChild(statsHeaders);
+        
+        // Create stats boxes row
+        const statsBoxes = document.createElement('div');
+        statsBoxes.className = 'stats-boxes';
+        
+        // Create stat box helper function
+        const createStatBox = (daysId, hoursId, minutesId) => {
+            const box = document.createElement('div');
+            box.className = 'stat-box';
             
-            const header = document.createElement('div');
-            header.className = 'stat-header';
-            const h3 = document.createElement('h3');
-            h3.textContent = title;
-            header.appendChild(h3);
-            card.appendChild(header);
+            // Days section
+            const daysSection = document.createElement('div');
+            daysSection.className = 'stat-days-section';
             
-            const grid = document.createElement('div');
-            grid.className = 'stat-grid';
+            const daysValue = document.createElement('span');
+            daysValue.className = 'stat-days-value';
+            daysValue.id = daysId;
+            daysValue.textContent = '0';
             
-            items.forEach(item => {
-                const statItem = document.createElement('div');
-                statItem.className = 'stat-item';
-                
-                if (item.type === 'days') {
-                    const value = document.createElement('div');
-                    value.className = 'stat-value';
-                    value.id = item.id;
-                    value.textContent = '0';
-                    statItem.appendChild(value);
-                    
-                    const sublabel = document.createElement('div');
-                    sublabel.className = 'stat-sublabel';
-                    sublabel.textContent = 'days';
-                    statItem.appendChild(sublabel);
-                } else if (item.type === 'time') {
-                    const time = document.createElement('div');
-                    time.className = 'stat-time';
-                    
-                    const hours = document.createElement('span');
-                    hours.className = 'stat-value';
-                    hours.id = item.hoursId;
-                    hours.textContent = '0h';
-                    time.appendChild(hours);
-                    
-                    time.appendChild(document.createTextNode(' '));
-                    
-                    const minutes = document.createElement('span');
-                    minutes.className = 'stat-value';
-                    minutes.id = item.minutesId;
-                    minutes.textContent = '0m';
-                    time.appendChild(minutes);
-                    
-                    statItem.appendChild(time);
-                }
-                
-                const label = document.createElement('div');
-                label.className = 'stat-label';
-                label.textContent = item.label;
-                statItem.appendChild(label);
-                
-                grid.appendChild(statItem);
-            });
+            const daysLabel = document.createElement('span');
+            daysLabel.className = 'stat-days-label';
+            daysLabel.textContent = 'days';
             
-            card.appendChild(grid);
-            return card;
+            daysSection.appendChild(daysValue);
+            daysSection.appendChild(daysLabel);
+            
+            const practicedLabel = document.createElement('div');
+            practicedLabel.className = 'stat-practiced-label';
+            practicedLabel.textContent = 'PRACTICED';
+            
+            // Time section
+            const timeSection = document.createElement('div');
+            timeSection.className = 'stat-time-section';
+            
+            const timeValue = document.createElement('div');
+            timeValue.className = 'stat-time-value';
+            
+            const hours = document.createElement('span');
+            hours.id = hoursId;
+            hours.textContent = '0h';
+            
+            const minutes = document.createElement('span');
+            minutes.id = minutesId;
+            minutes.textContent = '0m';
+            
+            timeValue.appendChild(hours);
+            timeValue.appendChild(document.createTextNode(' '));
+            timeValue.appendChild(minutes);
+            
+            const totalTimeLabel = document.createElement('div');
+            totalTimeLabel.className = 'stat-total-time-label';
+            totalTimeLabel.textContent = 'TOTAL TIME';
+            
+            timeSection.appendChild(timeValue);
+            timeSection.appendChild(totalTimeLabel);
+            
+            box.appendChild(daysSection);
+            box.appendChild(practicedLabel);
+            box.appendChild(timeSection);
+            
+            return box;
         };
         
-        stats.appendChild(createStatCard('THIS MONTH', [
-            { type: 'days', id: 'monthPracticeDays', label: 'PRACTICED' },
-            { type: 'time', hoursId: 'monthHours', minutesId: 'monthMinutes', label: 'TOTAL TIME' }
-        ]));
+        // Create This Month box
+        statsBoxes.appendChild(createStatBox('monthPracticeDays', 'monthHours', 'monthMinutes'));
         
-        stats.appendChild(createStatCard('ALL TIME', [
-            { type: 'days', id: 'totalPracticeDays', label: 'PRACTICED' },
-            { type: 'time', hoursId: 'totalHours', minutesId: 'totalMinutes', label: 'TOTAL TIME' }
-        ]));
+        // Create All Time box
+        statsBoxes.appendChild(createStatBox('totalPracticeDays', 'totalHours', 'totalMinutes'));
         
+        stats.appendChild(statsBoxes);
         calendarPage.appendChild(stats);
 
         // Create streak display
@@ -411,16 +423,6 @@ export class CalendarPage {
             const progressPercentage = totalGoalMinutes > 0 ?
                 Math.min((totalPracticeMinutes / totalGoalMinutes) * 100, 100) : 0;
             
-            // Debug logging for progress circle
-            if (dateStr === this.getLocalDateString(new Date()) && totalGoalMinutes > 0) {
-                console.log('Progress Circle Debug:', {
-                    date: dateStr,
-                    totalGoalMinutes,
-                    totalPracticeMinutes,
-                    progressPercentage,
-                    dailyGoals: this.dailyGoals
-                });
-            }
 
             // Add day number (always at top-left, not in wrapper)
             const dayNumber = document.createElement('div');
@@ -531,13 +533,6 @@ export class CalendarPage {
         const circumference = 2 * Math.PI * radius;
         const offset = circumference - (percentage / 100) * circumference;
         
-        // Debug log
-        console.log('Progress Circle Debug:', {
-            percentage,
-            circumference,
-            offset,
-            radius
-        });
 
         const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         svg.setAttribute('class', 'progress-circle');
@@ -994,19 +989,6 @@ export class CalendarPage {
         const totalTime = sessions.reduce((sum, session) => sum + (session.duration || 0), 0);
         const areas = {};
         
-        // Debug logging for today's practice
-        if (dateStr === this.getLocalDateString(new Date())) {
-            console.log('Practice Info Debug:', {
-                date: dateStr,
-                sessions: sessions.map(s => ({
-                    duration: s.duration,
-                    durationMinutes: Math.floor(s.duration / 60),
-                    practiceArea: s.practiceArea
-                })),
-                totalTimeSeconds: totalTime,
-                totalTimeMinutes: Math.floor(totalTime / 60)
-            });
-        }
 
         // Calculate total time per practice area (case-insensitive)
         sessions.forEach(session => {

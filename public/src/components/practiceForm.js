@@ -562,7 +562,6 @@ export class PracticeForm {
 
         // Prevent duplicate submissions
         if (this.isSubmitting) {
-            console.log('Already submitting, ignoring duplicate submit');
             return;
         }
 
@@ -752,7 +751,6 @@ export class PracticeForm {
                     if (notesLower.includes(song.title.toLowerCase())) {
                         // Update song practice stats
                         await this.storageService.updateSongPracticeStats(song.id, practiceEntry);
-                        console.log(`Linked practice session to song: ${song.title}`);
                         break; // Only match first song found
                     }
                 }
@@ -979,7 +977,6 @@ export class PracticeForm {
 
         try {
             localStorage.setItem('practiceFormState', JSON.stringify(formData));
-            console.log('Form state saved');
         } catch (error) {
             console.error('Failed to save form state:', error);
         }

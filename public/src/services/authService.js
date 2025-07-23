@@ -4,7 +4,6 @@ import rateLimitService from './rateLimitService.js';
 
 export class AuthService {
     constructor() {
-        console.log('🔧 AuthService: Initializing...');
         this.cloudStorage = firebaseSyncService;
         this.isCloudEnabled = false;
         this.initPromise = this.initialize();
@@ -16,7 +15,6 @@ export class AuthService {
             await this.cloudStorage.waitForInitialization();
             const isReady = !!this.cloudStorage.currentUser || true; // Allow auth attempts
             this.isCloudEnabled = isReady;
-            console.log('✅ AuthService: Firebase ready:', isReady);
         } catch (error) {
             console.error('❌ AuthService: Firebase init failed:', error);
             this.isCloudEnabled = false;
@@ -28,7 +26,6 @@ export class AuthService {
     }
 
     async login(email, password) {
-        console.log('🔐 AuthService: Login attempt for:', email);
         await this.ensureInitialized();
 
         // Check rate limit
@@ -41,13 +38,11 @@ export class AuthService {
         try {
             // Handle demo login
             if (email === 'demo@example.com' && password === 'demo123') {
-                console.log('🎭 AuthService: Demo login');
                 return this.localLogin(email, password);
             }
 
             // Try cloud authentication
             if (this.isCloudEnabled) {
-                console.log('☁️ AuthService: Cloud login...');
                 const result = await this.cloudStorage.signIn(email, password);
 
                 if (result.success) {

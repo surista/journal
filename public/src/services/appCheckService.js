@@ -39,21 +39,31 @@ class AppCheckService {
             // Activate App Check with the provider
             await this.appCheck.activate(provider, true); // true for automatic token refresh
             
-            // Get initial token
-            const tokenResponse = await this.appCheck.getToken();
-            this.token = tokenResponse.token;
+            // Get initial token with error handling
+            try {
+                const tokenResponse = await this.appCheck.getToken();
+                this.token = tokenResponse.token;
+            } catch (tokenError) {
+                console.warn('⚠️ Failed to get initial App Check token:', tokenError.message);
+                // Continue without token - app will still work
+            }
             
             // Set up token refresh listener
             this.setupTokenRefresh();
             
             this.isInitialized = true;
-            console.log('✅ Firebase App Check initialized');
+            console.log('✅ Firebase App Check initialized (token may be pending)');
             
             if (isDebugEnabled()) {
-                console.log('🔐 App Check token obtained');
+                console.log('🔐 App Check setup complete');
             }
         } catch (error) {
-            console.error('❌ Failed to initialize App Check:', error);
+            // Log the error but don't let it break the app
+            if (error.message && error.message.includes('ReCAPTCHA')) {
+                console.warn('⚠️ App Check ReCAPTCHA initialization failed. This is normal if the domain is not configured in the ReCAPTCHA admin console.');
+            } else {
+                console.warn('⚠️ App Check initialization error:', error.message);
+            }
             // Don't throw - App Check is optional and shouldn't break the app
         }
     }

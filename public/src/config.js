@@ -1,7 +1,6 @@
 // src/config.js - Simplified and Robust Configuration
-console.log('📋 Loading config.js...');
 
-const APP_VERSION = '10.85';
+const APP_VERSION = '10.86';
 
 // Simple and reliable base path detection
 function getBasePath() {
@@ -81,16 +80,9 @@ const appConfig = {
 
     // Initialize dynamic config
     init() {
-        console.log('🔧 Initializing app config...');
-
         // Set service worker paths
         this.serviceWorkerConfig.path = this.basePath + 'service-worker.js';
         this.serviceWorkerConfig.scope = this.basePath;
-
-        // Log important info
-        console.log('📍 Base path:', this.basePath);
-        console.log('🏠 Environment:', this.isDevelopment ? 'Development' : 'Production');
-        console.log('📦 Version:', this.version);
 
         return this;
     },
@@ -99,7 +91,6 @@ const appConfig = {
     getRouteUrl(routeName) {
         const route = this.routes[routeName];
         if (route === undefined) {
-            console.warn(`Route "${routeName}" not found`);
             return this.basePath;
         }
         return this.basePath + route;
@@ -123,10 +114,7 @@ const appConfig = {
 };
 
 // Initialize immediately
-console.log('⚙️ Initializing config...');
 appConfig.init();
-
-console.log('✅ Config loaded successfully');
 
 // Export as default
 export default appConfig;
