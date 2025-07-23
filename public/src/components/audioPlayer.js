@@ -1998,6 +1998,10 @@ export class AudioPlayer {
 
                 if (!timer.isRunning) {
                     console.log('Starting timer due to audio sync');
+                    // For YouTube, we want to continue from where we left off
+                    if (this.isYouTubeMode && timer.elapsedTime > 0) {
+                        console.log('Resuming timer from elapsed time:', timer.elapsedTime);
+                    }
                     timer.start();
                 } else {
                     console.log('Timer already running, no action needed');

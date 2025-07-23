@@ -509,9 +509,9 @@ export class Timer {
     `;
 
         // Handle form submission
-        modal.querySelector('#practiceLogForm').addEventListener('submit', (e) => {
+        modal.querySelector('#practiceLogForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            this.savePracticeLog(new FormData(e.target), contextData);
+            await this.savePracticeLog(new FormData(e.target), contextData);
             modal.remove();
         });
 

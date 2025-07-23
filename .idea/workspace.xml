@@ -4,7 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="26bd4cab-c121-4726-98e5-b7c42f2fd2f8" name="Changes" comment="" />
+    <list default="true" id="26bd4cab-c121-4726-98e5-b7c42f2fd2f8" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/build-info.json" beforeDir="false" afterPath="$PROJECT_DIR$/public/build-info.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/public/manifest.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/public/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/service-worker.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/service-worker.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/config.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/config/environment.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/config/environment.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/config/version.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/config/version.js" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -76,7 +86,7 @@
       <option name="presentableId" value="Default" />
       <updated>1752995192998</updated>
       <workItem from="1752995194544" duration="27742000" />
-      <workItem from="1753053746720" duration="110396000" />
+      <workItem from="1753053746720" duration="110768000" />
     </task>
     <servers />
   </component>
