@@ -29,6 +29,9 @@
     /* Light Backgrounds */
     --bg-dark: #ffffff;
     --bg-darker: #f9fafb;
+    --bg-primary: #ffffff;
+    --bg-secondary: #f9fafb;
+    --bg-tertiary: #f3f4f6;
     --bg-card: #ffffff;
     --bg-card-hover: #f9fafb;
     --bg-input: #f3f4f6;

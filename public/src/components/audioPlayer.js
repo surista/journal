@@ -1029,6 +1029,12 @@ export class AudioPlayer {
             // Stop any current playback
             this.stop();
 
+            // Clear YouTube mode when loading audio file
+            this.isYouTubeMode = false;
+            this.youtubeVideoId = null;
+            this.youtubeVideoTitle = null;
+            this.youtubeVideoUrl = null;
+
             // Store filename
             this.currentFileName = file.name;
             if (this.practiceForm) {
@@ -1227,7 +1233,7 @@ export class AudioPlayer {
         }
 
         // Fetch video title after a short delay
-        setTimeout(() => this.fetchYouTubeTitle(), 1000);
+        setTimeout(() => this.fetchYouTubeTitle(), 200);
 
         // Load saved sessions
         setTimeout(() => this.sessionManager.loadSavedSessions(), 1500);
@@ -1272,6 +1278,7 @@ export class AudioPlayer {
         this.youtubeVideoId = videoId;
         this.isYouTubeMode = true;
         this.youtubeVideoUrl = url;
+        this.youtubeVideoTitle = null; // Clear previous video title
 
         // Reset state
         this.stop();

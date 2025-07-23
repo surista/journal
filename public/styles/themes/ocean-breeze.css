@@ -26,6 +26,9 @@
     /* Light Backgrounds - Ocean blue */
     --bg-dark: #F0FAFF;
     --bg-darker: #E6F5FF;
+    --bg-primary: #F7FEFF;
+    --bg-secondary: #F0FAFF;
+    --bg-tertiary: #E6F5FF;
     --bg-card: #FAFEFF;
     --bg-card-hover: #F5FCFF;
     --bg-input: #D9F0FF;
@@ -35,11 +38,11 @@
     --bg-overlay: rgba(153, 217, 229, 0.4);
 
     /* Text Colors */
-    --text-primary: #2E4A5C;
-    --text-secondary: #5E7A8C;
-    --text-tertiary: #7E9AAC;
-    --text-muted: #AECADC;
-    --text-disabled: #C8DEEC;
+    --text-primary: #1E3A4C;
+    --text-secondary: #4E6A7C;
+    --text-tertiary: #6E8A9C;
+    --text-muted: #9EBACC;
+    --text-disabled: #B8CEDC;
 
     /* Borders - Sea mist */
     --border: #CCE9F2;

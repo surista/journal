@@ -623,8 +623,9 @@ export class Timer {
             if (storageService) {
                 await storageService.savePracticeEntry(practiceEntry);
 
-                // Reset/stop everything after successful save
-                this.reset(); // Reset timer
+                // Reset timer and restart it
+                this.reset(); // Reset timer to 00:00:00
+                this.start(); // Start the timer again
 
                 // Stop audio player
                 const audioPlayer = window.app?.currentPage?.components?.audioPlayer;

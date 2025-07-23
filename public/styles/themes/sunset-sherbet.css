@@ -26,6 +26,9 @@
     /* Light Backgrounds - Peachy orange */
     --bg-dark: #FFF0E6;
     --bg-darker: #FFE8D9;
+    --bg-primary: #FFFBF7;
+    --bg-secondary: #FFF5ED;
+    --bg-tertiary: #FFF0E6;
     --bg-card: #FFFAF5;
     --bg-card-hover: #FFF5ED;
     --bg-input: #FFE0CC;
@@ -35,11 +38,11 @@
     --bg-overlay: rgba(255, 179, 153, 0.4);
 
     /* Text Colors */
-    --text-primary: #5C3D2E;
-    --text-secondary: #8C6B5E;
-    --text-tertiary: #AC8B7E;
-    --text-muted: #DCBDAE;
-    --text-disabled: #ECD5C8;
+    --text-primary: #4C2D1E;
+    --text-secondary: #7C5B4E;
+    --text-tertiary: #9C7B6E;
+    --text-muted: #CCAD9E;
+    --text-disabled: #DCC5B8;
 
     /* Borders - Peach tints */
     --border: #FFE0CC;

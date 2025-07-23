@@ -26,9 +26,9 @@
     /* Light Backgrounds - Lavender tinted */
     --bg-dark: #F8F3FF;
     --bg-darker: #F3EBFF;
-    --bg-primary: #F3EBFF;
+    --bg-primary: #FDFBFF;
     --bg-secondary: #F8F3FF;
-    --bg-tertiary: #EDE5FF;
+    --bg-tertiary: #F3EBFF;
     --bg-card: #FDFAFF;
     --bg-card-hover: #F8F3FF;
     --bg-input: #EDE5FF;
@@ -38,11 +38,11 @@
     --bg-overlay: rgba(231, 210, 255, 0.4);
 
     /* Text Colors */
-    --text-primary: #4A3D5C;
-    --text-secondary: #7A6B8C;
-    --text-tertiary: #9A8BAC;
-    --text-muted: #CABDDC;
-    --text-disabled: #E0D5EC;
+    --text-primary: #3A2D4C;
+    --text-secondary: #6A5B7C;
+    --text-tertiary: #8A7B9C;
+    --text-muted: #BAADCC;
+    --text-disabled: #D0C5DC;
 
     /* Borders - Soft purple tints */
     --border: #E8DFFF;

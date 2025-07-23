@@ -789,6 +789,55 @@ export class StorageService {
         }
     }
 
+    async updatePracticeEntry(entryId, updates) {
+        try {
+            console.log('✏️ Attempting to update practice entry:', entryId);
+
+            // Get current entries
+            const entries = await this.getPracticeEntries();
+            const entryIndex = entries.findIndex(e => e.id === entryId);
+
+            if (entryIndex === -1) {
+                console.warn('Entry not found:', entryId);
+                return false;
+            }
+
+            // Update the entry
+            entries[entryIndex] = { ...entries[entryIndex], ...updates };
+
+            // Save updated entries
+            const key = `${this.prefix}practice_entries`;
+            if (this.useCompression) {
+                const compressed = CompressionUtils.compressObject(entries);
+                localStorage.setItem(key, compressed);
+            } else {
+                localStorage.setItem(key, JSON.stringify(entries));
+            }
+
+            console.log('✅ Practice entry updated successfully');
+
+            // Sync to Firebase
+            if (this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
+                try {
+                    await this.firebaseSync.updatePracticeEntry(entryId, entries[entryIndex]);
+                    console.log('☁️ Practice entry update synced to cloud');
+                } catch (cloudError) {
+                    console.warn('Practice entry update cloud sync failed:', cloudError);
+                }
+            }
+
+            // Dispatch event to notify UI components
+            window.dispatchEvent(new CustomEvent('practiceSessionUpdated', {
+                detail: { entryId, entry: entries[entryIndex] }
+            }));
+            
+            return true;
+        } catch (error) {
+            console.error('❌ Error updating practice entry:', error);
+            return false;
+        }
+    }
+
     async recalculateStats() {
         try {
             const entries = await this.getPracticeEntries();

@@ -61,6 +61,19 @@ export class HistoryTab {
                 return;
             }
 
+            const editBtn = e.target.closest('.edit-session-btn');
+            if (editBtn) {
+                e.preventDefault();
+                e.stopPropagation();
+                const sessionId = editBtn.dataset.id;
+                if (sessionId) {
+                    const numericId = Number(sessionId);
+                    if (!isNaN(numericId)) {
+                        await this.handleEditSession(numericId);
+                    }
+                }
+            }
+
             const deleteBtn = e.target.closest('.delete-session-btn');
             if (deleteBtn) {
                 e.preventDefault();
@@ -174,6 +187,92 @@ export class HistoryTab {
                     deleteBtn.disabled = false;
                 }
             }
+        }
+    }
+
+    async handleEditSession(sessionId) {
+        try {
+            // Find the session in our list
+            const session = this.allSessions.find(s => s.id === sessionId);
+            if (!session) {
+                this.showNotification('Session not found', 'error');
+                return;
+            }
+
+            // Create edit modal
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal edit-session-modal">
+                    <h3>Edit Practice Session</h3>
+                    <form id="editSessionForm">
+                        <div class="form-group">
+                            <label>Session Name</label>
+                            <input type="text" name="name" value="${escapeHtml(session.name || '')}" placeholder="Session name">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Practice Area</label>
+                            <input type="text" name="practiceArea" value="${escapeHtml(session.practiceArea || '')}" placeholder="What did you practice?">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Media</label>
+                            <input type="text" name="media" value="${escapeHtml(session.youtubeUrl || session.audioFile || '')}" readonly style="background: var(--bg-secondary); color: var(--text-secondary);">
+                            <small style="color: var(--text-muted);">Media cannot be changed</small>
+                        </div>
+                        
+                        <div class="modal-actions">
+                            <button type="button" class="btn btn-secondary cancel-btn">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+
+            // Handle form submission
+            const form = modal.querySelector('#editSessionForm');
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const formData = new FormData(form);
+                const updatedSession = {
+                    ...session,
+                    name: formData.get('name') || session.name,
+                    practiceArea: formData.get('practiceArea') || session.practiceArea
+                };
+
+                // Update in storage
+                const success = await this.storageService.updatePracticeEntry(sessionId, updatedSession);
+                
+                if (success) {
+                    // Update local array
+                    const index = this.allSessions.findIndex(s => s.id === sessionId);
+                    if (index !== -1) {
+                        this.allSessions[index] = updatedSession;
+                    }
+                    
+                    // Re-render the list
+                    this.displayHistory(this.allSessions);
+                    
+                    this.showNotification('Session updated successfully', 'success');
+                    modal.remove();
+                } else {
+                    this.showNotification('Failed to update session', 'error');
+                }
+            });
+
+            // Handle cancel
+            modal.querySelector('.cancel-btn').addEventListener('click', () => modal.remove());
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) modal.remove();
+            });
+
+        } catch (error) {
+            console.error('Error editing session:', error);
+            this.showNotification('Failed to edit session', 'error');
         }
     }
 
@@ -335,6 +434,8 @@ export class HistoryTab {
                             <div class="history-item-content">
                                 <div class="history-item-header">
                                     <h4>${escapeHtml(session.name || session.practiceArea || 'Practice Session')}</h4>
+                                    ${session.practiceArea && session.name && session.practiceArea !== session.name ? 
+                                        `<div style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">📚 ${escapeHtml(session.practiceArea)}</div>` : ''}
                                 <div class="history-item-actions">
                                     <span class="history-date">${dateStr}</span>
                                     ${session.sheetMusicImage ? `
@@ -342,6 +443,9 @@ export class HistoryTab {
                                             🎸
                                         </button>
                                     ` : ''}
+                                    <button class="btn-icon edit-session-btn" data-id="${session.id}" title="Edit session">
+                                        ✏️
+                                    </button>
                                     <button class="btn-icon delete-session-btn" data-id="${session.id}" title="Delete session">
                                         🗑️
                                     </button>

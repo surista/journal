@@ -62,7 +62,7 @@ export class SessionManager {
         ">
             <div style="display: grid; grid-template-columns: 1fr auto auto; gap: 4px; align-items: center;">
                 <div class="session-info" style="overflow: hidden;">
-                    <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left;">
                         ${session.name || `Session ${index + 1}`}
                     </div>
                  <div style="color: var(--text-secondary); font-size: 10px;">

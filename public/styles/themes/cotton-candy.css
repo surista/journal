@@ -26,6 +26,9 @@
     /* Light Backgrounds - Pink cotton */
     --bg-dark: #FFF0F7;
     --bg-darker: #FFE8F3;
+    --bg-primary: #FFFBFD;
+    --bg-secondary: #FFF5FA;
+    --bg-tertiary: #FFF0F7;
     --bg-card: #FFFAFC;
     --bg-card-hover: #FFF5FA;
     --bg-input: #FFE0EC;
@@ -35,11 +38,11 @@
     --bg-overlay: rgba(255, 182, 217, 0.4);
 
     /* Text Colors */
-    --text-primary: #5C3D4F;
-    --text-secondary: #8C6B7F;
-    --text-tertiary: #AC8B9F;
-    --text-muted: #DCBDCF;
-    --text-disabled: #ECD5E1;
+    --text-primary: #4C2D3F;
+    --text-secondary: #7C5B6F;
+    --text-tertiary: #9C7B8F;
+    --text-muted: #CCADBF;
+    --text-disabled: #DCC5D1;
 
     /* Borders - Soft pink tints */
     --border: #FFE0EC;

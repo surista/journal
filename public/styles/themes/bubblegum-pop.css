@@ -26,6 +26,9 @@
     /* Light Backgrounds - Bubblegum pink */
     --bg-dark: #FFEBF5;
     --bg-darker: #FFE0F0;
+    --bg-primary: #FFFBFE;
+    --bg-secondary: #FFF5FB;
+    --bg-tertiary: #FFEBF5;
     --bg-card: #FFFAFD;
     --bg-card-hover: #FFF5FB;
     --bg-input: #FFD6EB;
@@ -35,11 +38,11 @@
     --bg-overlay: rgba(255, 153, 204, 0.4);
 
     /* Text Colors */
-    --text-primary: #5C2E4A;
-    --text-secondary: #8C5E7A;
-    --text-tertiary: #AC7E9A;
-    --text-muted: #DCAECA;
-    --text-disabled: #ECC8DA;
+    --text-primary: #4C1E3A;
+    --text-secondary: #7C4E6A;
+    --text-tertiary: #9C6E8A;
+    --text-muted: #CC9EBA;
+    --text-disabled: #DCB8CA;
 
     /* Borders - Bubble pink */
     --border: #FFE0F0;

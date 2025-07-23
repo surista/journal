@@ -1025,6 +1025,11 @@ export class UnifiedPracticeMinimal {
             this.fileNameUpdateTimeout = null;
         }
 
+        // Clear YouTube state when switching to audio
+        this.youtubeVideoId = null;
+        this.youtubeVideoTitle = null;
+        this.youtubeVideoUrl = null;
+
         // Stop and destroy current audio player if it exists
         if (this.audioPlayer) {
             console.log('Stopping and destroying audio player');
@@ -1611,6 +1616,7 @@ export class UnifiedPracticeMinimal {
         // Store YouTube video information
         this.youtubeVideoId = videoId;
         this.youtubeVideoUrl = urlOrId;
+        this.youtubeVideoTitle = null; // Clear previous video title
 
         // Initialize YouTube player
         if (!this.youtubePlayer) {
@@ -1645,12 +1651,25 @@ export class UnifiedPracticeMinimal {
             // Re-initialize controls and waveform when loading new video
             this.initializeYouTubeControls();
             this.initializeYouTubeWaveform();
+            
+            // Load saved loops for this video
+            if (this.youtubeVideoId) {
+                // Small delay to ensure video is loaded
+                setTimeout(() => {
+                    this.loadSavedYouTubeLoops();
+                }, 500);
+            }
         }
     }
 
     onYouTubePlayerReady(event) {
         console.log('YouTube player ready');
-        this.youtubeReady = true;
+        
+        // Delay setting ready flag to ensure player is fully initialized
+        setTimeout(() => {
+            this.youtubeReady = true;
+            console.log('YouTube player fully ready for interactions');
+        }, 500);
 
         // Ensure video is paused on load
         if (this.youtubePlayer) {
@@ -1674,6 +1693,11 @@ export class UnifiedPracticeMinimal {
         // Initialize controls and waveform after player is ready
         this.initializeYouTubeControls();
         this.initializeYouTubeWaveform();
+        
+        // Load saved loops for this video
+        if (this.youtubeVideoId) {
+            this.loadSavedYouTubeLoops();
+        }
 
         // Start update interval
         if (this.youtubeUpdateInterval) {
@@ -2368,7 +2392,7 @@ export class UnifiedPracticeMinimal {
             ">
                 <div style="display: grid; grid-template-columns: 1fr auto auto; gap: 4px; align-items: center;">
                     <div class="loop-info" style="overflow: hidden;">
-                        <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 2px;">
+                        <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 2px; text-align: left;">
                             ${loop.name}
                         </div>
                         <div style="color: var(--text-secondary); font-size: 10px;">
@@ -2478,25 +2502,69 @@ export class UnifiedPracticeMinimal {
         canvas.addEventListener('click', (e) => {
             if (!this.youtubePlayer || !this.youtubeReady) return;
 
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const percentage = x / rect.width;
-            const duration = this.youtubePlayer.getDuration();
-
-            if (duration > 0) {
-                const seekTime = duration * percentage;
-                const wasPlaying = this.youtubePlayer.getPlayerState() === YT.PlayerState.PLAYING;
-
-                // Seek to the clicked position
-                this.youtubePlayer.seekTo(seekTime, true);
+            try {
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const percentage = x / rect.width;
                 
-                // If video wasn't playing before click, ensure it stays paused
-                if (!wasPlaying) {
-                    // Force pause after seek to prevent autoplay
-                    setTimeout(() => {
-                        this.youtubePlayer.pauseVideo();
-                    }, 50);
+                // Safely get duration with error handling
+                let duration = 0;
+                if (this.youtubePlayer.getDuration) {
+                    duration = this.youtubePlayer.getDuration();
                 }
+
+                if (duration > 0) {
+                    const seekTime = duration * percentage;
+                    
+                    // Safely get player state
+                    let wasPlaying = false;
+                    if (this.youtubePlayer.getPlayerState) {
+                        const state = this.youtubePlayer.getPlayerState();
+                        wasPlaying = state === YT.PlayerState.PLAYING;
+                    }
+
+                    // Check if video has never been played (UNSTARTED state)
+                    const playerState = this.youtubePlayer.getPlayerState ? this.youtubePlayer.getPlayerState() : -1;
+                    const isUnstarted = playerState === YT.PlayerState.UNSTARTED || playerState === -1;
+                    
+                    if (isUnstarted) {
+                        // For unstarted videos, we need to play first, then seek, then pause
+                        this.youtubePlayer.mute(); // Mute to avoid sudden audio
+                        this.youtubePlayer.playVideo();
+                        
+                        // Wait for video to start playing, then seek and pause
+                        const checkInterval = setInterval(() => {
+                            const currentState = this.youtubePlayer.getPlayerState();
+                            if (currentState === YT.PlayerState.PLAYING || currentState === YT.PlayerState.BUFFERING) {
+                                clearInterval(checkInterval);
+                                this.youtubePlayer.seekTo(seekTime, true);
+                                setTimeout(() => {
+                                    this.youtubePlayer.pauseVideo();
+                                    this.youtubePlayer.unMute(); // Restore audio
+                                }, 100);
+                            }
+                        }, 50);
+                        
+                        // Safety timeout to prevent infinite checking
+                        setTimeout(() => clearInterval(checkInterval), 2000);
+                    } else {
+                        // Normal seek for videos that have been played before
+                        if (this.youtubePlayer.seekTo) {
+                            this.youtubePlayer.seekTo(seekTime, true);
+                        }
+                        
+                        // If video wasn't playing before click, ensure it stays paused
+                        if (!wasPlaying && this.youtubePlayer.pauseVideo) {
+                            setTimeout(() => {
+                                if (this.youtubePlayer && this.youtubePlayer.pauseVideo) {
+                                    this.youtubePlayer.pauseVideo();
+                                }
+                            }, 100);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error handling YouTube waveform click:', error);
             }
         });
 
@@ -2876,12 +2944,43 @@ export class UnifiedPracticeMinimal {
                 const session = JSON.parse(sessionData);
                 sessionStorage.removeItem('loadPracticeSession'); // Clear it after loading
                 
-                // Load the session data
-                if (session.mode === 'metronome' && session.sheetMusicImage) {
-                    // Switch to metronome mode
-                    this.currentMode = 'metronome';
-                    this.switchMode('metronome');
-                    
+                // Switch to the appropriate mode
+                this.currentMode = session.mode;
+                this.switchMode(session.mode);
+                
+                // Load the session data based on mode
+                if (session.mode === 'youtube' && session.youtubeUrl) {
+                    // Load YouTube video
+                    setTimeout(() => {
+                        const youtubeInput = document.querySelector('#youtubeUrl');
+                        const loadBtn = document.querySelector('#loadYoutubeBtn');
+                        
+                        if (youtubeInput && loadBtn) {
+                            youtubeInput.value = session.youtubeUrl;
+                            loadBtn.click();
+                            
+                            // Set tempo if available
+                            if (session.tempo) {
+                                this.setBpm(session.tempo);
+                            }
+                            
+                            // Show notification
+                            this.showNotification('YouTube practice session loaded!', 'success');
+                        }
+                    }, 200);
+                } else if (session.mode === 'audio' && session.audioFile) {
+                    // Load audio file
+                    setTimeout(() => {
+                        // TODO: Implement audio file loading from blob URL
+                        // For now, just show a notification
+                        this.showNotification('Audio session details loaded (audio file needs to be re-uploaded)', 'info');
+                        
+                        // Set tempo if available
+                        if (session.tempo) {
+                            this.setBpm(session.tempo);
+                        }
+                    }, 200);
+                } else if (session.mode === 'metronome' && session.sheetMusicImage) {
                     // Load the sheet music image
                     setTimeout(() => {
                         const imagePreview = document.getElementById('imagePreview');
@@ -2904,7 +3003,15 @@ export class UnifiedPracticeMinimal {
                         
                         // Show notification
                         this.showNotification('Practice session loaded!', 'success');
-                    }, 100);
+                    }, 200);
+                }
+                
+                // Set practice area if available
+                if (session.practiceArea) {
+                    const practiceAreaInput = document.querySelector('input[placeholder="What are you practicing?"]');
+                    if (practiceAreaInput) {
+                        practiceAreaInput.value = session.practiceArea;
+                    }
                 }
             } catch (error) {
                 console.error('Error loading session:', error);

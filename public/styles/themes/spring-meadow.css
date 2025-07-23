@@ -26,6 +26,9 @@
     /* Light Backgrounds - Fresh mint green */
     --bg-dark: #F0FFF0;
     --bg-darker: #E8FFE8;
+    --bg-primary: #FBFFFB;
+    --bg-secondary: #F5FFF5;
+    --bg-tertiary: #F0FFF0;
     --bg-card: #FAFFFA;
     --bg-card-hover: #F5FFF5;
     --bg-input: #E0FFE0;
@@ -35,11 +38,11 @@
     --bg-overlay: rgba(179, 229, 179, 0.4);
 
     /* Text Colors */
-    --text-primary: #3D5C3D;
-    --text-secondary: #6B8C6B;
-    --text-tertiary: #8BAC8B;
-    --text-muted: #BDDCBD;
-    --text-disabled: #D5ECD5;
+    --text-primary: #2D4C2D;
+    --text-secondary: #5B7C5B;
+    --text-tertiary: #7B9C7B;
+    --text-muted: #ADCCAD;
+    --text-disabled: #C5DCC5;
 
     /* Borders - Leaf greens */
     --border: #DFF2DF;
