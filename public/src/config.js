@@ -1,7 +1,7 @@
 // src/config.js - Simplified and Robust Configuration
 console.log('📋 Loading config.js...');
 
-const APP_VERSION = '10.72';
+const APP_VERSION = '10.73';
 
 // Simple and reliable base path detection
 function getBasePath() {

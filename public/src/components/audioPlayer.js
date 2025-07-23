@@ -137,6 +137,14 @@ export class AudioPlayer {
 
     async initializeTone() {
         try {
+            // Check if Tone is available
+            if (typeof Tone === 'undefined') {
+                console.warn('Tone.js not loaded yet, deferring initialization');
+                // Try again after a short delay
+                setTimeout(() => this.initializeTone(), 500);
+                return;
+            }
+            
             // Start Tone.js
             await Tone.start();
             console.log('Tone.js initialized');
@@ -1027,6 +1035,11 @@ export class AudioPlayer {
             // Reset loaded state
             this.audioLoaded = false;
 
+            // Check if Tone is available
+            if (typeof Tone === 'undefined') {
+                throw new Error('Tone.js is not loaded yet. Please try again in a moment.');
+            }
+            
             // Create GrainPlayer with settings optimized for tempo changes
             // Key insight: For tempo changes, we need consistent grain timing
             this.grainPlayer = new Tone.GrainPlayer({
