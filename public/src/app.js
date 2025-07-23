@@ -37,6 +37,30 @@ class App {
         console.log('🚀 Starting app initialization...');
         console.log('Current location:', window.location.href);
 
+        // Check for mobile test mode
+        const urlParams = new URLSearchParams(window.location.search);
+        const isMobileTest = urlParams.get('mobile-test') === 'true' || window.MOBILE_TEST_MODE;
+        
+        if (isMobileTest) {
+            console.log('📱 Mobile test mode enabled');
+            // Load mobile improvements CSS
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = `${this.config.basePath}styles/mobile-improvements.css`;
+            document.head.appendChild(link);
+            
+            // Add test mode indicator
+            document.body.classList.add('mobile-test-mode');
+            
+            // Add mobile device class if applicable
+            const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase()) || window.innerWidth <= 768;
+            if (isMobile) {
+                document.body.classList.add('is-mobile-device');
+                // Set a global flag that components can check
+                window.IS_MOBILE_DEVICE = true;
+            }
+        }
+
         // Initialize cloud storage
         window.cloudStorage = firebaseSyncService;
 

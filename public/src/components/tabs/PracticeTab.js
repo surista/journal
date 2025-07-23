@@ -1,12 +1,14 @@
 // PracticeTab Component - Handles the main practice tab
 import { TimeUtils } from '../../utils/helpers.js';
 import { UnifiedPracticeMinimal } from '../unifiedPracticeMinimal.js';
+import { PracticeRecommendations } from '../practiceRecommendations.js';
 
 export class PracticeTab {
     constructor(storageService) {
         this.storageService = storageService;
         this.container = null;
         this.unifiedPractice = null;
+        this.recommendations = null;
     }
 
     render(container) {
@@ -15,6 +17,9 @@ export class PracticeTab {
         this.container.innerHTML = `
             <div class="practice-page-layout-single">
                 <div class="practice-main-content">
+                    <!-- Practice Recommendations -->
+                    <div id="practiceRecommendationsContainer"></div>
+                    
                     <!-- Unified Practice Component - Full Width -->
                     <div class="practice-container-wrapper">
                         <div id="unifiedPracticeContainer"></div>
@@ -46,6 +51,13 @@ export class PracticeTab {
 
     async initializeComponents() {
         try {
+            // Initialize recommendations
+            const recommendationsContainer = document.getElementById('practiceRecommendationsContainer');
+            if (recommendationsContainer) {
+                this.recommendations = new PracticeRecommendations(this.storageService);
+                await this.recommendations.init(recommendationsContainer);
+            }
+
             // Initialize unified practice component
             const container = document.getElementById('unifiedPracticeContainer');
             if (container) {
@@ -58,6 +70,11 @@ export class PracticeTab {
                 // Set callback for when sessions are saved
                 this.unifiedPractice.setOnSaveCallback(async (sessionData) => {
                     await this.loadPracticeData();
+                    
+                    // Refresh recommendations
+                    if (this.recommendations) {
+                        await this.recommendations.refresh();
+                    }
 
                     // Update header status if available
                     const dashboard = window.app?.currentPage;
@@ -133,8 +150,13 @@ export class PracticeTab {
         if (this.unifiedPractice && typeof this.unifiedPractice.destroy === 'function') {
             this.unifiedPractice.destroy();
         }
+        
+        if (this.recommendations && typeof this.recommendations.destroy === 'function') {
+            this.recommendations.destroy();
+        }
 
         this.unifiedPractice = null;
+        this.recommendations = null;
         this.container = null;
     }
 }

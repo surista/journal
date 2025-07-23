@@ -1,0 +1,160 @@
+/* Simple Fretboard Diagram Styles */
+.fretboard-simple {
+    margin: 30px 0;
+    padding: 20px;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+}
+
+.fretboard-simple .fretboard-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: var(--text-primary);
+}
+
+.fretboard-container-simple {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* Fret numbers */
+.fret-numbers-simple {
+    display: grid;
+    grid-template-columns: 30px repeat(3, 1fr);
+    gap: 0;
+    margin-bottom: 5px;
+    padding-left: 30px;
+}
+
+.fret-numbers-simple span {
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+/* Main grid */
+.fretboard-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    position: relative;
+    background: #f5f5f5;
+    border: 2px solid #333;
+    margin-left: 30px;
+}
+
+/* Dark mode */
+[data-theme*="dark"] .fretboard-grid,
+.dark-mode .fretboard-grid {
+    background: #2a2a2a;
+    border-color: #555;
+}
+
+/* Fret cells */
+.fret-cell {
+    position: relative;
+    aspect-ratio: 1;
+    border-right: 2px solid #999;
+    border-bottom: 1px solid #666;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fret-cell:nth-child(4n) {
+    border-right: none;
+}
+
+/* Open string (nut) */
+.fret-cell.open-string {
+    background: #e0e0e0;
+    border-right: 4px solid #333;
+}
+
+[data-theme*="dark"] .fret-cell.open-string,
+.dark-mode .fret-cell.open-string {
+    background: #3a3a3a;
+    border-right-color: #666;
+}
+
+/* Notes */
+.note {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    position: absolute;
+}
+
+.note.root {
+    background: #e74c3c;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.note.scale {
+    background: #2c3e50;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* String labels */
+.string-labels-simple {
+    display: grid;
+    grid-template-rows: repeat(6, 1fr);
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 30px;
+    align-items: center;
+    margin-top: 30px;
+}
+
+.string-labels-simple span {
+    text-align: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
+/* Legend */
+.fretboard-legend-simple {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 20px;
+    font-size: 0.9rem;
+}
+
+.fretboard-legend-simple .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.fretboard-legend-simple .dot {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+}
+
+.fretboard-legend-simple .dot.root {
+    background: #e74c3c;
+}
+
+.fretboard-legend-simple .dot.scale {
+    background: #2c3e50;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .fretboard-container-simple {
+        max-width: 320px;
+    }
+    
+    .note {
+        width: 20px;
+        height: 20px;
+    }
+}

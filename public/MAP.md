@@ -4,47 +4,98 @@
 
 ```
 guitar-practice-journal/
-├── index.html              # Main entry point with dynamic base path detection
-├── service-worker.js       # PWA offline functionality
-├── manifest.json          # PWA manifest
-├── src/
-│   ├── app.js              # Main application controller & routing
-│   ├── config.js           # Centralized configuration system
-│   ├── components/         # Reusable UI components
-│   │   ├── timer.js        # Practice session timer with sync
-│   │   ├── audioPlayer.js  # Audio processing & effects UI
-│   │   ├── practiceForm.js # Session logging form
-│   │   ├── metronome.js    # Digital metronome
-│   │   ├── goalsList.js    # Practice goals management
-│   │   ├── statsPanel.js   # Statistics dashboard
-│   │   ├── streakHeatMap.js# GitHub-style practice heatmap
-│   │   ├── achievementBadges.js # Gamification badges
-│   │   ├── waveform.js     # Audio waveform visualization
-│   │   ├── VirtualScrollList.js # Performance optimization
-│   │   ├── LazyImage.js    # Lazy loading images
-│   │   └── CloudSyncManager.js # Firebase cloud sync UI
-│   ├── pages/              # Main application views
-│   │   ├── dashboard.js    # Primary interface (tabbed layout)
-│   │   ├── calendar.js     # Practice calendar view
-│   │   └── auth.js         # User authentication
-│   ├── services/           # Business logic & data management
-│   │   ├── storageService.js    # Hybrid IndexedDB + localStorage
-│   │   ├── indexedDBService.js  # IndexedDB wrapper
-│   │   ├── audioService.js      # Web Audio API processing
-│   │   ├── authService.js       # Local authentication
-│   │   ├── notificationManager.js # User notifications
-│   │   ├── themeService.js      # Dark/light theme
-│   │   ├── pushNotificationService.js # PWA notifications
-│   │   ├── firebaseSyncService.js # Firebase integration
-│   │   └── cloudSyncService.js    # Cloud sync logic
-│   └── utils/              # Helper functions & utilities
-│       ├── helpers.js      # Time formatting, compression, debouncing
-│       └── router.js       # SPA routing with config integration
-└── styles/
-    ├── main.css           # Global styles, variables, typography
-    ├── components.css     # Component-specific styles
-    ├── pages.css          # Page-specific styles
-    └── themes/            # 23+ theme variations
+├── firebase.json          # Firebase hosting configuration
+├── firestore.indexes.json # Firestore database indexes
+├── firestore.rules        # Firestore security rules
+└── public/                # Main application directory
+    ├── index.html         # Main entry point with dynamic base path detection
+    ├── login.html         # Authentication page
+    ├── 404.html           # Custom 404 error page
+    ├── service-worker.js  # PWA offline functionality
+    ├── manifest.json      # PWA manifest
+    ├── build.js           # Build and version management script
+    ├── package.json       # NPM package configuration
+    ├── assets/            # Static assets
+    │   └── audio/         # Sample audio files
+    ├── src/
+    │   ├── app.js              # Main application controller & routing
+    │   ├── app-loader.js       # Application bootstrap loader
+    │   ├── config.js           # Centralized configuration system
+    │   ├── config/
+    │   │   └── version.js      # Version configuration
+    │   ├── components/         # Reusable UI components
+    │   │   ├── timer.js        # Practice session timer with sync
+    │   │   ├── audioPlayer.js  # Audio processing & effects UI
+    │   │   ├── practiceForm.js # Session logging form
+    │   │   ├── metronome.js    # Digital metronome (basic)
+    │   │   ├── metronomeEnhanced.js # Enhanced metronome features
+    │   │   ├── goalsList.js    # Practice goals management
+    │   │   ├── statsPanel.js   # Statistics dashboard
+    │   │   ├── streakHeatMap.js# GitHub-style practice heatmap
+    │   │   ├── achievementBadges.js # Gamification badges
+    │   │   ├── waveform.js     # Audio waveform visualization
+    │   │   ├── VirtualScrollList.js # Performance optimization
+    │   │   ├── LazyImage.js    # Lazy loading images
+    │   │   ├── CloudSyncManager.js # Firebase cloud sync UI
+    │   │   ├── cloudSyncSettings.js # Cloud sync settings UI
+    │   │   ├── header.js       # App header component
+    │   │   ├── footer.js       # App footer component
+    │   │   ├── topNavigation.js # Top navigation bar
+    │   │   ├── modal.js        # Modal dialog system
+    │   │   ├── unifiedPracticeMinimal.js # Simplified practice interface
+    │   │   ├── audio/
+    │   │   │   └── sessionManager.js # Audio session management
+    │   │   └── tabs/           # Tab components for dashboard
+    │   │       ├── AudioTab.js
+    │   │       ├── CalendarTab.js
+    │   │       ├── GoalsTab.js
+    │   │       ├── HistoryTab.js
+    │   │       ├── MetronomeTab.js
+    │   │       ├── PracticeTab.js
+    │   │       ├── RepertoireTab.js
+    │   │       ├── SettingsTab.js
+    │   │       └── StatsTab.js
+    │   ├── pages/              # Main application views
+    │   │   ├── dashboard.js    # Primary interface (tabbed layout)
+    │   │   ├── dashboardNew.js # UNUSED - experimental version
+    │   │   ├── calendar.js     # Practice calendar view
+    │   │   ├── auth.js         # User authentication
+    │   │   ├── about.js        # About page
+    │   │   ├── features.js     # Features showcase
+    │   │   ├── roadmap.js      # Development roadmap
+    │   │   └── whatsnew.js     # What's new/changelog
+    │   ├── services/           # Business logic & data management
+    │   │   ├── storageService.js    # Hybrid IndexedDB + localStorage
+    │   │   ├── audioService.js      # Web Audio API processing
+    │   │   ├── authService.js       # Local authentication
+    │   │   ├── notificationManager.js # User notifications
+    │   │   ├── themeService.js      # Dark/light theme system
+    │   │   ├── firebaseSyncService.js # Firebase integration
+    │   │   ├── sessionStateService.js # Session state management
+    │   │   ├── transposeExtensionAPI.js # Extension API for transposition
+    │   │   ├── youtubeAudioProcessor.js # YouTube audio integration
+    │   │   ├── highQualityPitchShifter.js # UNUSED - advanced pitch shifting
+    │   │   ├── highQualityTimeStretch.js  # UNUSED - advanced time stretching
+    │   │   └── pushNotificationService.js # UNUSED - PWA notifications
+    │   └── utils/              # Helper functions & utilities
+    │       ├── helpers.js      # Time formatting, compression, debouncing
+    │       ├── router.js       # SPA routing with config integration
+    │       ├── init.js         # App initialization utilities
+    │       ├── keyboardShortcuts.js # Keyboard shortcut handling
+    │       └── mobileEnhancements.js # Mobile-specific enhancements
+    ├── styles/
+    │   ├── main.css           # Global styles entry point
+    │   ├── loading.css        # Loading states
+    │   ├── minimal-practice.css # Minimal practice mode styles
+    │   ├── base/              # Base/foundation styles
+    │   ├── components/        # Component-specific styles
+    │   ├── layout/            # Layout system styles
+    │   ├── pages/             # Page-specific styles
+    │   ├── themes/            # 28 theme variations
+    │   └── utilities/         # Utility classes
+    └── test files (root)      # SHOULD BE MOVED to test directory
+        ├── test.js
+        └── test-*.html files
 ```
 
 ## 🔧 Technology Stack

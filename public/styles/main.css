@@ -51,6 +51,11 @@
 @import url('./components/save-session-image.css');
 @import url('./components/history-thumbnails.css');
 @import './minimal-practice.css';
+@import url('./components/fretboard.css');
+@import url('./components/fretboard-v2.css');
+@import url('./components/fretboard-simple.css');
+@import url('./components/fretboard-notes.css');
+@import url('./components/c-major-fretboard.css');
 
 
 /* Page-specific styles */
@@ -58,6 +63,7 @@
 @import url('./pages/dashboard-new.css');
 @import url('./pages/calendar.css');
 @import url('./pages/settings.css');
+@import url('./courses.css');
 
 /* Theme styles */
 @import url('./themes/dark.css');
@@ -346,4 +352,194 @@
 .btn-danger:hover {
     background: #dc2626;
     border-color: #dc2626;
+}
+
+/* Reminder notification animation */
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.practice-reminder-notification {
+    animation: slideInRight 0.3s ease;
+}
+
+.practice-reminder-notification .reminder-content h4 {
+    margin: 0 0 8px 0;
+    color: var(--primary);
+}
+
+.practice-reminder-notification .reminder-content p {
+    margin: 0 0 16px 0;
+    color: var(--text-primary);
+}
+
+.practice-reminder-notification .reminder-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.practice-reminder-notification .reminder-actions button {
+    flex: 1;
+}
+
+/* Practice Recommendations */
+.practice-recommendations {
+    margin-bottom: 2rem;
+}
+
+.recommendations-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+}
+
+.recommendation-section {
+    margin-bottom: 2rem;
+}
+
+.section-title {
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.recommendation-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+}
+
+.recommendation-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.2s ease;
+}
+
+.recommendation-card:hover {
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.repertoire-card {
+    border-left: 4px solid var(--primary);
+}
+
+.goal-card {
+    border-left: 4px solid var(--success);
+}
+
+.warmup-card {
+    border-left: 4px solid var(--warning);
+}
+
+.balance-card {
+    border-left: 4px solid var(--info);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.recommendation-card h5 {
+    margin: 0 0 0.5rem 0;
+    color: var(--text-primary);
+}
+
+.recommendation-desc {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.exercise-list {
+    margin-bottom: 1rem;
+}
+
+.exercise-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(var(--border), 0.5);
+}
+
+.exercise-item:last-child {
+    border-bottom: none;
+}
+
+.exercise-name {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.exercise-meta {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.exercise-focus {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    text-transform: capitalize;
+}
+
+.exercise-duration {
+    color: var(--primary);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.recommendation-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+.total-duration {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.priority {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.priority-high {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger);
+}
+
+.priority-medium {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--warning);
+}
+
+.priority-low {
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--info);
+}
+
+@media (max-width: 768px) {
+    .recommendation-cards {
+        grid-template-columns: 1fr;
+    }
 }

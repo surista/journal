@@ -396,33 +396,35 @@ export class CalendarPage {
     }
 
     showDayPopup(dateStr, event) {
-        // Remove any existing popup
+        // Remove any existing popup and overlay
         const existingPopup = document.querySelector('.session-popup');
-        if (existingPopup) {
-            existingPopup.remove();
-        }
+        const existingOverlay = document.querySelector('.session-popup-overlay');
+        if (existingPopup) existingPopup.remove();
+        if (existingOverlay) existingOverlay.remove();
 
         const practiceInfo = this.getPracticeInfoForDate(dateStr);
         const date = new Date(dateStr + 'T00:00:00');
 
+        // Create overlay
+        const overlay = document.createElement('div');
+        overlay.className = 'session-popup-overlay';
+        overlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            animation: fadeIn 0.2s ease;
+        `;
+        overlay.onclick = () => {
+            overlay.remove();
+            popup.remove();
+        };
+
         const popup = document.createElement('div');
         popup.className = 'session-popup';
-
-        // Position popup near the clicked element
-        const rect = event.currentTarget.getBoundingClientRect();
-        popup.style.left = `${rect.left}px`;
-        popup.style.top = `${rect.bottom + 10}px`;
-
-        // Adjust if popup would go off screen
-        setTimeout(() => {
-            const popupRect = popup.getBoundingClientRect();
-            if (popupRect.right > window.innerWidth) {
-                popup.style.left = `${window.innerWidth - popupRect.width - 20}px`;
-            }
-            if (popupRect.bottom > window.innerHeight) {
-                popup.style.top = `${rect.top - popupRect.height - 10}px`;
-            }
-        }, 0);
 
         const dateFormatted = date.toLocaleDateString('en-US', {
             weekday: 'long',
@@ -435,7 +437,7 @@ export class CalendarPage {
             popup.innerHTML = `
                 <div class="session-popup-header">
                     <h4>${dateFormatted}</h4>
-                    <button class="session-popup-close" onclick="this.parentElement.parentElement.remove()">&times;</button>
+                    <button class="session-popup-close" onclick="document.querySelector('.session-popup-overlay')?.remove(); this.parentElement.parentElement.remove()">&times;</button>
                 </div>
                 <p style="color: var(--text-secondary); text-align: center; padding: 1rem;">
                     No practice recorded for this day
@@ -461,7 +463,7 @@ export class CalendarPage {
             popup.innerHTML = `
                 <div class="session-popup-header">
                     <h4>${dateFormatted}</h4>
-                    <button class="session-popup-close" onclick="this.parentElement.parentElement.remove()">&times;</button>
+                    <button class="session-popup-close" onclick="document.querySelector('.session-popup-overlay')?.remove(); this.parentElement.parentElement.remove()">&times;</button>
                 </div>
                 <div class="session-list">
                     <div style="margin-bottom: 1rem;">
@@ -473,18 +475,10 @@ export class CalendarPage {
             `;
         }
 
+        document.body.appendChild(overlay);
         document.body.appendChild(popup);
 
-        // Click outside to close with delay
-        setTimeout(() => {
-            const clickOutsideHandler = (e) => {
-                if (!popup.contains(e.target)) {
-                    popup.remove();
-                    document.removeEventListener('click', clickOutsideHandler);
-                }
-            };
-            document.addEventListener('click', clickOutsideHandler);
-        }, 100);
+        // Remove the old click outside handler since we have overlay
     }
 
     async loadPracticeData() {
@@ -582,6 +576,9 @@ export class CalendarPage {
         // Calculate longest streak
         const streak = this.calculateLongestStreak();
         if (longestStreakEl) longestStreakEl.textContent = streak;
+        
+        // Update streak display
+        this.updateStreakDisplay();
     }
 
     calculateLongestStreak() {
@@ -639,34 +636,42 @@ export class CalendarPage {
     calculateCurrentStreak() {
         if (this.practiceData.length === 0) return 0;
 
-        const today = this.getLocalDateString(new Date());
-        const yesterday = this.getLocalDateString(new Date(Date.now() - 86400000));
-
-        // Check if practiced today or yesterday
+        // Get all practice dates
         const practiceDates = new Set();
         this.practiceData.forEach(session => {
             const date = this.getLocalDateString(new Date(session.date));
             practiceDates.add(date);
         });
 
-        if (!practiceDates.has(today) && !practiceDates.has(yesterday)) {
+        // Sort dates in descending order (most recent first)
+        const sortedDates = Array.from(practiceDates).sort((a, b) => new Date(b) - new Date(a));
+        
+        if (sortedDates.length === 0) return 0;
+
+        // Get today's date and yesterday's date
+        const today = this.getLocalDateString(new Date());
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayStr = this.getLocalDateString(yesterday);
+        
+        // Check if practiced yesterday
+        const practicedYesterday = practiceDates.has(yesterdayStr);
+        
+        // If didn't practice yesterday, streak is 0
+        if (!practicedYesterday) {
             return 0;
         }
-
-        // Count backwards from today or yesterday
+        
+        // If practiced yesterday, count consecutive days backwards
         let streak = 0;
-        let checkDate = practiceDates.has(today) ? new Date() : new Date(Date.now() - 86400000);
-
-        while (true) {
-            const dateStr = this.getLocalDateString(checkDate);
-            if (practiceDates.has(dateStr)) {
-                streak++;
-                checkDate.setDate(checkDate.getDate() - 1);
-            } else {
-                break;
-            }
+        let checkDate = new Date(yesterday);
+        
+        // Count backwards from yesterday
+        while (practiceDates.has(this.getLocalDateString(checkDate))) {
+            streak++;
+            checkDate.setDate(checkDate.getDate() - 1);
         }
-
+        
         return streak;
     }
 

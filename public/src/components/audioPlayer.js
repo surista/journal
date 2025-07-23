@@ -225,7 +225,7 @@ export class AudioPlayer {
     <!-- YouTube Input Section -->
     <div id="youtubeInputSection" class="source-section" style="display: none;">
         <div style="display: flex; gap: 8px; margin-bottom: 16px;">
-            <input type="text" id="youtubeUrlInput" placeholder="Enter YouTube URL or Video ID" 
+            <input type="text" id="youtubeUrlInput" placeholder="Enter YouTube URL" 
                    style="flex: 1; padding: 12px; background: var(--bg-input); border: 1px solid var(--border); 
                           border-radius: 8px; color: var(--text-primary);">
             <button id="loadYoutubeBtn" class="btn btn-primary" style="padding: 12px 20px;">
@@ -537,6 +537,28 @@ export class AudioPlayer {
                     if (youtubeContainer) {
                         youtubeContainer.style.display = 'none';
                     }
+                    
+                    // Re-enable controls
+                    const playBtn = document.getElementById('audioPlayPauseBtn');
+                    if (playBtn) {
+                        playBtn.disabled = false;
+                        playBtn.innerHTML = '<i class="icon">▶️</i> Play';
+                    }
+                    
+                    // Show all hidden controls
+                    const elementsToShow = [
+                        'speedControl',
+                        'pitchControl', 
+                        'loopControls',
+                        'progressSection',
+                        'waveformContainer',
+                        'tempoProgressionSection'
+                    ];
+                    
+                    elementsToShow.forEach(id => {
+                        const element = document.getElementById(id);
+                        if (element) element.style.display = '';
+                    });
 
                     // Reset waveform container
                     const waveformContainer = document.querySelector('.waveform-container');
@@ -1178,6 +1200,7 @@ export class AudioPlayer {
 
         return null;
     }
+
 
     startYouTubeTimeUpdates() {
         this.stopYouTubeTimeUpdates();

@@ -2,28 +2,29 @@
 
 A comprehensive web application for tracking guitar practice sessions, managing goals, and improving your musical journey. Built as a Progressive Web App (PWA) with offline capabilities and advanced audio processing features.
 
-![Version](https://img.shields.io/badge/version-9.4-blue)
+![Version](https://img.shields.io/badge/version-10.64-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![PWA](https://img.shields.io/badge/PWA-enabled-purple)
+![Cloud Sync](https://img.shields.io/badge/Cloud%20Sync-Beta-orange)
 
-## 🔧 Recent Improvements (v9.4)
+## 🔥 Recent Updates (v10.64)
 
-### Repertoire Management System
-- **Song Library**: Complete repertoire management with status tracking
-- **Enhanced Modals**: Improved modal system with better visibility
-- **Practice Integration**: Seamless connection between repertoire and practice logging
+### Session Image Management
+- **Visual Practice References**: Attach images to practice sessions
+- **Enhanced Documentation**: Save chord diagrams, sheet music, or practice photos
+- **Mobile Optimized**: Improved UX for mobile image handling
 
-### Enhanced Navigation System
-- **Robust Calendar Access**: Fixed critical navigation issues to Calendar page
-- **Multiple Fallback Strategies**: Ensures navigation works even if primary methods fail
-- **Better Error Handling**: User-friendly error messages with technical details
-- **Improved URL Management**: Better support for subdirectory deployments
+### Cloud Sync & Backup (v9.89+)
+- **Firebase Integration**: Real-time cloud synchronization across devices
+- **Automatic Backup**: Never lose your practice data
+- **Offline Support**: Syncs automatically when reconnected
+- **User Control**: Enable/disable cloud sync at any time
 
-### Component Reliability
-- **Enhanced Error Recovery**: Graceful handling of component loading failures
-- **Better State Management**: Improved component synchronization across tabs
-- **Memory Management**: More efficient cleanup during page transitions
-- **Performance Optimizations**: Faster navigation and component loading
+### Audio Processing Enhancements
+- **Improved Pitch Shifting**: Better audio quality at extreme pitch changes
+- **Enhanced Tempo Control**: More stable tempo adjustments
+- **YouTube Integration**: Practice along with YouTube videos
+- **Session Management**: Save and recall audio configurations
 
 ## ✨ Features
 
@@ -58,7 +59,13 @@ A comprehensive web application for tracking guitar practice sessions, managing 
 - **Offline Support**: Full functionality without internet connection
 - **Mobile Optimized**: Responsive design with touch-friendly interface
 - **Installation**: Install on mobile/desktop like a native app
-- **Theme Support**: Dark and light themes with system preference detection
+- **Theme Support**: 28 themes including dark, light, and pastel variations
+
+### ☁️ Cloud Sync (Beta)
+- **Firebase Integration**: Secure cloud backup and synchronization
+- **Multi-Device Sync**: Access your practice data from any device
+- **Automatic Backup**: Real-time data protection
+- **Privacy First**: Optional feature - enable only if needed
 
 ## 🚀 Quick Start
 
@@ -156,28 +163,15 @@ Upload files to your web server. The app works from any directory and automatica
 
 Built with modern web technologies:
 
-- **Frontend**: Vanilla JavaScript (ES6+ modules)
-- **Storage**: IndexedDB with localStorage fallback
-- **Audio**: Web Audio API with custom pitch shifting
-- **Styling**: CSS custom properties with responsive design
-- **PWA**: Service Worker with intelligent caching
-- **Navigation**: Custom SPA router with robust error handling
+- **Frontend**: Vanilla JavaScript (ES6+ modules) - No framework dependencies
+- **Storage**: Hybrid IndexedDB + localStorage with automatic migration
+- **Audio**: Advanced Web Audio API with custom pitch/tempo algorithms
+- **Styling**: Modular CSS with 28 theme variations
+- **PWA**: Service Worker with intelligent caching strategies
+- **Cloud**: Optional Firebase integration for backup and sync
+- **Build**: Custom version management system
 
-See [MAP.md](MAP.md) for detailed technical information.
-
-## 🔧 Recent Improvements (v5.4)
-
-### Enhanced Navigation System
-- **Robust Calendar Access**: Fixed critical navigation issues to Calendar page
-- **Multiple Fallback Strategies**: Ensures navigation works even if primary methods fail
-- **Better Error Handling**: User-friendly error messages with technical details
-- **Improved URL Management**: Better support for subdirectory deployments
-
-### Component Reliability
-- **Enhanced Error Recovery**: Graceful handling of component loading failures
-- **Better State Management**: Improved component synchronization across tabs
-- **Memory Management**: More efficient cleanup during page transitions
-- **Performance Optimizations**: Faster navigation and component loading
+See [MAP.md](MAP.md) for detailed technical architecture.
 
 ## 🤝 Contributing
 
@@ -200,16 +194,19 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guid
 ## 📋 Data & Privacy
 
 ### Data Storage
-- **100% Local**: All data stored on your device
-- **No Cloud**: No external servers or data transmission
+- **Local First**: Primary data storage on your device
+- **Optional Cloud**: Firebase sync available but not required
 - **Your Control**: Export/import data anytime
 - **Privacy First**: No tracking or analytics
+- **Encryption**: Secure cloud transmission when enabled
 
 ### Supported Data
 - Practice sessions with detailed metadata
 - Goals and achievement progress
-- Audio processing settings
+- Audio processing settings and saved sessions
 - User preferences and themes
+- Repertoire and song library
+- Session images and visual references
 
 ## 🔧 Configuration
 
@@ -305,12 +302,18 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🔮 Roadmap
 
+### Recently Completed ✅
+- **Cloud Sync**: Firebase integration for backup and sync (v9.89+)
+- **Session Images**: Visual practice documentation (v10.64)
+- **YouTube Integration**: Practice along with videos
+- **28 Themes**: Extensive theme collection including pastels
+
 ### Upcoming Features
-- **Cloud Sync**: Optional cloud backup and sync
 - **Social Features**: Share progress with friends
 - **Advanced Analytics**: AI-powered practice insights
 - **Multiple Instruments**: Support for other instruments
 - **Lesson Integration**: Built-in lesson recommendations
+- **Collaborative Practice**: Real-time practice sessions
 
 ### Version History
 See [CHANGELOG.md](CHANGELOG.md) for detailed version history.

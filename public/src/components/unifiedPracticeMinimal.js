@@ -242,7 +242,7 @@ export class UnifiedPracticeMinimal {
                                 <input type="text" 
                                        id="youtubeUrl" 
                                        class="youtube-url-input" 
-                                       placeholder="Paste YouTube URL or video ID">
+                                       placeholder="Paste YouTube URL">
                                 <button class="load-btn" id="loadYoutubeBtn">Load</button>
                             </div>
                         </div>

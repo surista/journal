@@ -8,7 +8,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned Features
-- Cloud sync and backup options
 - Social features for sharing progress
 - AI-powered practice recommendations
 - Multi-instrument support
@@ -19,6 +18,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Video lesson integration
 - Advanced music theory tools
 - Plugin architecture for extensions
+
+## [10.64] - 2025-07-22
+
+### Added
+- **Session Image Management**: Save and load images with practice sessions
+  - Ability to attach visual references to practice sessions
+  - Image storage and retrieval functionality
+  - Enhanced session documentation capabilities
+
+### Changed
+- **Mobile UX Improvements**: Enhanced mobile user experience
+  - Better touch interactions
+  - Improved responsive layouts
+  - Optimized mobile navigation
+
+### Fixed
+- **Style Tweaks**: Various UI/UX refinements for better usability
+
+## [9.95-9.96] - 2025-07-21
+
+### Changed
+- **Documentation Updates**: Improved project documentation
+- **Style Improvements**: Various CSS refinements and fixes
 
 ## [9.94] - 2025-07-21
 

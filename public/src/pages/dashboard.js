@@ -2,6 +2,8 @@
 import { Header } from '../components/header.js';
 import { TopNavigation } from '../components/topNavigation.js';
 import { Footer } from '../components/footer.js';
+import { tipsService } from '../services/tipsService.js';
+import { getReminderService } from '../services/reminderService.js';
 // import { CloudSyncHandler } from '../services/cloudSyncHandler.js';
 
 export class DashboardPage {
@@ -17,6 +19,7 @@ export class DashboardPage {
         this.cloudSyncHandler = null;
         this.isDestroyed = false;
         this.footer = null;
+        this.reminderService = null;
     }
 
     async render() {
@@ -84,6 +87,7 @@ export class DashboardPage {
                         <div class="tab-pane" id="statsTab" data-tab="stats"></div>
                         <div class="tab-pane" id="historyTab" data-tab="history"></div>
                         <div class="tab-pane" id="calendarTab" data-tab="calendar"></div>
+                        <div class="tab-pane" id="coursesTab" data-tab="courses"></div>
                         <div class="tab-pane" id="settingsTab" data-tab="settings"></div>
                     </div>
                 </main>
@@ -224,6 +228,10 @@ export class DashboardPage {
                     const { SettingsTab } = await import('../components/tabs/SettingsTab.js');
                     this.tabs[tab] = new SettingsTab(this.storageService, this.authService, this.cloudSyncHandler?.cloudSyncService);
                     break;
+                case 'courses':
+                    const CoursesPage = (await import('../pages/courses.js')).default;
+                    this.tabs[tab] = new CoursesPage(this.storageService, this.authService);
+                    break;
             }
 
             if (this.tabs[tab]) {
@@ -258,6 +266,18 @@ export class DashboardPage {
             this.footer.attachEventListeners();
         }
 
+        // Start rotating tips in header
+        tipsService.startRotatingTips(this.header, 20000); // Change tip every 20 seconds
+
+        // Initialize reminder service
+        try {
+            this.reminderService = getReminderService(this.storageService);
+            await this.reminderService.init();
+        } catch (error) {
+            console.warn('Failed to initialize reminder service:', error);
+            // Continue without reminders rather than breaking the dashboard
+        }
+
         // Check initial hash
         this.handleHashChange();
     }
@@ -283,6 +303,14 @@ export class DashboardPage {
 
     destroy() {
         this.isDestroyed = true;
+
+        // Stop rotating tips
+        tipsService.stopRotatingTips();
+
+        // Clean up reminder service
+        if (this.reminderService) {
+            this.reminderService.destroy();
+        }
 
         // Clean up cloud sync
         if (this.cloudSyncHandler) {
