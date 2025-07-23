@@ -1,5 +1,33 @@
 /* Notification Component Styles */
 
+/* Base notification element - ensure proper dimensions */
+#notification {
+    position: fixed !important;
+    bottom: 20px !important;
+    right: 20px !important;
+    z-index: 999999 !important;
+    max-width: 400px !important;
+    width: auto !important;
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+    display: none;
+    /* Override any potential inherited styles */
+    top: auto !important;
+    left: auto !important;
+}
+
+#notification.notification-show {
+    display: block !important;
+    animation: notificationSlideIn 0.3s ease;
+}
+
+/* Ensure notification content doesn't expand */
+#notification > * {
+    width: auto !important;
+    height: auto !important;
+    max-height: none !important;
+}
 
 /* Only show when explicitly activated */
 .notification-container.show {
@@ -37,6 +65,17 @@
     }
     to {
         transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes notificationSlideIn {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
         opacity: 1;
     }
 }
