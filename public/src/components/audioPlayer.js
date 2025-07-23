@@ -137,13 +137,31 @@ export class AudioPlayer {
 
     async initializeTone() {
         try {
+            // Initialize retry counter if not exists
+            if (!this.toneRetryCount) {
+                this.toneRetryCount = 0;
+            }
+            
             // Check if Tone is available
-            if (typeof Tone === 'undefined') {
-                console.warn('Tone.js not loaded yet, deferring initialization');
+            if (typeof Tone === 'undefined' || window.TONE_LOAD_FAILED) {
+                this.toneRetryCount++;
+                
+                // Limit retries to prevent infinite loop
+                if (this.toneRetryCount > 10 || window.TONE_LOAD_FAILED) {
+                    console.error('Tone.js failed to load');
+                    this.showNotification('Audio engine failed to load. Speed and pitch controls will not be available.', 'error');
+                    this.toneLoadFailed = true;
+                    return;
+                }
+                
+                console.warn(`Tone.js not loaded yet, retry ${this.toneRetryCount}/10`);
                 // Try again after a short delay
-                setTimeout(() => this.initializeTone(), 500);
+                setTimeout(() => this.initializeTone(), 1000);
                 return;
             }
+            
+            // Reset retry count on success
+            this.toneRetryCount = 0;
             
             // Start Tone.js
             await Tone.start();
@@ -1036,8 +1054,47 @@ export class AudioPlayer {
             this.audioLoaded = false;
 
             // Check if Tone is available
-            if (typeof Tone === 'undefined') {
-                throw new Error('Tone.js is not loaded yet. Please try again in a moment.');
+            if (typeof Tone === 'undefined' || this.toneLoadFailed) {
+                console.warn('Tone.js not available, using basic HTML5 audio');
+                
+                // Fall back to basic HTML5 audio
+                this.useBasicAudio = true;
+                this.basicAudio = new Audio();
+                this.basicAudio.src = audioUrl;
+                
+                // Show warning about limited features
+                this.showNotification('Using basic audio player. Speed and pitch controls are not available.', 'warning');
+                
+                // Set up basic audio loaded handler
+                this.basicAudio.addEventListener('loadedmetadata', () => {
+                    this.duration = this.basicAudio.duration;
+                    this.audioLoaded = true;
+                    this.updateWaveform();
+                    console.log('Basic audio loaded successfully');
+                });
+                
+                this.basicAudio.addEventListener('error', (e) => {
+                    console.error('Basic audio load error:', e);
+                    this.showNotification('Failed to load audio file', 'error');
+                });
+                
+                // Time update for basic audio
+                this.basicAudio.addEventListener('timeupdate', () => {
+                    this.currentTime = this.basicAudio.currentTime;
+                    this.updateTimeDisplay();
+                    if (this.waveformVisualizer) {
+                        this.waveformVisualizer.updateProgress(this.currentTime);
+                    }
+                });
+                
+                // Handle ended event
+                this.basicAudio.addEventListener('ended', () => {
+                    this.isPlaying = false;
+                    this.updatePlayPauseButton();
+                    this.syncTimerStop();
+                });
+                
+                return;
             }
             
             // Create GrainPlayer with settings optimized for tempo changes
@@ -1866,6 +1923,19 @@ export class AudioPlayer {
             }
             return;
         }
+        
+        // Handle basic HTML5 audio
+        if (this.useBasicAudio && this.basicAudio) {
+            if (this.isPlaying) {
+                this.basicAudio.pause();
+                this.isPlaying = false;
+            } else {
+                this.basicAudio.play();
+                this.isPlaying = true;
+            }
+            this.updatePlayPauseButton();
+            return;
+        }
 
         // Original file-based code
         console.log('=== AUDIO PLAY DEBUG ===');
@@ -2084,6 +2154,9 @@ export class AudioPlayer {
             this.stopYouTubeTimeUpdates();
             // For YouTube, explicitly seek to start
             this.youtubePlayer.seekTo(0);
+        } else if (this.useBasicAudio && this.basicAudio) {
+            this.basicAudio.pause();
+            this.basicAudio.currentTime = 0;
         } else if (this.grainPlayer) {
             this.grainPlayer.stop();
         }
