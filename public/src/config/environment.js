@@ -11,8 +11,8 @@ export const detectEnvironment = () => {
     // Production domains
     if (hostname === 'www.guitar-practice-journal.com' || 
         hostname === 'guitar-practice-journal.com' ||
-        hostname === 'guitar-journal-6d4e0.web.app' ||
-        hostname === 'guitar-journal-6d4e0.firebaseapp.com') {
+        hostname === 'guitar-practice-journal-9f064.web.app' ||
+        hostname === 'guitar-practice-journal-9f064.firebaseapp.com') {
         return 'production';
     }
     
@@ -37,9 +37,9 @@ const environments = {
     development: {
         firebaseConfig: {
             apiKey: "AIzaSyACB5lnRzzgIKR1toEXVKGkBfadk6KB_g0",
-            authDomain: "guitar-journal-6d4e0.firebaseapp.com",
-            projectId: "guitar-journal-6d4e0",
-            storageBucket: "guitar-journal-6d4e0.appspot.com",
+            authDomain: "guitar-practice-journal-9f064.firebaseapp.com",
+            projectId: "guitar-practice-journal-9f064",
+            storageBucket: "guitar-practice-journal-9f064.appspot.com",
             messagingSenderId: "192212928966",
             appId: "1:192212928966:web:7f3b6bf36d2db950fa3767",
             measurementId: "G-9HCN5FFKK0"
@@ -56,9 +56,9 @@ const environments = {
         // Same Firebase project but with different settings
         firebaseConfig: {
             apiKey: "AIzaSyACB5lnRzzgIKR1toEXVKGkBfadk6KB_g0",
-            authDomain: "guitar-journal-6d4e0.firebaseapp.com",
-            projectId: "guitar-journal-6d4e0",
-            storageBucket: "guitar-journal-6d4e0.appspot.com",
+            authDomain: "guitar-practice-journal-9f064.firebaseapp.com",
+            projectId: "guitar-practice-journal-9f064",
+            storageBucket: "guitar-practice-journal-9f064.appspot.com",
             messagingSenderId: "192212928966",
             appId: "1:192212928966:web:7f3b6bf36d2db950fa3767",
             measurementId: "G-9HCN5FFKK0"
@@ -73,9 +73,9 @@ const environments = {
     production: {
         firebaseConfig: {
             apiKey: "AIzaSyACB5lnRzzgIKR1toEXVKGkBfadk6KB_g0",
-            authDomain: "guitar-journal-6d4e0.firebaseapp.com",
-            projectId: "guitar-journal-6d4e0",
-            storageBucket: "guitar-journal-6d4e0.appspot.com",
+            authDomain: "guitar-practice-journal-9f064.firebaseapp.com",
+            projectId: "guitar-practice-journal-9f064",
+            storageBucket: "guitar-practice-journal-9f064.appspot.com",
             messagingSenderId: "192212928966",
             appId: "1:192212928966:web:7f3b6bf36d2db950fa3767",
             measurementId: "G-9HCN5FFKK0"
