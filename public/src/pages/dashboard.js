@@ -3,6 +3,7 @@ import { Header } from '../components/header.js';
 import { TopNavigation } from '../components/topNavigation.js';
 import { Footer } from '../components/footer.js';
 import { tipsService } from '../services/tipsService.js';
+import { TipsPopup } from '../components/tipsPopup.js';
 import { getReminderService } from '../services/reminderService.js';
 // import { CloudSyncHandler } from '../services/cloudSyncHandler.js';
 
@@ -20,6 +21,7 @@ export class DashboardPage {
         this.isDestroyed = false;
         this.footer = null;
         this.reminderService = null;
+        this.tipsPopup = null;
     }
 
     async render() {
@@ -269,8 +271,9 @@ export class DashboardPage {
             this.footer.attachEventListeners();
         }
 
-        // Start rotating tips in header
-        tipsService.startRotatingTips(this.header, 20000); // Change tip every 20 seconds
+        // Initialize tips popup instead of header rotation
+        this.tipsPopup = new TipsPopup(tipsService);
+        this.tipsPopup.init();
 
         // Initialize reminder service
         try {
@@ -306,8 +309,10 @@ export class DashboardPage {
     destroy() {
         this.isDestroyed = true;
 
-        // Stop rotating tips
-        tipsService.stopRotatingTips();
+        // Destroy tips popup
+        if (this.tipsPopup) {
+            this.tipsPopup.destroy();
+        }
 
         // Clean up reminder service
         if (this.reminderService) {

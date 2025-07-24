@@ -3,7 +3,7 @@ export class Header {
     constructor(themeService) {
         this.themeService = themeService;
         this.currentTab = 'Practice';
-        this.statusMessage = 'All systems go';
+        this.statusMessage = '';
         this.statusType = 'success'; // success, warning, error
     }
 
@@ -51,10 +51,7 @@ export class Header {
                     </div>
                     
                     <div class="header-center">
-                        <div class="header-status status-${this.statusType}">
-                            <span class="status-indicator"></span>
-                            <span class="status-text">${this.statusMessage}</span>
-                        </div>
+                        <!-- Status removed - tips now show as popup -->
                     </div>
                     
                     <div class="header-right">

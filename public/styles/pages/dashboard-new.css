@@ -1206,12 +1206,7 @@ textarea.form-control {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* Footer alignment */
-#appFooter .footer-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 2rem;
-}
+/* Footer alignment - removed to match header at 700px */
 
 /* ============================================
    Responsive Design - Mobile First

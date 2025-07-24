@@ -24,7 +24,7 @@
 /* Header Left - Tab Name */
 .header-left {
     flex: 0 0 auto;
-    min-width: 200px;
+    min-width: auto;
 }
 
 .header-tab-name {
@@ -188,7 +188,7 @@
     }
     
     .header-left {
-        min-width: 150px;
+        min-width: auto;
     }
     
     .header-tab-name {
