@@ -228,6 +228,14 @@ export class UnifiedPracticeMinimal {
                                 <p class="file-hint" style="margin-top: 0.5rem; text-align: center;">MP3 files only (max 20MB)</p>
                             </div>
                             <div id="audioPlayerContainer"></div>
+                            
+                            <!-- Saved Loops Section -->
+                            <div class="saved-loops-section" id="audioSavedLoopsSection" style="display: none; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); padding: 16px; border-radius: 12px; margin-top: 20px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                                <h4 style="margin-bottom: 12px; font-size: 14px; color: var(--text-secondary);">Saved Loops</h4>
+                                <div id="audioSavedLoopsList" class="saved-sessions-list" style="max-height: 150px; overflow-y: auto;">
+                                    <p class="no-loops-message" style="text-align: center; color: var(--text-muted); font-size: 14px;">No saved loops yet</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
@@ -272,7 +280,7 @@ export class UnifiedPracticeMinimal {
                         <span id="youtubeDuration" class="time-duration">0:00</span>
                     </div>
 
-                    <!-- Play/Stop and Loop Controls Combined (same as audio player) -->
+                    <!-- Play/Stop and Loop Controls Combined (EXACTLY like audio player) -->
                     <div class="controls-playback-loop" style="display: flex; justify-content: center; align-items: center; gap: 20px; margin-bottom: 20px;">
                         <div class="controls-main" style="display: flex; gap: 10px;">
                             <button id="youtubePlayPauseBtn" class="btn-control btn-play-pause" title="Play/Pause (Space)">
@@ -307,6 +315,9 @@ export class UnifiedPracticeMinimal {
                             <button id="youtubeLoopClearBtn" class="btn-control btn-loop-clear" title="Clear Loop">
                                 <span>×</span>
                             </button>
+                            <button id="youtubeSaveLoopBtn" class="btn-control btn-loop-save" title="Save Loop" style="display: none;">
+                                <span>💾</span>
+                            </button>
                         </div>
                     </div>
 
@@ -320,6 +331,8 @@ export class UnifiedPracticeMinimal {
                     </div>
                     
                     ${this.renderYouTubeAudioControls()}
+                    
+                    ${this.renderYouTubeLoopControls()}
                 </div>
             </div>
         `;
@@ -327,58 +340,7 @@ export class UnifiedPracticeMinimal {
 
     renderYouTubeLoopControls() {
         return `
-            <!-- Loop Controls Section -->
-            <div class="loop-controls-unified" style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); padding: 16px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.1);">
-                <h4 style="margin-bottom: 12px;">Loop Controls</h4>
-                
-                <!-- Main Controls Row -->
-                <div style="display: grid; grid-template-columns: auto auto auto 1fr auto; gap: 8px; align-items: center; margin-bottom: 12px;">
-                    <button id="youtubeLoopStart" class="btn btn-sm btn-secondary" style="padding: 6px 12px; font-size: 12px;">Start</button>
-                    <button id="youtubeLoopEnd" class="btn btn-sm btn-secondary" style="padding: 6px 12px; font-size: 12px;">End</button>
-                    <button id="youtubeLoopClear" class="btn btn-sm btn-secondary" style="padding: 6px 12px; font-size: 12px;">Clear</button>
-                    <div class="loop-info" style="font-family: monospace; font-size: 13px; text-align: center;">
-                        <span id="youtubeLoopStartTime">--:--</span> - <span id="youtubeLoopEndTime">--:--</span>
-                    </div>
-                    <button id="youtubeSaveLoopBtn" class="btn btn-sm btn-primary" style="padding: 6px 16px; font-size: 12px;">
-                        💾 Save Loop
-                    </button>
-                </div>
-                
-                <!-- Toggle Controls Row -->
-                <div style="display: flex; align-items: center; gap: 16px;">
-                    <label class="loop-toggle" style="display: inline-flex; align-items: center; white-space: nowrap;">
-                        <input type="checkbox" id="youtubeLoopEnabled">
-                        <span class="toggle-switch"></span>
-                        <span>Loop?</span>
-                    </label>
-                    
-                    <label class="loop-toggle" style="display: inline-flex; align-items: center; white-space: nowrap;">
-                        <input type="checkbox" id="youtubeAutoProgress">
-                        <span class="toggle-switch"></span>
-                        <span>Auto?</span>
-                    </label>
-                    
-                    <div style="flex: 1;"></div>
-                    
-                    <span style="color: var(--text-secondary); font-size: 13px;">Saved Loops:</span>
-                </div>
-                
-                <!-- Tempo Progression Controls (shows when Auto is enabled) -->
-                <div class="progression-controls-inline" id="youtubeProgressionControls" style="display: none; align-items: center; gap: 6px; font-size: 12px; margin-top: 12px;">
-                    <input type="number" id="youtubeProgressAmount" value="1" min="0.1" max="10" step="0.1" 
-                           style="width: 45px; padding: 3px 6px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 4px; font-size: 12px;">
-                    <select id="youtubeProgressType" style="padding: 3px 6px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 4px; font-size: 12px;">
-                        <option value="percentage">%</option>
-                        <option value="bpm">BPM</option>
-                    </select>
-                    <span>every</span>
-                    <input type="number" id="youtubeProgressLoops" value="1" min="1" max="10" 
-                           style="width: 35px; padding: 3px 6px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 4px; font-size: 12px;">
-                    <span>loops</span>
-                </div>
-            </div>
-            
-            <!-- Saved Loops Section (Separate) -->
+            <!-- Saved Loops Section (simplified like audio player) -->
             <div class="saved-loops-section" style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); padding: 16px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.1);">
                 <h4 style="margin-bottom: 12px; font-size: 14px; color: var(--text-secondary);">Saved Loops</h4>
                 <div id="youtubeSavedLoopsList" class="saved-sessions-list" style="max-height: 150px; overflow-y: auto;">
@@ -715,6 +677,9 @@ export class UnifiedPracticeMinimal {
         // YouTube Controls
         this.attachYouTubeListeners();
         
+        // Keyboard Shortcuts
+        this.setupKeyboardShortcuts();
+        
         // Audio context initialization is now handled by checkAudioInitialization()
     }
     
@@ -765,6 +730,228 @@ export class UnifiedPracticeMinimal {
                 }, 300);
             }
         });
+    }
+    
+    setupKeyboardShortcuts() {
+        // Remove any existing keyboard handler to prevent duplicates
+        if (this.keyboardHandler) {
+            document.removeEventListener('keydown', this.keyboardHandler);
+        }
+        
+        // Create keyboard shortcut handler
+        this.keyboardHandler = (e) => {
+            // Don't handle shortcuts when typing in input fields
+            if (e.target.tagName === 'INPUT' || 
+                e.target.tagName === 'TEXTAREA' || 
+                e.target.isContentEditable) {
+                return;
+            }
+            
+            // Space bar - Play/Pause timer and current audio/metronome
+            if (e.code === 'Space') {
+                e.preventDefault();
+                const playPauseBtn = document.getElementById('playPauseBtn');
+                if (playPauseBtn) {
+                    playPauseBtn.click();
+                }
+            }
+            
+            // M key - Toggle metronome
+            else if (e.key.toLowerCase() === 'm' && !e.ctrlKey && !e.metaKey) {
+                e.preventDefault();
+                if (this.currentMode === 'metronome') {
+                    const metronomePlayBtn = document.getElementById('metronomePlay');
+                    if (metronomePlayBtn) {
+                        metronomePlayBtn.click();
+                    }
+                }
+            }
+            
+            // L key - Set loop points in audio
+            else if (e.key.toLowerCase() === 'l' && !e.ctrlKey && !e.metaKey) {
+                e.preventDefault();
+                if (this.currentMode === 'audio') {
+                    const loopToggleBtn = document.getElementById('loopToggleBtn');
+                    if (loopToggleBtn) {
+                        loopToggleBtn.click();
+                    }
+                } else if (this.currentMode === 'youtube') {
+                    const youtubeLoopEnabled = document.getElementById('youtubeLoopEnabled');
+                    if (youtubeLoopEnabled) {
+                        youtubeLoopEnabled.checked = !youtubeLoopEnabled.checked;
+                        youtubeLoopEnabled.dispatchEvent(new Event('change'));
+                    }
+                }
+            }
+            
+            // Arrow Up/Down - Adjust BPM
+            else if (e.code === 'ArrowUp' || e.code === 'ArrowDown') {
+                if (this.currentMode === 'metronome') {
+                    e.preventDefault();
+                    const bpmSlider = document.getElementById('bpmSlider');
+                    if (bpmSlider) {
+                        const currentValue = parseInt(bpmSlider.value);
+                        const step = e.shiftKey ? 10 : 1; // Hold shift for larger steps
+                        const newValue = e.code === 'ArrowUp' 
+                            ? Math.min(currentValue + step, 250)
+                            : Math.max(currentValue - step, 30);
+                        bpmSlider.value = newValue;
+                        bpmSlider.dispatchEvent(new Event('input'));
+                    }
+                }
+            }
+            
+            // Number keys 1-9 - Quick BPM presets
+            else if (e.key >= '1' && e.key <= '9' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+                if (this.currentMode === 'metronome') {
+                    e.preventDefault();
+                    const presets = [60, 80, 100, 120, 140, 160, 180, 200, 220];
+                    const presetIndex = parseInt(e.key) - 1;
+                    const bpmSlider = document.getElementById('bpmSlider');
+                    if (bpmSlider && presets[presetIndex]) {
+                        bpmSlider.value = presets[presetIndex];
+                        bpmSlider.dispatchEvent(new Event('input'));
+                    }
+                }
+            }
+            
+            // L key - Toggle loop for YouTube
+            else if (e.code === 'KeyL') {
+                if (this.currentMode === 'youtube') {
+                    e.preventDefault();
+                    const loopToggleBtn = document.getElementById('youtubeLoopToggleBtn');
+                    if (loopToggleBtn) {
+                        loopToggleBtn.click();
+                    }
+                }
+            }
+            
+            // Escape key - Close modals
+            else if (e.key === 'Escape' || e.key === 'Esc') {
+                // Close any open modals
+                const modals = document.querySelectorAll('.modal-overlay, .practice-log-modal');
+                modals.forEach(modal => {
+                    const closeBtn = modal.querySelector('.btn-secondary');
+                    if (closeBtn) {
+                        closeBtn.click();
+                    } else {
+                        modal.remove();
+                    }
+                });
+            }
+        };
+        
+        // Attach keyboard handler
+        document.addEventListener('keydown', this.keyboardHandler);
+        
+        // Add visual keyboard shortcut guide
+        this.addKeyboardShortcutGuide();
+    }
+    
+    addKeyboardShortcutGuide() {
+        // Check if guide already exists
+        if (document.getElementById('keyboard-shortcuts-guide')) {
+            return;
+        }
+        
+        // Create keyboard shortcuts guide button
+        const guideButton = document.createElement('button');
+        guideButton.id = 'keyboard-shortcuts-toggle';
+        guideButton.className = 'keyboard-guide-btn';
+        guideButton.innerHTML = '⌨️';
+        guideButton.title = 'Keyboard Shortcuts';
+        guideButton.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-card, #374151);
+            border: 1px solid var(--border, #4b5563);
+            color: var(--text-primary, #e5e7eb);
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        `;
+        
+        // Create shortcuts guide panel
+        const guidePanel = document.createElement('div');
+        guidePanel.id = 'keyboard-shortcuts-guide';
+        guidePanel.className = 'keyboard-shortcuts-panel';
+        guidePanel.style.cssText = `
+            position: fixed;
+            bottom: 70px;
+            right: 20px;
+            width: 300px;
+            background: var(--bg-card, #374151);
+            border: 1px solid var(--border, #4b5563);
+            border-radius: 12px;
+            padding: 20px;
+            z-index: 999;
+            display: none;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        `;
+        
+        guidePanel.innerHTML = `
+            <h3 style="margin: 0 0 15px 0; font-size: 16px; color: var(--text-primary);">
+                Keyboard Shortcuts
+            </h3>
+            <div class="shortcuts-list" style="font-size: 14px; line-height: 1.8;">
+                <div class="shortcut-item" style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="color: var(--text-secondary);">Play/Pause</span>
+                    <kbd style="background: var(--bg-dark); padding: 2px 8px; border-radius: 4px; font-family: monospace;">Space</kbd>
+                </div>
+                <div class="shortcut-item" style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="color: var(--text-secondary);">Toggle Metronome</span>
+                    <kbd style="background: var(--bg-dark); padding: 2px 8px; border-radius: 4px; font-family: monospace;">M</kbd>
+                </div>
+                <div class="shortcut-item" style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="color: var(--text-secondary);">Toggle Loop</span>
+                    <kbd style="background: var(--bg-dark); padding: 2px 8px; border-radius: 4px; font-family: monospace;">L</kbd>
+                </div>
+                <div class="shortcut-item" style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="color: var(--text-secondary);">BPM Up/Down</span>
+                    <kbd style="background: var(--bg-dark); padding: 2px 8px; border-radius: 4px; font-family: monospace;">↑ ↓</kbd>
+                </div>
+                <div class="shortcut-item" style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="color: var(--text-secondary);">BPM Presets</span>
+                    <kbd style="background: var(--bg-dark); padding: 2px 8px; border-radius: 4px; font-family: monospace;">1-9</kbd>
+                </div>
+                <div class="shortcut-item" style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="color: var(--text-secondary);">Close Modals</span>
+                    <kbd style="background: var(--bg-dark); padding: 2px 8px; border-radius: 4px; font-family: monospace;">Esc</kbd>
+                </div>
+                <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 12px; color: var(--text-secondary);">
+                    <div>• Hold Shift with ↑↓ for ±10 BPM</div>
+                    <div>• Number keys: 1=60, 2=80, 3=100...</div>
+                </div>
+            </div>
+        `;
+        
+        // Toggle guide visibility
+        guideButton.addEventListener('click', () => {
+            const isVisible = guidePanel.style.display === 'block';
+            guidePanel.style.display = isVisible ? 'none' : 'block';
+            guideButton.style.transform = isVisible ? '' : 'scale(1.1)';
+        });
+        
+        // Close guide when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!guideButton.contains(e.target) && !guidePanel.contains(e.target)) {
+                guidePanel.style.display = 'none';
+                guideButton.style.transform = '';
+            }
+        });
+        
+        // Append to document
+        document.body.appendChild(guideButton);
+        document.body.appendChild(guidePanel);
     }
     
     checkAudioInitialization() {
@@ -1088,7 +1275,27 @@ export class UnifiedPracticeMinimal {
                 const success = await this.audioPlayer.loadFile(file);
                 if (success) {
                     this.uiController.showAudioFileName(file.name);
+                    // Update saved loops list when a new file is loaded
+                    this.updateAudioSavedLoopsList();
+                    
+                    // Initialize audio loop save functionality
+                    this.initializeAudioLoopSaveFeature();
                 }
+            }
+        });
+        
+        // Add event delegation for saved loops list
+        document.getElementById('audioSavedLoopsList')?.addEventListener('click', (e) => {
+            const loopItem = e.target.closest('.audio-loop-item');
+            const deleteBtn = e.target.closest('.audio-loop-delete');
+            
+            if (loopItem) {
+                const index = parseInt(loopItem.dataset.index);
+                this.loadAudioLoop(index);
+            } else if (deleteBtn) {
+                e.stopPropagation(); // Prevent triggering the load when clicking delete
+                const index = parseInt(deleteBtn.dataset.index);
+                this.deleteAudioLoop(index);
             }
         });
     }
@@ -1104,6 +1311,15 @@ export class UnifiedPracticeMinimal {
                     await this.youtubePlayer.loadVideo(url);
                     this.uiController.showYouTubePlayer();
                     this.initializeYouTubeUI();
+                    
+                    // Ensure play button shows correct initial state
+                    const playPauseBtn = document.getElementById('youtubePlayPauseBtn');
+                    if (playPauseBtn) {
+                        const iconPlay = playPauseBtn.querySelector('.icon-play');
+                        const iconPause = playPauseBtn.querySelector('.icon-pause');
+                        if (iconPlay) iconPlay.style.display = 'block';
+                        if (iconPause) iconPause.style.display = 'none';
+                    }
                 } catch (error) {
                     this.uiController.showNotification('Failed to load YouTube video', 'error');
                 }
@@ -1171,6 +1387,8 @@ export class UnifiedPracticeMinimal {
                 if (this.youtubePlayer && this.youtubePlayer.player) {
                     const duration = this.youtubePlayer.getDuration();
                     const seekTime = clickPercent * duration;
+                    
+                    // Simply seek to the clicked position without affecting play state
                     this.youtubePlayer.seekTo(seekTime);
                     
                     // Immediately update the position line
@@ -1268,14 +1486,23 @@ export class UnifiedPracticeMinimal {
             const iconPlay = playPauseBtn.querySelector('.icon-play');
             const iconPause = playPauseBtn.querySelector('.icon-pause');
             
-            if (this.youtubePlayer.player?.getPlayerState() === YT.PlayerState.PLAYING) {
-                this.youtubePlayer.pause();
-                iconPlay.style.display = 'block';
-                iconPause.style.display = 'none';
-            } else {
-                this.youtubePlayer.play();
-                iconPlay.style.display = 'none';
-                iconPause.style.display = 'block';
+            // Check if player is ready and get current state
+            if (this.youtubePlayer.player && this.youtubePlayer.ready) {
+                try {
+                    const playerState = this.youtubePlayer.player.getPlayerState();
+                    
+                    if (playerState === 1) { // 1 = YT.PlayerState.PLAYING
+                        this.youtubePlayer.pause();
+                        iconPlay.style.display = 'block';
+                        iconPause.style.display = 'none';
+                    } else {
+                        this.youtubePlayer.play();
+                        iconPlay.style.display = 'none';
+                        iconPause.style.display = 'block';
+                    }
+                } catch (e) {
+                    console.error('Error toggling play/pause:', e);
+                }
             }
         });
 
@@ -1289,13 +1516,13 @@ export class UnifiedPracticeMinimal {
             if (iconPause) iconPause.style.display = 'none';
         });
 
-        // Loop controls
+        // Loop controls (in main control area)
         document.getElementById('youtubeLoopStartBtn')?.addEventListener('click', () => {
             const time = this.youtubePlayer.getCurrentTime();
             this.youtubePlayer.loopStart = time;
             document.getElementById('youtubeLoopStartTime').textContent = this.formatTime(time);
             this.updateYouTubeLoopInfo();
-            this.drawYouTubeWaveform(); // Redraw to show loop region
+            this.drawYouTubeWaveform();
         });
 
         document.getElementById('youtubeLoopEndBtn')?.addEventListener('click', () => {
@@ -1303,7 +1530,7 @@ export class UnifiedPracticeMinimal {
             this.youtubePlayer.loopEnd = time;
             document.getElementById('youtubeLoopEndTime').textContent = this.formatTime(time);
             this.updateYouTubeLoopInfo();
-            this.drawYouTubeWaveform(); // Redraw to show loop region
+            this.drawYouTubeWaveform();
         });
 
         document.getElementById('youtubeLoopToggleBtn')?.addEventListener('click', () => {
@@ -1313,6 +1540,7 @@ export class UnifiedPracticeMinimal {
             if (toggleBtn) {
                 toggleBtn.style.background = isLooping ? 'var(--primary, #6366f1)' : 'var(--bg-card, #374151)';
             }
+            // No checkbox to update - using toggle button only
         });
 
         document.getElementById('youtubeLoopClearBtn')?.addEventListener('click', () => {
@@ -1324,7 +1552,7 @@ export class UnifiedPracticeMinimal {
             if (toggleBtn) {
                 toggleBtn.style.background = 'var(--bg-card, #374151)';
             }
-            this.drawYouTubeWaveform(); // Redraw to clear loop region
+            this.drawYouTubeWaveform();
         });
 
         // Speed control
@@ -1363,6 +1591,8 @@ export class UnifiedPracticeMinimal {
             this.uiController.showNotification('Pitch control requires the Transpose Chrome Extension for YouTube videos', 'info');
         });
 
+        // Removed duplicate loop controls event listeners - now using only the main control buttons
+        
         // Save loop
         document.getElementById('youtubeSaveLoopBtn')?.addEventListener('click', () => {
             this.showSaveLoopModal();
@@ -1394,18 +1624,72 @@ export class UnifiedPracticeMinimal {
         document.getElementById('youtubeCurrentTime').textContent = this.formatTime(state.currentTime);
         document.getElementById('youtubeDuration').textContent = this.formatTime(state.duration);
         
+        // Update play/pause button state
+        const playPauseBtn = document.getElementById('youtubePlayPauseBtn');
+        if (playPauseBtn) {
+            const iconPlay = playPauseBtn.querySelector('.icon-play');
+            const iconPause = playPauseBtn.querySelector('.icon-pause');
+            
+            if (state.isPlaying) {
+                if (iconPlay) iconPlay.style.display = 'none';
+                if (iconPause) iconPause.style.display = 'block';
+            } else {
+                if (iconPlay) iconPlay.style.display = 'block';
+                if (iconPause) iconPause.style.display = 'none';
+            }
+        }
+        
         // Update waveform position immediately
         this.updateYouTubeWaveformPosition(state.currentTime, state.duration);
     }
 
     updateYouTubeLoopInfo() {
         const loopInfo = document.getElementById('youtubeLoopInfo');
+        const saveBtn = document.getElementById('youtubeSaveLoopBtn');
+        
+        // Update all elements with loop time info (there might be multiple)
+        const allStartTimeElements = document.querySelectorAll('[id="youtubeLoopStartTime"]');
+        const allEndTimeElements = document.querySelectorAll('[id="youtubeLoopEndTime"]');
+        
         if (this.youtubePlayer.loopStart !== null && this.youtubePlayer.loopEnd !== null) {
-            loopInfo.style.display = 'block';
+            if (loopInfo) loopInfo.style.display = 'block';
+            
+            // Update all instances of loop times
+            allStartTimeElements.forEach(el => {
+                el.textContent = this.formatTime(this.youtubePlayer.loopStart);
+            });
+            allEndTimeElements.forEach(el => {
+                el.textContent = this.formatTime(this.youtubePlayer.loopEnd);
+            });
+            
             const duration = this.youtubePlayer.loopEnd - this.youtubePlayer.loopStart;
-            document.getElementById('youtubeLoopDuration').textContent = `(${this.formatTime(duration)})`;
+            const durationEl = document.getElementById('youtubeLoopDuration');
+            if (durationEl) {
+                durationEl.textContent = `(${this.formatTime(duration)})`;
+            }
+            
+            // Show save button when we have a valid loop
+            if (saveBtn) {
+                saveBtn.style.display = 'inline-block';
+                console.log('Showing YouTube save loop button');
+            } else {
+                console.log('YouTube save loop button not found!');
+            }
         } else {
-            loopInfo.style.display = 'none';
+            if (loopInfo) loopInfo.style.display = 'none';
+            
+            // Reset all instances
+            allStartTimeElements.forEach(el => {
+                el.textContent = '--:--';
+            });
+            allEndTimeElements.forEach(el => {
+                el.textContent = '--:--';
+            });
+            
+            // Hide save button when no loop
+            if (saveBtn) {
+                saveBtn.style.display = 'none';
+            }
         }
     }
 
@@ -1750,6 +2034,150 @@ export class UnifiedPracticeMinimal {
             this.uiController.showNotification('Loop deleted', 'info');
         }
     }
+    
+    // Audio Loop Methods
+    updateAudioSavedLoopsList() {
+        const loopController = this.audioPlayer?.audioPlayer?.loopController;
+        if (!loopController) return;
+        
+        const container = document.getElementById('audioSavedLoopsList');
+        const section = document.getElementById('audioSavedLoopsSection');
+        
+        if (!container || !section) return;
+        
+        const loops = loopController.savedLoops || [];
+        
+        if (loops.length === 0) {
+            container.innerHTML = '<p class="no-loops-message" style="text-align: center; color: var(--text-muted); font-size: 14px;">No saved loops yet</p>';
+            section.style.display = 'none';
+        } else {
+            section.style.display = 'block';
+            container.innerHTML = loops.map((loop, index) => `
+                <div class="saved-loop-item" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-bottom: 1px solid var(--border); cursor: pointer;">
+                    <div class="audio-loop-item" data-index="${index}" style="flex: 1;">
+                        <div style="font-weight: 500;">${loop.name}</div>
+                        <div style="font-size: 11px; color: var(--text-muted);">
+                            ${this.formatTime(loop.start)} - ${this.formatTime(loop.end)}
+                        </div>
+                    </div>
+                    <button class="audio-loop-delete" data-index="${index}" 
+                            class="btn btn-xs btn-danger" 
+                            style="padding: 2px 8px; font-size: 11px;">
+                        Delete
+                    </button>
+                </div>
+            `).join('');
+        }
+    }
+    
+    loadAudioLoop(index) {
+        const loopController = this.audioPlayer?.audioPlayer?.loopController;
+        if (!loopController || !loopController.savedLoops[index]) return;
+        
+        const loop = loopController.savedLoops[index];
+        loopController.setLoopStart(loop.start);
+        loopController.setLoopEnd(loop.end);
+        loopController.setLooping(true);
+        
+        this.uiController.showNotification(`Loaded loop: ${loop.name}`, 'success');
+    }
+    
+    deleteAudioLoop(index) {
+        if (confirm('Delete this saved loop?')) {
+            const loopController = this.audioPlayer?.audioPlayer?.loopController;
+            if (loopController) {
+                loopController.deleteLoop(index);
+                this.updateAudioSavedLoopsList();
+                this.uiController.showNotification('Loop deleted', 'info');
+            }
+        }
+    }
+    
+    initializeAudioLoopSaveFeature() {
+        // Get the audio player's loop controller
+        const audioPlayer = this.audioPlayer?.audioPlayer;
+        if (!audioPlayer || !audioPlayer.loopController) return;
+        
+        // Set callback for when loops are loaded
+        audioPlayer.loopController.onLoopsLoaded = (savedLoops) => {
+            this.updateAudioSavedLoopsList();
+        };
+        
+        // Add save loop handler to the audio player
+        audioPlayer.handleLoopSave = () => {
+            this.showAudioSaveLoopModal();
+        };
+        
+        // Re-set the UI callbacks to include the save handler
+        if (audioPlayer.uiControls) {
+            audioPlayer.uiControls.setCallbacks({
+                onLoopSave: audioPlayer.handleLoopSave.bind(audioPlayer)
+            });
+        }
+    }
+    
+    showAudioSaveLoopModal() {
+        const loopController = this.audioPlayer?.audioPlayer?.loopController;
+        if (!loopController || loopController.loopStart === null || loopController.loopEnd === null) {
+            this.uiController.showNotification('Please set loop start and end points first', 'error');
+            return;
+        }
+        
+        const modal = this.uiController.showModal(this.renderAudioSaveLoopModal());
+        this.attachAudioSaveLoopHandlers(modal);
+    }
+    
+    renderAudioSaveLoopModal() {
+        const loopController = this.audioPlayer?.audioPlayer?.loopController;
+        const loopDuration = loopController.loopEnd - loopController.loopStart;
+        return `
+            <h3>Save Loop</h3>
+            <div class="save-loop-form">
+                <p>Loop: ${this.formatTime(loopController.loopStart)} - ${this.formatTime(loopController.loopEnd)} 
+                   (${this.formatTime(loopDuration)})</p>
+                
+                <div class="form-group">
+                    <label for="audioLoopName">Loop Name:</label>
+                    <input type="text" id="audioLoopName" 
+                           placeholder="e.g., Intro, Verse 1, Chorus..." 
+                           style="width: 100%; padding: 8px; margin-top: 8px;">
+                </div>
+                
+                <div class="button-group" style="margin-top: 16px;">
+                    <button class="btn btn-primary" id="confirmAudioLoopSaveBtn">Save Loop</button>
+                    <button class="btn btn-secondary" id="cancelAudioLoopSaveBtn">Cancel</button>
+                </div>
+            </div>
+        `;
+    }
+    
+    attachAudioSaveLoopHandlers(modal) {
+        const nameInput = modal.querySelector('#audioLoopName');
+        const confirmBtn = modal.querySelector('#confirmAudioLoopSaveBtn');
+        const cancelBtn = modal.querySelector('#cancelAudioLoopSaveBtn');
+        
+        confirmBtn?.addEventListener('click', () => {
+            const name = nameInput?.value.trim();
+            if (name) {
+                const loopController = this.audioPlayer?.audioPlayer?.loopController;
+                if (loopController) {
+                    loopController.saveLoop(name);
+                    this.updateAudioSavedLoopsList();
+                    modal.remove();
+                    this.uiController.showNotification('Loop saved successfully', 'success');
+                }
+            } else {
+                this.uiController.showNotification('Please enter a loop name', 'error');
+            }
+        });
+        
+        cancelBtn?.addEventListener('click', () => {
+            modal.remove();
+        });
+        
+        nameInput?.focus();
+    }
+    
 
     formatTime(seconds) {
         if (!seconds || seconds < 0) return '0:00';
@@ -1802,6 +2230,18 @@ export class UnifiedPracticeMinimal {
         if (this.tapTimeout) {
             clearTimeout(this.tapTimeout);
         }
+        
+        // Remove keyboard shortcuts
+        if (this.keyboardHandler) {
+            document.removeEventListener('keydown', this.keyboardHandler);
+            this.keyboardHandler = null;
+        }
+        
+        // Remove keyboard guide UI
+        const guideButton = document.getElementById('keyboard-shortcuts-toggle');
+        const guidePanel = document.getElementById('keyboard-shortcuts-guide');
+        if (guideButton) guideButton.remove();
+        if (guidePanel) guidePanel.remove();
         
         // Clear global references
         if (window.currentTimer === this.timer) {

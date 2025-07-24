@@ -1,4 +1,6 @@
 // Image Manager Module - Handles sheet music/image uploads
+import { LazyImage } from '../LazyImage.js';
+
 export class ImageManager {
     constructor() {
         this.currentImage = null;

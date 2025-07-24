@@ -91,6 +91,9 @@ export class UIControls {
                         <button id="loopClearBtn" class="btn-control btn-loop-clear" title="Clear Loop">
                             <span>×</span>
                         </button>
+                        <button id="loopSaveBtn" class="btn-control btn-loop-save" title="Save Loop" style="display: none;">
+                            <span>💾</span>
+                        </button>
                     </div>
                 </div>
 
@@ -369,6 +372,7 @@ export class UIControls {
         this.elements.loopEndBtn = findElement('loopEndBtn');
         this.elements.loopToggleBtn = findElement('loopToggleBtn');
         this.elements.loopClearBtn = findElement('loopClearBtn');
+        this.elements.loopSaveBtn = findElement('loopSaveBtn');
         
         // Speed controls
         this.elements.speedSlider = findElement('speedSlider');
@@ -440,6 +444,16 @@ export class UIControls {
         this.elements.loopClearBtn?.addEventListener('click', () => {
             if (this.callbacks.onLoopClear) {
                 this.callbacks.onLoopClear();
+            }
+        });
+        
+        this.elements.loopSaveBtn?.addEventListener('click', () => {
+            console.log('Loop save button clicked');
+            if (this.callbacks.onLoopSave) {
+                console.log('Calling onLoopSave callback');
+                this.callbacks.onLoopSave();
+            } else {
+                console.log('No onLoopSave callback set');
             }
         });
         
@@ -565,10 +579,20 @@ export class UIControls {
             if (this.elements.loopToggleBtn) {
                 this.elements.loopToggleBtn.classList.toggle('active', isLooping);
             }
+            
+            // Show save button when we have a valid loop
+            if (this.elements.loopSaveBtn) {
+                this.elements.loopSaveBtn.style.display = 'inline-block';
+            }
         } else {
             this.elements.loopInfo.style.display = 'none';
             if (this.elements.loopToggleBtn) {
                 this.elements.loopToggleBtn.classList.remove('active');
+            }
+            
+            // Hide save button when no loop
+            if (this.elements.loopSaveBtn) {
+                this.elements.loopSaveBtn.style.display = 'none';
             }
         }
     }

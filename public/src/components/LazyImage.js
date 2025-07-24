@@ -208,13 +208,11 @@ export class LazyAchievementBadges {
         nameDiv.className = 'achievement-name';
         nameDiv.textContent = achievement.name;
 
-        const descDiv = document.createElement('div');
-        descDiv.className = 'achievement-description';
-        descDiv.textContent = achievement.description;
+        // Remove the description div - it will be shown on hover via title attribute
+        // The description is already set as the title attribute above
 
         badgeDiv.appendChild(iconDiv);
         badgeDiv.appendChild(nameDiv);
-        badgeDiv.appendChild(descDiv);
 
         return badgeDiv;
     }

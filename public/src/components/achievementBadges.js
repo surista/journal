@@ -1,6 +1,7 @@
 // Achievement Badges Component - Fixed to handle async storage properly
 import {notificationManager} from '../services/notificationManager.js';
 import {TimeUtils} from '../utils/helpers.js';
+import {LazyAchievementBadges} from './LazyImage.js';
 
 export class AchievementBadges {
     constructor(container, storageService) {
@@ -8,6 +9,7 @@ export class AchievementBadges {
         this.storageService = storageService;
         this.achievements = this.defineAchievements();
         this.earnedAchievements = [];
+        this.lazyBadges = new LazyAchievementBadges(container);
     }
 
     defineAchievements() {
@@ -442,16 +444,13 @@ export class AchievementBadges {
     }
 
     renderBadge(achievement, isEarned) {
-        const badgeClass = isEarned ? 'badge earned' : 'badge';
-        // Format the name to add line breaks for better display
-        const formattedName = achievement.name.replace(' ', '\n');
-
-        return `
-            <div class="${badgeClass}" title="${achievement.description}">
-                <span class="badge-icon">${achievement.icon}</span>
-                <span class="badge-label">${formattedName}</span>
-            </div>
-        `;
+        // Use LazyAchievementBadges for rendering
+        const badgeElement = this.lazyBadges.renderBadge(achievement, isEarned);
+        
+        // Convert DOM element to HTML string for compatibility
+        const wrapper = document.createElement('div');
+        wrapper.appendChild(badgeElement);
+        return wrapper.innerHTML;
     }
 
     attachEventListeners() {
@@ -618,6 +617,11 @@ export class AchievementBadges {
 
     destroy() {
         try {
+            // Clean up lazy loader
+            if (this.lazyBadges) {
+                this.lazyBadges.destroy();
+            }
+            
             // Remove event listeners
             window.removeEventListener('practiceSessionSaved', this.checkAchievements);
         } catch (error) {

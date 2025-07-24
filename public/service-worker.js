@@ -1,6 +1,6 @@
 // service-worker.js - Updated with proper cache management
-const CACHE_NAME = 'guitar-practice-journal-v10.88'; // Update version
-const CACHE_VERSION = '10.88';
+const CACHE_NAME = 'guitar-practice-journal-v10.89'; // Update version
+const CACHE_VERSION = '10.89';
 
 // Files to cache - be specific about what we cache
 const STATIC_CACHE_URLS = [
@@ -23,7 +23,7 @@ const STATIC_CACHE_URLS = [
     './src/services/notificationManager.js',
 
     // Component files
-    './src/components/timer.js',
+    './src/components/modules/timer.js',
     './src/components/practiceForm.js',
     './src/components/audioPlayer.js',
     './src/components/metronome.js',

@@ -230,9 +230,10 @@ export class SessionManager {
     async showRestorePrompt(duration) {
         return new Promise((resolve) => {
             const modal = document.createElement('div');
-            modal.className = 'restore-session-modal';
+            modal.className = 'restore-session-modal modal';
             modal.innerHTML = `
                 <div class="modal-content">
+                    <button class="modal-close" aria-label="Close" title="Start fresh session">×</button>
                     <h3>Restore Previous Session?</h3>
                     <p>You had a session in progress (${this.formatDuration(duration)} elapsed).</p>
                     <p>Would you like to continue where you left off?</p>
@@ -242,18 +243,146 @@ export class SessionManager {
                     </div>
                 </div>
             `;
-
+            
+            // Add inline styles for the modal
+            const style = document.createElement('style');
+            style.textContent = `
+                .restore-session-modal {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: rgba(0, 0, 0, 0.5);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 10000;
+                }
+                
+                .restore-session-modal .modal-content {
+                    background: var(--bg-card, #fff);
+                    padding: 2rem;
+                    border-radius: 12px;
+                    max-width: 500px;
+                    width: 90%;
+                    position: relative;
+                    box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
+                }
+                
+                .restore-session-modal .modal-close {
+                    position: absolute;
+                    top: 10px;
+                    right: 10px;
+                    background: none;
+                    border: none;
+                    font-size: 28px;
+                    cursor: pointer;
+                    color: var(--text-secondary);
+                    width: 40px;
+                    height: 40px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 50%;
+                    transition: all 0.2s;
+                }
+                
+                .restore-session-modal .modal-close:hover {
+                    background: var(--bg-hover, rgba(0, 0, 0, 0.1));
+                    color: var(--text-primary);
+                }
+                
+                .restore-session-modal h3 {
+                    margin: 0 0 1rem 0;
+                    color: var(--text-primary);
+                }
+                
+                .restore-session-modal p {
+                    margin: 0.5rem 0;
+                    color: var(--text-secondary);
+                }
+                
+                .restore-session-modal .button-group {
+                    display: flex;
+                    gap: 1rem;
+                    margin-top: 1.5rem;
+                }
+                
+                .restore-session-modal .btn {
+                    flex: 1;
+                    padding: 0.75rem 1.5rem;
+                    border: none;
+                    border-radius: 8px;
+                    font-size: 16px;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                }
+                
+                .restore-session-modal .btn-primary {
+                    background: var(--primary, #6366f1);
+                    color: white;
+                }
+                
+                .restore-session-modal .btn-primary:hover {
+                    background: var(--primary-hover, #4f46e5);
+                }
+                
+                .restore-session-modal .btn-secondary {
+                    background: var(--bg-secondary, #374151);
+                    color: var(--text-primary);
+                }
+                
+                .restore-session-modal .btn-secondary:hover {
+                    background: var(--bg-hover, #4b5563);
+                }
+                
+                @media (max-width: 640px) {
+                    .restore-session-modal .modal-content {
+                        padding: 1.5rem;
+                    }
+                    
+                    .restore-session-modal .button-group {
+                        flex-direction: column;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+            
             document.body.appendChild(modal);
-
+            
+            // Event listeners
+            const closeModal = () => {
+                modal.remove();
+                style.remove();
+                resolve(false);
+            };
+            
             document.getElementById('restoreYes').addEventListener('click', () => {
                 modal.remove();
+                style.remove();
                 resolve(true);
             });
-
-            document.getElementById('restoreNo').addEventListener('click', () => {
-                modal.remove();
-                resolve(false);
+            
+            document.getElementById('restoreNo').addEventListener('click', closeModal);
+            
+            modal.querySelector('.modal-close').addEventListener('click', closeModal);
+            
+            // Close on background click
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeModal();
+                }
             });
+            
+            // Close on escape key
+            const handleEscape = (e) => {
+                if (e.key === 'Escape') {
+                    closeModal();
+                    document.removeEventListener('keydown', handleEscape);
+                }
+            };
+            document.addEventListener('keydown', handleEscape);
         });
     }
 

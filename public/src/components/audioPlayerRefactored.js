@@ -127,6 +127,11 @@ export class AudioPlayer {
             this.uiControls.updateLoopCount(loopCount);
         };
         
+        this.loopController.onLoopsLoaded = (savedLoops) => {
+            // This will be handled by the unified practice component
+            // which will update the saved loops UI
+        };
+        
         this.loopController.onTempoChange = (newTempo) => {
             this.pitchTempoController.setSpeed(newTempo);
             this.audioCore.setPlaybackRate(newTempo);
@@ -147,6 +152,7 @@ export class AudioPlayer {
         this.waveformController.onSeek = this.handleSeek.bind(this);
         
         // Connect UI callbacks
+        console.log('Setting up UI callbacks, handleLoopSave exists:', !!this.handleLoopSave);
         this.uiControls.setCallbacks({
             onPlayPause: this.handlePlayPause.bind(this),
             onStop: this.handleStop.bind(this),
@@ -154,6 +160,7 @@ export class AudioPlayer {
             onLoopEnd: this.handleLoopEnd.bind(this),
             onLoopToggle: this.handleLoopToggle.bind(this),
             onLoopClear: this.handleLoopClear.bind(this),
+            onLoopSave: this.handleLoopSave ? this.handleLoopSave.bind(this) : null,
             onSpeedChange: this.handleSpeedChange.bind(this),
             onPitchChange: this.handlePitchChange.bind(this)
         });
@@ -205,6 +212,9 @@ export class AudioPlayer {
                 this.currentFileName = file.name;
                 this.isYouTubeMode = false;
                 
+                // Set current file in loop controller and load saved loops
+                this.loopController.setCurrentFile(file.name);
+                
                 // Generate waveform
                 await this.waveformController.generateWaveform(audioBuffer);
                 
@@ -241,6 +251,9 @@ export class AudioPlayer {
             if (success) {
                 this.currentFileName = fileName;
                 this.isYouTubeMode = false;
+                
+                // Set current file in loop controller and load saved loops
+                this.loopController.setCurrentFile(fileName);
                 
                 // Generate waveform
                 await this.waveformController.generateWaveform(audioBuffer);

@@ -6,6 +6,10 @@ export class LoopController {
         this.isLooping = false;
         this.loopCount = 0;
         
+        // Saved loops for current file
+        this.savedLoops = [];
+        this.currentFileName = null;
+        
         // Tempo progression for loops
         this.tempoProgression = {
             enabled: false,
@@ -21,6 +25,7 @@ export class LoopController {
         this.onLoopUpdate = null;
         this.onLoopComplete = null;
         this.onTempoChange = null;
+        this.onLoopsLoaded = null;
     }
 
     setLoopStart(time, duration) {
@@ -260,5 +265,91 @@ export class LoopController {
         this.clearLoop();
         this.loopCount = 0;
         this.resetTempoProgression();
+    }
+    
+    // Save/Load functionality
+    setCurrentFile(fileName) {
+        this.currentFileName = fileName;
+        this.loadSavedLoops();
+    }
+    
+    saveLoop(name) {
+        if (!this.currentFileName || this.loopStart === null || this.loopEnd === null) {
+            return false;
+        }
+        
+        const loop = {
+            name: name,
+            start: this.loopStart,
+            end: this.loopEnd,
+            timestamp: Date.now()
+        };
+        
+        // Save to storage
+        const storageKey = `audio_loops_${this.currentFileName}`;
+        let savedLoops = [];
+        try {
+            const stored = localStorage.getItem(storageKey);
+            savedLoops = stored ? JSON.parse(stored) : [];
+        } catch (e) {
+            console.error('Error loading saved loops:', e);
+        }
+        savedLoops.push(loop);
+        localStorage.setItem(storageKey, JSON.stringify(savedLoops));
+        
+        this.savedLoops = savedLoops;
+        
+        if (this.onLoopsLoaded) {
+            this.onLoopsLoaded(this.savedLoops);
+        }
+        
+        return true;
+    }
+    
+    loadSavedLoops() {
+        if (!this.currentFileName) return;
+        
+        const storageKey = `audio_loops_${this.currentFileName}`;
+        try {
+            const stored = localStorage.getItem(storageKey);
+            this.savedLoops = stored ? JSON.parse(stored) : [];
+        } catch (e) {
+            console.error('Error loading saved loops:', e);
+            this.savedLoops = [];
+        }
+        
+        if (this.onLoopsLoaded) {
+            this.onLoopsLoaded(this.savedLoops);
+        }
+        
+        return this.savedLoops;
+    }
+    
+    loadLoop(index) {
+        if (index >= 0 && index < this.savedLoops.length) {
+            const loop = this.savedLoops[index];
+            this.loopStart = loop.start;
+            this.loopEnd = loop.end;
+            this.updateLoopState();
+            return loop;
+        }
+        return null;
+    }
+    
+    deleteLoop(index) {
+        if (index >= 0 && index < this.savedLoops.length) {
+            this.savedLoops.splice(index, 1);
+            
+            // Update storage
+            const storageKey = `audio_loops_${this.currentFileName}`;
+            localStorage.setItem(storageKey, JSON.stringify(this.savedLoops));
+            
+            if (this.onLoopsLoaded) {
+                this.onLoopsLoaded(this.savedLoops);
+            }
+            
+            return true;
+        }
+        return false;
     }
 }

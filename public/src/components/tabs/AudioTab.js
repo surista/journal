@@ -1,4 +1,4 @@
-import {Timer} from '../timer.js';
+import {Timer} from '../modules/timer.js';
 import {PracticeForm} from '../practiceForm.js';
 import {AudioPlayer} from '../audioPlayerRefactored.js';
 

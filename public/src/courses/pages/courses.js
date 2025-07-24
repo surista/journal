@@ -1,6 +1,7 @@
 import courseService from '../services/courseService.js';
 import { showToast } from '../../utils/toast.js';
 import { escapeHtml, sanitizeUrl } from '../../utils/sanitizer.js';
+import { LazyImage } from '../../components/LazyImage.js';
 
 class CoursesPage {
     constructor(storageService, authService) {
@@ -10,6 +11,10 @@ class CoursesPage {
         this.userProgress = {};
         this.selectedCourse = null;
         this.selectedLesson = null;
+        this.lazyLoader = new LazyImage({
+            rootMargin: '100px',
+            showSpinner: true
+        });
     }
 
     async render(container) {
@@ -74,38 +79,69 @@ class CoursesPage {
             return;
         }
 
-        courseList.innerHTML = this.courses.map(course => {
+        // Clear existing content
+        courseList.innerHTML = '';
+        
+        // Create course cards with lazy loaded images
+        this.courses.forEach(course => {
             const progress = this.userProgress[course.id];
             const progressPercent = Math.min(100, Math.max(0, progress?.percentComplete || 0));
             
-            return `
-                <div class="course-card" data-course-id="${escapeHtml(course.id)}">
-                    <div class="course-thumbnail">
-                        ${course.thumbnail 
-                            ? `<img src="${sanitizeUrl(course.thumbnail) || ''}" alt="${escapeHtml(course.title)}">`
-                            : `<div class="placeholder-thumb">${this.getIcon(course.category)}</div>`
-                        }
-                        <div class="course-difficulty ${escapeHtml(course.difficulty)}">${escapeHtml(course.difficulty)}</div>
-                    </div>
-                    <div class="course-info">
-                        <h3>${escapeHtml(course.title)}</h3>
-                        <p>${escapeHtml(course.description)}</p>
-                        <div class="course-meta">
-                            <span class="lesson-count">${escapeHtml(course.lessons.length)} lessons</span>
-                            <span class="duration">~${escapeHtml(course.estimatedHours)}h</span>
-                        </div>
-                        ${progress ? `
-                            <div class="course-progress">
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: ${progressPercent}%"></div>
-                                </div>
-                                <span class="progress-text">${escapeHtml(progress.completedLessons)}/${escapeHtml(progress.totalLessons)} completed</span>
-                            </div>
-                        ` : ''}
-                    </div>
+            const courseCard = document.createElement('div');
+            courseCard.className = 'course-card';
+            courseCard.setAttribute('data-course-id', course.id);
+            
+            // Create thumbnail container
+            const thumbnailDiv = document.createElement('div');
+            thumbnailDiv.className = 'course-thumbnail';
+            
+            if (course.thumbnail) {
+                // Use lazy loading for thumbnail
+                const lazyImage = this.lazyLoader.create(
+                    sanitizeUrl(course.thumbnail) || '',
+                    course.title,
+                    {
+                        className: 'course-thumb-img',
+                        showSpinner: true,
+                        placeholder: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect width="100" height="100" fill="%23f3f4f6"/%3E%3C/svg%3E'
+                    }
+                );
+                thumbnailDiv.appendChild(lazyImage);
+            } else {
+                thumbnailDiv.innerHTML = `<div class="placeholder-thumb">${this.getIcon(course.category)}</div>`;
+            }
+            
+            // Add difficulty badge
+            const difficultyDiv = document.createElement('div');
+            difficultyDiv.className = `course-difficulty ${course.difficulty}`;
+            difficultyDiv.textContent = course.difficulty;
+            thumbnailDiv.appendChild(difficultyDiv);
+            
+            courseCard.appendChild(thumbnailDiv);
+            
+            // Add the rest of the course card content
+            const infoDiv = document.createElement('div');
+            infoDiv.className = 'course-info';
+            infoDiv.innerHTML = `
+                <h3>${escapeHtml(course.title)}</h3>
+                <p>${escapeHtml(course.description)}</p>
+                <div class="course-meta">
+                    <span class="lesson-count">${escapeHtml(course.lessons.length)} lessons</span>
+                    <span class="duration">~${escapeHtml(course.estimatedHours)}h</span>
                 </div>
+                ${progress ? `
+                    <div class="course-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${progressPercent}%"></div>
+                        </div>
+                        <span class="progress-text">${escapeHtml(progress.completedLessons)}/${escapeHtml(progress.totalLessons)} completed</span>
+                    </div>
+                ` : ''}
             `;
-        }).join('');
+            
+            courseCard.appendChild(infoDiv);
+            courseList.appendChild(courseCard);
+        });
         
         // Add click listeners to course cards
         courseList.querySelectorAll('.course-card').forEach(card => {
@@ -671,6 +707,11 @@ class CoursesPage {
     }
     
     cleanup() {
+        // Clean up lazy loader
+        if (this.lazyLoader) {
+            this.lazyLoader.disconnect();
+        }
+        
         // Remove modals when leaving the page
         const courseModal = document.getElementById('courseModal');
         const lessonModal = document.getElementById('lessonModal');

@@ -159,12 +159,14 @@ export class YouTubePlayer {
     }
 
     onPlayerStateChange(event) {
-        if (event.data === YT.PlayerState.PLAYING) {
+        // Use numeric constants instead of YT.PlayerState
+        // 1 = PLAYING, 2 = PAUSED
+        if (event.data === 1) { // PLAYING
             // Handle timer sync if needed
             if (this.syncWithTimer && window.currentTimer && !window.currentTimer.isRunning) {
                 window.currentTimer.start();
             }
-        } else if (event.data === YT.PlayerState.PAUSED) {
+        } else if (event.data === 2) { // PAUSED
             // Handle timer sync if needed
             if (this.syncWithTimer && window.currentTimer && window.currentTimer.isRunning) {
                 window.currentTimer.pause();
@@ -192,7 +194,7 @@ export class YouTubePlayer {
                     this.onUpdateCallback({
                         currentTime,
                         duration,
-                        isPlaying: this.player.getPlayerState() === YT.PlayerState.PLAYING
+                        isPlaying: this.player.getPlayerState() === 1 // 1 = PLAYING
                     });
                 }
             }
@@ -382,6 +384,10 @@ export class YouTubePlayer {
 
     getDuration() {
         return this.player && this.ready ? this.player.getDuration() : 0;
+    }
+    
+    get isPlaying() {
+        return this.player && this.ready && this.player.getPlayerState() === 1; // 1 = PLAYING
     }
 
     getState() {
