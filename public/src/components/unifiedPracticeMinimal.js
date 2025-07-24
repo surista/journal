@@ -1607,6 +1607,9 @@ export class UnifiedPracticeMinimal {
         
         // Draw YouTube waveform visualization
         this.drawYouTubeWaveform();
+        
+        // Load and display saved loops for this video
+        this.updateSavedLoopsList();
     }
     
     drawYouTubeWaveform() {
@@ -2276,16 +2279,17 @@ export class UnifiedPracticeMinimal {
                 sessionData.timeSignature = this.metronome.state.timeSignature;
             }
             
-            // Save the practice entry
+            // Save the practice entry with all the session data
             const practiceEntry = {
                 ...sessionData,
-                id: Date.now() + Math.random()
+                id: Date.now() + Math.random(),
+                state: this.getComponentsState()  // Add state for session restoration
             };
             
             await this.storageService.savePracticeEntry(practiceEntry);
             
-            // Also save session state for restore
-            const session = await this.sessionManager.saveSession(name, duration, this.getComponentsState());
+            // Don't also call sessionManager.saveSession to avoid duplicate entries
+            const session = practiceEntry;
             
             if (session && this.onSaveCallback) {
                 this.onSaveCallback(session);

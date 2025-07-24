@@ -49,6 +49,13 @@ export class HistoryTab {
             this.exportHistory();
         });
 
+        // Listen for new practice sessions
+        this.practiceSessionListener = (e) => {
+            // Reload history when a new session is saved
+            this.loadHistory();
+        };
+        window.addEventListener('practiceSessionSaved', this.practiceSessionListener);
+
         // Delete session buttons using event delegation on the container
         this.container.addEventListener('click', async (e) => {
             // Handle YouTube practice links
@@ -748,6 +755,12 @@ export class HistoryTab {
     }
 
     destroy() {
+        // Remove event listeners
+        if (this.practiceSessionListener) {
+            window.removeEventListener('practiceSessionSaved', this.practiceSessionListener);
+            this.practiceSessionListener = null;
+        }
+        
         this.allSessions = [];
         this.container = null;
     }
