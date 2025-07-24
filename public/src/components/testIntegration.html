@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UnifiedPracticeMinimal Module Integration Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+        .test-results {
+            background-color: #2a2a2a;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .success {
+            color: #4caf50;
+        }
+        .error {
+            color: #f44336;
+        }
+        .info {
+            color: #2196f3;
+        }
+        #unifiedPracticeContainer {
+            background-color: #2a2a2a;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>UnifiedPracticeMinimal Module Integration Test</h1>
+    
+    <div class="test-results" id="testResults">
+        <h2>Test Results:</h2>
+        <div id="results"></div>
+    </div>
+    
+    <div id="unifiedPracticeContainer">
+        <!-- Component will render here -->
+    </div>
+
+    <script type="module">
+        import { UnifiedPracticeMinimal } from './unifiedPracticeMinimal.js';
+        
+        const results = document.getElementById('results');
+        let testsPassed = 0;
+        let testsFailed = 0;
+        
+        function log(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = type;
+            div.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            results.appendChild(div);
+            console.log(message);
+        }
+        
+        async function runTests() {
+            log('Starting integration tests...', 'info');
+            
+            try {
+                // Test 1: Can create instance
+                log('Test 1: Creating UnifiedPracticeMinimal instance...');
+                const mockStorageService = {
+                    getItem: (key) => localStorage.getItem(key),
+                    setItem: (key, value) => localStorage.setItem(key, value),
+                    addSession: async (session) => { log('Mock: Session would be saved', 'info'); return session; },
+                    getSessions: async () => [],
+                    getPracticeEntries: async () => [],
+                    calculateStats: async () => ({ totalSessions: 0, currentStreak: 0, totalSeconds: 0 })
+                };
+                
+                const unifiedPractice = new UnifiedPracticeMinimal(mockStorageService);
+                log('✓ Instance created successfully', 'success');
+                testsPassed++;
+                
+                // Test 2: Check all modules are initialized
+                log('Test 2: Checking module initialization...');
+                const modules = [
+                    { name: 'timer', obj: unifiedPractice.timer },
+                    { name: 'metronome', obj: unifiedPractice.metronome },
+                    { name: 'audioPlayer', obj: unifiedPractice.audioPlayer },
+                    { name: 'youtubePlayer', obj: unifiedPractice.youtubePlayer },
+                    { name: 'sessionManager', obj: unifiedPractice.sessionManager },
+                    { name: 'imageManager', obj: unifiedPractice.imageManager },
+                    { name: 'uiController', obj: unifiedPractice.uiController }
+                ];
+                
+                let allModulesOk = true;
+                for (const module of modules) {
+                    if (module.obj) {
+                        log(`  ✓ ${module.name} module initialized`, 'success');
+                    } else {
+                        log(`  ✗ ${module.name} module missing`, 'error');
+                        allModulesOk = false;
+                    }
+                }
+                
+                if (allModulesOk) {
+                    testsPassed++;
+                } else {
+                    testsFailed++;
+                }
+                
+                // Test 3: Render method works
+                log('Test 3: Testing render method...');
+                const html = unifiedPractice.render();
+                if (html && html.includes('unified-practice-minimal')) {
+                    log('✓ Render method returns valid HTML', 'success');
+                    testsPassed++;
+                } else {
+                    log('✗ Render method failed', 'error');
+                    testsFailed++;
+                }
+                
+                // Test 4: Init method works
+                log('Test 4: Testing init method...');
+                const container = document.getElementById('unifiedPracticeContainer');
+                try {
+                    unifiedPractice.init(container);
+                    log('✓ Init method executed successfully', 'success');
+                    testsPassed++;
+                    
+                    // Test 5: Check DOM elements
+                    log('Test 5: Checking DOM elements...');
+                    const elements = [
+                        { id: 'minimalTimerDisplay', name: 'Timer Display' },
+                        { id: 'playPauseBtn', name: 'Play/Pause Button' },
+                        { id: 'metronomePanel', name: 'Metronome Panel' },
+                        { id: 'audioPanel', name: 'Audio Panel' },
+                        { id: 'youtubePanel', name: 'YouTube Panel' }
+                    ];
+                    
+                    let allElementsOk = true;
+                    for (const elem of elements) {
+                        const el = document.getElementById(elem.id);
+                        if (el) {
+                            log(`  ✓ ${elem.name} found`, 'success');
+                        } else {
+                            log(`  ✗ ${elem.name} missing`, 'error');
+                            allElementsOk = false;
+                        }
+                    }
+                    
+                    if (allElementsOk) {
+                        testsPassed++;
+                    } else {
+                        testsFailed++;
+                    }
+                    
+                    // Test 6: Timer functionality
+                    log('Test 6: Testing timer functionality...');
+                    const timer = unifiedPractice.timer;
+                    if (timer && typeof timer.start === 'function') {
+                        timer.start();
+                        const isRunning = timer.isRunning;
+                        timer.stop();
+                        if (isRunning) {
+                            log('✓ Timer start/stop works', 'success');
+                            testsPassed++;
+                        } else {
+                            log('✗ Timer did not start', 'error');
+                            testsFailed++;
+                        }
+                    } else {
+                        log('✗ Timer module not functional', 'error');
+                        testsFailed++;
+                    }
+                    
+                    // Test 7: Global timer reference
+                    log('Test 7: Testing global timer reference...');
+                    if (window.currentTimer === unifiedPractice.timer) {
+                        log('✓ Global timer reference set correctly', 'success');
+                        testsPassed++;
+                    } else {
+                        log('✗ Global timer reference not set', 'error');
+                        testsFailed++;
+                    }
+                    
+                } catch (error) {
+                    log(`✗ Init method error: ${error.message}`, 'error');
+                    console.error(error);
+                    testsFailed++;
+                }
+                
+            } catch (error) {
+                log(`✗ Critical error: ${error.message}`, 'error');
+                console.error(error);
+                testsFailed++;
+            }
+            
+            // Summary
+            log(`\n=== Test Summary ===`, 'info');
+            log(`Tests Passed: ${testsPassed}`, 'success');
+            log(`Tests Failed: ${testsFailed}`, testsFailed > 0 ? 'error' : 'info');
+            log(`Total Tests: ${testsPassed + testsFailed}`, 'info');
+            
+            if (testsFailed === 0) {
+                log('\n✅ All tests passed! The refactored module integration is working correctly.', 'success');
+            } else {
+                log('\n❌ Some tests failed. Please check the errors above.', 'error');
+            }
+        }
+        
+        // Run tests when page loads
+        window.addEventListener('load', () => {
+            setTimeout(runTests, 500);
+        });
+    </script>
+</body>
+</html>
