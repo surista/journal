@@ -12,7 +12,41 @@
     <meta name="description" content="Track your guitar practice sessions, set goals, and monitor your progress">
     <meta name="theme-color" content="#6366f1">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://unpkg.com https://www.gstatic.com https://apis.google.com https://cdn.jsdelivr.net https://www.youtube.com https://s.ytimg.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; worker-src 'self' blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' blob: https://*.firebaseapp.com https://*.firebaseio.com https://*.googleapis.com https://*.firebasestorage.googleapis.com https://securetoken.googleapis.com wss://*.firebaseio.com https://recaptchaenterprise.googleapis.com; frame-src 'self' https://www.youtube.com https://accounts.google.com https://*.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/; media-src 'self' blob:; object-src 'none'; base-uri 'self'">
-    <title>Guitar Practice Journal v10.89</title>
+    <title>Guitar Practice Journal v10.90</title>
+
+    <!-- Global promise rejection handler - must be first -->
+    <script>
+        // Catch all promise rejections as early as possible
+        window.addEventListener('unhandledrejection', function(event) {
+            // Always prevent the default error handling for null rejections
+            if (event.reason === null || event.reason === undefined || event.reason === 'null') {
+                console.warn('⚠️ Unhandled promise rejection: null (suppressed)');
+                event.preventDefault();
+                return;
+            }
+            
+            console.warn('⚠️ Unhandled promise rejection:', event.reason);
+            
+            // Prevent for known non-critical errors
+            if (event.reason && event.reason.message && (
+                event.reason.message.includes('ReCAPTCHA') ||
+                event.reason.message.includes('appCheck') ||
+                event.reason.message.includes('AudioContext') ||
+                event.reason.message.includes('cancelled')
+            )) {
+                event.preventDefault();
+                return;
+            }
+            
+            // Check if it's a cancelled promise (common in Firebase operations)
+            if (event.reason && event.reason.toString && event.reason.toString() === 'cancelled') {
+                event.preventDefault();
+                return;
+            }
+            
+            // For other errors, let them propagate normally
+        });
+    </script>
 
     <!-- Add this before your app scripts -->
     <script>
@@ -30,7 +64,7 @@
     <!-- Simplified base path detection -->
     <script>
         // Simple version tracking
-        window.APP_VERSION = '10.89';
+        window.APP_VERSION = '10.90';
         console.log('🎸 Loading Guitar Practice Journal version:', window.APP_VERSION);
 
         // Simplified base path detection
@@ -80,7 +114,18 @@
         loadToneJS();
     </script>
     <!-- SoundTouch for high-quality tempo/pitch adjustment -->
-    <script src="https://cdn.jsdelivr.net/npm/soundtouchjs@0.1.30/dist/soundtouch.min.js"></script>
+    <script>
+        // Load SoundTouch with error handling
+        (function() {
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/soundtouchjs@0.1.30/dist/soundtouch.min.js';
+            script.onerror = function() {
+                console.warn('⚠️ SoundTouch library failed to load. Pitch shifting will be unavailable.');
+                window.SoundTouch = null; // Set to null so the app knows it's not available
+            };
+            document.head.appendChild(script);
+        })();
+    </script>
     <!-- YouTube iframe API -->
     <script src="https://www.youtube.com/iframe_api"></script>
 
@@ -234,6 +279,12 @@
     });
 
     window.addEventListener('unhandledrejection', (e) => {
+        // Ignore null rejections
+        if (e.reason === null || e.reason === undefined || e.reason === 'null') {
+            e.preventDefault();
+            return;
+        }
+        
         // Ignore App Check ReCAPTCHA errors - they're non-critical
         if (e.reason && (
             (e.reason.message && e.reason.message.includes('ReCAPTCHA')) ||
@@ -260,7 +311,7 @@
             // Fallback to default text if version loading fails
             const loadingText = document.getElementById('loadingVersionText');
             if (loadingText) {
-                loadingText.textContent = 'Loading Guitar Practice Journal v10.89...';
+                loadingText.textContent = 'Loading Guitar Practice Journal v10.90...';
             }
         }
     })();
@@ -300,9 +351,14 @@
             window.app = new App();
 
             showDebugInfo('Calling app.init()...');
-            await window.app.init();
-
-            console.log('✅ App initialized successfully!');
+            try {
+                await window.app.init();
+                console.log('✅ App initialized successfully!');
+            } catch (initError) {
+                console.error('App init error:', initError);
+                // Continue app loading even if some services fail
+                console.log('⚠️ App initialized with warnings');
+            }
 
             // Hide loading screen
             const loader = document.querySelector('.app-loading');
@@ -362,5 +418,6 @@
         });
     }
 </script>
+
 </body>
 </html>

@@ -20,7 +20,9 @@ class AppCheckService {
         try {
             // Only initialize if App Check is enabled for this environment
             if (!isAppCheckEnabled()) {
-                console.log('ℹ️ App Check is disabled for this environment');
+                if (isDebugEnabled()) {
+                    console.log('ℹ️ App Check is disabled for this environment');
+                }
                 return;
             }
 
@@ -44,7 +46,10 @@ class AppCheckService {
                 const tokenResponse = await this.appCheck.getToken();
                 this.token = tokenResponse.token;
             } catch (tokenError) {
-                console.warn('⚠️ Failed to get initial App Check token:', tokenError.message);
+                // Only log in debug mode to reduce console noise
+                if (isDebugEnabled()) {
+                    console.warn('⚠️ Failed to get initial App Check token:', tokenError.message);
+                }
                 // Continue without token - app will still work
             }
             

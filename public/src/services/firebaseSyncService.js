@@ -18,7 +18,10 @@ class FirebaseSyncService {
         this.retryTimeout = null;
         
         // Initialize Firebase when ready
-        this.initialize();
+        this.initialize().catch(err => {
+            // Initialization errors are logged but don't break the app
+            console.warn('Firebase initialization error:', err);
+        });
     }
 
     async initialize() {
@@ -50,8 +53,11 @@ class FirebaseSyncService {
             this.db = firebase.firestore();
             
             // Initialize App Check for additional security (non-blocking)
-            initializeAppCheck(this.app).catch(err => {
-                // App Check failure is non-critical
+            Promise.resolve(initializeAppCheck(this.app)).catch(err => {
+                // App Check failure is non-critical - log but don't throw
+                if (err !== null && err !== undefined) {
+                    console.warn('App Check initialization skipped:', err?.message || err);
+                }
             });
 
             // Enable offline persistence
@@ -86,21 +92,29 @@ class FirebaseSyncService {
             }
 
             // Set up auth state listener
-            this.auth.onAuthStateChanged(async (user) => {
-                try {
-                    this.currentUser = user;
-                    if (user) {
-                        await this.ensureUserDocument();
-                        this.processPendingWrites();
-                        // Temporarily disable real-time listeners to avoid permission errors
-                        // this.setupRealtimeListeners();
-                    } else {
-                        this.removeRealtimeListeners();
+            this.auth.onAuthStateChanged((user) => {
+                // Wrap in Promise to handle async operations properly
+                Promise.resolve().then(async () => {
+                    try {
+                        this.currentUser = user;
+                        if (user) {
+                            await this.ensureUserDocument();
+                            this.processPendingWrites();
+                            // Temporarily disable real-time listeners to avoid permission errors
+                            // this.setupRealtimeListeners();
+                        } else {
+                            this.removeRealtimeListeners();
+                        }
+                    } catch (error) {
+                        console.error('Auth state change error:', error);
+                        // Don't let auth errors prevent app from loading
                     }
-                } catch (error) {
-                    console.error('Auth state change error:', error);
-                    // Don't let auth errors prevent app from loading
-                }
+                }).catch(err => {
+                    // Catch any promise rejections
+                    if (err !== null && err !== undefined) {
+                        console.error('Auth handler error:', err);
+                    }
+                });
             });
 
             // Monitor connection state - disabled due to permission issues
