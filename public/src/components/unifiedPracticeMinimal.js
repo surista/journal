@@ -100,7 +100,7 @@ export class UnifiedPracticeMinimal {
                             
                             <div class="bpm-section">
                                 <div class="bpm-display-minimal">
-                                    <span class="bpm-value" id="bpmValue">120</span>
+                                    <span class="bpm-value" id="bpmValue">80</span>
                                     <span class="bpm-label">BPM</span>
                                 </div>
                             </div>
@@ -255,7 +255,7 @@ export class UnifiedPracticeMinimal {
                 <!-- YouTube Player -->
                 <div id="youtubePlayer" style="width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 8px; margin-bottom: 1rem; overflow: hidden;"></div>
                 
-                <!-- Waveform Visualization -->
+                <!-- Progress Bar (waveform placeholder for YouTube) -->
                 <div class="waveform-container" style="position: relative; width: 100%; height: 100px; background: var(--bg-secondary); border-radius: 8px; overflow: hidden; margin-bottom: 1rem;">
                     <canvas id="youtubeWaveformCanvas" style="width: 100%; height: 100%; display: block;"></canvas>
                     <div class="youtube-progress-bar" style="position: absolute; bottom: 0; left: 0; right: 0; height: 4px; background: rgba(255,255,255,0.1);">
@@ -265,20 +265,60 @@ export class UnifiedPracticeMinimal {
                 
                 <!-- YouTube Controls -->
                 <div class="youtube-controls">
-                    <!-- Playback Controls -->
-                    <div class="playback-controls" style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px; justify-content: center;">
-                        <button id="youtubePlayPause" class="btn btn-primary" style="padding: 12px 24px;">
-                            <i class="icon">▶️</i> Play
-                        </button>
-                        <button id="youtubeStop" class="btn btn-secondary" style="padding: 12px 24px;">
-                            <i class="icon">⏹️</i> Stop
-                        </button>
-                        <div class="time-display" style="font-family: monospace; font-size: 18px; margin-left: 16px;">
-                            <span id="youtubeCurrentTime">0:00</span> / <span id="youtubeDuration">0:00</span>
+                    <!-- Time Display -->
+                    <div class="time-display" style="text-align: center; font-size: 24px; margin-bottom: 20px; color: var(--text-primary, #e5e7eb);">
+                        <span id="youtubeCurrentTime" class="time-current">0:00</span>
+                        <span class="time-separator">/</span>
+                        <span id="youtubeDuration" class="time-duration">0:00</span>
+                    </div>
+
+                    <!-- Play/Stop and Loop Controls Combined (same as audio player) -->
+                    <div class="controls-playback-loop" style="display: flex; justify-content: center; align-items: center; gap: 20px; margin-bottom: 20px;">
+                        <div class="controls-main" style="display: flex; gap: 10px;">
+                            <button id="youtubePlayPauseBtn" class="btn-control btn-play-pause" title="Play/Pause (Space)">
+                                <svg class="icon-play" viewBox="0 0 24 24" style="width: 24px; height: 24px;">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                                <svg class="icon-pause" style="display: none; width: 24px; height: 24px;" viewBox="0 0 24 24">
+                                    <path d="M6 4h4v16H6zm8 0h4v16h-4z"/>
+                                </svg>
+                            </button>
+                            <button id="youtubeStopBtn" class="btn-control btn-stop" title="Stop">
+                                <svg viewBox="0 0 24 24" style="width: 24px; height: 24px;">
+                                    <path d="M6 6h12v12H6z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <div class="controls-separator" style="color: var(--text-secondary, #9ca3af); font-size: 24px; line-height: 1; opacity: 0.5;">|</div>
+                        
+                        <div class="controls-loop" style="display: flex; gap: 10px;">
+                            <button id="youtubeLoopStartBtn" class="btn-control btn-loop-start" title="Set Loop Start (I)">
+                                <span>[</span>
+                            </button>
+                            <button id="youtubeLoopEndBtn" class="btn-control btn-loop-end" title="Set Loop End (O)">
+                                <span>]</span>
+                            </button>
+                            <button id="youtubeLoopToggleBtn" class="btn-control btn-loop-toggle" title="Toggle Loop (L)">
+                                <svg viewBox="0 0 24 24" style="width: 24px; height: 24px;">
+                                    <path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/>
+                                </svg>
+                            </button>
+                            <button id="youtubeLoopClearBtn" class="btn-control btn-loop-clear" title="Clear Loop">
+                                <span>×</span>
+                            </button>
                         </div>
                     </div>
+
+                    <!-- Loop Info Display -->
+                    <div id="youtubeLoopInfo" class="loop-info" style="display: none; text-align: center; margin-bottom: 20px;">
+                        <span class="loop-label">Loop:</span>
+                        <span id="youtubeLoopStartTime" class="loop-time">--:--</span>
+                        <span class="loop-separator">→</span>
+                        <span id="youtubeLoopEndTime" class="loop-time">--:--</span>
+                        <span id="youtubeLoopDuration" class="loop-duration">(--:--)</span>
+                    </div>
                     
-                    ${this.renderYouTubeLoopControls()}
                     ${this.renderYouTubeAudioControls()}
                 </div>
             </div>
@@ -349,64 +389,227 @@ export class UnifiedPracticeMinimal {
     }
 
     renderYouTubeAudioControls() {
+        // Extract the exact same controls HTML from UIControls but with youtube IDs
         return `
             <!-- Audio Controls Section -->
             <div class="audio-controls-compact" style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); padding: 20px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1);">
-                <h4 style="margin-bottom: 16px; text-align: center;">Audio Controls</h4>
-                
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 16px;">
-                    <!-- Speed Control (Left) -->
-                    <div class="speed-control-compact">
-                        <label style="display: block; margin-bottom: 8px; font-size: 14px; color: var(--text-secondary);">
-                            Speed: <span id="youtubeSpeedValue" style="color: var(--primary); font-weight: 600;">100%</span>
-                        </label>
-                        <input type="range" id="youtubeSpeedSlider" min="50" max="150" value="100" step="1" class="slider" 
-                               style="width: 100%; height: 8px; background: linear-gradient(to right, #374151 0%, #6366f1 50%, #374151 100%); border-radius: 4px; outline: none; -webkit-appearance: none;">
-                        <div style="display: flex; justify-content: space-between; margin-top: 4px; font-size: 11px; color: var(--text-muted);">
-                            <span>50%</span>
-                            <span style="color: var(--text-secondary);">100%</span>
-                            <span>150%</span>
-                        </div>
+                <!-- Speed and Pitch Controls Combined (exact same as audio player) -->
+                <div class="controls-speed-pitch">
+                    <label class="control-label">Speed</label>
+                    <div class="speed-controls-group">
+                        <input type="range" id="youtubeSpeedSlider" class="slider slider-speed" 
+                               min="25" max="200" value="100" step="1">
+                        <span id="youtubeSpeedValue" class="value-display">100%</span>
                     </div>
+                    <button id="youtubeResetSpeed" class="btn-reset" title="Reset Speed">Reset</button>
                     
-                    <!-- Pitch Control (Right) -->
-                    <div class="pitch-control-compact">
-                        <label style="display: block; margin-bottom: 8px; font-size: 14px; color: var(--text-secondary);">
-                            Pitch: <span id="youtubePitchValue" style="color: var(--primary); font-weight: 600;">0</span>
-                        </label>
-                        <div class="pitch-buttons" style="display: flex; gap: 6px; justify-content: center;">
-                            <button class="pitch-btn youtube-pitch-btn" data-pitch="-1" style="flex: 1; padding: 8px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 14px;">-1</button>
-                            <button class="pitch-btn youtube-pitch-btn" data-pitch="-0.5" style="flex: 1; padding: 8px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 14px;">-½</button>
-                            <button class="pitch-btn youtube-pitch-btn" data-pitch="0.5" style="flex: 1; padding: 8px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 14px;">+½</button>
-                            <button class="pitch-btn youtube-pitch-btn" data-pitch="1" style="flex: 1; padding: 8px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 14px;">+1</button>
-                        </div>
-                        <div id="youtubePitchStatus" style="font-size: 11px; color: var(--text-muted); text-align: center; margin-top: 4px;">
-                            <button id="youtubePitchInfo" class="btn btn-xs" style="padding: 2px 6px; font-size: 10px;">ℹ️ Why Pitch is Disabled</button>
-                        </div>
+                    <label class="control-label pitch-label">Pitch</label>
+                    <div class="pitch-controls-group">
+                        <button id="youtubePitchDown" class="btn-adjust" title="Lower Pitch (-)" disabled>-</button>
+                        <span id="youtubePitchValue" class="value-display">0</span>
+                        <button id="youtubePitchUp" class="btn-adjust" title="Raise Pitch (+)" disabled>+</button>
                     </div>
+                    <button id="youtubeResetPitch" class="btn-reset" title="Reset Pitch" disabled>Reset</button>
                 </div>
                 
-                <!-- Volume Control (Bottom) -->
-                <div class="volume-control-compact">
-                    <label style="display: block; margin-bottom: 8px; font-size: 14px; color: var(--text-secondary);">
-                        Volume: <span id="youtubeVolumeValue" style="color: var(--primary); font-weight: 600;">100%</span>
-                    </label>
-                    <div class="volume-slider-container" style="display: flex; align-items: center; gap: 12px;">
-                        <i class="icon" style="font-size: 18px;">🔊</i>
-                        <input type="range" id="youtubeVolumeSlider" min="0" max="100" value="100" class="slider" 
-                               style="flex: 1; height: 8px; background: linear-gradient(to right, #374151 0%, #6366f1 100%); border-radius: 4px; outline: none; -webkit-appearance: none;">
-                    </div>
+                <div style="text-align: center; margin-top: 10px;">
+                    <button id="youtubePitchInfo" class="btn btn-xs">ℹ️ Why Pitch is Disabled</button>
                 </div>
                 
-                <!-- Reset buttons -->
-                <div style="display: flex; gap: 10px; margin-top: 16px;">
-                    <button id="youtubeResetSpeed" class="btn btn-sm btn-secondary" style="flex: 1; padding: 8px; font-size: 13px;">
-                        <i class="icon">↻</i> Reset Speed
-                    </button>
-                    <button id="youtubeResetPitch" class="btn btn-sm btn-secondary" style="flex: 1; padding: 8px; font-size: 13px;">
-                        <i class="icon">↻</i> Reset Pitch
-                    </button>
-                </div>
+                <style>
+                    .controls-speed-pitch {
+                        display: flex;
+                        gap: 15px;
+                        margin-bottom: 20px;
+                        align-items: center;
+                    }
+
+                    .pitch-label {
+                        margin-left: 20px;
+                    }
+
+                    .speed-controls-group,
+                    .pitch-controls-group {
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 10px;
+                    }
+
+                    .control-label {
+                        display: inline-block;
+                        margin-bottom: 0;
+                        color: var(--text-secondary, #9ca3af);
+                        font-size: 14px;
+                    }
+
+                    .slider {
+                        width: 200px;
+                        margin: 0 10px;
+                    }
+
+                    .btn-adjust {
+                        width: 32px;
+                        height: 32px;
+                        border-radius: 6px;
+                        border: 1px solid var(--border, #374151);
+                        background: var(--bg-card, #374151);
+                        color: var(--text-primary, #e5e7eb);
+                        cursor: pointer;
+                        font-size: 16px;
+                        font-weight: 600;
+                        transition: all 0.2s;
+                    }
+
+                    .btn-adjust:hover:not(:disabled) {
+                        background: var(--bg-hover, #4b5563);
+                    }
+
+                    .btn-adjust:disabled {
+                        opacity: 0.5;
+                        cursor: not-allowed;
+                    }
+
+                    .btn-reset {
+                        padding: 4px 12px;
+                        border-radius: 4px;
+                        border: 1px solid var(--border, #374151);
+                        background: var(--bg-secondary, #1f2937);
+                        color: var(--text-secondary, #9ca3af);
+                        cursor: pointer;
+                        font-size: 12px;
+                        transition: all 0.2s;
+                    }
+
+                    .btn-reset:hover:not(:disabled) {
+                        background: var(--bg-hover, #374151);
+                        color: var(--text-primary, #e5e7eb);
+                    }
+
+                    .btn-reset:disabled {
+                        opacity: 0.5;
+                        cursor: not-allowed;
+                    }
+
+                    .value-display {
+                        min-width: 50px;
+                        text-align: center;
+                        font-weight: 600;
+                        color: var(--primary, #6366f1);
+                    }
+
+                    .btn-xs {
+                        padding: 6px 12px;
+                        font-size: 13px;
+                        background: var(--bg-card, #374151);
+                        border: 1px solid var(--border, #4b5563);
+                        border-radius: 6px;
+                        cursor: pointer;
+                        color: var(--text-primary, #e5e7eb);
+                        transition: all 0.2s;
+                    }
+                    
+                    .btn-xs:hover {
+                        background: var(--bg-hover, #4b5563);
+                        border-color: var(--primary, #6366f1);
+                        transform: translateY(-1px);
+                    }
+
+                    @media (max-width: 768px) {
+                        .controls-speed-pitch {
+                            flex-wrap: wrap;
+                            gap: 10px;
+                        }
+                        
+                        .pitch-label {
+                            margin-left: 0;
+                            width: 100%;
+                        }
+
+                        .slider {
+                            width: 150px;
+                        }
+                    }
+
+                    /* Playback and Loop Control Styles (same as audio player) */
+                    .controls-playback-loop {
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        gap: 20px;
+                        margin-bottom: 20px;
+                    }
+
+                    .controls-main {
+                        display: flex;
+                        gap: 10px;
+                    }
+
+                    .btn-control {
+                        width: 48px;
+                        height: 48px;
+                        border-radius: 8px;
+                        border: 1px solid var(--border, #374151);
+                        background: var(--bg-card, #374151);
+                        color: var(--text-primary, #e5e7eb);
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        transition: all 0.2s;
+                    }
+
+                    .btn-control:hover {
+                        background: var(--bg-hover, #4b5563);
+                        transform: scale(1.05);
+                    }
+
+                    .btn-control svg {
+                        width: 24px;
+                        height: 24px;
+                        fill: currentColor;
+                    }
+
+                    .controls-loop {
+                        display: flex;
+                        gap: 10px;
+                    }
+
+                    .controls-separator {
+                        color: var(--text-secondary, #9ca3af);
+                        font-size: 24px;
+                        line-height: 1;
+                        opacity: 0.5;
+                    }
+
+                    .loop-info {
+                        text-align: center;
+                        padding: 10px;
+                        background: var(--bg-dark, #111827);
+                        border-radius: 8px;
+                        font-family: monospace;
+                    }
+
+                    .loop-time {
+                        color: var(--primary, #6366f1);
+                        font-weight: 600;
+                    }
+
+                    .loop-duration {
+                        color: var(--text-secondary, #9ca3af);
+                        font-size: 14px;
+                    }
+
+                    @media (max-width: 768px) {
+                        .controls-playback-loop {
+                            flex-wrap: wrap;
+                            gap: 15px;
+                        }
+                        
+                        .controls-separator {
+                            display: none;
+                        }
+                    }
+                </style>
             </div>
         `;
     }
@@ -422,6 +625,9 @@ export class UnifiedPracticeMinimal {
         
         // Set initial states
         this.setInitialStates();
+        
+        // Check and prompt for audio initialization
+        this.checkAudioInitialization();
         
         // Check for session to restore
         this.checkForSessionToLoad();
@@ -442,6 +648,9 @@ export class UnifiedPracticeMinimal {
         
         // Initialize Metronome
         this.metronome.initialize();
+        
+        // Set up BPM pulse animation
+        this.setupBpmPulseAnimation();
         
         // Initialize Audio Player
         this.audioPlayer.initialize(document.getElementById('audioPlayerContainer'));
@@ -506,16 +715,132 @@ export class UnifiedPracticeMinimal {
         // YouTube Controls
         this.attachYouTubeListeners();
         
-        // Audio context initialization
-        document.addEventListener('click', () => {
-            if (this.audioService && !this.metronome.state.audioReady) {
-                setTimeout(() => {
-                    if (this.audioService.isReady && this.audioService.isReady()) {
-                        this.metronome.state.audioReady = true;
+        // Audio context initialization is now handled by checkAudioInitialization()
+    }
+    
+    setupBpmPulseAnimation() {
+        // Add CSS for the pulse animation
+        if (!document.getElementById('bpm-pulse-styles')) {
+            const style = document.createElement('style');
+            style.id = 'bpm-pulse-styles';
+            style.textContent = `
+                @keyframes bpmPulse {
+                    0% { 
+                        transform: scale(1);
+                        text-shadow: 0 0 0 rgba(99, 102, 241, 0);
                     }
-                }, 100);
+                    20% { 
+                        transform: scale(1.1);
+                        text-shadow: 0 0 20px rgba(99, 102, 241, 0.8);
+                    }
+                    40% {
+                        transform: scale(1);
+                        text-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
+                    }
+                    100% { 
+                        transform: scale(1);
+                        text-shadow: 0 0 0 rgba(99, 102, 241, 0);
+                    }
+                }
+                
+                .bpm-value.pulsing {
+                    animation: bpmPulse 0.3s ease-out;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        // Register beat callback
+        this.metronome.onBeat((beat, isAccent) => {
+            const bpmElement = document.getElementById('bpmValue');
+            if (bpmElement && this.metronome.state.isPlaying) {
+                // Remove and re-add the class to restart animation
+                bpmElement.classList.remove('pulsing');
+                void bpmElement.offsetWidth; // Trigger reflow
+                bpmElement.classList.add('pulsing');
+                
+                // Remove class after animation completes
+                setTimeout(() => {
+                    bpmElement.classList.remove('pulsing');
+                }, 300);
             }
-        }, { once: true });
+        });
+    }
+    
+    checkAudioInitialization() {
+        // Check if audio context is already initialized
+        if (this.audioService && this.audioService.audioContext && this.audioService.audioContext.state === 'running') {
+            this.metronome.audioReady = true;
+            return;
+        }
+        
+        // Create a subtle prompt that appears above the metronome
+        const promptDiv = document.createElement('div');
+        promptDiv.className = 'audio-init-prompt';
+        promptDiv.style.cssText = `
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary, #6366f1);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            z-index: 1000;
+            cursor: pointer;
+            animation: pulse 2s infinite;
+            box-shadow: 0 2px 10px rgba(99, 102, 241, 0.3);
+        `;
+        promptDiv.innerHTML = '🎵 Click anywhere to enable audio';
+        
+        // Add animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes pulse {
+                0% { opacity: 0.8; transform: translateX(-50%) scale(1); }
+                50% { opacity: 1; transform: translateX(-50%) scale(1.05); }
+                100% { opacity: 0.8; transform: translateX(-50%) scale(1); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Find the metronome panel and add the prompt
+        const metronomePanel = document.getElementById('metronomePanel');
+        if (metronomePanel) {
+            metronomePanel.style.position = 'relative';
+            metronomePanel.appendChild(promptDiv);
+        }
+        
+        // Remove prompt once audio is initialized
+        const removePrompt = () => {
+            promptDiv.remove();
+            style.remove();
+        };
+        
+        // Enhanced click handler that initializes audio and removes prompt
+        const initAudio = async () => {
+            if (this.audioService) {
+                this.audioService.userGestureReceived = true;
+                await this.audioService.initializeAudioContext();
+                
+                if (this.metronome) {
+                    this.metronome.audioReady = true;
+                }
+                
+                removePrompt();
+                document.removeEventListener('click', initAudio);
+            }
+        };
+        
+        // Add click listener
+        document.addEventListener('click', initAudio);
+        
+        // Also remove the prompt if clicked directly
+        promptDiv.addEventListener('click', (e) => {
+            e.stopPropagation();
+            initAudio();
+        });
     }
 
     attachTimerListeners() {
@@ -572,7 +897,8 @@ export class UnifiedPracticeMinimal {
         });
 
         // Save session button
-        document.getElementById('saveSessionBtn')?.addEventListener('click', async () => {
+        const saveBtn = document.getElementById('saveSessionBtn');
+        saveBtn?.addEventListener('click', async () => {
             const duration = this.timer.getElapsedTime();
             if (duration > 0) {
                 if (this.timer.isRunning) {
@@ -581,6 +907,7 @@ export class UnifiedPracticeMinimal {
                 }
                 this.stopAllPlayback();
                 this.showSaveSessionPopup(duration);
+            } else {
             }
         });
     }
@@ -744,6 +1071,10 @@ export class UnifiedPracticeMinimal {
         const browseBtn = document.getElementById('browseAudioBtn');
 
         browseBtn?.addEventListener('click', () => {
+            // Ensure AudioService registers this user gesture
+            if (this.audioPlayer?.audioService) {
+                this.audioPlayer.audioService.userGestureReceived = true;
+            }
             this.audioPlayer.clear();
             if (fileInput) {
                 fileInput.value = '';
@@ -794,49 +1125,206 @@ export class UnifiedPracticeMinimal {
 
         // Initialize YouTube control listeners
         this.attachYouTubeControlListeners();
+        
+        // Draw YouTube waveform visualization
+        this.drawYouTubeWaveform();
+    }
+    
+    drawYouTubeWaveform() {
+        const canvas = document.getElementById('youtubeWaveformCanvas');
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width = canvas.offsetWidth;
+        const height = canvas.height = canvas.offsetHeight;
+        
+        // Store dimensions for position updates
+        this.youtubeWaveformDimensions = { width, height };
+        
+        // Clear canvas
+        ctx.clearRect(0, 0, width, height);
+        
+        // Draw a simple waveform visualization
+        const barCount = 100;
+        const barWidth = width / barCount;
+        const barGap = 1;
+        
+        ctx.fillStyle = 'rgba(99, 102, 241, 0.3)';
+        
+        for (let i = 0; i < barCount; i++) {
+            // Create a simple wave pattern
+            const barHeight = (Math.sin(i * 0.1) * 0.3 + 0.7) * height * 0.8;
+            const x = i * barWidth;
+            const y = (height - barHeight) / 2;
+            
+            ctx.fillRect(x + barGap/2, y, barWidth - barGap, barHeight);
+        }
+        
+        // Add click handler for seeking
+        if (!canvas.hasAttribute('data-click-handler')) {
+            canvas.setAttribute('data-click-handler', 'true');
+            canvas.addEventListener('click', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const clickPercent = x / width;
+                
+                if (this.youtubePlayer && this.youtubePlayer.player) {
+                    const duration = this.youtubePlayer.getDuration();
+                    const seekTime = clickPercent * duration;
+                    this.youtubePlayer.seekTo(seekTime);
+                    
+                    // Immediately update the position line
+                    this.updateYouTubeWaveformPosition(seekTime, duration);
+                }
+            });
+            
+            // Change cursor on hover
+            canvas.style.cursor = 'pointer';
+        }
+        
+        // Draw loop markers
+        this.drawYouTubeLoopMarkers(ctx, width, height);
+        
+        // Draw current playback position
+        if (this.youtubePlayer && this.youtubePlayer.player) {
+            const currentTime = this.youtubePlayer.getCurrentTime();
+            const duration = this.youtubePlayer.getDuration();
+            this.drawYouTubePlaybackPosition(ctx, currentTime, duration, width, height);
+        }
+    }
+    
+    drawYouTubeLoopMarkers(ctx, width, height) {
+        if (!this.youtubePlayer) return;
+        
+        const duration = this.youtubePlayer.getDuration();
+        if (duration <= 0) return;
+        
+        // Draw loop start marker if set
+        if (this.youtubePlayer.loopStart !== null) {
+            const loopStartX = (this.youtubePlayer.loopStart / duration) * width;
+            
+            // Draw loop start marker (green)
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(loopStartX, 0);
+            ctx.lineTo(loopStartX, height);
+            ctx.stroke();
+        }
+        
+        // Draw loop end marker if set
+        if (this.youtubePlayer.loopEnd !== null) {
+            const loopEndX = (this.youtubePlayer.loopEnd / duration) * width;
+            
+            // Draw loop end marker (red)
+            ctx.strokeStyle = '#ef4444';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(loopEndX, 0);
+            ctx.lineTo(loopEndX, height);
+            ctx.stroke();
+        }
+        
+        // Draw loop region if both markers are set
+        if (this.youtubePlayer.loopStart !== null && this.youtubePlayer.loopEnd !== null) {
+            const loopStartX = (this.youtubePlayer.loopStart / duration) * width;
+            const loopEndX = (this.youtubePlayer.loopEnd / duration) * width;
+            
+            // Draw loop region
+            ctx.fillStyle = 'rgba(99, 102, 241, 0.2)';
+            ctx.fillRect(loopStartX, 0, loopEndX - loopStartX, height);
+        }
+    }
+    
+    drawYouTubePlaybackPosition(ctx, currentTime, duration, width, height) {
+        if (duration > 0) {
+            const posX = (currentTime / duration) * width;
+            
+            // Draw position line
+            ctx.strokeStyle = 'rgba(229, 231, 235, 0.8)'; // Light grey line for current position
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(posX, 0);
+            ctx.lineTo(posX, height);
+            ctx.stroke();
+        }
+    }
+    
+    updateYouTubeWaveformPosition(currentTime, duration) {
+        const canvas = document.getElementById('youtubeWaveformCanvas');
+        if (!canvas || !this.youtubeWaveformDimensions) return;
+        
+        const ctx = canvas.getContext('2d');
+        const { width, height } = this.youtubeWaveformDimensions;
+        
+        // Redraw the waveform
+        this.drawYouTubeWaveform();
     }
 
     attachYouTubeControlListeners() {
         // Play/Pause
-        document.getElementById('youtubePlayPause')?.addEventListener('click', () => {
-            const btn = document.getElementById('youtubePlayPause');
+        const playPauseBtn = document.getElementById('youtubePlayPauseBtn');
+        playPauseBtn?.addEventListener('click', () => {
+            const iconPlay = playPauseBtn.querySelector('.icon-play');
+            const iconPause = playPauseBtn.querySelector('.icon-pause');
+            
             if (this.youtubePlayer.player?.getPlayerState() === YT.PlayerState.PLAYING) {
                 this.youtubePlayer.pause();
-                btn.innerHTML = '<i class="icon">▶️</i> Play';
+                iconPlay.style.display = 'block';
+                iconPause.style.display = 'none';
             } else {
                 this.youtubePlayer.play();
-                btn.innerHTML = '<i class="icon">⏸️</i> Pause';
+                iconPlay.style.display = 'none';
+                iconPause.style.display = 'block';
             }
         });
 
         // Stop
-        document.getElementById('youtubeStop')?.addEventListener('click', () => {
+        document.getElementById('youtubeStopBtn')?.addEventListener('click', () => {
             this.youtubePlayer.stop();
-            document.getElementById('youtubePlayPause').innerHTML = '<i class="icon">▶️</i> Play';
+            const playPauseBtn = document.getElementById('youtubePlayPauseBtn');
+            const iconPlay = playPauseBtn?.querySelector('.icon-play');
+            const iconPause = playPauseBtn?.querySelector('.icon-pause');
+            if (iconPlay) iconPlay.style.display = 'block';
+            if (iconPause) iconPause.style.display = 'none';
         });
 
         // Loop controls
-        document.getElementById('youtubeLoopStart')?.addEventListener('click', () => {
+        document.getElementById('youtubeLoopStartBtn')?.addEventListener('click', () => {
             const time = this.youtubePlayer.getCurrentTime();
             this.youtubePlayer.loopStart = time;
             document.getElementById('youtubeLoopStartTime').textContent = this.formatTime(time);
+            this.updateYouTubeLoopInfo();
+            this.drawYouTubeWaveform(); // Redraw to show loop region
         });
 
-        document.getElementById('youtubeLoopEnd')?.addEventListener('click', () => {
+        document.getElementById('youtubeLoopEndBtn')?.addEventListener('click', () => {
             const time = this.youtubePlayer.getCurrentTime();
             this.youtubePlayer.loopEnd = time;
             document.getElementById('youtubeLoopEndTime').textContent = this.formatTime(time);
+            this.updateYouTubeLoopInfo();
+            this.drawYouTubeWaveform(); // Redraw to show loop region
         });
 
-        document.getElementById('youtubeLoopClear')?.addEventListener('click', () => {
+        document.getElementById('youtubeLoopToggleBtn')?.addEventListener('click', () => {
+            const isLooping = !this.youtubePlayer.looping;
+            this.youtubePlayer.setLooping(isLooping);
+            const toggleBtn = document.getElementById('youtubeLoopToggleBtn');
+            if (toggleBtn) {
+                toggleBtn.style.background = isLooping ? 'var(--primary, #6366f1)' : 'var(--bg-card, #374151)';
+            }
+        });
+
+        document.getElementById('youtubeLoopClearBtn')?.addEventListener('click', () => {
             this.youtubePlayer.clearLoop();
             document.getElementById('youtubeLoopStartTime').textContent = '--:--';
             document.getElementById('youtubeLoopEndTime').textContent = '--:--';
-            document.getElementById('youtubeLoopEnabled').checked = false;
-        });
-
-        document.getElementById('youtubeLoopEnabled')?.addEventListener('change', (e) => {
-            this.youtubePlayer.setLooping(e.target.checked);
+            document.getElementById('youtubeLoopInfo').style.display = 'none';
+            const toggleBtn = document.getElementById('youtubeLoopToggleBtn');
+            if (toggleBtn) {
+                toggleBtn.style.background = 'var(--bg-card, #374151)';
+            }
+            this.drawYouTubeWaveform(); // Redraw to clear loop region
         });
 
         // Speed control
@@ -847,12 +1335,32 @@ export class UnifiedPracticeMinimal {
             document.getElementById('youtubeSpeedValue').textContent = `${e.target.value}%`;
         });
 
-        // Volume control
-        const volumeSlider = document.getElementById('youtubeVolumeSlider');
-        volumeSlider?.addEventListener('input', (e) => {
-            const volume = parseInt(e.target.value);
-            this.youtubePlayer.setVolume(volume);
-            document.getElementById('youtubeVolumeValue').textContent = `${volume}%`;
+        // Speed reset button
+        document.getElementById('youtubeResetSpeed')?.addEventListener('click', () => {
+            const slider = document.getElementById('youtubeSpeedSlider');
+            slider.value = 100;
+            this.youtubePlayer.setSpeed(1.0);
+            document.getElementById('youtubeSpeedValue').textContent = '100%';
+        });
+
+        // Pitch controls (disabled for YouTube)
+        let currentPitch = 0;
+        
+        document.getElementById('youtubePitchDown')?.addEventListener('click', () => {
+            // Pitch is disabled for YouTube
+        });
+
+        document.getElementById('youtubePitchUp')?.addEventListener('click', () => {
+            // Pitch is disabled for YouTube
+        });
+
+        document.getElementById('youtubeResetPitch')?.addEventListener('click', () => {
+            // Pitch is disabled for YouTube
+        });
+
+        // Pitch info button
+        document.getElementById('youtubePitchInfo')?.addEventListener('click', () => {
+            this.uiController.showNotification('Pitch control requires the Transpose Chrome Extension for YouTube videos', 'info');
         });
 
         // Save loop
@@ -885,6 +1393,20 @@ export class UnifiedPracticeMinimal {
         // Update time display
         document.getElementById('youtubeCurrentTime').textContent = this.formatTime(state.currentTime);
         document.getElementById('youtubeDuration').textContent = this.formatTime(state.duration);
+        
+        // Update waveform position immediately
+        this.updateYouTubeWaveformPosition(state.currentTime, state.duration);
+    }
+
+    updateYouTubeLoopInfo() {
+        const loopInfo = document.getElementById('youtubeLoopInfo');
+        if (this.youtubePlayer.loopStart !== null && this.youtubePlayer.loopEnd !== null) {
+            loopInfo.style.display = 'block';
+            const duration = this.youtubePlayer.loopEnd - this.youtubePlayer.loopStart;
+            document.getElementById('youtubeLoopDuration').textContent = `(${this.formatTime(duration)})`;
+        } else {
+            loopInfo.style.display = 'none';
+        }
     }
 
     updateTimerDisplay() {
@@ -945,24 +1467,78 @@ export class UnifiedPracticeMinimal {
         this.tapTimeout = setTimeout(() => { this.tapTimes = []; }, 2000);
     }
 
-    showSaveSessionPopup(duration) {
-        const modal = this.uiController.showModal(this.renderSaveSessionModal(duration), {
-            onClose: () => {
-                // Resume timer if it was paused
-                if (!this.timer.isRunning && this.timer.elapsedTime > 0) {
-                    this.timer.start();
-                    this.uiController.updateTimerControls(true);
-                }
+    async showSaveSessionPopup(duration) {
+        try {
+            console.log('showSaveSessionPopup called with duration:', duration);
+            
+            // Check if uiController exists
+            if (!this.uiController) {
+                console.error('UIController not initialized!');
+                return;
             }
-        });
-
-        // Attach save handlers
-        this.attachSaveSessionHandlers(modal, duration);
+            
+            const modalContent = await this.renderSaveSessionModal(duration);
+            console.log('Modal content generated:', modalContent);
+            
+            const modal = this.uiController.showModal(modalContent, {
+                onClose: () => {
+                    // Resume timer if it was paused
+                    if (!this.timer.isRunning && this.timer.elapsedTime > 0) {
+                        this.timer.start();
+                        this.uiController.updateTimerControls(true);
+                    }
+                }
+            });
+            
+            console.log('Modal created:', modal);
+            console.log('Modal in DOM:', document.body.contains(modal));
+            console.log('Modal styles:', {
+                display: modal.style.display,
+                visibility: modal.style.visibility,
+                opacity: modal.style.opacity,
+                zIndex: modal.style.zIndex
+            });
+            
+            // Attach save handlers
+            this.attachSaveSessionHandlers(modal, duration);
+        } catch (error) {
+            console.error('Error in showSaveSessionPopup:', error);
+            console.error('Error stack:', error.stack);
+        }
     }
 
-    renderSaveSessionModal(duration) {
+    async renderSaveSessionModal(duration) {
         const defaultName = this.sessionManager.generateSessionName();
         const formattedDuration = this.sessionManager.formatDuration(duration);
+        
+        // Get practice areas
+        const practiceAreas = [
+            'Scales', 'Chords', 'Arpeggios', 'Songs', 'Technique',
+            'Theory', 'Improvisation', 'Sight Reading', 'Ear Training', 'Rhythm'
+        ];
+        
+        // Get current media info
+        let mediaInfo = '';
+        let defaultPracticeArea = '';
+        
+        if (this.currentMode === 'audio' && this.audioPlayer.currentFileName) {
+            mediaInfo = `<p>Audio File: <strong>${this.audioPlayer.currentFileName}</strong></p>`;
+            // Try to find previous practice area for this file
+            try {
+                const previousSessions = await this.storageService.getPracticeEntries() || [];
+                const previousSession = previousSessions.find(s => s.audioFile === this.audioPlayer.currentFileName);
+                if (previousSession?.practiceArea) {
+                    defaultPracticeArea = previousSession.practiceArea;
+                }
+            } catch (e) {
+                console.log('Could not load previous sessions:', e);
+            }
+        } else if (this.currentMode === 'youtube' && this.youtubePlayer.videoTitle) {
+            const truncatedTitle = this.youtubePlayer.videoTitle.length > 50 
+                ? this.youtubePlayer.videoTitle.substring(0, 47) + '...' 
+                : this.youtubePlayer.videoTitle;
+            mediaInfo = `<p>YouTube: <strong>${truncatedTitle}</strong></p>`;
+        }
         
         return `
             <h3>Save Practice Session</h3>
@@ -970,6 +1546,7 @@ export class UnifiedPracticeMinimal {
                 <div class="session-info">
                     <p>Duration: <strong>${formattedDuration}</strong></p>
                     ${this.currentMode === 'metronome' ? `<p>BPM: <strong>${this.metronome.state.bpm}</strong></p>` : ''}
+                    ${mediaInfo}
                 </div>
                 
                 <div class="form-group">
@@ -977,6 +1554,16 @@ export class UnifiedPracticeMinimal {
                     <input type="text" id="sessionName" value="${defaultName}" 
                            placeholder="Enter session name..." 
                            style="width: 100%; padding: 8px; margin-top: 8px;">
+                </div>
+                
+                <div class="form-group" style="margin-top: 12px;">
+                    <label for="practiceArea">Practice Area:</label>
+                    <select id="practiceArea" style="width: 100%; padding: 8px; margin-top: 8px;">
+                        <option value="">Select practice area...</option>
+                        ${practiceAreas.map(area => 
+                            `<option value="${area}" ${area === defaultPracticeArea ? 'selected' : ''}>${area}</option>`
+                        ).join('')}
+                    </select>
                 </div>
                 
                 <div class="button-group" style="margin-top: 16px;">
@@ -989,16 +1576,55 @@ export class UnifiedPracticeMinimal {
 
     attachSaveSessionHandlers(modal, duration) {
         const nameInput = modal.querySelector('#sessionName');
+        const practiceAreaSelect = modal.querySelector('#practiceArea');
         const confirmBtn = modal.querySelector('#confirmSaveBtn');
         const cancelBtn = modal.querySelector('#cancelSaveBtn');
 
         confirmBtn?.addEventListener('click', async () => {
             const name = nameInput?.value.trim() || this.sessionManager.generateSessionName();
+            const practiceArea = practiceAreaSelect?.value || '';
+            
+            // Create enhanced session data
+            const sessionData = {
+                name,
+                duration,
+                date: new Date().toISOString(),
+                practiceArea,
+                mode: this.currentMode
+            };
+            
+            // Add media-specific information
+            if (this.currentMode === 'audio' && this.audioPlayer.currentFileName) {
+                sessionData.audioFile = this.audioPlayer.currentFileName;
+            } else if (this.currentMode === 'youtube') {
+                if (this.youtubePlayer.videoTitle) {
+                    sessionData.youtubeTitle = this.youtubePlayer.videoTitle.substring(0, 50);
+                }
+                if (this.youtubePlayer.videoId) {
+                    sessionData.youtubeUrl = `https://youtube.com/watch?v=${this.youtubePlayer.videoId}`;
+                }
+            } else if (this.currentMode === 'metronome') {
+                sessionData.bpm = this.metronome.state.bpm;
+                sessionData.timeSignature = this.metronome.state.timeSignature;
+            }
+            
+            // Save the practice entry
+            const practiceEntry = {
+                ...sessionData,
+                id: Date.now() + Math.random()
+            };
+            
+            await this.storageService.savePracticeEntry(practiceEntry);
+            
+            // Also save session state for restore
             const session = await this.sessionManager.saveSession(name, duration, this.getComponentsState());
             
             if (session && this.onSaveCallback) {
                 this.onSaveCallback(session);
             }
+            
+            // Show success notification
+            this.uiController.showNotification('Practice session saved successfully!', 'success');
             
             // Reset timer after saving
             this.timer.stop();

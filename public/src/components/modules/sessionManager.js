@@ -153,12 +153,22 @@ export class SessionManager {
     }
 
     persistCurrentState(components) {
+        if (!this.sessionStateService || !this.sessionStateService.saveState) {
+            console.warn('SessionStateService not available');
+            return;
+        }
+        
         const state = this.getCurrentSessionState(components);
-        this.sessionStateService.saveSessionState(state);
+        this.sessionStateService.saveState(state);
     }
 
     async checkForRestorable(components) {
-        const savedState = this.sessionStateService.getSessionState();
+        if (!this.sessionStateService || !this.sessionStateService.getState) {
+            console.warn('SessionStateService not available');
+            return;
+        }
+        
+        const savedState = this.sessionStateService.getState();
         
         if (savedState && savedState.duration > 0) {
             const timeSinceSession = Date.now() - savedState.timestamp;
@@ -170,7 +180,7 @@ export class SessionManager {
                 if (shouldRestore) {
                     this.restorePersistedState(savedState, components);
                 } else {
-                    this.sessionStateService.clearSessionState();
+                    this.sessionStateService.clearState();
                 }
             }
         }

@@ -1,6 +1,6 @@
 import {Timer} from '../timer.js';
 import {PracticeForm} from '../practiceForm.js';
-import {AudioPlayer} from '../audioPlayer.js';
+import {AudioPlayer} from '../audioPlayerRefactored.js';
 
 export class AudioTab {
     constructor(storageService, audioService) {

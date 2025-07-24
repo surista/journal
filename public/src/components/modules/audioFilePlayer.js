@@ -1,5 +1,5 @@
 // Audio File Player Module - Handles MP3 file playback
-import { AudioPlayer } from '../audioPlayer.js';
+import { AudioPlayer } from '../audioPlayerRefactored.js';
 import { AudioService } from '../../services/audioService.js';
 
 export class AudioFilePlayer {
@@ -8,6 +8,7 @@ export class AudioFilePlayer {
         this.audioService = new AudioService();
         this.audioPlayer = null;
         this.currentFile = null;
+        this.currentFileName = null;
         this.syncWithTimer = true;
         this.container = null;
     }
@@ -33,17 +34,43 @@ export class AudioFilePlayer {
 
             // Read file as ArrayBuffer
             const arrayBuffer = await file.arrayBuffer();
-            const audioBuffer = await this.audioService.decodeAudioData(arrayBuffer);
+            
+            // Decode audio data using Web Audio API
+            // Use the AudioService which properly handles user gesture requirements
+            console.log('Getting audio context from AudioService...');
+            const audioContext = await this.audioService.getAudioContext();
+            if (!audioContext) {
+                console.log('No audio context available, attempting to initialize...');
+                // If we don't have an audio context yet, try to initialize it
+                // This should work since the user just clicked the browse button
+                await this.audioService.initializeAudioContext();
+                const context = await this.audioService.getAudioContext();
+                if (!context) {
+                    throw new Error('Cannot initialize audio. Please refresh the page and try again.');
+                }
+                return await this.loadFile(file); // Retry once with initialized context
+            }
+            
+            console.log('Audio context state:', audioContext.state);
+            console.log('Decoding audio data, arrayBuffer size:', arrayBuffer.byteLength);
+            const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+            console.log('Audio decoded successfully, duration:', audioBuffer.duration, 'channels:', audioBuffer.numberOfChannels);
 
-            // Create audio player instance
+            // Get player container
             const playerContainer = this.container || document.getElementById('audioPlayerContainer');
             if (!playerContainer) {
                 console.error('Audio player container not found');
                 return;
             }
 
-            this.audioPlayer = new AudioPlayer(this.audioService, this.storageService);
-            this.audioPlayer.render(playerContainer);
+            // Create audio player instance only if it doesn't exist
+            if (!this.audioPlayer) {
+                console.log('Creating new AudioPlayer instance');
+                this.audioPlayer = new AudioPlayer(this.audioService, this.storageService);
+                await this.audioPlayer.render(playerContainer);
+            } else {
+                console.log('Reusing existing AudioPlayer instance');
+            }
 
             // Load the audio buffer
             await this.audioPlayer.loadAudioBuffer(audioBuffer, file.name);
@@ -54,6 +81,7 @@ export class AudioFilePlayer {
             }
 
             // Show file name
+            this.currentFileName = file.name;
             this.updateFileName(file.name);
 
             return true;
@@ -88,16 +116,16 @@ export class AudioFilePlayer {
 
     clear() {
         if (this.audioPlayer) {
-            this.audioPlayer.destroy();
-            this.audioPlayer = null;
-        }
-
-        const playerContainer = this.container || document.getElementById('audioPlayerContainer');
-        if (playerContainer) {
-            playerContainer.innerHTML = '';
+            // Don't destroy the player, just stop it
+            this.audioPlayer.stop();
+            // Clear the loaded audio
+            if (this.audioPlayer.audioCore) {
+                this.audioPlayer.audioCore.audioLoaded = false;
+            }
         }
 
         this.currentFile = null;
+        this.currentFileName = null;
         this.hideFileName();
     }
 

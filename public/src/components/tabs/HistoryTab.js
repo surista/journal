@@ -288,7 +288,7 @@ export class HistoryTab {
             sessionStorage.setItem('loadPracticeSession', JSON.stringify({
                 mode: 'metronome',
                 sheetMusicImage: session.sheetMusicImage,
-                tempo: session.tempo || session.bpm || 120,
+                tempo: session.tempo || session.bpm || 80,
                 timeSignature: session.timeSignature || '4/4',
                 practiceArea: session.practiceArea || session.area || ''
             }));
@@ -329,7 +329,7 @@ export class HistoryTab {
             // Prepare session data for loading
             const loadData = {
                 mode: mode,
-                tempo: session.tempo || session.bpm || 120,
+                tempo: session.tempo || session.bpm || 80,
                 timeSignature: session.timeSignature || '4/4',
                 practiceArea: session.practiceArea || session.area || ''
             };

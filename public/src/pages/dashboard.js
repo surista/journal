@@ -223,7 +223,7 @@ export class DashboardPage {
                     this.tabs[tab] = new SettingsTab(this.storageService, this.authService, this.cloudSyncHandler?.cloudSyncService);
                     break;
                 case 'courses':
-                    const CoursesPage = (await import('../pages/courses.js')).default;
+                    const CoursesPage = (await import('../courses/pages/courses.js')).default;
                     this.tabs[tab] = new CoursesPage(this.storageService, this.authService);
                     break;
             }

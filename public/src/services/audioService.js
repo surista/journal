@@ -14,7 +14,7 @@ export class AudioService {
         const handleUserGesture = () => {
             if (!this.userGestureReceived) {
                 this.userGestureReceived = true;
-                this.initializeAudioContext();
+                // User gesture received, AudioContext can now be created when needed
 
                 // Remove listeners after first interaction
                 document.removeEventListener('click', handleUserGesture);
@@ -34,6 +34,12 @@ export class AudioService {
             return this.initPromise;
         }
 
+        // Check if user gesture was received
+        if (!this.userGestureReceived) {
+            console.warn('⚠️ Attempting to create AudioContext without user gesture');
+            return null;
+        }
+
         this.initPromise = new Promise((resolve, reject) => {
             try {
                 // Create AudioContext only after user gesture
@@ -51,6 +57,7 @@ export class AudioService {
                 }
             } catch (error) {
                 console.error('❌ AudioContext initialization failed:', error);
+                console.error('User gesture received:', this.userGestureReceived);
                 reject(error);
             }
         });

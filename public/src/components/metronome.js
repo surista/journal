@@ -6,7 +6,7 @@ export class Metronome {
         this.container = container;
         this.audioService = audioService;
         this.isPlaying = false;
-        this.bpm = 120;
+        this.bpm = 80;
         this.currentBeat = 0;
         this.beatsPerMeasure = 4;
         this.interval = null;

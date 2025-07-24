@@ -8,8 +8,8 @@ export class MetronomeEnhanced extends Metronome {
         // Additional properties for enhanced features
         this.tempoProgression = {
             enabled: false,
-            startBpm: 120,
-            endBpm: 140,
+            startBpm: 80,
+            endBpm: 120,
             increment: 5,
             measuresPerStep: 4,
             currentMeasure: 0

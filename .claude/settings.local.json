@@ -33,7 +33,10 @@
       "Bash(tail:*)",
       "Bash(npm run bump-minor:*)",
       "Bash(del \"C:\\Users\\suris\\IdeaProjects\\journal\\test-spotify.html\")",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(npm run deploy:*)",
+      "Bash(sed:*)",
+      "Bash(mkdir:*)"
     ],
     "deny": []
   }

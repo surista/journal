@@ -5,7 +5,7 @@ export class MetronomeController {
     constructor(audioService) {
         this.audioService = audioService || new AudioService();
         this.state = {
-            bpm: 120,
+            bpm: 80,
             isPlaying: false,
             timeSignature: 4,
             accentPattern: [true, false, false, false],
@@ -22,6 +22,7 @@ export class MetronomeController {
         this.lookAheadTime = 0.1; // How far ahead to schedule (in seconds)
         this.scheduleInterval = 25; // How often to call scheduler (in ms)
         this.timerID = null;
+        this.beatCallbacks = [];
     }
 
     initialize() {
@@ -35,6 +36,19 @@ export class MetronomeController {
                 clearInterval(checkInterval);
             }
         }, 100);
+    }
+    
+    onBeat(callback) {
+        if (typeof callback === 'function') {
+            this.beatCallbacks.push(callback);
+        }
+    }
+    
+    removeOnBeat(callback) {
+        const index = this.beatCallbacks.indexOf(callback);
+        if (index > -1) {
+            this.beatCallbacks.splice(index, 1);
+        }
     }
 
     setBpm(newBpm) {
@@ -143,6 +157,16 @@ export class MetronomeController {
         
         // Play the beat
         this.playBeatSound(time, isAccent);
+        
+        // Trigger beat callbacks
+        const currentTime = this.audioService.audioContext.currentTime;
+        const delay = Math.max(0, (time - currentTime) * 1000); // Convert to milliseconds
+        
+        setTimeout(() => {
+            this.beatCallbacks.forEach(callback => {
+                callback(this.state.currentBeat, isAccent);
+            });
+        }, delay);
     }
 
     playBeatSound(time, isAccent) {

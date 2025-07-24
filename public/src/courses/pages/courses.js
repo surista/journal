@@ -1,6 +1,6 @@
 import courseService from '../services/courseService.js';
-import { showToast } from '../utils/toast.js';
-import { escapeHtml, sanitizeUrl } from '../utils/sanitizer.js';
+import { showToast } from '../../utils/toast.js';
+import { escapeHtml, sanitizeUrl } from '../../utils/sanitizer.js';
 
 class CoursesPage {
     constructor(storageService, authService) {
@@ -442,7 +442,7 @@ class CoursesPage {
     async startMetronomePractice(goalId, bpm, duration) {
         try {
             // Import metronome component
-            const { default: metronome } = await import('../components/metronome.js');
+            const { default: metronome } = await import('../../components/metronome.js');
             
             // Configure metronome for this goal
             metronome.setBPM(bpm);
@@ -507,7 +507,7 @@ class CoursesPage {
         }
 
         // Stop metronome
-        import('../components/metronome.js').then(({ default: metronome }) => {
+        import('../../components/metronome.js').then(({ default: metronome }) => {
             metronome.stop();
         });
     }

@@ -326,9 +326,15 @@ export class YouTubePlayer {
         
         // Save to storage
         const storageKey = `youtube_loops_${this.videoId}`;
-        const savedLoops = this.storageService.getItem(storageKey) || [];
+        let savedLoops = [];
+        try {
+            const stored = localStorage.getItem(storageKey);
+            savedLoops = stored ? JSON.parse(stored) : [];
+        } catch (e) {
+            console.error('Error loading saved loops:', e);
+        }
         savedLoops.push(loop);
-        this.storageService.setItem(storageKey, savedLoops);
+        localStorage.setItem(storageKey, JSON.stringify(savedLoops));
         
         this.savedLoops = savedLoops;
         return true;
@@ -338,7 +344,13 @@ export class YouTubePlayer {
         if (!this.videoId) return;
         
         const storageKey = `youtube_loops_${this.videoId}`;
-        this.savedLoops = this.storageService.getItem(storageKey) || [];
+        try {
+            const stored = localStorage.getItem(storageKey);
+            this.savedLoops = stored ? JSON.parse(stored) : [];
+        } catch (e) {
+            console.error('Error loading saved loops:', e);
+            this.savedLoops = [];
+        }
         return this.savedLoops;
     }
 
@@ -358,7 +370,7 @@ export class YouTubePlayer {
             
             // Update storage
             const storageKey = `youtube_loops_${this.videoId}`;
-            this.storageService.setItem(storageKey, this.savedLoops);
+            localStorage.setItem(storageKey, JSON.stringify(this.savedLoops));
             return true;
         }
         return false;

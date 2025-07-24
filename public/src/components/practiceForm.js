@@ -10,7 +10,7 @@ export class PracticeForm {
         this.timer = null;
         this.formState = this.loadFormState();
         this.isPercentageMode = false;
-        this.baseTempo = 120; // Default base tempo for percentage calculations
+        this.baseTempo = 80; // Default base tempo for percentage calculations
         this.tabSuffix = ''; // Will be set based on container
         this.currentAudioFileName = ''; // Track current audio file
         this.currentYouTubeInfo = null; // Track YouTube video info
