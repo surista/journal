@@ -26,10 +26,26 @@
     flex-direction: column;
 }
 
-/* Timer Display Section */
+/* Timer Display Section - Sticky at top */
 .timer-display-section {
     text-align: center;
     margin-bottom: 3rem;
+    position: sticky;
+    top: 0;
+    background: var(--bg-card);
+    z-index: 100;
+    padding: 1.5rem 0 1rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    margin: -2.5rem -2.5rem 2rem -2.5rem; /* Negative margins to counteract container padding */
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+    border-radius: 16px 16px 0 0;
+    transition: box-shadow 0.3s ease;
+}
+
+/* Add shadow when scrolled */
+.timer-display-section.scrolled {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .timer-display {
@@ -43,9 +59,9 @@
     font-feature-settings: "tnum";
     min-width: 280px;
     display: inline-block;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
     background: transparent;
-    padding: 2.5rem 0 2rem 0;
+    padding: 1rem 0 0.5rem 0;
     border-radius: 0;
     border: none;
 }
@@ -96,7 +112,7 @@
 
 /* Sync Checkbox */
 .timer-sync-row {
-    margin-bottom: 2.5rem;
+    margin-bottom: 1rem;
 }
 
 .sync-checkbox {

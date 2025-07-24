@@ -1,6 +1,6 @@
 // service-worker.js - Updated with proper cache management
-const CACHE_NAME = 'guitar-practice-journal-v10.91'; // Update version
-const CACHE_VERSION = '10.91';
+const CACHE_NAME = 'guitar-practice-journal-v10.92'; // Update version
+const CACHE_VERSION = '10.92';
 
 // Files to cache - be specific about what we cache
 const STATIC_CACHE_URLS = [

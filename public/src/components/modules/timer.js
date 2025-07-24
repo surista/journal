@@ -1,5 +1,6 @@
 // Timer Module - Unified timer implementation for both UI and logic-only use cases
 import { notificationManager } from '../../services/notificationManager.js';
+import { timerRegistry } from '../../services/timerRegistry.js';
 
 export class Timer {
     constructor(container = null) {
@@ -27,9 +28,9 @@ export class Timer {
         this.reset = this.reset.bind(this);
         this.toggleTimer = this.toggleTimer.bind(this);
         
-        // Make timer globally accessible if it's a UI timer
+        // Register timer in the registry if it's a UI timer
         if (container) {
-            window.currentTimer = this;
+            timerRegistry.register('practice', this);
             this.init();
         }
     }
@@ -323,9 +324,8 @@ export class Timer {
             document.removeEventListener('keydown', this.keyboardHandler);
         }
         
-        if (window.currentTimer === this) {
-            window.currentTimer = null;
-        }
+        // Unregister from timer registry
+        timerRegistry.unregister('practice');
         
         this.updateCallback = null;
     }

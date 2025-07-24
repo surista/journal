@@ -1,7 +1,7 @@
 {
   "name": "Guitar Practice Journal",
   "short_name": "Guitar Journal",
-  "version": "10.91",
+  "version": "10.92",
   "description": "Track your guitar practice sessions, set goals, and monitor your progress",
   "start_url": "./",
   "display": "standalone",

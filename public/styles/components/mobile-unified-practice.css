@@ -17,10 +17,17 @@
         max-width: 380px;
     }
 
-    /* Timer display section */
+    /* Timer display section - maintain sticky on mobile */
     .timer-display-section {
         text-align: center;
         width: 100%;
+        position: sticky;
+        top: 0;
+        background: var(--bg-card);
+        z-index: 100;
+        padding: 1rem 1rem 0.5rem 1rem;
+        margin: 0 0 1rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     /* Override timer display for unified practice */

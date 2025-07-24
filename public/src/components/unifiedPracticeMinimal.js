@@ -594,8 +594,8 @@ export class UnifiedPracticeMinimal {
         // Check for session to restore
         this.checkForSessionToLoad();
         
-        // Make timer globally accessible
-        window.currentTimer = this.timer;
+        // Timer is now registered via the Timer constructor
+        // Just update the app reference for backward compatibility
         if (window.app && window.app.currentPage) {
             window.app.currentPage.timer = this.timer;
         }

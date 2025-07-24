@@ -484,7 +484,12 @@ export class AudioPlayer {
     }
 
     findTimer() {
-        // Try multiple ways to find the timer
+        // Use timer registry for standardized access
+        if (window.timerRegistry) {
+            return window.timerRegistry.getPrimary();
+        }
+        
+        // Fallback to legacy patterns if registry not available
         if (window.currentTimer) {
             return window.currentTimer;
         } else if (window.app?.currentPage?.timer) {
