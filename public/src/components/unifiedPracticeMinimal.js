@@ -1609,7 +1609,22 @@ export class UnifiedPracticeMinimal {
         this.drawYouTubeWaveform();
         
         // Load and display saved loops for this video
-        this.updateSavedLoopsList();
+        // Add a small delay to ensure the player is ready
+        setTimeout(() => {
+            this.updateSavedLoopsList();
+        }, 500);
+        
+        // Also update when player is fully ready
+        if (this.youtubePlayer && this.youtubePlayer.player) {
+            const originalStateChange = this.youtubePlayer.onPlayerStateChange.bind(this.youtubePlayer);
+            this.youtubePlayer.onPlayerStateChange = (event) => {
+                originalStateChange(event);
+                // Update loops list when video is cued (5) or unstarted (-1)
+                if (event.data === 5 || event.data === -1) {
+                    this.updateSavedLoopsList();
+                }
+            };
+        }
     }
     
     drawYouTubeWaveform() {
@@ -1785,6 +1800,13 @@ export class UnifiedPracticeMinimal {
         // Loop controls (in main control area)
         document.getElementById('youtubeLoopStartBtn')?.addEventListener('click', () => {
             const time = this.youtubePlayer.getCurrentTime();
+            
+            // If setting start after current end, clear the loop and make this the new start
+            if (this.youtubePlayer.loopEnd !== null && time > this.youtubePlayer.loopEnd) {
+                this.youtubePlayer.loopEnd = null;
+                document.getElementById('youtubeLoopEndTime').textContent = '--:--';
+            }
+            
             this.youtubePlayer.loopStart = time;
             document.getElementById('youtubeLoopStartTime').textContent = this.formatTime(time);
             this.updateYouTubeLoopInfo();
@@ -1793,8 +1815,18 @@ export class UnifiedPracticeMinimal {
 
         document.getElementById('youtubeLoopEndBtn')?.addEventListener('click', () => {
             const time = this.youtubePlayer.getCurrentTime();
-            this.youtubePlayer.loopEnd = time;
-            document.getElementById('youtubeLoopEndTime').textContent = this.formatTime(time);
+            
+            // If setting end before current start, clear the loop and make this the new start
+            if (this.youtubePlayer.loopStart !== null && time < this.youtubePlayer.loopStart) {
+                this.youtubePlayer.loopStart = time;
+                this.youtubePlayer.loopEnd = null;
+                document.getElementById('youtubeLoopStartTime').textContent = this.formatTime(time);
+                document.getElementById('youtubeLoopEndTime').textContent = '--:--';
+            } else {
+                this.youtubePlayer.loopEnd = time;
+                document.getElementById('youtubeLoopEndTime').textContent = this.formatTime(time);
+            }
+            
             this.updateYouTubeLoopInfo();
             this.drawYouTubeWaveform();
         });

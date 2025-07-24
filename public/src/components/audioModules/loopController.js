@@ -33,13 +33,12 @@ export class LoopController {
             return false;
         }
 
-        this.loopStart = time;
-        
-        // Ensure loop end is after loop start
-        if (this.loopEnd !== null && this.loopEnd <= this.loopStart) {
+        // If setting start after current end, clear the loop and make this the new start
+        if (this.loopEnd !== null && time > this.loopEnd) {
             this.loopEnd = null;
         }
         
+        this.loopStart = time;
         this.updateLoopState();
         return true;
     }
@@ -49,11 +48,12 @@ export class LoopController {
             return false;
         }
 
-        this.loopEnd = time;
-        
-        // Ensure loop start is before loop end
-        if (this.loopStart !== null && this.loopStart >= this.loopEnd) {
-            this.loopStart = null;
+        // If setting end before current start, clear the loop and make this the new start
+        if (this.loopStart !== null && time < this.loopStart) {
+            this.loopStart = time;
+            this.loopEnd = null;
+        } else {
+            this.loopEnd = time;
         }
         
         this.updateLoopState();
