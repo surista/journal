@@ -20,6 +20,7 @@ export class HistoryTab {
                     <div class="history-filters">
                         <select class="filter-select" id="historyFilter">
                             <option value="all">All Sessions</option>
+                            <option value="favorites">⭐ Favorites</option>
                             <option value="week">This Week</option>
                             <option value="month">This Month</option>
                             <option value="year">This Year</option>
@@ -85,6 +86,19 @@ export class HistoryTab {
                     const numericId = Number(sessionId);
                     if (!isNaN(numericId)) {
                         await this.handleDeleteSession(numericId);
+                    }
+                }
+            }
+            
+            const favoriteBtn = e.target.closest('.toggle-favorite-btn');
+            if (favoriteBtn) {
+                e.preventDefault();
+                e.stopPropagation();
+                const sessionId = favoriteBtn.dataset.id;
+                if (sessionId) {
+                    const numericId = Number(sessionId);
+                    if (!isNaN(numericId)) {
+                        await this.handleToggleFavorite(numericId);
                     }
                 }
             }
@@ -275,6 +289,52 @@ export class HistoryTab {
         }
     }
 
+    async handleToggleFavorite(sessionId) {
+        try {
+            // Find the session in our list
+            const session = this.allSessions.find(s => s.id === sessionId);
+            if (!session) {
+                this.showNotification('Session not found', 'error');
+                return;
+            }
+
+            // Toggle the favorite status
+            session.isFavorite = !session.isFavorite;
+
+            // Update in storage
+            const success = await this.storageService.updatePracticeEntry(sessionId, { isFavorite: session.isFavorite });
+            
+            if (success) {
+                // Update the UI
+                const favoriteBtn = document.querySelector(`.toggle-favorite-btn[data-id="${sessionId}"]`);
+                if (favoriteBtn) {
+                    favoriteBtn.textContent = session.isFavorite ? '⭐' : '☆';
+                    favoriteBtn.title = session.isFavorite ? 'Remove from favorites' : 'Add to favorites';
+                }
+
+                // Update the header star if present
+                const sessionEl = document.querySelector(`.history-item[data-id="${sessionId}"] h4`);
+                if (sessionEl) {
+                    const starSpan = sessionEl.querySelector('span');
+                    if (session.isFavorite && !starSpan) {
+                        sessionEl.insertAdjacentHTML('afterbegin', '<span style="color: #facc15; margin-right: 4px;">⭐</span>');
+                    } else if (!session.isFavorite && starSpan) {
+                        starSpan.remove();
+                    }
+                }
+
+                this.showNotification(session.isFavorite ? 'Added to favorites' : 'Removed from favorites', 'success');
+            } else {
+                // Revert on failure
+                session.isFavorite = !session.isFavorite;
+                this.showNotification('Failed to update favorite status', 'error');
+            }
+        } catch (error) {
+            console.error('Error toggling favorite:', error);
+            this.showNotification('Failed to update favorite status', 'error');
+        }
+    }
+
     async handlePracticeAgain(sessionId) {
         try {
             // Find the session in our list
@@ -429,11 +489,17 @@ export class HistoryTab {
                             ` : ''}
                             <div class="history-item-content">
                                 <div class="history-item-header">
-                                    <h4>${escapeHtml(session.name || session.practiceArea || 'Practice Session')}</h4>
+                                    <h4>
+                                        ${session.isFavorite ? '<span style="color: #facc15; margin-right: 4px;">⭐</span>' : ''}
+                                        ${escapeHtml(session.name || session.practiceArea || 'Practice Session')}
+                                    </h4>
                                     ${session.practiceArea && session.name && session.practiceArea !== session.name ? 
                                         `<div style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">📚 ${escapeHtml(session.practiceArea)}</div>` : ''}
                                 <div class="history-item-actions">
                                     <span class="history-date">${dateStr}</span>
+                                    <button class="btn-icon toggle-favorite-btn" data-id="${session.id}" title="${session.isFavorite ? 'Remove from favorites' : 'Add to favorites'}">
+                                        ${session.isFavorite ? '⭐' : '☆'}
+                                    </button>
                                     ${session.sheetMusicImage ? `
                                         <button class="btn-icon practice-again-btn" data-id="${session.id}" title="Practice again with this sheet music">
                                             🎸
@@ -454,7 +520,7 @@ export class HistoryTab {
                                 ${session.bpm ? `<span class="history-tempo"><i class="icon">🎵</i> ${session.bpm} BPM</span>` : ''}
                                 ${session.tempoPercentage ? `<span class="history-tempo"><i class="icon">📊</i> ${session.tempoPercentage}% speed</span>` : ''}
                                 ${session.key ? `<span class="history-key"><i class="icon">🎼</i> ${escapeHtml(session.key)}</span>` : ''}
-                                ${session.audioFile ? `<span class="history-audio"><i class="icon">🎧</i> Audio: ${escapeHtml(session.audioFile)}</span>` : ''}
+                                ${session.audioFile ? `<span class="history-audio"><i class="icon">🎧</i> Audio: ${escapeHtml(session.audioFile.length > 50 ? session.audioFile.substring(0, 47) + '...' : session.audioFile)}</span>` : ''}
                                 ${session.sheetMusicImage ? `<span class="history-sheet-music"><i class="icon">📄</i> Sheet Music</span>` : ''}
                                 ${session.youtubeTitle ? `
                                 <span class="history-audio">
@@ -539,6 +605,9 @@ export class HistoryTab {
         let filtered = this.allSessions;
 
         switch (filter) {
+            case 'favorites':
+                filtered = this.allSessions.filter(s => s.isFavorite === true);
+                break;
             case 'week':
                 const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
                 filtered = this.allSessions.filter(s => new Date(s.date) >= weekAgo);
@@ -578,11 +647,12 @@ export class HistoryTab {
     }
 
     convertSessionsToCSV(sessions) {
-        const headers = ['Date', 'Duration (minutes)', 'Practice Area', 'BPM', 'Key', 'Notes'];
+        const headers = ['Date', 'Duration (minutes)', 'Practice Area', 'Audio File', 'BPM', 'Key', 'Notes'];
         const rows = sessions.map(session => [
             new Date(session.date).toLocaleDateString(),
             Math.round((session.duration || 0) / 60),
             session.practiceArea || '',
+            session.audioFile || '',
             session.bpm || '',
             session.key || '',
             (session.notes || '').replace(/,/g, ';') // Replace commas to avoid CSV issues

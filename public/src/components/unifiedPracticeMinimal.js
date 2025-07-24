@@ -103,6 +103,15 @@ export class UnifiedPracticeMinimal {
                                     <span class="bpm-value" id="bpmValue">80</span>
                                     <span class="bpm-label">BPM</span>
                                 </div>
+                                <!-- Tempo Progression Status -->
+                                <div id="tempoProgressionStatus" class="tempo-progression-status" style="display: none;">
+                                    <div class="measure-progress">
+                                        Measure <span id="currentMeasure">1</span> of <span id="measuresPerStep">4</span>
+                                    </div>
+                                    <div class="tempo-range">
+                                        <span id="currentProgressBpm">120</span> → <span id="targetProgressBpm">140</span> BPM
+                                    </div>
+                                </div>
                             </div>
                             
                             <div class="bpm-slider-minimal">
@@ -333,6 +342,48 @@ export class UnifiedPracticeMinimal {
                     ${this.renderYouTubeAudioControls()}
                     
                     ${this.renderYouTubeLoopControls()}
+                    
+                    <!-- Advanced Features for YouTube -->
+                    <details class="advanced-features-minimal" style="margin-top: 20px;">
+                        <summary>Advanced Features ▼</summary>
+                        
+                        <!-- Speed Progression -->
+                        <div class="feature-section-minimal">
+                            <label>
+                                <input type="checkbox" id="youtubeSpeedProgressionEnabled">
+                                Gradual Speed Increase
+                            </label>
+                            <div class="youtube-speed-progression-controls" style="display: none;">
+                                <div class="control-row-minimal">
+                                    <label>Start:</label>
+                                    <input type="number" id="youtubeProgressionStartSpeed" value="80" min="25" max="200">
+                                    <span>%</span>
+                                </div>
+                                <div class="control-row-minimal">
+                                    <label>End:</label>
+                                    <input type="number" id="youtubeProgressionEndSpeed" value="100" min="25" max="200">
+                                    <span>%</span>
+                                </div>
+                                <div class="control-row-minimal">
+                                    <label>Increase:</label>
+                                    <input type="number" id="youtubeProgressionIncrement" value="5" min="1" max="20">
+                                    <span>% every</span>
+                                    <input type="number" id="youtubeProgressionLoops" value="4" min="1" max="16">
+                                    <span>loops</span>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+                    
+                    <!-- Speed Progression Status -->
+                    <div id="youtubeSpeedProgressionStatus" class="tempo-progression-status" style="display: none;">
+                        <div class="measure-progress">
+                            Loop <span id="youtubeCurrentLoop">1</span> of <span id="youtubeLoopsPerStep">4</span>
+                        </div>
+                        <div class="tempo-range">
+                            <span id="youtubeCurrentProgressSpeed">80</span>% → <span id="youtubeTargetProgressSpeed">100</span>%
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
@@ -560,6 +611,69 @@ export class UnifiedPracticeMinimal {
                         color: var(--text-secondary, #9ca3af);
                         font-size: 14px;
                     }
+                    
+                    /* Tempo Progression Styles */
+                    .tempo-progression-status {
+                        margin-top: 10px;
+                        padding: 12px;
+                        background: rgba(0, 0, 0, 0.3);
+                        border: 1px solid rgba(255, 255, 255, 0.1);
+                        border-radius: 8px;
+                        font-size: 14px;
+                        animation: fadeIn 0.3s ease-in-out;
+                        backdrop-filter: blur(10px);
+                    }
+                    
+                    .measure-progress {
+                        color: #ffffff;
+                        margin-bottom: 5px;
+                        font-weight: 500;
+                        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+                    }
+                    
+                    .tempo-range {
+                        color: #e5e7eb;
+                        font-size: 13px;
+                        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+                    }
+                    
+                    #currentProgressBpm {
+                        color: #6366f1;
+                        font-weight: 600;
+                        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+                    }
+                    
+                    .bpm-increase-animation {
+                        position: fixed;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%);
+                        font-size: 48px;
+                        font-weight: bold;
+                        color: var(--primary, #6366f1);
+                        z-index: 1000;
+                        animation: bpmIncrease 1s ease-out forwards;
+                    }
+                    
+                    @keyframes bpmIncrease {
+                        0% {
+                            opacity: 0;
+                            transform: translate(-50%, -50%) scale(0.5);
+                        }
+                        50% {
+                            opacity: 1;
+                            transform: translate(-50%, -50%) scale(1.2);
+                        }
+                        100% {
+                            opacity: 0;
+                            transform: translate(-50%, -50%) scale(1.5);
+                        }
+                    }
+                    
+                    @keyframes fadeIn {
+                        from { opacity: 0; }
+                        to { opacity: 1; }
+                    }
 
                     @media (max-width: 768px) {
                         .controls-playback-loop {
@@ -578,6 +692,9 @@ export class UnifiedPracticeMinimal {
 
     init(container) {
         container.innerHTML = this.render();
+        
+        // Make this instance globally accessible for timer discovery
+        window.unifiedPracticeMinimal = this;
         
         // Initialize all modules
         this.initializeModules();
@@ -608,8 +725,51 @@ export class UnifiedPracticeMinimal {
         // Initialize Timer with callback
         this.timer.setUpdateCallback(() => this.updateTimerDisplay());
         
+        // Initial timer display update to show save button if needed
+        this.updateTimerDisplay();
+        
+        // Initialize sync settings from checkbox
+        const syncCheckbox = document.getElementById('syncMetronome');
+        if (syncCheckbox) {
+            const isChecked = syncCheckbox.checked;
+            if (this.audioPlayer) {
+                this.audioPlayer.setSyncWithTimer(isChecked);
+            }
+            if (this.youtubePlayer) {
+                this.youtubePlayer.syncWithTimer = isChecked;
+            }
+        }
+        
         // Initialize Metronome
         this.metronome.initialize();
+        
+        // Set up metronome callbacks for tempo progression
+        this.metronome.setCallbacks({
+            onBpmChange: (bpm) => {
+                this.uiController.updateBpmDisplay(bpm);
+                // Update progression display if active
+                const prog = this.metronome.state.tempoProgression;
+                if (prog?.enabled) {
+                    document.getElementById('currentProgressBpm').textContent = bpm;
+                }
+            },
+            onProgressionUpdate: (data) => {
+                const statusDiv = document.getElementById('tempoProgressionStatus');
+                if (statusDiv) {
+                    statusDiv.style.display = 'block';
+                    document.getElementById('currentMeasure').textContent = data.currentMeasure;
+                    document.getElementById('measuresPerStep').textContent = data.measuresPerStep;
+                    document.getElementById('currentProgressBpm').textContent = data.currentBpm;
+                    document.getElementById('targetProgressBpm').textContent = data.targetBpm;
+                }
+            },
+            onBpmIncrease: (data) => {
+                // Show animation for BPM increase
+                this.showBpmIncreaseAnimation(data.increment);
+                // Reset measure display
+                document.getElementById('currentMeasure').textContent = '0';
+            }
+        });
         
         // Set up BPM pulse animation
         this.setupBpmPulseAnimation();
@@ -619,6 +779,31 @@ export class UnifiedPracticeMinimal {
         
         // Initialize YouTube Player
         this.youtubePlayer.initialize('youtubePlayer');
+        // Sync the timer preference
+        if (this.timer && this.timer.syncWithAudio !== undefined) {
+            this.youtubePlayer.syncWithTimer = this.timer.syncWithAudio;
+            console.log('YouTube initialization: syncWithTimer set to', this.timer.syncWithAudio);
+        }
+        
+        // Set up YouTube speed progression callbacks
+        this.youtubePlayer.setSpeedProgressionCallbacks({
+            onSpeedProgressionUpdate: (data) => {
+                const statusDiv = document.getElementById('youtubeSpeedProgressionStatus');
+                if (statusDiv) {
+                    statusDiv.style.display = 'block';
+                    document.getElementById('youtubeCurrentLoop').textContent = data.currentLoop;
+                    document.getElementById('youtubeLoopsPerStep').textContent = data.loopsPerStep;
+                    document.getElementById('youtubeCurrentProgressSpeed').textContent = data.currentSpeed;
+                    document.getElementById('youtubeTargetProgressSpeed').textContent = data.targetSpeed;
+                }
+            },
+            onSpeedIncrease: (data) => {
+                // Show animation for speed increase
+                this.showSpeedIncreaseAnimation(data.increment);
+                // Reset loop display
+                document.getElementById('youtubeCurrentLoop').textContent = '0';
+            }
+        });
         
         // Initialize Session Manager
         this.sessionManager.initialize();
@@ -1082,6 +1267,21 @@ export class UnifiedPracticeMinimal {
             this.uiController.updateTimerControls(false);
             this.stopAllPlayback();
         });
+        
+        // Sync checkbox change handler
+        syncCheckbox?.addEventListener('change', (e) => {
+            const isChecked = e.target.checked;
+            // Update audio player sync setting
+            if (this.audioPlayer) {
+                this.audioPlayer.setSyncWithTimer(isChecked);
+            }
+            // Update YouTube player sync setting
+            if (this.youtubePlayer) {
+                this.youtubePlayer.syncWithTimer = isChecked;
+            }
+            // Save preference
+            localStorage.setItem('timerSyncWithAudio', isChecked ? 'true' : 'false');
+        });
 
         // Save session button
         const saveBtn = document.getElementById('saveSessionBtn');
@@ -1212,13 +1412,50 @@ export class UnifiedPracticeMinimal {
                     endBpm: parseInt(document.getElementById('progressionEndBpm')?.value || 140),
                     increment: parseInt(document.getElementById('progressionIncrement')?.value || 5),
                     measuresPerStep: parseInt(document.getElementById('progressionMeasures')?.value || 4),
-                    currentMeasure: 0,
-                    currentBpm: this.metronome.state.bpm
+                    currentMeasure: 0
+                    // Don't set currentBpm here - let the metronome set it to startBpm when it starts
                 };
+                // Show the progression status if metronome is playing
+                if (this.metronome.state.isPlaying) {
+                    const statusDiv = document.getElementById('tempoProgressionStatus');
+                    if (statusDiv) {
+                        statusDiv.style.display = 'block';
+                        document.getElementById('currentMeasure').textContent = '0';
+                        document.getElementById('measuresPerStep').textContent = this.metronome.state.tempoProgression.measuresPerStep;
+                        document.getElementById('currentProgressBpm').textContent = this.metronome.state.tempoProgression.startBpm;
+                        document.getElementById('targetProgressBpm').textContent = this.metronome.state.tempoProgression.endBpm;
+                    }
+                }
             } else {
                 this.metronome.state.tempoProgression = { enabled: false };
+                // Hide the progression status
+                const statusDiv = document.getElementById('tempoProgressionStatus');
+                if (statusDiv) {
+                    statusDiv.style.display = 'none';
+                }
             }
         });
+        
+        // Update tempo progression when input values change
+        const updateTempoProgression = () => {
+            if (this.metronome.state.tempoProgression?.enabled) {
+                this.metronome.state.tempoProgression.startBpm = parseInt(document.getElementById('progressionStartBpm')?.value || 60);
+                this.metronome.state.tempoProgression.endBpm = parseInt(document.getElementById('progressionEndBpm')?.value || 100);
+                this.metronome.state.tempoProgression.increment = parseInt(document.getElementById('progressionIncrement')?.value || 5);
+                this.metronome.state.tempoProgression.measuresPerStep = parseInt(document.getElementById('progressionMeasures')?.value || 4);
+                
+                // Update display if visible
+                const statusDiv = document.getElementById('tempoProgressionStatus');
+                if (statusDiv && statusDiv.style.display !== 'none') {
+                    document.getElementById('targetProgressBpm').textContent = this.metronome.state.tempoProgression.endBpm;
+                }
+            }
+        };
+        
+        document.getElementById('progressionStartBpm')?.addEventListener('change', updateTempoProgression);
+        document.getElementById('progressionEndBpm')?.addEventListener('change', updateTempoProgression);
+        document.getElementById('progressionIncrement')?.addEventListener('change', updateTempoProgression);
+        document.getElementById('progressionMeasures')?.addEventListener('change', updateTempoProgression);
 
         // Beat Dropout
         const beatDropoutCheckbox = document.getElementById('beatDropoutEnabled');
@@ -1272,6 +1509,19 @@ export class UnifiedPracticeMinimal {
         fileInput?.addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (file) {
+                // Update sync setting before loading - check timer's sync state
+                if (this.timer && this.timer.syncWithAudio !== undefined) {
+                    this.audioPlayer.setSyncWithTimer(this.timer.syncWithAudio);
+                    console.log('Audio: Setting syncWithTimer from timer.syncWithAudio:', this.timer.syncWithAudio);
+                } else {
+                    // Fallback to the syncMetronome checkbox
+                    const syncCheckbox = document.getElementById('syncMetronome');
+                    if (syncCheckbox) {
+                        this.audioPlayer.setSyncWithTimer(syncCheckbox.checked);
+                        console.log('Audio: Setting syncWithTimer from checkbox:', syncCheckbox.checked);
+                    }
+                }
+                
                 const success = await this.audioPlayer.loadFile(file);
                 if (success) {
                     this.uiController.showAudioFileName(file.name);
@@ -1308,6 +1558,19 @@ export class UnifiedPracticeMinimal {
             const url = urlInput?.value.trim();
             if (url) {
                 try {
+                    // Update sync setting before loading - check timer's sync state
+                    if (this.timer && this.timer.syncWithAudio !== undefined) {
+                        this.youtubePlayer.syncWithTimer = this.timer.syncWithAudio;
+                        console.log('YouTube: Setting syncWithTimer from timer.syncWithAudio:', this.timer.syncWithAudio);
+                    } else {
+                        // Fallback to the syncMetronome checkbox
+                        const syncCheckbox = document.getElementById('syncMetronome');
+                        if (syncCheckbox) {
+                            this.youtubePlayer.syncWithTimer = syncCheckbox.checked;
+                            console.log('YouTube: Setting syncWithTimer from checkbox:', syncCheckbox.checked);
+                        }
+                    }
+                    
                     await this.youtubePlayer.loadVideo(url);
                     this.uiController.showYouTubePlayer();
                     this.initializeYouTubeUI();
@@ -1540,7 +1803,22 @@ export class UnifiedPracticeMinimal {
             if (toggleBtn) {
                 toggleBtn.style.background = isLooping ? 'var(--primary, #6366f1)' : 'var(--bg-card, #374151)';
             }
-            // No checkbox to update - using toggle button only
+            
+            // Show/hide speed progression status if enabled
+            if (this.youtubePlayer.speedProgression?.enabled) {
+                const statusDiv = document.getElementById('youtubeSpeedProgressionStatus');
+                if (statusDiv) {
+                    if (isLooping) {
+                        statusDiv.style.display = 'block';
+                        document.getElementById('youtubeCurrentLoop').textContent = '0';
+                        document.getElementById('youtubeLoopsPerStep').textContent = this.youtubePlayer.speedProgression.loopsPerStep;
+                        document.getElementById('youtubeCurrentProgressSpeed').textContent = Math.round(this.youtubePlayer.playbackRate * 100);
+                        document.getElementById('youtubeTargetProgressSpeed').textContent = this.youtubePlayer.speedProgression.endSpeed;
+                    } else {
+                        statusDiv.style.display = 'none';
+                    }
+                }
+            }
         });
 
         document.getElementById('youtubeLoopClearBtn')?.addEventListener('click', () => {
@@ -1611,6 +1889,67 @@ export class UnifiedPracticeMinimal {
                 this.deleteYouTubeLoop(index);
             }
         });
+        
+        // Speed Progression
+        const speedProgressionCheckbox = document.getElementById('youtubeSpeedProgressionEnabled');
+        const speedProgressionControls = document.querySelector('.youtube-speed-progression-controls');
+        
+        speedProgressionCheckbox?.addEventListener('change', (e) => {
+            if (speedProgressionControls) {
+                speedProgressionControls.style.display = e.target.checked ? 'block' : 'none';
+            }
+            
+            if (e.target.checked) {
+                this.youtubePlayer.speedProgression = {
+                    enabled: true,
+                    startSpeed: parseInt(document.getElementById('youtubeProgressionStartSpeed')?.value || 80),
+                    endSpeed: parseInt(document.getElementById('youtubeProgressionEndSpeed')?.value || 100),
+                    increment: parseInt(document.getElementById('youtubeProgressionIncrement')?.value || 5),
+                    loopsPerStep: parseInt(document.getElementById('youtubeProgressionLoops')?.value || 4),
+                    currentLoop: 0
+                };
+                
+                // Show the progression status if loop is active
+                if (this.youtubePlayer.looping) {
+                    const statusDiv = document.getElementById('youtubeSpeedProgressionStatus');
+                    if (statusDiv) {
+                        statusDiv.style.display = 'block';
+                        document.getElementById('youtubeCurrentLoop').textContent = '0';
+                        document.getElementById('youtubeLoopsPerStep').textContent = this.youtubePlayer.speedProgression.loopsPerStep;
+                        document.getElementById('youtubeCurrentProgressSpeed').textContent = this.youtubePlayer.speedProgression.startSpeed;
+                        document.getElementById('youtubeTargetProgressSpeed').textContent = this.youtubePlayer.speedProgression.endSpeed;
+                    }
+                }
+            } else {
+                this.youtubePlayer.speedProgression = { enabled: false };
+                // Hide the progression status
+                const statusDiv = document.getElementById('youtubeSpeedProgressionStatus');
+                if (statusDiv) {
+                    statusDiv.style.display = 'none';
+                }
+            }
+        });
+        
+        // Update speed progression when input values change
+        const updateSpeedProgression = () => {
+            if (this.youtubePlayer.speedProgression?.enabled) {
+                this.youtubePlayer.speedProgression.startSpeed = parseInt(document.getElementById('youtubeProgressionStartSpeed')?.value || 80);
+                this.youtubePlayer.speedProgression.endSpeed = parseInt(document.getElementById('youtubeProgressionEndSpeed')?.value || 100);
+                this.youtubePlayer.speedProgression.increment = parseInt(document.getElementById('youtubeProgressionIncrement')?.value || 5);
+                this.youtubePlayer.speedProgression.loopsPerStep = parseInt(document.getElementById('youtubeProgressionLoops')?.value || 4);
+                
+                // Update display if visible
+                const statusDiv = document.getElementById('youtubeSpeedProgressionStatus');
+                if (statusDiv && statusDiv.style.display !== 'none') {
+                    document.getElementById('youtubeTargetProgressSpeed').textContent = this.youtubePlayer.speedProgression.endSpeed;
+                }
+            }
+        };
+        
+        document.getElementById('youtubeProgressionStartSpeed')?.addEventListener('change', updateSpeedProgression);
+        document.getElementById('youtubeProgressionEndSpeed')?.addEventListener('change', updateSpeedProgression);
+        document.getElementById('youtubeProgressionIncrement')?.addEventListener('change', updateSpeedProgression);
+        document.getElementById('youtubeProgressionLoops')?.addEventListener('change', updateSpeedProgression);
     }
 
     updateYouTubeUI(state) {
@@ -1703,6 +2042,14 @@ export class UnifiedPracticeMinimal {
     }
 
     startMetronome() {
+        // Update tempo progression values before starting
+        if (this.metronome.state.tempoProgression?.enabled) {
+            this.metronome.state.tempoProgression.startBpm = parseInt(document.getElementById('progressionStartBpm')?.value || 60);
+            this.metronome.state.tempoProgression.endBpm = parseInt(document.getElementById('progressionEndBpm')?.value || 100);
+            this.metronome.state.tempoProgression.increment = parseInt(document.getElementById('progressionIncrement')?.value || 5);
+            this.metronome.state.tempoProgression.measuresPerStep = parseInt(document.getElementById('progressionMeasures')?.value || 4);
+        }
+        
         this.metronome.start(() => {
             if (this.uiController.getElement('syncCheckbox')?.checked && !this.timer.isRunning) {
                 this.timer.start();
@@ -1710,11 +2057,32 @@ export class UnifiedPracticeMinimal {
             }
         });
         this.uiController.updateMetronomeControls(true);
+        
+        // Show tempo progression status if enabled
+        if (this.metronome.state.tempoProgression?.enabled) {
+            const statusDiv = document.getElementById('tempoProgressionStatus');
+            if (statusDiv) {
+                statusDiv.style.display = 'block';
+                const prog = this.metronome.state.tempoProgression;
+                console.log('Starting metronome with progression:', prog);
+                document.getElementById('currentMeasure').textContent = '0';
+                document.getElementById('measuresPerStep').textContent = prog.measuresPerStep;
+                // Show the start BPM since that's what it will start at
+                document.getElementById('currentProgressBpm').textContent = prog.startBpm;
+                document.getElementById('targetProgressBpm').textContent = prog.endBpm;
+            }
+        }
     }
 
     stopMetronome() {
         this.metronome.stop();
         this.uiController.updateMetronomeControls(false);
+        
+        // Hide tempo progression status
+        const statusDiv = document.getElementById('tempoProgressionStatus');
+        if (statusDiv) {
+            statusDiv.style.display = 'none';
+        }
     }
 
     stopAllPlayback() {
@@ -1762,7 +2130,7 @@ export class UnifiedPracticeMinimal {
             }
             
             const modalContent = await this.renderSaveSessionModal(duration);
-            console.log('Modal content generated:', modalContent);
+            // console.log('Modal content generated:', modalContent);
             
             const modal = this.uiController.showModal(modalContent, {
                 onClose: () => {
@@ -1806,7 +2174,10 @@ export class UnifiedPracticeMinimal {
         let defaultPracticeArea = '';
         
         if (this.currentMode === 'audio' && this.audioPlayer.currentFileName) {
-            mediaInfo = `<p>Audio File: <strong>${this.audioPlayer.currentFileName}</strong></p>`;
+            const truncatedFileName = this.audioPlayer.currentFileName.length > 50 
+                ? this.audioPlayer.currentFileName.substring(0, 47) + '...' 
+                : this.audioPlayer.currentFileName;
+            mediaInfo = `<p>Audio File: <strong>${truncatedFileName}</strong></p>`;
             // Try to find previous practice area for this file
             try {
                 const previousSessions = await this.storageService.getPracticeEntries() || [];
@@ -1850,6 +2221,16 @@ export class UnifiedPracticeMinimal {
                     </select>
                 </div>
                 
+                <div class="form-group" style="margin-top: 12px;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" id="favoriteSession" style="width: auto; margin: 0;">
+                        <span style="display: flex; align-items: center; gap: 4px;">
+                            <span style="color: #facc15;">⭐</span>
+                            Mark as favorite
+                        </span>
+                    </label>
+                </div>
+                
                 <div class="button-group" style="margin-top: 16px;">
                     <button class="btn btn-primary" id="confirmSaveBtn">Save Session</button>
                     <button class="btn btn-secondary" id="cancelSaveBtn">Cancel</button>
@@ -1861,12 +2242,14 @@ export class UnifiedPracticeMinimal {
     attachSaveSessionHandlers(modal, duration) {
         const nameInput = modal.querySelector('#sessionName');
         const practiceAreaSelect = modal.querySelector('#practiceArea');
+        const favoriteCheckbox = modal.querySelector('#favoriteSession');
         const confirmBtn = modal.querySelector('#confirmSaveBtn');
         const cancelBtn = modal.querySelector('#cancelSaveBtn');
 
         confirmBtn?.addEventListener('click', async () => {
             const name = nameInput?.value.trim() || this.sessionManager.generateSessionName();
             const practiceArea = practiceAreaSelect?.value || '';
+            const isFavorite = favoriteCheckbox?.checked || false;
             
             // Create enhanced session data
             const sessionData = {
@@ -1874,7 +2257,8 @@ export class UnifiedPracticeMinimal {
                 duration,
                 date: new Date().toISOString(),
                 practiceArea,
-                mode: this.currentMode
+                mode: this.currentMode,
+                isFavorite
             };
             
             // Add media-specific information
@@ -2184,6 +2568,41 @@ export class UnifiedPracticeMinimal {
         const mins = Math.floor(seconds / 60);
         const secs = Math.floor(seconds % 60);
         return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+    
+    showBpmIncreaseAnimation(increment) {
+        // Create and show the BPM increase animation
+        const animDiv = document.createElement('div');
+        animDiv.className = 'bpm-increase-animation';
+        animDiv.textContent = `+${increment} BPM!`;
+        document.body.appendChild(animDiv);
+        
+        // Remove after animation completes
+        setTimeout(() => {
+            animDiv.remove();
+        }, 1000);
+        
+        // Also pulse the BPM display
+        const bpmValue = document.getElementById('bpmValue');
+        if (bpmValue) {
+            bpmValue.style.animation = 'none';
+            setTimeout(() => {
+                bpmValue.style.animation = 'bpmPulse 0.5s ease-out';
+            }, 10);
+        }
+    }
+    
+    showSpeedIncreaseAnimation(increment) {
+        // Create and show the speed increase animation
+        const animDiv = document.createElement('div');
+        animDiv.className = 'bpm-increase-animation';
+        animDiv.textContent = `+${increment}% Speed!`;
+        document.body.appendChild(animDiv);
+        
+        // Remove after animation completes
+        setTimeout(() => {
+            animDiv.remove();
+        }, 1000);
     }
 
     checkForSessionToLoad() {

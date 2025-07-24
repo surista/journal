@@ -611,6 +611,11 @@ export class StorageService {
                 entry.date = new Date().toISOString();
             }
 
+            // Add userId for Firebase sync
+            if (!entry.userId && this.userId) {
+                entry.userId = this.userId;
+            }
+
             entries.unshift(entry);
             if (entries.length > 1000) {
                 entries.length = 1000;

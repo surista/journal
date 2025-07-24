@@ -336,7 +336,7 @@ export class AudioPlayer {
     }
 
     async play() {
-        console.log('AudioPlayer.play() called');
+        console.log('AudioPlayer.play() called, syncWithTimer:', this.syncWithTimer);
         try {
             const success = await this.audioCore.play();
             console.log('AudioCore.play() returned:', success);
@@ -346,8 +346,12 @@ export class AudioPlayer {
                 this.startTimeUpdates();
                 
                 // Sync with timer if enabled
+                console.log('Checking timer sync, syncWithTimer:', this.syncWithTimer);
                 if (this.syncWithTimer) {
+                    console.log('Timer sync enabled, calling syncTimerStart()');
                     this.syncTimerStart();
+                } else {
+                    console.log('Timer sync disabled, not starting timer');
                 }
             }
             
@@ -470,9 +474,16 @@ export class AudioPlayer {
 
     // Timer sync methods
     syncTimerStart() {
+        console.log('AudioPlayer.syncTimerStart() called, syncWithTimer:', this.syncWithTimer);
         const timer = this.findTimer();
+        console.log('AudioPlayer found timer:', timer);
         if (timer && !timer.isRunning) {
+            console.log('AudioPlayer starting timer');
             timer.start();
+        } else if (timer && timer.isRunning) {
+            console.log('AudioPlayer timer already running');
+        } else if (!timer) {
+            console.log('AudioPlayer could not find timer');
         }
     }
 
@@ -484,20 +495,27 @@ export class AudioPlayer {
     }
 
     findTimer() {
+        console.log('AudioPlayer.findTimer() called');
         // Use timer registry for standardized access
         if (window.timerRegistry) {
-            return window.timerRegistry.getPrimary();
+            const timer = window.timerRegistry.getPrimary();
+            console.log('AudioPlayer found timer via registry:', timer);
+            return timer;
         }
         
         // Fallback to legacy patterns if registry not available
         if (window.currentTimer) {
+            console.log('AudioPlayer found timer via window.currentTimer');
             return window.currentTimer;
         } else if (window.app?.currentPage?.timer) {
+            console.log('AudioPlayer found timer via window.app.currentPage.timer');
             return window.app.currentPage.timer;
         } else if (window.unifiedPracticeMinimal?.timer) {
+            console.log('AudioPlayer found timer via window.unifiedPracticeMinimal.timer');
             return window.unifiedPracticeMinimal.timer;
         }
         
+        console.log('AudioPlayer could not find timer anywhere');
         return null;
     }
 

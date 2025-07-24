@@ -4,6 +4,7 @@ import { AudioService } from '../../services/audioService.js';
 export class MetronomeController {
     constructor(audioService) {
         this.audioService = audioService || new AudioService();
+        this.audioContext = null;
         this.state = {
             bpm: 80,
             isPlaying: false,
@@ -30,12 +31,9 @@ export class MetronomeController {
     }
 
     checkAudioReady() {
-        const checkInterval = setInterval(() => {
-            if (this.audioService && this.audioService.isReady && this.audioService.isReady()) {
-                this.state.audioReady = true;
-                clearInterval(checkInterval);
-            }
-        }, 100);
+        // Audio is ready when the service exists
+        // The actual AudioContext will be created on first user interaction
+        this.state.audioReady = !!this.audioService;
     }
     
     onBeat(callback) {
@@ -52,14 +50,23 @@ export class MetronomeController {
     }
 
     setBpm(newBpm) {
+        console.log('Metronome setBpm called with:', newBpm, 'current BPM:', this.state.bpm);
         newBpm = Math.max(30, Math.min(300, newBpm));
+        
         this.state.bpm = newBpm;
         this.beatDuration = 60 / newBpm;
+        console.log('Metronome BPM set to:', this.state.bpm, 'beatDuration:', this.beatDuration);
         
-        // Update tempo progression if enabled
-        if (this.state.tempoProgression?.enabled) {
-            this.state.tempoProgression.currentBpm = newBpm;
+        // Note: We don't need to track currentBpm separately
+        // We use this.state.bpm directly for progression calculations
+        
+        // Update UI to reflect new BPM
+        if (this.onBpmChange) {
+            this.onBpmChange(newBpm);
         }
+        
+        // Don't restart - just update the beat duration
+        // The scheduler will pick up the new duration on the next beat
     }
 
     setTimeSignature(beats) {
@@ -90,6 +97,13 @@ export class MetronomeController {
         }
 
         if (this.state.isPlaying) return;
+        
+        // Ensure audio context is initialized
+        this.audioContext = await this.audioService.getAudioContext();
+        if (!this.audioContext) {
+            console.error('Failed to get audio context');
+            return;
+        }
 
         this.state.isPlaying = true;
         this.state.currentBeat = 0;
@@ -97,13 +111,12 @@ export class MetronomeController {
         // Reset tempo progression
         if (this.state.tempoProgression?.enabled) {
             this.state.tempoProgression.currentMeasure = 0;
-            this.state.tempoProgression.currentBpm = this.state.tempoProgression.startBpm;
-            this.setBpm(this.state.tempoProgression.currentBpm);
+            // Set BPM to the start BPM
+            this.setBpm(this.state.tempoProgression.startBpm);
         }
 
         // Initialize timing
-        const audioContext = this.audioService.audioContext;
-        this.nextBeatTime = audioContext.currentTime;
+        this.nextBeatTime = this.audioContext.currentTime;
         
         // Start the timer if callback provided
         if (timerCallback) {
@@ -122,6 +135,7 @@ export class MetronomeController {
             this.timerID = null;
         }
         this.state.currentBeat = 0;
+        // Don't clear audioContext - keep it for next start
     }
 
     pause() {
@@ -129,9 +143,9 @@ export class MetronomeController {
     }
 
     scheduler() {
-        if (!this.audioService || !this.audioService.audioContext) return;
+        if (!this.audioService || !this.audioContext) return;
         
-        const audioContext = this.audioService.audioContext;
+        const audioContext = this.audioContext;
         
         while (this.nextBeatTime < audioContext.currentTime + this.lookAheadTime) {
             this.scheduleBeat(this.nextBeatTime);
@@ -159,20 +173,22 @@ export class MetronomeController {
         this.playBeatSound(time, isAccent);
         
         // Trigger beat callbacks
-        const currentTime = this.audioService.audioContext.currentTime;
-        const delay = Math.max(0, (time - currentTime) * 1000); // Convert to milliseconds
-        
-        setTimeout(() => {
-            this.beatCallbacks.forEach(callback => {
-                callback(this.state.currentBeat, isAccent);
-            });
-        }, delay);
+        if (this.audioContext) {
+            const currentTime = this.audioContext.currentTime;
+            const delay = Math.max(0, (time - currentTime) * 1000); // Convert to milliseconds
+            
+            setTimeout(() => {
+                this.beatCallbacks.forEach(callback => {
+                    callback(this.state.currentBeat, isAccent);
+                });
+            }, delay);
+        }
     }
 
     playBeatSound(time, isAccent) {
-        if (!this.audioService || !this.audioService.audioContext) return;
+        if (!this.audioContext) return;
         
-        const audioContext = this.audioService.audioContext;
+        const audioContext = this.audioContext;
         const oscillator = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
         
@@ -212,12 +228,32 @@ export class MetronomeController {
         
         prog.currentMeasure++;
         
+        // Notify UI of measure progress
+        if (this.onProgressionUpdate) {
+            this.onProgressionUpdate({
+                currentMeasure: prog.currentMeasure,
+                measuresPerStep: prog.measuresPerStep,
+                currentBpm: this.state.bpm,
+                targetBpm: prog.endBpm
+            });
+        }
+        
         if (prog.currentMeasure >= prog.measuresPerStep) {
             prog.currentMeasure = 0;
-            const newBpm = Math.min(prog.currentBpm + prog.increment, prog.endBpm);
+            const currentBpm = this.state.bpm;
+            const newBpm = Math.min(currentBpm + prog.increment, prog.endBpm);
             
-            if (newBpm !== prog.currentBpm) {
+            if (newBpm !== currentBpm) {
                 this.setBpm(newBpm);
+                
+                // Notify UI of BPM increase
+                if (this.onBpmIncrease) {
+                    this.onBpmIncrease({
+                        oldBpm: currentBpm,
+                        newBpm: newBpm,
+                        increment: prog.increment
+                    });
+                }
             }
         }
     }
@@ -269,8 +305,24 @@ export class MetronomeController {
             Object.assign(this.state, newState);
         }
     }
+    
+    // Set callbacks for UI updates
+    setCallbacks(callbacks) {
+        if (callbacks.onBpmChange) {
+            this.onBpmChange = callbacks.onBpmChange;
+        }
+        if (callbacks.onProgressionUpdate) {
+            this.onProgressionUpdate = callbacks.onProgressionUpdate;
+        }
+        if (callbacks.onBpmIncrease) {
+            this.onBpmIncrease = callbacks.onBpmIncrease;
+        }
+    }
 
     destroy() {
         this.stop();
+        this.onBpmChange = null;
+        this.onProgressionUpdate = null;
+        this.onBpmIncrease = null;
     }
 }

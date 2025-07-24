@@ -31,7 +31,7 @@ export class Footer {
                             <div class="footer-dropdown-content">
                                 <a href="#" class="footer-link" data-action="about">About Guitar Journal</a>
                                 <a href="#" class="footer-link" data-action="features">Features</a>
-                                <a href="#" class="footer-link" data-action="whatsnew">What's New</a>
+                                <a href="#" class="footer-link" data-action="whatsnew">What's New in v10.92</a>
                                 <a href="#" class="footer-link" data-action="roadmap">Roadmap</a>
                             </div>
                         </div>

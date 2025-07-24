@@ -16,6 +16,44 @@ export class RoadmapPage {
                 </div>
 
                 <div class="roadmap-timeline">
+                    <!-- Recently Completed -->
+                    <div class="roadmap-section completed">
+                        <div class="section-header">
+                            <div class="status-badge completed" style="background: var(--success); color: white;">Recently Completed</div>
+                            <h2>v10.92 Features</h2>
+                        </div>
+                        
+                        <div class="roadmap-items">
+                            <div class="roadmap-item">
+                                <div class="item-icon">☁️</div>
+                                <div class="item-content">
+                                    <h3>Cloud Sync & Backup (Beta)</h3>
+                                    <p>Cloud synchronization with Firebase to keep your practice data backed up and synced.</p>
+                                    <div class="features-list">
+                                        <span class="feature-tag">Firebase integration</span>
+                                        <span class="feature-tag">Automatic backup</span>
+                                        <span class="feature-tag">Cross-device sync</span>
+                                        <span class="feature-tag">Offline support</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="roadmap-item">
+                                <div class="item-icon">🎯</div>
+                                <div class="item-content">
+                                    <h3>Enhanced Practice Features</h3>
+                                    <p>New tools to make practice sessions more effective and enjoyable.</p>
+                                    <div class="features-list">
+                                        <span class="feature-tag">Tempo progression</span>
+                                        <span class="feature-tag">Speed ramping</span>
+                                        <span class="feature-tag">Timer sync</span>
+                                        <span class="feature-tag">Visual feedback</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Currently Working On -->
                     <div class="roadmap-section current">
                         <div class="section-header">
@@ -24,19 +62,6 @@ export class RoadmapPage {
                         </div>
                         
                         <div class="roadmap-items">
-                            <div class="roadmap-item">
-                                <div class="item-icon">☁️</div>
-                                <div class="item-content">
-                                    <h3>Cloud Sync & Backup</h3>
-                                    <p>Optional cloud synchronization to keep your practice data in sync across all your devices.</p>
-                                    <div class="features-list">
-                                        <span class="feature-tag">Automatic sync</span>
-                                        <span class="feature-tag">Conflict resolution</span>
-                                        <span class="feature-tag">Encrypted storage</span>
-                                        <span class="feature-tag">Privacy controls</span>
-                                    </div>
-                                </div>
-                            </div>
 
                             <div class="roadmap-item">
                                 <div class="item-icon">🎼</div>

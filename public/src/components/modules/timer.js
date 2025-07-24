@@ -28,9 +28,11 @@ export class Timer {
         this.reset = this.reset.bind(this);
         this.toggleTimer = this.toggleTimer.bind(this);
         
-        // Register timer in the registry if it's a UI timer
+        // Register timer in the registry
+        timerRegistry.register('practice', this);
+        
+        // Initialize UI if container provided
         if (container) {
-            timerRegistry.register('practice', this);
             this.init();
         }
     }
@@ -110,6 +112,17 @@ export class Timer {
             syncCheckbox.addEventListener('change', (e) => {
                 this.syncWithAudio = e.target.checked;
                 localStorage.setItem('timerSyncWithAudio', this.syncWithAudio.toString());
+                console.log('Timer: syncWithAudio changed to', this.syncWithAudio);
+                
+                // Notify any media players of the change
+                if (window.unifiedPracticeMinimal) {
+                    if (window.unifiedPracticeMinimal.audioPlayer) {
+                        window.unifiedPracticeMinimal.audioPlayer.setSyncWithTimer(this.syncWithAudio);
+                    }
+                    if (window.unifiedPracticeMinimal.youtubePlayer) {
+                        window.unifiedPracticeMinimal.youtubePlayer.syncWithTimer = this.syncWithAudio;
+                    }
+                }
             });
         }
         
@@ -278,9 +291,14 @@ export class Timer {
     
     // Sync methods
     syncStart(source) {
+        console.log(`Timer syncStart called from ${source}, syncWithAudio:`, this.syncWithAudio, ', isRunning:', this.isRunning);
         if (this.syncWithAudio && !this.isRunning) {
             console.log(`Timer auto-starting from ${source}`);
             this.start();
+        } else if (!this.syncWithAudio) {
+            console.log(`Timer sync disabled, not starting from ${source}`);
+        } else if (this.isRunning) {
+            console.log(`Timer already running, not starting from ${source}`);
         }
     }
     
@@ -310,6 +328,10 @@ export class Timer {
                 this.start();
             } else {
                 this.updateDisplay();
+                // Trigger callback to update save button visibility
+                if (this.updateCallback) {
+                    this.updateCallback(this.elapsedTime);
+                }
             }
         }
     }

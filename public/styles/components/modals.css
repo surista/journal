@@ -153,6 +153,8 @@
     padding: 2rem;
     overflow-y: auto;
     max-height: calc(90vh - 5rem);
+    user-select: text;
+    cursor: auto;
 }
 
 /* Modal Footer */
@@ -200,10 +202,23 @@
     flex: 1;
     overflow-y: auto;
     padding: 0;
+    user-select: text;
+    cursor: auto;
 }
 
 .page-modal .info-page-wrapper {
     padding: 2rem;
+    user-select: text;
+}
+
+/* Ensure all text in page modals is selectable */
+.page-modal * {
+    user-select: text;
+}
+
+/* Ensure text colors in page modals */
+.page-modal p {
+    color: var(--text-secondary);
 }
 
 /* Hide duplicate headers in page modals */
@@ -294,6 +309,7 @@
     padding: 0.5rem 0;
     padding-left: 1.5rem;
     position: relative;
+    color: var(--text-secondary);
 }
 
 .page-modal li::before {

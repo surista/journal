@@ -40,6 +40,22 @@ export class YouTubePlayer {
         
         // Saved loops
         this.savedLoops = [];
+        
+        // Speed progression
+        this.speedProgression = {
+            enabled: false,
+            startSpeed: 80,
+            endSpeed: 100,
+            increment: 5,
+            loopsPerStep: 4,
+            currentLoop: 0,
+            currentSpeed: 100
+        };
+        this.loopCount = 0;
+        
+        // Callbacks
+        this.onSpeedProgressionUpdate = null;
+        this.onSpeedIncrease = null;
     }
 
     async initialize(containerId) {
@@ -93,6 +109,24 @@ export class YouTubePlayer {
             if (match && match[1]) {
                 return match[1];
             }
+        }
+        
+        return null;
+    }
+    
+    findTimer() {
+        // Use timer registry for standardized access
+        if (window.timerRegistry) {
+            return window.timerRegistry.getPrimary();
+        }
+        
+        // Fallback to legacy patterns if registry not available
+        if (window.currentTimer) {
+            return window.currentTimer;
+        } else if (window.app?.currentPage?.timer) {
+            return window.app.currentPage.timer;
+        } else if (window.unifiedPracticeMinimal?.timer) {
+            return window.unifiedPracticeMinimal.timer;
         }
         
         return null;
@@ -162,14 +196,23 @@ export class YouTubePlayer {
         // Use numeric constants instead of YT.PlayerState
         // 1 = PLAYING, 2 = PAUSED
         if (event.data === 1) { // PLAYING
+            console.log('YouTube playing, syncWithTimer:', this.syncWithTimer);
             // Handle timer sync if needed
-            if (this.syncWithTimer && window.currentTimer && !window.currentTimer.isRunning) {
-                window.currentTimer.start();
+            if (this.syncWithTimer) {
+                const timer = this.findTimer();
+                if (timer && !timer.isRunning) {
+                    console.log('Starting timer from YouTube play');
+                    timer.start();
+                }
             }
         } else if (event.data === 2) { // PAUSED
             // Handle timer sync if needed
-            if (this.syncWithTimer && window.currentTimer && window.currentTimer.isRunning) {
-                window.currentTimer.pause();
+            if (this.syncWithTimer) {
+                const timer = this.findTimer();
+                if (timer && timer.isRunning) {
+                    console.log('Pausing timer from YouTube pause');
+                    timer.pause();
+                }
             }
         }
     }
@@ -204,8 +247,44 @@ export class YouTubePlayer {
     handleLoopEnd() {
         this.player.seekTo(this.loopStart || 0);
         
-        // Handle auto progression
-        if (this.autoProgress) {
+        // Handle speed progression
+        if (this.speedProgression.enabled) {
+            this.loopCount++;
+            this.speedProgression.currentLoop++;
+            
+            // Update UI
+            if (this.onSpeedProgressionUpdate) {
+                this.onSpeedProgressionUpdate({
+                    currentLoop: this.speedProgression.currentLoop,
+                    loopsPerStep: this.speedProgression.loopsPerStep,
+                    currentSpeed: Math.round(this.playbackRate * 100),
+                    targetSpeed: this.speedProgression.endSpeed
+                });
+            }
+            
+            if (this.speedProgression.currentLoop >= this.speedProgression.loopsPerStep) {
+                this.speedProgression.currentLoop = 0;
+                
+                const currentSpeedPercent = Math.round(this.playbackRate * 100);
+                const newSpeedPercent = Math.min(this.speedProgression.endSpeed, currentSpeedPercent + this.speedProgression.increment);
+                
+                if (newSpeedPercent !== currentSpeedPercent) {
+                    this.setSpeed(newSpeedPercent / 100);
+                    
+                    // Notify UI of speed increase
+                    if (this.onSpeedIncrease) {
+                        this.onSpeedIncrease({
+                            oldSpeed: currentSpeedPercent,
+                            newSpeed: newSpeedPercent,
+                            increment: this.speedProgression.increment
+                        });
+                    }
+                }
+            }
+        }
+        
+        // Keep old auto progression for backward compatibility
+        else if (this.autoProgress) {
             this.currentLoopCount = (this.currentLoopCount || 0) + 1;
             
             if (this.currentLoopCount >= this.progressionSettings.loops) {
@@ -228,12 +307,34 @@ export class YouTubePlayer {
     play() {
         if (this.player && this.ready) {
             this.player.playVideo();
+            
+            // Manually trigger timer sync
+            if (this.syncWithTimer) {
+                console.log('YouTube play() - checking timer sync, syncWithTimer:', this.syncWithTimer);
+                const timer = this.findTimer();
+                console.log('YouTube play() - found timer:', timer);
+                if (timer && !timer.isRunning) {
+                    console.log('YouTube play() - starting timer');
+                    timer.start();
+                }
+            }
         }
     }
 
     pause() {
         if (this.player && this.ready) {
             this.player.pauseVideo();
+            
+            // Manually trigger timer sync
+            if (this.syncWithTimer) {
+                console.log('YouTube pause() - checking timer sync, syncWithTimer:', this.syncWithTimer);
+                const timer = this.findTimer();
+                console.log('YouTube pause() - found timer:', timer);
+                if (timer && timer.isRunning) {
+                    console.log('YouTube pause() - pausing timer');
+                    timer.pause();
+                }
+            }
         }
     }
 
@@ -297,6 +398,15 @@ export class YouTubePlayer {
         this.looping = enabled;
         if (!enabled) {
             this.currentLoopCount = 0;
+            this.loopCount = 0;
+            if (this.speedProgression.enabled) {
+                this.speedProgression.currentLoop = 0;
+            }
+        } else if (enabled && this.speedProgression.enabled) {
+            // Reset speed to start speed when enabling loop with progression
+            this.setSpeed(this.speedProgression.startSpeed / 100);
+            this.speedProgression.currentLoop = 0;
+            this.loopCount = 0;
         }
     }
 
@@ -429,6 +539,15 @@ export class YouTubePlayer {
     setUpdateCallback(callback) {
         this.onUpdateCallback = callback;
     }
+    
+    setSpeedProgressionCallbacks(callbacks) {
+        if (callbacks.onSpeedProgressionUpdate) {
+            this.onSpeedProgressionUpdate = callbacks.onSpeedProgressionUpdate;
+        }
+        if (callbacks.onSpeedIncrease) {
+            this.onSpeedIncrease = callbacks.onSpeedIncrease;
+        }
+    }
 
     destroy() {
         if (this.updateInterval) {
@@ -443,5 +562,7 @@ export class YouTubePlayer {
         
         this.ready = false;
         this.onUpdateCallback = null;
+        this.onSpeedProgressionUpdate = null;
+        this.onSpeedIncrease = null;
     }
 }

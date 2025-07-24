@@ -11,6 +11,13 @@
     color: var(--text-primary);
 }
 
+/* Sync Controls Container */
+.sync-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
 /* Sync Status */
 .sync-status {
     display: flex;
@@ -59,11 +66,12 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 10px 15px;
+    padding: 12px 20px;
     background: var(--bg-input);
-    border-radius: 6px;
+    border-radius: 8px;
     margin-bottom: 20px;
     color: var(--text-secondary);
+    border: 1px solid var(--border);
 }
 
 /* Sync Actions */
@@ -80,6 +88,7 @@
     justify-content: center;
     gap: 10px;
     padding: 12px 20px;
+    width: 100%;
 }
 
 /* Sync Settings */
@@ -118,6 +127,10 @@
     margin-bottom: 15px;
 }
 
+.danger-zone button {
+    width: 100%;
+}
+
 /* Auth Section */
 .sync-auth {
     text-align: center;
@@ -133,7 +146,12 @@
 }
 
 .sync-auth button {
-    margin: 5px;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.sync-auth button:last-child {
+    margin-bottom: 0;
 }
 
 /* Auth Modal */
@@ -150,6 +168,10 @@
     gap: 10px;
     justify-content: flex-end;
     margin-top: 20px;
+}
+
+.auth-modal .form-actions button {
+    flex: 1;
 }
 
 /* Notifications */

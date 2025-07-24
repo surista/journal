@@ -4,9 +4,9 @@
     bottom: 0;
     left: 0;
     right: 0;
-    background: rgba(15, 23, 42, 0.95);
+    background: var(--bg-secondary);
     backdrop-filter: blur(12px);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid var(--border);
     z-index: 1000;
     height: 48px;
     transition: all 0.3s ease;
@@ -39,7 +39,7 @@
 }
 
 .footer-copyright {
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--text-secondary);
     font-size: 0.875rem;
     font-weight: 500;
     white-space: nowrap;
@@ -49,22 +49,22 @@
     display: inline-flex;
     align-items: center;
     padding: 0.25rem 0.75rem;
-    background: rgba(99, 102, 241, 0.2);
-    color: #818cf8;
+    background: var(--bg-input);
+    color: var(--primary);
     font-size: 0.75rem;
     font-weight: 600;
     border-radius: 12px;
-    border: 1px solid rgba(99, 102, 241, 0.3);
+    border: 1px solid var(--border);
     cursor: help;
     transition: all 0.2s ease;
     white-space: nowrap;
 }
 
 .footer-version-badge:hover {
-    background: rgba(99, 102, 241, 0.3);
-    border-color: rgba(99, 102, 241, 0.4);
+    background: var(--bg-hover);
+    border-color: var(--primary);
     transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.2);
+    box-shadow: var(--shadow-sm);
 }
 
 /* Footer Navigation */
@@ -87,7 +87,7 @@
 .footer-dropdown-trigger {
     background: none;
     border: none;
-    color: rgba(255, 255, 255, 0.5);
+    color: var(--text-tertiary);
     font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.1em;
@@ -99,7 +99,7 @@
 }
 
 .footer-dropdown:hover .footer-dropdown-trigger {
-    color: #818cf8;
+    color: var(--primary);
 }
 
 .footer-dropdown-content {
@@ -107,12 +107,12 @@
     bottom: 100%;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(30, 41, 59, 0.98);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
     border-radius: 8px;
     padding: 8px 0;
     min-width: 180px;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--shadow-lg);
     opacity: 0;
     visibility: hidden;
     transition: all 0.2s ease;
@@ -128,7 +128,7 @@
 .footer-dropdown-content a {
     display: block;
     padding: 8px 16px;
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--text-secondary);
     text-decoration: none;
     font-size: 13px;
     transition: all 0.2s ease;
@@ -136,8 +136,8 @@
 }
 
 .footer-dropdown-content a:hover {
-    background: rgba(99, 102, 241, 0.1);
-    color: #818cf8;
+    background: var(--bg-hover);
+    color: var(--primary);
 }
 
 .footer-dropdown-content a i {
@@ -212,48 +212,8 @@
     animation: version-pulse 2s ease-in-out 3;
 }
 
-/* Light theme adjustments */
-[data-theme="light"] .app-footer {
-    background: rgba(255, 255, 255, 0.95);
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-[data-theme="light"] .footer-copyright {
-    color: rgba(0, 0, 0, 0.6);
-}
-
-[data-theme="light"] .footer-version-badge {
-    background: rgba(99, 102, 241, 0.1);
-    color: var(--primary);
-    border-color: rgba(99, 102, 241, 0.2);
-}
-
-[data-theme="light"] .footer-version-badge:hover {
-    background: rgba(99, 102, 241, 0.15);
-    border-color: rgba(99, 102, 241, 0.3);
-}
-
-[data-theme="light"] .footer-dropdown-trigger {
-    color: rgba(0, 0, 0, 0.5);
-}
-
-[data-theme="light"] .footer-dropdown:hover .footer-dropdown-trigger {
-    color: var(--primary);
-}
-
-[data-theme="light"] .footer-dropdown-content {
-    background: rgba(255, 255, 255, 0.98);
-    border-color: rgba(0, 0, 0, 0.1);
-}
-
-[data-theme="light"] .footer-dropdown-content a {
-    color: rgba(0, 0, 0, 0.7);
-}
-
-[data-theme="light"] .footer-dropdown-content a:hover {
-    background: rgba(99, 102, 241, 0.05);
-    color: var(--primary);
-}
+/* Theme-specific footer adjustments if needed */
+/* The footer now uses CSS variables that automatically adapt to the current theme */
 
 /* Keyboard shortcuts modal styles */
 .shortcuts-list {

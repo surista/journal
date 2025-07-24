@@ -85,7 +85,7 @@ export class SessionManager {
             }
 
             // Save to storage
-            await this.storageService.addSession(session);
+            await this.storageService.savePracticeEntry(session);
 
             // Show success notification
             this.showNotification(`Session "${session.name}" saved successfully!`, 'success');
@@ -112,6 +112,9 @@ export class SessionManager {
             // Restore timer
             if (state.data.timer && components.timer) {
                 components.timer.setState(state.data.timer);
+                if (components.updateTimerDisplay) {
+                    components.updateTimerDisplay();
+                }
             }
 
             // Restore mode

@@ -4,12 +4,12 @@ export class WhatsNewPage {
         return `
             <div class="whats-new-page">
                 <div class="page-header">
-                    <h1>What's New</h1>
+                    <h1>What's New in v10.92</h1>
                     <p class="subtitle">Latest updates and improvements to Guitar Practice Journal</p>
                 </div>
 
                 <div class="release-section">
-                    <div class="version-badge">v8.6</div>
+                    <div class="version-badge">v10.92</div>
                     <h2>Latest Release - January 2025</h2>
                     
                     <div class="release-highlights">
