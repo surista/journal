@@ -231,6 +231,25 @@ export class StorageService {
                     try {
                         const cloudGoals = await this.firebaseSync.getGoals();
                         if (cloudGoals && cloudGoals.length > 0) {
+                            // IMPORTANT: Check for local data again before saving
+                            // to prevent race condition data loss
+                            const currentStored = localStorage.getItem(key);
+                            if (currentStored) {
+                                // Local data appeared while we were loading from cloud
+                                // Merge them properly
+                                try {
+                                    const localGoals = JSON.parse(currentStored);
+                                    if (Array.isArray(localGoals) && localGoals.length > 0) {
+                                        // Merge local and cloud data
+                                        const merged = this.mergeData(localGoals, cloudGoals);
+                                        await this.saveGoals(merged);
+                                        return merged;
+                                    }
+                                } catch (e) {
+                                    console.error('Error parsing local goals during merge:', e);
+                                }
+                            }
+                            
                             // Save to local storage for next time
                             await this.saveGoals(cloudGoals);
                             return cloudGoals;
@@ -369,6 +388,25 @@ export class StorageService {
                     try {
                         const cloudRepertoire = await this.firebaseSync.getRepertoire();
                         if (cloudRepertoire && cloudRepertoire.length > 0) {
+                            // IMPORTANT: Check for local data again before saving
+                            // to prevent race condition data loss
+                            const currentStored = localStorage.getItem(key);
+                            if (currentStored) {
+                                // Local data appeared while we were loading from cloud
+                                // Merge them properly
+                                try {
+                                    const localRepertoire = JSON.parse(currentStored);
+                                    if (Array.isArray(localRepertoire) && localRepertoire.length > 0) {
+                                        // Merge local and cloud data
+                                        const merged = this.mergeData(localRepertoire, cloudRepertoire);
+                                        await this.saveRepertoire(merged);
+                                        return merged;
+                                    }
+                                } catch (e) {
+                                    console.error('Error parsing local repertoire during merge:', e);
+                                }
+                            }
+                            
                             // Save to local storage for next time
                             await this.saveRepertoire(cloudRepertoire);
                             return cloudRepertoire;
@@ -583,40 +621,76 @@ export class StorageService {
 
     // In storageService.js, update the savePracticeEntry method:
 
+    cleanPracticeEntry(entry) {
+        // Create a clean copy of the entry without circular references
+        const cleanEntry = {};
+        
+        // Define allowed fields
+        const allowedFields = [
+            'id', 'name', 'date', 'duration', 'practiceArea', 'key', 'mode',
+            'isFavorite', 'audioFile', 'youtubeTitle', 'youtubeUrl', 'bpm',
+            'timeSignature', 'sheetMusicImage', 'sheetMusicThumbnail',
+            'notes', 'tempo', 'area', 'tempoPercentage'
+        ];
+        
+        // Copy only allowed fields
+        for (const field of allowedFields) {
+            if (entry.hasOwnProperty(field) && entry[field] !== undefined) {
+                // Make sure we're not copying objects that might have circular refs
+                if (typeof entry[field] === 'object' && entry[field] !== null) {
+                    // For now, just stringify and parse to break any references
+                    try {
+                        cleanEntry[field] = JSON.parse(JSON.stringify(entry[field]));
+                    } catch (e) {
+                        console.warn(`Could not clean field ${field}:`, e);
+                        // Skip this field if it can't be stringified
+                    }
+                } else {
+                    cleanEntry[field] = entry[field];
+                }
+            }
+        }
+        
+        return cleanEntry;
+    }
+
     async savePracticeEntry(entry) {
         try {
+            // Clean the entry to remove any circular references
+            const cleanedEntry = this.cleanPracticeEntry(entry);
+            
             // Prevent duplicate entries by checking if an identical entry was just saved
             const entries = await this.getPracticeEntries();
             // Check for duplicate entry within the last 5 seconds
             if (entries.length > 0) {
                 const lastEntry = entries[0];
                 const lastEntryTime = new Date(lastEntry.date).getTime();
-                const currentEntryTime = new Date(entry.date).getTime();
+                const currentEntryTime = new Date(cleanedEntry.date).getTime();
                 const timeDiff = Math.abs(currentEntryTime - lastEntryTime);
 
                 // If the last entry has the same practice area and duration and was saved within 5 seconds, it's likely a duplicate
                 if (timeDiff < 5000 &&
-                    lastEntry.practiceArea === entry.practiceArea &&
-                    lastEntry.duration === entry.duration) {
+                    lastEntry.practiceArea === cleanedEntry.practiceArea &&
+                    lastEntry.duration === cleanedEntry.duration) {
                     return true; // Return success but don't save
                 }
             }
 
             // Ensure entry has required properties
-            if (!entry.id) {
-                entry.id = Date.now() + Math.random();
+            if (!cleanedEntry.id) {
+                cleanedEntry.id = Date.now() + Math.random();
             }
 
-            if (!entry.date) {
-                entry.date = new Date().toISOString();
+            if (!cleanedEntry.date) {
+                cleanedEntry.date = new Date().toISOString();
             }
 
             // Add userId for Firebase sync
-            if (!entry.userId && this.userId) {
-                entry.userId = this.userId;
+            if (!cleanedEntry.userId && this.userId) {
+                cleanedEntry.userId = this.userId;
             }
 
-            entries.unshift(entry);
+            entries.unshift(cleanedEntry);
             if (entries.length > 1000) {
                 entries.length = 1000;
             }
@@ -649,13 +723,13 @@ export class StorageService {
             // Verify save
             const savedData = localStorage.getItem(key);
 
-            await this.updateStats(entry);
+            await this.updateStats(cleanedEntry);
             this.scheduleBackup();
 
             // Sync to Firebase
             if (this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
                 try {
-                    await this.firebaseSync.savePracticeSession(entry);
+                    await this.firebaseSync.savePracticeSession(cleanedEntry);
                 } catch (cloudError) {
                     console.warn('Cloud sync failed, data saved locally:', cloudError);
                 }
@@ -663,7 +737,7 @@ export class StorageService {
 
             // Dispatch event to notify UI components
             window.dispatchEvent(new CustomEvent('practiceSessionSaved', {
-                detail: { entry }
+                detail: { entry: cleanedEntry }
             }));
             
             return true;
@@ -811,6 +885,15 @@ export class StorageService {
             const key = `${this.prefix}stats`;
             localStorage.setItem(key, JSON.stringify(stats));
 
+            // Sync stats to Firebase
+            if (this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
+                try {
+                    await this.firebaseSync.saveStats(stats);
+                } catch (cloudError) {
+                    console.warn('Stats cloud sync failed:', cloudError);
+                }
+            }
+
             return stats;
         } catch (error) {
             console.error('Error recalculating stats:', error);
@@ -906,6 +989,31 @@ export class StorageService {
                     try {
                         const cloudSessions = await this.firebaseSync.getPracticeSessions();
                         if (cloudSessions && cloudSessions.length > 0) {
+                            // IMPORTANT: Check for local data again before saving
+                            // to prevent race condition data loss
+                            const currentStored = localStorage.getItem(key);
+                            if (currentStored) {
+                                // Local data appeared while we were loading from cloud
+                                // Merge them properly
+                                let localEntries = [];
+                                try {
+                                    if (this.useCompression) {
+                                        localEntries = CompressionUtils.decompressObject(currentStored) || [];
+                                    } else {
+                                        localEntries = JSON.parse(currentStored);
+                                    }
+                                } catch (e) {
+                                    console.error('Error parsing local data during merge:', e);
+                                }
+                                
+                                if (Array.isArray(localEntries) && localEntries.length > 0) {
+                                    // Merge local and cloud data
+                                    const merged = this.mergeData(localEntries, cloudSessions);
+                                    await this.savePracticeEntries(merged);
+                                    return merged;
+                                }
+                            }
+                            
                             // Save to local storage for next time
                             await this.savePracticeEntries(cloudSessions);
                             return cloudSessions;
@@ -924,6 +1032,35 @@ export class StorageService {
             }
 
             if (!stored) {
+                // Try to find data in backup locations
+                console.log('No data found in primary key, checking backup locations...');
+                const backupKeys = [
+                    'practiceEntries', // Old key format
+                    'guitarpractice_demo_user_practice_entries', // Demo user key
+                    `guitarpractice_${this.userId.replace('@', '_').replace('.', '_')}_practice_entries`, // Email-based key
+                    'practice_sessions', // Alternative key
+                    `${this.prefix}practice_entries_backup`, // Backup key
+                    `${key}_backup` // Direct backup
+                ];
+                
+                for (const backupKey of backupKeys) {
+                    try {
+                        const backupData = localStorage.getItem(backupKey);
+                        if (backupData) {
+                            console.log(`Found backup data in key: ${backupKey}`);
+                            const parsed = JSON.parse(backupData);
+                            if (Array.isArray(parsed) && parsed.length > 0) {
+                                // Restore from backup
+                                localStorage.setItem(key, backupData);
+                                return parsed;
+                            }
+                        }
+                    } catch (e) {
+                        console.warn(`Failed to parse backup key ${backupKey}:`, e);
+                    }
+                }
+                
+                console.warn('No backup data found, returning empty array');
                 return [];
             }
 
@@ -994,6 +1131,15 @@ export class StorageService {
             const key = `${this.prefix}stats`;
             localStorage.setItem(key, JSON.stringify(stats));
 
+            // Sync stats to Firebase
+            if (this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
+                try {
+                    await this.firebaseSync.saveStats(stats);
+                } catch (cloudError) {
+                    console.warn('Stats cloud sync failed:', cloudError);
+                }
+            }
+
             return stats;
         } catch (error) {
             console.error('Error updating stats:', error);
@@ -1004,7 +1150,44 @@ export class StorageService {
         try {
             const key = `${this.prefix}stats`;
             const stored = localStorage.getItem(key);
-            return stored ? JSON.parse(stored) : {
+            
+            // If no local stats but user is authenticated, try to load from Firebase
+            if (!stored && this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
+                try {
+                    const cloudStats = await this.firebaseSync.getStats();
+                    if (cloudStats) {
+                        // Save to local storage for next time
+                        localStorage.setItem(key, JSON.stringify(cloudStats));
+                        return cloudStats;
+                    }
+                } catch (cloudError) {
+                    console.warn('Failed to load stats from cloud:', cloudError);
+                }
+            }
+            
+            if (stored) {
+                return JSON.parse(stored);
+            }
+            
+            // If no stats exist, calculate from practice entries
+            const calculatedStats = await this.calculateStats();
+            if (calculatedStats && calculatedStats.totalSessions > 0) {
+                // Save calculated stats
+                localStorage.setItem(key, JSON.stringify(calculatedStats));
+                
+                // Sync to Firebase
+                if (this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
+                    try {
+                        await this.firebaseSync.saveStats(calculatedStats);
+                    } catch (cloudError) {
+                        console.warn('Stats cloud sync failed:', cloudError);
+                    }
+                }
+                
+                return calculatedStats;
+            }
+            
+            return {
                 totalSessions: 0,
                 totalSeconds: 0,
                 totalHours: 0,
@@ -1059,6 +1242,7 @@ export class StorageService {
             const totalSeconds = entries.reduce((sum, entry) => sum + (entry.duration || 0), 0);
             const totalHours = Math.floor(totalSeconds / 3600);
             const currentStreak = await this.calculateCurrentStreak();
+            const longestStreak = await this.calculateLongestStreak();
 
             const practiceAreas = {};
             entries.forEach(entry => {
@@ -1081,7 +1265,7 @@ export class StorageService {
                 totalHours,
                 totalSeconds,
                 currentStreak,
-                longestStreak: currentStreak,
+                longestStreak: Math.max(longestStreak, currentStreak),
                 averageSessionLength: entries.length > 0 ? Math.floor(totalSeconds / entries.length) : 0,
                 practiceAreas,
                 mostPracticedArea,
@@ -1192,6 +1376,119 @@ export class StorageService {
             return true;
         } catch (error) {
             console.error('Error saving user settings:', error);
+            return false;
+        }
+    }
+
+    // ===================
+    // SESSION AREAS
+    // ===================
+
+    async getSessionAreas() {
+        try {
+            const key = `${this.prefix}session_areas`;
+            const stored = localStorage.getItem(key);
+            
+            if (stored) {
+                return JSON.parse(stored);
+            }
+            
+            // Return default areas if none stored
+            return [
+                'Scales',
+                'Chords',
+                'Arpeggios',
+                'Songs',
+                'Technique',
+                'Theory',
+                'Improvisation',
+                'Sight Reading',
+                'Ear Training',
+                'Rhythm',
+                'Repertoire',
+                'Audio Practice'
+            ];
+        } catch (error) {
+            console.error('Error loading session areas:', error);
+            // Return defaults on error
+            return [
+                'Scales',
+                'Chords',
+                'Arpeggios',
+                'Songs',
+                'Technique',
+                'Theory',
+                'Improvisation',
+                'Sight Reading',
+                'Ear Training',
+                'Rhythm',
+                'Repertoire',
+                'Audio Practice'
+            ];
+        }
+    }
+
+    async saveSessionAreas(areas) {
+        try {
+            // Validate input
+            if (!Array.isArray(areas)) {
+                console.error('Session areas must be an array');
+                return false;
+            }
+
+            const key = `${this.prefix}session_areas`;
+            localStorage.setItem(key, JSON.stringify(areas));
+            
+            // Dispatch event for other components
+            window.dispatchEvent(new CustomEvent('sessionAreasUpdated', {
+                detail: { areas, userId: this.userId }
+            }));
+            
+            // Schedule backup
+            this.scheduleBackup();
+            
+            // Sync to Firebase if enabled
+            if (this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
+                try {
+                    await this.firebaseSync.saveSessionAreas(areas);
+                } catch (syncError) {
+                    console.warn('Failed to sync session areas to cloud:', syncError);
+                }
+            }
+            
+            return true;
+        } catch (error) {
+            console.error('Error saving session areas:', error);
+            return false;
+        }
+    }
+
+    async addSessionArea(area) {
+        try {
+            const areas = await this.getSessionAreas();
+            if (!areas.includes(area)) {
+                areas.push(area);
+                areas.sort();
+                return await this.saveSessionAreas(areas);
+            }
+            return true;
+        } catch (error) {
+            console.error('Error adding session area:', error);
+            return false;
+        }
+    }
+
+    async removeSessionArea(area) {
+        try {
+            const areas = await this.getSessionAreas();
+            const index = areas.indexOf(area);
+            if (index > -1) {
+                areas.splice(index, 1);
+                return await this.saveSessionAreas(areas);
+            }
+            return true;
+        } catch (error) {
+            console.error('Error removing session area:', error);
             return false;
         }
     }
@@ -1325,6 +1622,117 @@ export class StorageService {
             return true;
         } catch (error) {
             console.error('Error clearing data:', error);
+            return false;
+        }
+    }
+
+    // ===================
+    // LEARNING PLAN METHODS
+    // ===================
+
+    async saveLearningProfile(profile) {
+        try {
+            const key = `${this.prefix}learning_profile`;
+            localStorage.setItem(key, JSON.stringify(profile));
+            
+            // Trigger backup if enabled
+            if (this.autoBackupEnabled) {
+                this.scheduleBackup();
+            }
+            
+            return true;
+        } catch (error) {
+            console.error('Error saving learning profile:', error);
+            return false;
+        }
+    }
+
+    async getLearningProfile() {
+        try {
+            const key = `${this.prefix}learning_profile`;
+            const data = localStorage.getItem(key);
+            return data ? JSON.parse(data) : null;
+        } catch (error) {
+            console.error('Error getting learning profile:', error);
+            return null;
+        }
+    }
+
+    async saveLearningPlan(plan) {
+        try {
+            // Add unique ID and timestamp
+            plan.id = plan.id || Date.now().toString();
+            plan.createdAt = plan.createdAt || new Date().toISOString();
+            
+            const key = `${this.prefix}learning_plan_current`;
+            localStorage.setItem(key, JSON.stringify(plan));
+            
+            // Also save to plan history
+            const historyKey = `${this.prefix}learning_plans`;
+            const historyData = localStorage.getItem(historyKey);
+            const history = historyData ? JSON.parse(historyData) : [];
+            history.unshift(plan);
+            // Keep only last 5 plans
+            if (history.length > 5) {
+                history.length = 5;
+            }
+            localStorage.setItem(historyKey, JSON.stringify(history));
+            
+            return true;
+        } catch (error) {
+            console.error('Error saving learning plan:', error);
+            return false;
+        }
+    }
+
+    async getCurrentLearningPlan() {
+        try {
+            const key = `${this.prefix}learning_plan_current`;
+            const data = localStorage.getItem(key);
+            return data ? JSON.parse(data) : null;
+        } catch (error) {
+            console.error('Error getting current learning plan:', error);
+            return null;
+        }
+    }
+
+    async getLearningPlanHistory() {
+        try {
+            const key = `${this.prefix}learning_plans`;
+            const data = localStorage.getItem(key);
+            return data ? JSON.parse(data) : [];
+        } catch (error) {
+            console.error('Error getting learning plan history:', error);
+            return [];
+        }
+    }
+
+    async updateLearningPlanProgress(planId, sessionId, completed = true) {
+        try {
+            const plan = await this.getCurrentLearningPlan();
+            if (!plan || plan.id !== planId) return false;
+            
+            // Find and update the session
+            let updated = false;
+            plan.weeks.forEach(week => {
+                const session = week.sessions.find(s => s.id === sessionId);
+                if (session) {
+                    session.completed = completed;
+                    session.completedAt = completed ? new Date().toISOString() : null;
+                    updated = true;
+                    
+                    // Update week progress
+                    week.completedSessions = week.sessions.filter(s => s.completed).length;
+                }
+            });
+            
+            if (updated) {
+                await this.saveLearningPlan(plan);
+            }
+            
+            return updated;
+        } catch (error) {
+            console.error('Error updating learning plan progress:', error);
             return false;
         }
     }
@@ -1508,6 +1916,16 @@ export class StorageService {
             } catch (error) {
                 console.error('Failed to migrate settings:', error);
             }
+            
+            // Migrate stats
+            const stats = await this.getStats();
+            if (stats && stats.totalSessions > 0) {
+                try {
+                    await this.firebaseSync.saveStats(stats);
+                } catch (error) {
+                    console.error('Failed to migrate stats:', error);
+                }
+            }
 
             return true;
         } catch (error) {
@@ -1557,6 +1975,13 @@ export class StorageService {
                     });
                     localStorage.setItem('settingsUpdatedAt', cloudSettings.updatedAt);
                 }
+            }
+            
+            // Sync stats from cloud
+            const cloudStats = await this.firebaseSync.getStats();
+            if (cloudStats) {
+                const key = `${this.prefix}stats`;
+                localStorage.setItem(key, JSON.stringify(cloudStats));
             }
 
             return true;

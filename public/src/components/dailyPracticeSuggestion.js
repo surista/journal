@@ -92,77 +92,175 @@ export class DailyPracticeSuggestion {
         }
     }
 
-    getDefaultSuggestion() {
-        const suggestions = [
-            {
-                type: 'warmup',
-                title: 'Start with a Warm-up',
-                description: 'Begin your practice with 5-10 minutes of finger exercises and stretches to prevent injury and improve dexterity.',
-                icon: '🤸',
-                actionText: 'Start Warm-up Timer',
-                exercises: [
-                    { name: 'Finger stretches', duration: 2 },
-                    { name: 'Chromatic runs', duration: 3 },
-                    { name: 'Spider exercise', duration: 5 }
-                ]
-            },
-            {
-                type: 'scales',
-                title: 'Scale Practice Day',
-                description: 'Focus on major and minor scales in different positions. This builds muscle memory and improves your fretboard knowledge.',
-                icon: '🎼',
-                actionText: 'Practice Scales',
-                exercises: [
-                    { name: 'Major scales - 5 positions', duration: 10 },
-                    { name: 'Minor scales - 5 positions', duration: 10 },
-                    { name: 'Scale sequences', duration: 10 }
-                ]
-            },
-            {
-                type: 'rhythm',
-                title: 'Rhythm & Timing Focus',
-                description: 'Work on your timing with a metronome. Start slow and gradually increase tempo while maintaining accuracy.',
-                icon: '🥁',
-                actionText: 'Start Metronome',
-                exercises: [
-                    { name: 'Quarter note exercises', duration: 5 },
-                    { name: 'Syncopation patterns', duration: 10 },
-                    { name: 'Strumming patterns', duration: 10 }
-                ]
-            },
-            {
-                type: 'technique',
-                title: 'Technique Building',
-                description: 'Dedicate time to specific techniques like bending, vibrato, or fingerpicking to expand your playing abilities.',
-                icon: '🎸',
-                actionText: 'Work on Technique',
-                exercises: [
-                    { name: 'String bending exercises', duration: 10 },
-                    { name: 'Vibrato practice', duration: 5 },
-                    { name: 'Hammer-ons and pull-offs', duration: 10 }
-                ]
-            },
-            {
-                type: 'ear',
-                title: 'Ear Training Session',
-                description: 'Develop your musical ear by playing along to songs or working on interval recognition.',
-                icon: '👂',
-                actionText: 'Start Ear Training',
-                exercises: [
-                    { name: 'Interval recognition', duration: 10 },
-                    { name: 'Chord identification', duration: 10 },
-                    { name: 'Melody transcription', duration: 10 }
-                ]
+    async getDefaultSuggestion() {
+        // Get user's custom session areas
+        let sessionAreas = [];
+        try {
+            sessionAreas = await this.storageService.getSessionAreas();
+        } catch (error) {
+            console.error('Error loading session areas:', error);
+            sessionAreas = [];
+        }
+        
+        // Create suggestions based on user's session areas
+        const suggestions = [];
+        
+        // Always include a warmup suggestion
+        suggestions.push({
+            type: 'warmup',
+            title: 'Start with a Warm-up',
+            description: 'Begin your practice with 5-10 minutes of finger exercises and stretches to prevent injury and improve dexterity.',
+            icon: '🤸',
+            actionText: 'Start Warm-up Timer',
+            exercises: [
+                { name: 'Finger stretches', duration: 2 },
+                { name: 'Chromatic runs', duration: 3 },
+                { name: 'Spider exercise', duration: 5 }
+            ]
+        });
+        
+        // Add suggestions based on user's session areas
+        sessionAreas.forEach(area => {
+            const areaLower = area.toLowerCase();
+            
+            if (areaLower.includes('scale')) {
+                suggestions.push({
+                    type: 'scales',
+                    title: `${area} Practice`,
+                    description: 'Focus on scales in different positions. This builds muscle memory and improves your fretboard knowledge.',
+                    icon: '🎼',
+                    actionText: `Practice ${area}`,
+                    exercises: [
+                        { name: 'Major scales - 5 positions', duration: 10 },
+                        { name: 'Minor scales - 5 positions', duration: 10 },
+                        { name: 'Scale sequences', duration: 10 }
+                    ]
+                });
+            } else if (areaLower.includes('chord')) {
+                suggestions.push({
+                    type: 'chords',
+                    title: `${area} Practice`,
+                    description: 'Work on chord shapes, transitions, and voicings to improve your rhythm playing.',
+                    icon: '🎸',
+                    actionText: `Practice ${area}`,
+                    exercises: [
+                        { name: 'Open chord transitions', duration: 10 },
+                        { name: 'Barre chord practice', duration: 10 },
+                        { name: 'Chord progressions', duration: 10 }
+                    ]
+                });
+            } else if (areaLower.includes('rhythm')) {
+                suggestions.push({
+                    type: 'rhythm',
+                    title: `${area} Focus`,
+                    description: 'Work on your timing with a metronome. Start slow and gradually increase tempo while maintaining accuracy.',
+                    icon: '🥁',
+                    actionText: 'Start Metronome',
+                    exercises: [
+                        { name: 'Quarter note exercises', duration: 5 },
+                        { name: 'Syncopation patterns', duration: 10 },
+                        { name: 'Strumming patterns', duration: 10 }
+                    ]
+                });
+            } else if (areaLower.includes('technique')) {
+                suggestions.push({
+                    type: 'technique',
+                    title: `${area} Building`,
+                    description: 'Dedicate time to specific techniques to expand your playing abilities.',
+                    icon: '🎸',
+                    actionText: `Work on ${area}`,
+                    exercises: [
+                        { name: 'String bending exercises', duration: 10 },
+                        { name: 'Vibrato practice', duration: 5 },
+                        { name: 'Hammer-ons and pull-offs', duration: 10 }
+                    ]
+                });
+            } else if (areaLower.includes('ear')) {
+                suggestions.push({
+                    type: 'ear',
+                    title: `${area} Session`,
+                    description: 'Develop your musical ear by playing along to songs or working on interval recognition.',
+                    icon: '👂',
+                    actionText: `Start ${area}`,
+                    exercises: [
+                        { name: 'Interval recognition', duration: 10 },
+                        { name: 'Chord identification', duration: 10 },
+                        { name: 'Melody transcription', duration: 10 }
+                    ]
+                });
+            } else if (areaLower.includes('arpeggio')) {
+                suggestions.push({
+                    type: 'arpeggios',
+                    title: `${area} Practice`,
+                    description: 'Work on broken chord patterns to improve your finger independence and melodic playing.',
+                    icon: '🎵',
+                    actionText: `Practice ${area}`,
+                    exercises: [
+                        { name: 'Basic triad arpeggios', duration: 10 },
+                        { name: 'Seventh chord arpeggios', duration: 10 },
+                        { name: 'Arpeggio sequences', duration: 10 }
+                    ]
+                });
+            } else {
+                // Generic suggestion for custom areas
+                suggestions.push({
+                    type: 'custom',
+                    title: `${area} Practice`,
+                    description: `Focus on improving your ${area} skills with dedicated practice time.`,
+                    icon: '🎵',
+                    actionText: `Practice ${area}`,
+                    exercises: [
+                        { name: `${area} fundamentals`, duration: 10 },
+                        { name: `${area} exercises`, duration: 10 },
+                        { name: `${area} application`, duration: 10 }
+                    ],
+                    practiceArea: area
+                });
             }
-        ];
+        });
+        
+        // If no suggestions were created from session areas, use defaults
+        if (suggestions.length === 1) { // Only warmup
+            suggestions.push(
+                {
+                    type: 'scales',
+                    title: 'Scale Practice Day',
+                    description: 'Focus on major and minor scales in different positions.',
+                    icon: '🎼',
+                    actionText: 'Practice Scales',
+                    exercises: [
+                        { name: 'Major scales - 5 positions', duration: 10 },
+                        { name: 'Minor scales - 5 positions', duration: 10 },
+                        { name: 'Scale sequences', duration: 10 }
+                    ]
+                },
+                {
+                    type: 'technique',
+                    title: 'Technique Building',
+                    description: 'Dedicate time to specific techniques.',
+                    icon: '🎸',
+                    actionText: 'Work on Technique',
+                    exercises: [
+                        { name: 'String bending exercises', duration: 10 },
+                        { name: 'Vibrato practice', duration: 5 },
+                        { name: 'Hammer-ons and pull-offs', duration: 10 }
+                    ]
+                }
+            );
+        }
         
         // Pick a random suggestion based on the day
         const dayIndex = new Date().getDate() % suggestions.length;
         return suggestions[dayIndex];
     }
 
-    render() {
+    async render() {
         if (!this.container || !this.currentSuggestion) return;
+
+        // Make sure we have a current suggestion
+        if (!this.currentSuggestion) {
+            this.currentSuggestion = await this.getDefaultSuggestion();
+        }
 
         const totalDuration = this.currentSuggestion.exercises
             ? this.currentSuggestion.exercises.reduce((sum, ex) => sum + ex.duration, 0)
@@ -239,7 +337,7 @@ export class DailyPracticeSuggestion {
             // Default: start a general practice session
             window.dispatchEvent(new CustomEvent('startPracticeSession', {
                 detail: { 
-                    practiceArea: suggestion.title,
+                    practiceArea: suggestion.practiceArea || suggestion.title,
                     exercises: suggestion.exercises 
                 }
             }));

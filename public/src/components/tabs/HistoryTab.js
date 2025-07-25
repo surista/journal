@@ -1,6 +1,6 @@
 // HistoryTab Component - Handles the practice history tab
 import { TimeUtils } from '../../utils/helpers.js';
-import { sanitizeUrl, escapeHtml } from '../../utils/sanitizer.js';
+import { sanitizeUrl, escapeHtml, sanitizeInput } from '../../utils/sanitizer.js';
 
 export class HistoryTab {
     constructor(storageService) {
@@ -25,6 +25,44 @@ export class HistoryTab {
                             <option value="month">This Month</option>
                             <option value="year">This Year</option>
                         </select>
+                        <select class="filter-select" id="keyFilter">
+                            <option value="">All Keys</option>
+                            <optgroup label="Major Keys">
+                                <option value="C Major">C Major</option>
+                                <option value="C#/Db Major">C# / Db Major</option>
+                                <option value="D Major">D Major</option>
+                                <option value="D#/Eb Major">D# / Eb Major</option>
+                                <option value="E Major">E Major</option>
+                                <option value="F Major">F Major</option>
+                                <option value="F#/Gb Major">F# / Gb Major</option>
+                                <option value="G Major">G Major</option>
+                                <option value="G#/Ab Major">G# / Ab Major</option>
+                                <option value="A Major">A Major</option>
+                                <option value="A#/Bb Major">A# / Bb Major</option>
+                                <option value="B Major">B Major</option>
+                            </optgroup>
+                            <optgroup label="Minor Keys">
+                                <option value="C Minor">C Minor</option>
+                                <option value="C#/Db Minor">C# / Db Minor</option>
+                                <option value="D Minor">D Minor</option>
+                                <option value="D#/Eb Minor">D# / Eb Minor</option>
+                                <option value="E Minor">E Minor</option>
+                                <option value="F Minor">F Minor</option>
+                                <option value="F#/Gb Minor">F# / Gb Minor</option>
+                                <option value="G Minor">G Minor</option>
+                                <option value="G#/Ab Minor">G# / Ab Minor</option>
+                                <option value="A Minor">A Minor</option>
+                                <option value="A#/Bb Minor">A# / Bb Minor</option>
+                                <option value="B Minor">B Minor</option>
+                            </optgroup>
+                            <optgroup label="Modes">
+                                <option value="Dorian">Any Dorian</option>
+                                <option value="Phrygian">Any Phrygian</option>
+                                <option value="Lydian">Any Lydian</option>
+                                <option value="Mixolydian">Any Mixolydian</option>
+                                <option value="Locrian">Any Locrian</option>
+                            </optgroup>
+                        </select>
                         <button class="btn btn-secondary" id="exportHistoryBtn">
                             Export History
                         </button>
@@ -42,6 +80,11 @@ export class HistoryTab {
         // History filter
         document.getElementById('historyFilter')?.addEventListener('change', (e) => {
             this.filterHistory(e.target.value);
+        });
+
+        // Key filter
+        document.getElementById('keyFilter')?.addEventListener('change', (e) => {
+            this.filterHistory(this.currentFilter);
         });
 
         // Export history
@@ -74,11 +117,16 @@ export class HistoryTab {
                 e.preventDefault();
                 e.stopPropagation();
                 const sessionId = editBtn.dataset.id;
+                console.log('Edit button clicked, sessionId:', sessionId);
                 if (sessionId) {
                     const numericId = Number(sessionId);
                     if (!isNaN(numericId)) {
                         await this.handleEditSession(numericId);
+                    } else {
+                        console.error('Invalid session ID:', sessionId);
                     }
+                } else {
+                    console.error('No session ID found on edit button');
                 }
             }
 
@@ -125,27 +173,29 @@ export class HistoryTab {
             
             // Handle clicking on session item (but not on buttons or links)
             const sessionItem = e.target.closest('.history-item');
-            if (sessionItem && !e.target.closest('button') && !e.target.closest('a') && !e.target.closest('.history-thumbnail')) {
+            if (sessionItem && !e.target.closest('button') && !e.target.closest('a')) {
                 const sessionId = sessionItem.dataset.id;
                 if (sessionId) {
                     const numericId = Number(sessionId);
                     if (!isNaN(numericId)) {
-                        await this.handleLoadSession(numericId);
+                        // Check if this session has an image
+                        const session = this.allSessions.find(s => s.id === numericId);
+                        if (session && session.sheetMusicImage) {
+                            // If it has an image, load it into metronome
+                            await this.handlePracticeAgain(numericId);
+                        } else {
+                            // Otherwise, do the normal load
+                            await this.handleLoadSession(numericId);
+                        }
                     }
                 }
-            }
-            
-            // Handle thumbnail clicks
-            const thumbnail = e.target.closest('.history-thumbnail');
-            if (thumbnail) {
-                e.preventDefault();
-                this.showImageLightbox(thumbnail.src);
             }
         });
     }
 
 
     async handleDeleteSession(sessionId) {
+        console.log('handleDeleteSession called with sessionId:', sessionId);
 
         // Find the session to get details for confirmation
         // Use == instead of === to handle potential type mismatches
@@ -164,10 +214,12 @@ export class HistoryTab {
         const confirmMessage = `Are you sure you want to delete this practice session?\n\n` +
             `${area}\n` +
             `Date: ${date}\n` +
-            `Duration: ${duration}\n` +
-            `${session.notes ? `Notes: ${session.notes.substring(0, 50)}...` : ''}`;
+            `Duration: ${duration}`;
 
-        if (confirm(confirmMessage)) {
+        const userConfirmed = confirm(confirmMessage);
+        console.log('User confirmation result:', userConfirmed);
+        
+        if (userConfirmed) {
             try {
                 // Show loading state
                 const deleteBtn = document.querySelector(`.delete-session-btn[data-id="${sessionId}"]`);
@@ -211,40 +263,59 @@ export class HistoryTab {
     }
 
     async handleEditSession(sessionId) {
+        console.log('handleEditSession called with ID:', sessionId);
         try {
             // Find the session in our list
             const session = this.allSessions.find(s => s.id === sessionId);
+            console.log('Found session:', session);
             if (!session) {
+                console.error('Session not found in allSessions:', sessionId);
+                console.log('Available session IDs:', this.allSessions.map(s => s.id));
                 this.showNotification('Session not found', 'error');
                 return;
             }
 
             // Create edit modal
             const modal = document.createElement('div');
-            modal.className = 'modal-overlay';
+            modal.className = 'modal-overlay modal-overlay-active';
             modal.innerHTML = `
-                <div class="modal edit-session-modal">
-                    <h3>Edit Practice Session</h3>
+                <div class="modal-content edit-session-modal" style="max-width: 500px; padding: 2rem;">
+                    <h3 style="color: var(--text-primary); margin-bottom: 1.5rem; margin-top: 0;">Edit Practice Session</h3>
                     <form id="editSessionForm">
-                        <div class="form-group">
-                            <label>Session Name</label>
-                            <input type="text" name="name" value="${escapeHtml(session.name || '')}" placeholder="Session name">
+                        <div class="form-group" style="margin-bottom: 1rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; color: var(--text-primary); font-weight: 500;">Session Name</label>
+                            <input type="text" name="name" value="${escapeHtml(session.name || '')}" placeholder="Session name" class="modal-input" style="width: 100%; padding: 0.75rem; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text-primary);">
                         </div>
                         
-                        <div class="form-group">
-                            <label>Practice Area</label>
-                            <input type="text" name="practiceArea" value="${escapeHtml(session.practiceArea || '')}" placeholder="What did you practice?">
+                        <div class="form-group" style="margin-bottom: 1rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; color: var(--text-primary); font-weight: 500;">Practice Area</label>
+                            <select name="practiceArea" class="modal-input" style="width: 100%; padding: 0.75rem; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text-primary);">
+                                <option value="">Select practice area...</option>
+                                <option value="Scales" ${session.practiceArea === 'Scales' ? 'selected' : ''}>Scales</option>
+                                <option value="Chords" ${session.practiceArea === 'Chords' ? 'selected' : ''}>Chords</option>
+                                <option value="Arpeggios" ${session.practiceArea === 'Arpeggios' ? 'selected' : ''}>Arpeggios</option>
+                                <option value="Songs" ${session.practiceArea === 'Songs' ? 'selected' : ''}>Songs</option>
+                                <option value="Technique" ${session.practiceArea === 'Technique' ? 'selected' : ''}>Technique</option>
+                                <option value="Theory" ${session.practiceArea === 'Theory' ? 'selected' : ''}>Theory</option>
+                                <option value="Improvisation" ${session.practiceArea === 'Improvisation' ? 'selected' : ''}>Improvisation</option>
+                                <option value="Sight Reading" ${session.practiceArea === 'Sight Reading' ? 'selected' : ''}>Sight Reading</option>
+                                <option value="Ear Training" ${session.practiceArea === 'Ear Training' ? 'selected' : ''}>Ear Training</option>
+                                <option value="Rhythm" ${session.practiceArea === 'Rhythm' ? 'selected' : ''}>Rhythm</option>
+                                <option value="Audio Practice" ${session.practiceArea === 'Audio Practice' ? 'selected' : ''}>Audio Practice</option>
+                                <option value="YouTube Practice" ${session.practiceArea === 'YouTube Practice' ? 'selected' : ''}>YouTube Practice</option>
+                                <option value="Other" ${session.practiceArea && !['Scales', 'Chords', 'Arpeggios', 'Songs', 'Technique', 'Theory', 'Improvisation', 'Sight Reading', 'Ear Training', 'Rhythm', 'Audio Practice', 'YouTube Practice'].includes(session.practiceArea) ? 'selected' : ''}>Other</option>
+                            </select>
                         </div>
                         
-                        <div class="form-group">
-                            <label>Media</label>
-                            <input type="text" name="media" value="${escapeHtml(session.youtubeUrl || session.audioFile || '')}" readonly style="background: var(--bg-secondary); color: var(--text-secondary);">
-                            <small style="color: var(--text-muted);">Media cannot be changed</small>
+                        <div class="form-group" style="margin-bottom: 1.5rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; color: var(--text-primary); font-weight: 500;">Media</label>
+                            <input type="text" name="media" value="${escapeHtml(session.youtubeUrl || session.audioFile || '')}" readonly style="width: 100%; padding: 0.75rem; background: var(--bg-secondary); color: var(--text-secondary); border: 1px solid var(--border); border-radius: var(--radius);" class="modal-input">
+                            <small style="color: var(--text-muted); display: block; margin-top: 0.25rem;">Media cannot be changed</small>
                         </div>
                         
-                        <div class="modal-actions">
-                            <button type="button" class="btn btn-secondary cancel-btn">Cancel</button>
-                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <div class="modal-actions" style="display: flex; gap: 1rem; justify-content: flex-end;">
+                            <button type="button" class="btn btn-secondary cancel-btn" style="padding: 0.75rem 1.5rem;">Cancel</button>
+                            <button type="submit" class="btn btn-primary" style="padding: 0.75rem 1.5rem;">Save Changes</button>
                         </div>
                     </form>
                 </div>
@@ -254,33 +325,55 @@ export class HistoryTab {
 
             // Handle form submission
             const form = modal.querySelector('#editSessionForm');
+            let isSubmitting = false; // Prevent double submission
+            
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 
-                const formData = new FormData(form);
-                const updatedSession = {
-                    ...session,
-                    name: formData.get('name') || session.name,
-                    practiceArea: formData.get('practiceArea') || session.practiceArea
-                };
-
-                // Update in storage
-                const success = await this.storageService.updatePracticeEntry(sessionId, updatedSession);
+                // Prevent double submission
+                if (isSubmitting) return;
+                isSubmitting = true;
                 
-                if (success) {
-                    // Update local array
-                    const index = this.allSessions.findIndex(s => s.id === sessionId);
-                    if (index !== -1) {
-                        this.allSessions[index] = updatedSession;
+                const submitBtn = form.querySelector('button[type="submit"]');
+                const originalText = submitBtn.textContent;
+                submitBtn.textContent = 'Saving...';
+                submitBtn.disabled = true;
+                
+                try {
+                    const formData = new FormData(form);
+                    const updatedSession = {
+                        ...session,
+                        name: formData.get('name') || session.name,
+                        practiceArea: formData.get('practiceArea') || session.practiceArea
+                    };
+
+                    // Update in storage
+                    const success = await this.storageService.updatePracticeEntry(sessionId, updatedSession);
+                    
+                    if (success) {
+                        // Update local array
+                        const index = this.allSessions.findIndex(s => s.id === sessionId);
+                        if (index !== -1) {
+                            this.allSessions[index] = updatedSession;
+                        }
+                        
+                        // Re-render the list
+                        this.displayHistory(this.allSessions);
+                        
+                        this.showNotification('Session updated successfully', 'success');
+                        modal.remove();
+                    } else {
+                        this.showNotification('Failed to update session', 'error');
+                        submitBtn.textContent = originalText;
+                        submitBtn.disabled = false;
+                        isSubmitting = false;
                     }
-                    
-                    // Re-render the list
-                    this.displayHistory(this.allSessions);
-                    
-                    this.showNotification('Session updated successfully', 'success');
-                    modal.remove();
-                } else {
+                } catch (error) {
+                    console.error('Error updating session:', error);
                     this.showNotification('Failed to update session', 'error');
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                    isSubmitting = false;
                 }
             });
 
@@ -491,7 +584,7 @@ export class HistoryTab {
                         <div class="history-item ${session.sheetMusicImage ? 'has-image' : ''}" data-id="${session.id}">
                             ${session.sheetMusicImage ? `
                                 <div class="history-item-thumbnail">
-                                    <img src="${session.sheetMusicImage}" alt="Sheet music" class="history-thumbnail" />
+                                    <img src="${sanitizeUrl(session.sheetMusicThumbnail || session.sheetMusicImage) || ''}" alt="Sheet music" class="history-thumbnail" />
                                 </div>
                             ` : ''}
                             <div class="history-item-content">
@@ -608,6 +701,7 @@ export class HistoryTab {
     filterHistory(filter) {
         if (!this.allSessions) return;
 
+        this.currentFilter = filter;
         const now = new Date();
         let filtered = this.allSessions;
 
@@ -627,6 +721,17 @@ export class HistoryTab {
                 const yearAgo = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
                 filtered = this.allSessions.filter(s => new Date(s.date) >= yearAgo);
                 break;
+        }
+
+        // Apply key filter if selected
+        const keyFilter = document.getElementById('keyFilter')?.value;
+        if (keyFilter) {
+            // Check if filtering by mode only
+            if (['Dorian', 'Phrygian', 'Lydian', 'Mixolydian', 'Locrian'].includes(keyFilter)) {
+                filtered = filtered.filter(s => s.key && s.key.includes(keyFilter));
+            } else {
+                filtered = filtered.filter(s => s.key === keyFilter);
+            }
         }
 
         this.displayHistory(filtered);

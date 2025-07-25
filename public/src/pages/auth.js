@@ -91,7 +91,9 @@ class AuthPage {
         this.showStatus('Signing in...', 'info');
 
         try {
+            console.log('🔐 AuthPage: Starting login for:', email);
             const result = await this.authService.login(email, password);
+            console.log('🔐 AuthPage: Login result:', result);
 
             if (result.success) {
                 this.showStatus('Success! Redirecting...', 'success');

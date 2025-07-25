@@ -15,23 +15,19 @@ export class PracticeTab {
         this.container = container;
 
         this.container.innerHTML = `
-            <div class="practice-page-layout-single">
-                <div class="practice-main-content">
-                    <!-- Daily Practice Suggestion -->
-                    <div id="dailySuggestionContainer"></div>
-                    
-                    <!-- Unified Practice Component - Full Width -->
-                    <div class="practice-container-wrapper">
-                        <div id="unifiedPracticeContainer"></div>
-                    </div>
-                    
-                    <!-- Stats at the bottom -->
-                    <div class="practice-bottom-widgets">
-                        <!-- Quick Stats -->
-                        <div class="dashboard-widget compact" style="max-width: 100%;">
-                            <h3 class="widget-title">Today's Stats</h3>
-                            <div id="quickStats"></div>
-                        </div>
+            <div class="practice-layout-simple">
+                <!-- Daily Practice Suggestion -->
+                <div id="dailySuggestionContainer"></div>
+                
+                <!-- Unified Practice Component will render here -->
+                <div id="unifiedPracticeContainer"></div>
+                
+                <!-- Stats at the bottom -->
+                <div class="practice-bottom-widgets">
+                    <!-- Quick Stats -->
+                    <div class="dashboard-widget compact" style="max-width: 100%;">
+                        <h3 class="widget-title">Today's Stats</h3>
+                        <div id="quickStats"></div>
                     </div>
                 </div>
             </div>

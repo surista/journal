@@ -9,6 +9,9 @@ import appConfig from './config.js';
 import {ThemeService} from './services/themeService.js';
 import firebaseSyncService from './services/firebaseSyncService.js';
 
+// Import environment badge for non-production environments
+import './components/environmentBadge.js';
+
 
 class App {
     constructor() {
@@ -121,6 +124,9 @@ class App {
             // Step 3: Load storage service
             const storageModule = await import('./services/storageService.js');
             this.storageService = new storageModule.StorageService(user.id);
+
+            // Step 3.5: Migrate legacy data
+            this.migrateLegacyData();
 
             // // Step 4: Load notification service
             try {
@@ -404,6 +410,53 @@ class App {
     destroy() {
         if (this.currentPage && typeof this.currentPage.destroy === 'function') {
             this.currentPage.destroy();
+        }
+    }
+
+    migrateLegacyData() {
+        try {
+            // Get current user data
+            const userId = this.storageService.userId;
+            const userPrefix = `guitarpractice_${userId}_`;
+            
+            // Migrate old shared sessionAreas to user-specific storage
+            const sharedSessionAreas = localStorage.getItem('sessionAreas');
+            const userSessionAreas = localStorage.getItem(`${userPrefix}session_areas`);
+            
+            if (sharedSessionAreas && !userSessionAreas) {
+                // Migrate shared session areas to user-specific
+                localStorage.setItem(`${userPrefix}session_areas`, sharedSessionAreas);
+                console.log('Migrated shared sessionAreas to user-specific storage');
+            }
+            
+            // Migrate customPracticeAreas to user session areas
+            const customPracticeAreas = localStorage.getItem('customPracticeAreas');
+            
+            if (customPracticeAreas) {
+                const customAreas = JSON.parse(customPracticeAreas);
+                
+                // Get current user session areas
+                this.storageService.getSessionAreas().then(currentAreas => {
+                    // Merge custom areas with current areas
+                    const mergedAreas = [...new Set([...currentAreas, ...customAreas])].sort();
+                    
+                    // Save the merged areas
+                    this.storageService.saveSessionAreas(mergedAreas).then(() => {
+                        console.log('Migrated customPracticeAreas to user session areas');
+                        // Remove the old key
+                        localStorage.removeItem('customPracticeAreas');
+                    });
+                });
+            }
+            
+            // Clean up old shared sessionAreas after all users have migrated
+            // Only remove if user has their own session areas
+            if (userSessionAreas && sharedSessionAreas) {
+                localStorage.removeItem('sessionAreas');
+                console.log('Removed old shared sessionAreas');
+            }
+        } catch (error) {
+            console.error('Error during data migration:', error);
         }
     }
 }

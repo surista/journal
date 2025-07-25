@@ -4,6 +4,7 @@ export class UIController {
         this.currentMode = 'metronome';
         this.modeChangeCallbacks = [];
         this.elements = {};
+        this.isModalOpen = false;
     }
 
     initialize() {
@@ -68,6 +69,12 @@ export class UIController {
 
     switchMode(mode) {
         if (this.currentMode === mode) return;
+        
+        // Prevent mode switching if modal is open
+        if (this.isModalOpen) {
+            console.log('Cannot switch modes while save session popup is open');
+            return;
+        }
         
         // Update current mode
         this.currentMode = mode;
@@ -267,41 +274,13 @@ export class UIController {
 
     // Modal methods
     showModal(content, options = {}) {
+        // Set modal open state
+        this.isModalOpen = true;
+        
         const modal = document.createElement('div');
-        modal.className = 'modal-overlay';
-        
-        // Apply inline styles to ensure visibility
-        modal.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999999;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        `;
-        
+        modal.className = 'modal-overlay modal-overlay-active';
         modal.innerHTML = `
-            <div class="modal-content" style="
-                background: var(--bg-card, var(--background-primary, #ffffff));
-                border-radius: 8px;
-                padding: 24px;
-                max-width: 500px;
-                width: 90%;
-                max-height: 90vh;
-                overflow-y: auto;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-                position: relative;
-                z-index: 10000000;
-                transform: scale(1) !important;
-                opacity: 1 !important;
-                visibility: visible !important;
-            ">
+            <div class="modal-content save-session-popup">
                 ${content}
             </div>
         `;
@@ -310,17 +289,13 @@ export class UIController {
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) {
                     modal.remove();
+                    this.isModalOpen = false;
                     options.onClose();
                 }
             });
         }
 
         document.body.appendChild(modal);
-        
-        // Force modal to be visible
-        requestAnimationFrame(() => {
-            modal.style.opacity = '1';
-        });
         
         console.log('Modal appended to body:', modal);
         console.log('Body contains modal:', document.body.contains(modal));

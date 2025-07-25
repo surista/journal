@@ -2,6 +2,7 @@
 export class RecommendationService {
     constructor(storageService) {
         this.storageService = storageService;
+        this.sessionAreas = null; // Will be loaded dynamically
         this.exercises = {
             scales: [
                 { name: 'Major Scale Pattern', difficulty: 'beginner', focus: 'technique', duration: 10 },
@@ -39,7 +40,17 @@ export class RecommendationService {
         };
     }
 
+    async loadSessionAreas() {
+        if (!this.sessionAreas) {
+            this.sessionAreas = await this.storageService.getSessionAreas();
+        }
+        return this.sessionAreas;
+    }
+
     async getRecommendations() {
+        // Ensure session areas are loaded
+        await this.loadSessionAreas();
+        
         const recommendations = {
             repertoire: [],
             goals: [],
@@ -181,8 +192,8 @@ export class RecommendationService {
             }
         });
 
-        // Find least practiced areas
-        const allAreas = ['Scales', 'Chords', 'Arpeggios', 'Technique', 'Rhythm', 'Ear Training'];
+        // Find least practiced areas from user's custom session areas
+        const allAreas = this.sessionAreas || [];
         const neglectedAreas = allAreas.filter(area => 
             !practicedAreas[area] || practicedAreas[area] < 3
         );
@@ -219,7 +230,31 @@ export class RecommendationService {
     }
 
     getExerciseSet(category, difficulty, count = 3) {
-        const availableExercises = this.exercises[category] || this.exercises.technique;
+        // Handle custom session areas by mapping them to exercise categories
+        const normalizedCategory = category.toLowerCase().replace(/\s+/g, '');
+        
+        // Try to find exercises for this category
+        let availableExercises = this.exercises[normalizedCategory];
+        
+        // If no direct match, try to find a related category
+        if (!availableExercises) {
+            // Map custom areas to existing exercise categories
+            const categoryMappings = {
+                'sightreading': 'scales',
+                'improvisation': 'scales',
+                'songs': 'chords',
+                'theory': 'scales',
+                'audiopractice': 'technique',
+                'fingerpicking': 'arpeggios',
+                'strumming': 'rhythm',
+                'lead': 'scales',
+                'fingerstyle': 'arpeggios'
+            };
+            
+            const mappedCategory = categoryMappings[normalizedCategory];
+            availableExercises = mappedCategory ? this.exercises[mappedCategory] : this.exercises.technique;
+        }
+        
         const filtered = availableExercises.filter(ex => 
             !difficulty || ex.difficulty === difficulty
         );
@@ -235,6 +270,9 @@ export class RecommendationService {
     }
 
     async getQuickRecommendation() {
+        // Ensure session areas are loaded
+        await this.loadSessionAreas();
+        
         // Get a single, contextual recommendation for the practice page
         const repertoire = await this.storageService.getRepertoire();
         const learningItems = repertoire.filter(item => 
@@ -251,9 +289,15 @@ export class RecommendationService {
             };
         }
 
-        // Otherwise, suggest a practice area
-        const areas = ['scales', 'chords', 'technique', 'rhythm'];
-        const randomArea = areas[Math.floor(Math.random() * areas.length)];
+        // Otherwise, suggest a practice area from user's custom areas
+        const userAreas = this.sessionAreas || [];
+        // Map to exercise categories (lowercase, no spaces)
+        const mappedAreas = userAreas.map(area => area.toLowerCase().replace(/\s+/g, ''))
+            .filter(area => this.exercises[area]); // Only keep areas that have exercises
+        
+        // Fallback to some defaults if no mapped areas
+        const availableAreas = mappedAreas.length > 0 ? mappedAreas : ['scales', 'chords', 'technique', 'rhythm'];
+        const randomArea = availableAreas[Math.floor(Math.random() * availableAreas.length)];
         const exercise = this.getRandomExercise(randomArea, 'intermediate');
 
         return {

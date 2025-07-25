@@ -52,6 +52,8 @@ class FirebaseSyncService {
             this.auth = firebase.auth();
             this.db = firebase.firestore();
             
+            console.log('✅ Firebase auth and firestore initialized');
+            
             // Initialize App Check for additional security (non-blocking)
             Promise.resolve(initializeAppCheck(this.app)).catch(err => {
                 // App Check failure is non-critical - log but don't throw
@@ -91,6 +93,11 @@ class FirebaseSyncService {
                 // Persistence errors are non-critical - app works without it
             }
 
+            // Mark as initialized after core services are ready
+            // (auth and db are the critical parts)
+            this.isInitialized = true;
+            console.log('✅ Firebase core services initialized');
+            
             // Set up auth state listener
             this.auth.onAuthStateChanged((user) => {
                 // Wrap in Promise to handle async operations properly
@@ -128,8 +135,6 @@ class FirebaseSyncService {
                 }
             });
             */
-
-            this.isInitialized = true;
         } catch (error) {
             console.error('❌ Failed to initialize Firebase:', error);
             this.isInitialized = false;
@@ -631,6 +636,64 @@ class FirebaseSyncService {
     }
 
     // ===================
+    // Stats
+    // ===================
+
+    async saveStats(stats) {
+        if (!this.currentUser || !this.isInitialized) {
+            this.pendingWrites.push({
+                type: 'stats',
+                operation: 'save',
+                data: stats
+            });
+            return;
+        }
+
+        try {
+            await this.db.collection('users')
+                .doc(this.currentUser.uid)
+                .update({
+                    stats: stats,
+                    'stats.updatedAt': firebase.firestore.FieldValue.serverTimestamp()
+                });
+            
+        } catch (error) {
+            // If update fails, try set (for new users)
+            try {
+                await this.db.collection('users')
+                    .doc(this.currentUser.uid)
+                    .set({ stats: stats }, { merge: true });
+            } catch (setError) {
+                console.error('❌ Failed to save stats:', setError);
+                this.pendingWrites.push({
+                    type: 'stats',
+                    operation: 'save',
+                    data: stats
+                });
+                throw setError;
+            }
+        }
+    }
+
+    async getStats() {
+        if (!this.currentUser) return null;
+
+        try {
+            const userDoc = await this.db.collection('users')
+                .doc(this.currentUser.uid)
+                .get();
+
+            if (userDoc.exists) {
+                return userDoc.data().stats || null;
+            }
+            return null;
+        } catch (error) {
+            console.error('❌ Failed to get stats:', error);
+            return null;
+        }
+    }
+
+    // ===================
     // Real-time Listeners
     // ===================
 
@@ -774,6 +837,12 @@ class FirebaseSyncService {
                     await this.saveSettings(write.data);
                 }
                 break;
+            
+            case 'stats':
+                if (write.operation === 'save') {
+                    await this.saveStats(write.data);
+                }
+                break;
         }
     }
 
@@ -833,11 +902,43 @@ class FirebaseSyncService {
     // ===================
 
     async signIn(email, password) {
+        console.log('🔐 FirebaseSyncService.signIn called for:', email);
+        
+        if (!this.auth) {
+            console.error('❌ Firebase auth not initialized');
+            return { success: false, error: 'Authentication service not initialized' };
+        }
+        
         try {
-            const credential = await this.auth.signInWithEmailAndPassword(email, password);
+            console.log('🔐 Calling Firebase signInWithEmailAndPassword...');
+            
+            // Much shorter timeout - 3 seconds max
+            const authPromise = this.auth.signInWithEmailAndPassword(email, password);
+            const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Firebase authentication timeout')), 3000)
+            );
+            
+            const credential = await Promise.race([authPromise, timeoutPromise]);
+            console.log('🔐 Firebase sign in successful');
             return { success: true, user: credential.user };
         } catch (error) {
-            console.error('Sign in error:', error);
+            console.error('❌ Firebase sign in error:', error);
+            console.error('Error code:', error.code);
+            console.error('Error details:', error);
+            
+            // Provide more specific error messages
+            if (error.message === 'Firebase authentication timeout') {
+                return { success: false, error: 'Connection timeout. Please check your internet connection and try again.' };
+            } else if (error.code === 'auth/user-not-found') {
+                return { success: false, error: 'No account found with this email address.' };
+            } else if (error.code === 'auth/wrong-password') {
+                return { success: false, error: 'Incorrect password.' };
+            } else if (error.code === 'auth/invalid-email') {
+                return { success: false, error: 'Invalid email address.' };
+            } else if (error.code === 'auth/network-request-failed') {
+                return { success: false, error: 'Network error. Please check your internet connection.' };
+            }
+            
             return { success: false, error: error.message };
         }
     }
@@ -901,6 +1002,11 @@ class FirebaseSyncService {
         while (!this.isInitialized && attempts < 100) {
             await new Promise(resolve => setTimeout(resolve, 100));
             attempts++;
+        }
+        
+        // After timeout, return whether initialized or not
+        if (!this.isInitialized) {
+            console.warn('⚠️ Firebase initialization timeout - proceeding without cloud sync');
         }
         return this.isInitialized;
     }

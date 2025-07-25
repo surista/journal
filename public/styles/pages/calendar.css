@@ -236,11 +236,9 @@
 @keyframes popupFadeIn {
     from {
         opacity: 0;
-        transform: translate(-50%, -50%) scale(0.95);
     }
     to {
         opacity: 1;
-        transform: translate(-50%, -50%) scale(1);
     }
 }
 
@@ -811,5 +809,30 @@
 
     .badge-label {
         font-size: 0.75rem;
+    }
+}
+
+/* Learning badge for calendar days */
+.learning-badge {
+    position: absolute;
+    bottom: 4px;
+    left: 4px;
+    width: 24px;
+    height: 24px;
+    background: var(--primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    z-index: 3;
+}
+
+@media (max-width: 768px) {
+    .learning-badge {
+        width: 20px;
+        height: 20px;
+        font-size: 12px;
     }
 }

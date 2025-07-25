@@ -125,22 +125,23 @@
    Practice Tab Layout
    ============================================ */
 
-/* Single column layout for practice page */
-.practice-page-layout-single {
+/* Simplified single column practice layout */
+.practice-layout-simple {
     max-width: 800px;
     margin: 0 auto;
     width: 100%;
     padding: 0 2rem;
-}
-
-.practice-main-content {
     display: flex;
     flex-direction: column;
     gap: 2rem;
 }
 
+
+/* Legacy styles - can be removed after migration */
+.practice-page-layout-single,
+.practice-main-content,
 .practice-container-wrapper {
-    width: 100%;
+    /* Keep empty for backward compatibility */
 }
 
 .practice-bottom-widgets {

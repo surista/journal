@@ -181,6 +181,17 @@ export class SettingsTab {
                                 <a href="https://github.com/yourusername/guitar-practice-journal" target="_blank">GitHub</a>
                                 <a href="#" onclick="if(window.settingsTab) window.settingsTab.showPrivacyPolicy()">Privacy Policy</a>
                             </div>
+                            <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
+                                <p style="margin-bottom: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);">Enjoying Guitar Practice Journal?</p>
+                                <a href="https://coff.ee/guitar.practice.journal" 
+                                   target="_blank" 
+                                   rel="noopener noreferrer"
+                                   style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-input); border: 1px solid var(--border); border-radius: 6px; text-decoration: none; color: var(--text-primary); transition: all 0.2s ease;"
+                                   onmouseover="this.style.background='var(--primary)'; this.style.color='white'; this.style.borderColor='var(--primary)';"
+                                   onmouseout="this.style.background='var(--bg-input)'; this.style.color='var(--text-primary)'; this.style.borderColor='var(--border)';">
+                                    ☕ Buy Me a Coffee
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -202,7 +213,7 @@ export class SettingsTab {
         this.attachEventListeners();
 
         // Load session areas
-        this.loadSessionAreas();
+        this.loadSessionAreas().catch(console.error);
 
         // Calculate storage usage
         this.calculateStorageUsage();
@@ -419,29 +430,16 @@ export class SettingsTab {
         ];
     }
 
-    getSessionAreas() {
-        const stored = localStorage.getItem('sessionAreas');
-        if (stored) {
-            try {
-                return JSON.parse(stored);
-            } catch (e) {
-                return this.getDefaultSessionAreas();
-            }
-        }
-        return this.getDefaultSessionAreas();
+    async getSessionAreas() {
+        return await this.storageService.getSessionAreas();
     }
 
-    saveSessionAreas(areas) {
-        localStorage.setItem('sessionAreas', JSON.stringify(areas));
-
-        // Dispatch event so other components can update
-        window.dispatchEvent(new CustomEvent('sessionAreasUpdated', {
-            detail: { areas }
-        }));
+    async saveSessionAreas(areas) {
+        await this.storageService.saveSessionAreas(areas);
     }
 
-    loadSessionAreas() {
-        const areas = this.getSessionAreas();
+    async loadSessionAreas() {
+        const areas = await this.getSessionAreas();
         const container = document.getElementById('sessionAreasContainer');
         if (!container) return;
 
@@ -484,7 +482,7 @@ export class SettingsTab {
         `;
     }
 
-    addSessionArea() {
+    async addSessionArea() {
         const input = document.getElementById('newSessionArea');
         if (!input) return;
 
@@ -494,7 +492,7 @@ export class SettingsTab {
             return;
         }
 
-        const areas = this.getSessionAreas();
+        const areas = await this.getSessionAreas();
 
         // Check if already exists
         if (areas.some(area => area.toLowerCase() === newArea.toLowerCase())) {
@@ -504,32 +502,32 @@ export class SettingsTab {
 
         // Add new area
         areas.push(newArea);
-        this.saveSessionAreas(areas);
+        await this.saveSessionAreas(areas);
 
         // Clear input and reload
         input.value = '';
-        this.loadSessionAreas();
+        await this.loadSessionAreas();
         this.showNotification('Session area added successfully', 'success');
     }
 
-    deleteSessionArea(areaToDelete) {
+    async deleteSessionArea(areaToDelete) {
         if (!confirm(`Are you sure you want to delete "${areaToDelete}"?`)) {
             return;
         }
 
-        const areas = this.getSessionAreas();
+        const areas = await this.getSessionAreas();
         const filtered = areas.filter(area => area !== areaToDelete);
-        this.saveSessionAreas(filtered);
+        await this.saveSessionAreas(filtered);
 
-        this.loadSessionAreas();
+        await this.loadSessionAreas();
         this.showNotification('Session area deleted successfully', 'success');
     }
 
-    resetSessionAreasToDefaults() {
+    async resetSessionAreasToDefaults() {
         if (confirm('This will reset all session areas to the default list. Are you sure?')) {
             const defaultAreas = this.getDefaultSessionAreas();
-            this.saveSessionAreas(defaultAreas);
-            this.loadSessionAreas();
+            await this.saveSessionAreas(defaultAreas);
+            await this.loadSessionAreas();
             this.showNotification('Session areas reset to defaults', 'success');
         }
     }
@@ -542,7 +540,7 @@ export class SettingsTab {
 
     onActivate() {
         // Refresh data when tab is activated
-        this.loadSessionAreas();
+        this.loadSessionAreas().catch(console.error);
         this.calculateStorageUsage();
     }
 

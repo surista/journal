@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guitar Practice Journal - Development Workflow Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #6366f1;
+            margin-bottom: 10px;
+            border-bottom: 3px solid #6366f1;
+            padding-bottom: 10px;
+        }
+        
+        h2 {
+            color: #4338ca;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-left: 4px solid #6366f1;
+            padding-left: 10px;
+        }
+        
+        h3 {
+            color: #6366f1;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .workflow-section {
+            background: #f8f9ff;
+            border: 1px solid #e0e7ff;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .command-box {
+            background: #1e293b;
+            color: #f1f5f9;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+        }
+        
+        .command-box .comment {
+            color: #94a3b8;
+        }
+        
+        .step {
+            background: #f0f9ff;
+            border-left: 4px solid #0ea5e9;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 6px 6px 0;
+        }
+        
+        .step-number {
+            display: inline-block;
+            background: #0ea5e9;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 28px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .warning {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 6px 6px 0;
+        }
+        
+        .success {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 6px 6px 0;
+        }
+        
+        .info {
+            background: #e0e7ff;
+            border-left: 4px solid #6366f1;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 6px 6px 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        th, td {
+            border: 1px solid #e5e7eb;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background: #f3f4f6;
+            font-weight: 600;
+        }
+        
+        code {
+            background: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+        }
+        
+        .quick-ref {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                padding: 20px;
+            }
+            .command-box {
+                border: 1px solid #333;
+                color: #000;
+                background: #f5f5f5;
+            }
+        }
+        
+        .env-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .env-dev { background: #10b981; }
+        .env-staging { background: #f59e0b; }
+        .env-prod { background: #ef4444; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎸 Guitar Practice Journal - Development Workflow Guide</h1>
+        <p style="font-size: 18px; color: #6b7280; margin-top: 10px;">Complete guide for developing, testing, and deploying your application</p>
+        
+        <div class="quick-ref">
+            <h3>⚡ Quick Reference</h3>
+            <div class="command-box">
+<span class="comment"># Check current environment</span>
+firebase use
+
+<span class="comment"># Development</span>
+npm run switch:dev
+npm run emulators:dev  <span class="comment"># Local testing</span>
+npm run deploy:dev     <span class="comment"># Deploy to dev hosting</span>
+
+<span class="comment"># Production</span>
+npm run switch:prod
+npm run deploy:prod    <span class="comment"># Deploy to live site</span>
+            </div>
+        </div>
+
+        <h2>📋 Prerequisites</h2>
+        <ul style="margin-left: 20px;">
+            <li>Firebase CLI installed</li>
+            <li>Java installed (for emulators)</li>
+            <li>Access to both Firebase projects</li>
+            <li>Working from the <code>public</code> directory</li>
+        </ul>
+
+        <h2>🔄 Complete Development Cycle</h2>
+        
+        <div class="workflow-section">
+            <div class="step">
+                <span class="step-number">1</span>
+                <strong>Start Development</strong>
+                <div class="command-box">
+cd public
+npm run switch:dev
+npm run emulators:dev
+                </div>
+                <p>✅ Visit <code>http://localhost:5000</code> to see your app</p>
+                <p>✅ Look for the <span class="env-badge env-dev">🔧 Development</span> badge in the upper left</p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">2</span>
+                <strong>Deploy to Dev Hosting</strong>
+                <div class="command-box">
+npm run deploy:dev
+                </div>
+                <p>✅ Test at: <code>https://journal-dev-b6257.web.app</code></p>
+                <p>✅ Share with testers for feedback</p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">3</span>
+                <strong>Ready for Production</strong>
+                <div class="command-box">
+<span class="comment"># Update version</span>
+npm run bump-patch  <span class="comment"># or bump-minor for features</span>
+
+<span class="comment"># Commit changes</span>
+git add .
+git commit -m "Deploy v10.95 - Add new features"
+git push
+
+<span class="comment"># Deploy to production</span>
+npm run deploy:prod
+                </div>
+                <p>✅ Live at: <code>https://guitar-practice-journal-9f064.web.app</code></p>
+                <p>✅ No environment badge should appear</p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">4</span>
+                <strong>Continue Development</strong>
+                <div class="command-box">
+npm run switch:dev
+                </div>
+                <p>✅ Ready for the next feature!</p>
+            </div>
+        </div>
+
+        <h2>🌍 Environment Overview</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Environment</th>
+                    <th>Firebase Project</th>
+                    <th>URL</th>
+                    <th>Badge</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Development</strong></td>
+                    <td>journal-dev-b6257</td>
+                    <td>https://journal-dev-b6257.web.app</td>
+                    <td><span class="env-badge env-dev">🔧 Development</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Production</strong></td>
+                    <td>guitar-practice-journal-9f064</td>
+                    <td>https://guitar-practice-journal-9f064.web.app</td>
+                    <td>None (hidden)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>🎯 Key Commands Explained</h2>
+        
+        <h3>Development Commands</h3>
+        <div class="info">
+            <p><code>npm run emulators:dev</code> - Starts local Firebase emulators</p>
+            <ul style="margin-left: 20px; margin-top: 5px;">
+                <li>Hosting on http://localhost:5000</li>
+                <li>Auth emulator on http://localhost:9099</li>
+                <li>Firestore emulator on http://localhost:8080</li>
+                <li>Emulator UI on http://localhost:4000</li>
+            </ul>
+        </div>
+        
+        <div class="info">
+            <p><code>npm run deploy:dev</code> - Deploys to development hosting</p>
+            <ul style="margin-left: 20px; margin-top: 5px;">
+                <li>Uses no-cache headers for testing</li>
+                <li>Shows environment badge</li>
+                <li>Enables debug logging</li>
+            </ul>
+        </div>
+
+        <h3>Production Commands</h3>
+        <div class="info">
+            <p><code>npm run deploy:prod</code> - Deploys to live production site</p>
+            <ul style="margin-left: 20px; margin-top: 5px;">
+                <li>Uses 24-hour cache for performance</li>
+                <li>No environment badge</li>
+                <li>App Check enabled for security</li>
+            </ul>
+        </div>
+
+        <h2>⚠️ Important Notes</h2>
+        
+        <div class="warning">
+            <strong>Data Separation</strong>
+            <p>Development and Production use separate Firebase projects. Data does NOT sync between them:</p>
+            <ul style="margin-left: 20px;">
+                <li>Test data stays in dev</li>
+                <li>Real user data stays in production</li>
+            </ul>
+        </div>
+        
+        <div class="warning">
+            <strong>Always Use NPM Scripts</strong>
+            <p>Don't use <code>firebase deploy</code> directly - it might deploy with wrong settings!</p>
+            <p>Always use: <code>npm run deploy:dev</code> or <code>npm run deploy:prod</code></p>
+        </div>
+
+        <h2>✅ Best Practices</h2>
+        <ol style="margin-left: 20px;">
+            <li><strong>Test locally first</strong> with emulators</li>
+            <li><strong>Deploy to dev hosting</strong> for external testing</li>
+            <li><strong>Version bump</strong> before production deploys</li>
+            <li><strong>Git commit</strong> before production deploys</li>
+            <li><strong>Verify production</strong> after deploying</li>
+            <li><strong>Switch back to dev</strong> after production deploy</li>
+        </ol>
+
+        <h2>🚨 Troubleshooting</h2>
+        
+        <div class="step">
+            <strong>Wrong project deployed?</strong>
+            <div class="command-box">
+firebase use  <span class="comment"># Check current project</span>
+npm run switch:dev  <span class="comment"># or switch:prod</span>
+            </div>
+        </div>
+        
+        <div class="step">
+            <strong>Emulators not starting?</strong>
+            <div class="command-box">
+java -version  <span class="comment"># Ensure Java is installed</span>
+firebase emulators:kill  <span class="comment"># Kill stuck emulators</span>
+            </div>
+        </div>
+        
+        <div class="step">
+            <strong>Deploy failed?</strong>
+            <div class="command-box">
+firebase login  <span class="comment"># Re-authenticate</span>
+firebase projects:list  <span class="comment"># Verify access</span>
+            </div>
+        </div>
+
+        <div class="success" style="margin-top: 30px;">
+            <h3 style="margin-top: 0;">🎉 You're All Set!</h3>
+            <p>Follow this workflow to safely develop and deploy features. The environment badge will always show you where you are!</p>
+        </div>
+    </div>
+</body>
+</html>

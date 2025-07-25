@@ -1,6 +1,42 @@
-// service-worker.js - Updated with proper cache management
-const CACHE_NAME = 'guitar-practice-journal-v10.94'; // Update version
-const CACHE_VERSION = '10.94';
+// service-worker.js - Updated with proper cache management and environment support
+const CACHE_VERSION = '10.98';
+
+// Detect environment based on URL
+const detectEnvironment = () => {
+    const hostname = self.location.hostname;
+    
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        return 'development';
+    } else if (hostname.includes('staging') || hostname.includes('-dev') || hostname.includes('test')) {
+        return 'staging';
+    } else {
+        return 'production';
+    }
+};
+
+const ENV = detectEnvironment();
+const CACHE_NAME = `guitar-practice-journal-${ENV}-v${CACHE_VERSION}`;
+
+// Environment-specific cache strategies
+const CACHE_STRATEGIES = {
+    development: {
+        cacheFirst: false,  // Always fetch from network in dev
+        cacheTimeout: 0,    // No caching in dev
+        enableOffline: false
+    },
+    staging: {
+        cacheFirst: true,   // Cache first with network fallback
+        cacheTimeout: 3600, // 1 hour cache
+        enableOffline: true
+    },
+    production: {
+        cacheFirst: true,   // Cache first with network fallback  
+        cacheTimeout: 86400, // 24 hour cache
+        enableOffline: true
+    }
+};
+
+const CURRENT_STRATEGY = CACHE_STRATEGIES[ENV];
 
 // Files to cache - be specific about what we cache
 const STATIC_CACHE_URLS = [

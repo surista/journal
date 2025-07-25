@@ -340,20 +340,20 @@ export class GoalsList {
             }
 
             const goalHtml = `
-                <div class="goal-item fade-in ${goal.completed ? 'completed' : ''}" data-goal-id="${goal.id}" data-priority="${goal.priority}" style="background: #1a2744; border-radius: var(--radius-md); padding: 0.75rem 1.5rem; margin-bottom: 0.5rem;">
+                <div class="goal-item fade-in ${goal.completed ? 'completed' : ''}" data-goal-id="${escapeHtml(goal.id)}" data-priority="${escapeHtml(goal.priority || '')}" style="background: #1a2744; border-radius: var(--radius-md); padding: 0.75rem 1.5rem; margin-bottom: 0.5rem;">
                     <div class="goal-content" style="display: flex; align-items: center; width: 100%;">
-                        <span style="color: #ffffff; font-weight: 500; margin-right: 1.5rem;">${goal.text}</span>
-                        <span style="color: #ffffff; margin-right: 1.5rem;">${area}</span>
+                        <span style="color: #ffffff; font-weight: 500; margin-right: 1.5rem;">${escapeHtml(goal.text)}</span>
+                        <span style="color: #ffffff; margin-right: 1.5rem;">${escapeHtml(area)}</span>
                         <span style="color: #ffffff; margin-right: 1.5rem;">${goal.type ? this.getUnitLabel(goal.type) : '-'}</span>
                         <span style="color: #ffffff; display: flex; align-items: center; gap: 0.5rem;">
                             📅 ${targetDateFormatted || '-'}
                         </span>
                         <div style="flex: 1;"></div>
                         <div style="display: flex; gap: 0.5rem;">
-                            ${goal.type ? `<button data-goal-id="${goal.id}" data-action="update" title="Update progress" style="background: transparent; border: none; color: #ffffff; cursor: pointer; padding: 0.25rem;">📊</button>` : ''}
-                            <button data-goal-id="${goal.id}" data-action="complete" title="Mark complete" style="background: transparent; border: none; color: #ffffff; cursor: pointer; padding: 0.25rem;">⭕</button>
-                            <button data-goal-id="${goal.id}" data-action="edit" title="Edit goal" style="background: transparent; border: none; color: #ffffff; cursor: pointer; padding: 0.25rem;">✏️</button>
-                            <button data-goal-id="${goal.id}" data-action="delete" title="Delete goal" style="background: transparent; border: none; color: #ffffff; cursor: pointer; padding: 0.25rem;">🗑️</button>
+                            ${goal.type ? `<button data-goal-id="${escapeHtml(goal.id)}" data-action="update" title="Update progress" style="background: transparent; border: none; color: #ffffff; cursor: pointer; padding: 0.25rem;">📊</button>` : ''}
+                            <button data-goal-id="${escapeHtml(goal.id)}" data-action="complete" title="Mark complete" style="background: transparent; border: none; color: #ffffff; cursor: pointer; padding: 0.25rem;">⭕</button>
+                            <button data-goal-id="${escapeHtml(goal.id)}" data-action="edit" title="Edit goal" style="background: transparent; border: none; color: #ffffff; cursor: pointer; padding: 0.25rem;">✏️</button>
+                            <button data-goal-id="${escapeHtml(goal.id)}" data-action="delete" title="Delete goal" style="background: transparent; border: none; color: #ffffff; cursor: pointer; padding: 0.25rem;">🗑️</button>
                         </div>
                     </div>
                 </div>

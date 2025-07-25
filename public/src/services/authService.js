@@ -13,8 +13,15 @@ export class AuthService {
         try {
             // Wait for Firebase to be ready
             await this.cloudStorage.waitForInitialization();
-            const isReady = !!this.cloudStorage.currentUser || true; // Allow auth attempts
-            this.isCloudEnabled = isReady;
+            // Check if Firebase is actually available
+            this.isCloudEnabled = this.cloudStorage.isInitialized || 
+                                 (typeof firebase !== 'undefined' && firebase.auth);
+            
+            if (!this.isCloudEnabled) {
+                console.warn('⚠️ AuthService: Cloud sync disabled - Firebase not initialized');
+            } else {
+                console.log('✅ AuthService: Cloud sync enabled');
+            }
         } catch (error) {
             console.error('❌ AuthService: Firebase init failed:', error);
             this.isCloudEnabled = false;
@@ -26,24 +33,29 @@ export class AuthService {
     }
 
     async login(email, password) {
-        await this.ensureInitialized();
+        console.log('🔑 AuthService.login called for:', email);
+        
+        // Add timeout wrapper
+        const loginWithTimeout = async () => {
+            await this.ensureInitialized();
 
-        // Check rate limit
-        const rateLimit = rateLimitService.checkRateLimit(email, 'login');
-        if (!rateLimit.allowed) {
-            console.warn('🚫 AuthService: Rate limit exceeded for:', email);
-            throw new Error(rateLimit.message);
-        }
+            // Check rate limit
+            const rateLimit = rateLimitService.checkRateLimit(email, 'login');
+            if (!rateLimit.allowed) {
+                console.warn('🚫 AuthService: Rate limit exceeded for:', email);
+                throw new Error(rateLimit.message);
+            }
 
-        try {
             // Handle demo login
             if (email === 'demo@example.com' && password === 'demo123') {
                 return this.localLogin(email, password);
             }
 
-            // Try cloud authentication
-            if (this.isCloudEnabled) {
+            // Try cloud authentication only if enabled and not demo
+            if (this.isCloudEnabled && email !== 'demo@example.com') {
+                console.log('🔑 AuthService: Attempting cloud login');
                 const result = await this.cloudStorage.signIn(email, password);
+                console.log('🔑 AuthService: Cloud login result:', result);
 
                 if (result.success) {
                     const user = {
@@ -67,13 +79,36 @@ export class AuthService {
                 return result;
             }
 
-            // Fallback to local
-            return this.localLogin(email, password);
+            // If we get here and cloud is not enabled, it means the user doesn't exist in Firebase
+            // Only demo accounts can use local login
+            if (!this.isCloudEnabled || email === 'demo@example.com') {
+                return this.localLogin(email, password);
+            }
+            
+            // For non-demo accounts when cloud didn't authenticate them
+            return {
+                success: false,
+                error: 'Invalid email or password'
+            };
+        };
+        
+        try {
+            // Wrap the login with a timeout
+            const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('Login timeout - please try again')), 15000)
+            );
+            
+            const result = await Promise.race([
+                loginWithTimeout(),
+                timeoutPromise
+            ]);
+            
+            return result;
         } catch (error) {
             console.error('💥 AuthService: Login error:', error);
             
             // Record failed attempt unless it's a rate limit error
-            if (!error.message.includes('Too many attempts')) {
+            if (!error.message.includes('Too many attempts') && !error.message.includes('timeout')) {
                 rateLimitService.recordAttempt(email, 'login', false);
             }
             
@@ -173,11 +208,27 @@ export class AuthService {
     async waitForAuthState() {
         await this.ensureInitialized();
         
-        // Wait for Firebase auth state to be determined
+        // Wait for Firebase auth state to be determined with timeout
         return new Promise((resolve) => {
+            let authStateResolved = false;
+            
+            // Set a timeout to prevent indefinite waiting
+            const timeout = setTimeout(() => {
+                if (!authStateResolved) {
+                    authStateResolved = true;
+                    console.warn('⚠️ Auth state timeout - using local auth');
+                    resolve(this.getCurrentUser());
+                }
+            }, 5000); // 5 second timeout
+            
             if (typeof firebase !== 'undefined' && firebase.auth) {
                 const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+                    if (authStateResolved) return; // Already resolved by timeout
+                    
+                    authStateResolved = true;
+                    clearTimeout(timeout);
                     unsubscribe(); // Unsubscribe after first call
+                    
                     if (user) {
                         // Update local storage with Firebase user
                         const userData = {
@@ -195,6 +246,8 @@ export class AuthService {
                 });
             } else {
                 // No Firebase, use local auth
+                authStateResolved = true;
+                clearTimeout(timeout);
                 resolve(this.getCurrentUser());
             }
         });

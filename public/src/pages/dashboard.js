@@ -50,6 +50,7 @@ export class DashboardPage {
             stats: 'Statistics',
             history: 'History',
             calendar: 'Calendar',
+            learning: 'Learning',
             settings: 'Settings'
         };
 
@@ -89,13 +90,14 @@ export class DashboardPage {
                         <div class="tab-pane" id="statsTab" data-tab="stats"></div>
                         <div class="tab-pane" id="historyTab" data-tab="history"></div>
                         <div class="tab-pane" id="calendarTab" data-tab="calendar"></div>
+                        <div class="tab-pane" id="learningTab" data-tab="learning"></div>
                         <div class="tab-pane" id="coursesTab" data-tab="courses"></div>
                         <div class="tab-pane" id="settingsTab" data-tab="settings"></div>
                     </div>
                 </main>
                 
                 <!-- Footer -->
-                <footer id="appFooter"></footer>
+                <footer id="appFooter" class="app-footer"></footer>
             </div>
         `;
 
@@ -163,6 +165,7 @@ export class DashboardPage {
             stats: 'Statistics',
             history: 'History',
             calendar: 'Calendar',
+            learning: 'Learning',
             settings: 'Settings'
         };
         this.header.setCurrentTab(tabTitles[tab]);
@@ -219,6 +222,10 @@ export class DashboardPage {
                 case 'calendar':
                     const { CalendarTab } = await import('../components/tabs/CalendarTab.js');
                     this.tabs[tab] = new CalendarTab(this.storageService);
+                    break;
+                case 'learning':
+                    const LearningPage = (await import('./learning.js')).default;
+                    this.tabs[tab] = new LearningPage(this.storageService);
                     break;
                 case 'settings':
                     const { SettingsTab } = await import('../components/tabs/SettingsTab.js');

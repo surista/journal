@@ -9,10 +9,7 @@ export class CalendarPage {
         this.currentYear = this.currentDate.getFullYear();
         this.practiceData = [];
         this.dailyGoals = [];
-        this.practiceAreas = [
-            'Scales', 'Chords', 'Arpeggios', 'Songs', 'Technique',
-            'Theory', 'Improvisation', 'Sight Reading', 'Ear Training', 'Rhythm'
-        ];
+        this.practiceAreas = []; // Will be loaded from storage
         this.isInitialized = false;
     }
 
@@ -26,8 +23,28 @@ export class CalendarPage {
 
     async init(container = null) {
         this.render(container);
+        await this.loadSessionAreas();
         await this.loadPracticeData();
         this.isInitialized = true;
+        
+        // Listen for session areas updates
+        this.sessionAreasHandler = async () => {
+            await this.loadSessionAreas();
+        };
+        window.addEventListener('sessionAreasUpdated', this.sessionAreasHandler);
+    }
+    
+    async loadSessionAreas() {
+        try {
+            this.practiceAreas = await this.storageService.getSessionAreas();
+        } catch (error) {
+            console.error('Error loading session areas:', error);
+            // Fallback to defaults if loading fails
+            this.practiceAreas = [
+                'Scales', 'Chords', 'Arpeggios', 'Songs', 'Technique',
+                'Theory', 'Improvisation', 'Sight Reading', 'Ear Training', 'Speed', 'Rhythm'
+            ];
+        }
     }
 
     getMonthName(monthIndex) {
@@ -242,7 +259,7 @@ export class CalendarPage {
         // Set global reference for onclick handlers
         window.calendarInstance = this;
 
-        this.renderCalendarDays();
+        // Don't render calendar days here - it will be rendered by loadPracticeData -> updateCalendar
         this.updateStreakDisplay();
         this.ensureModalsExist();
     }
@@ -306,16 +323,18 @@ export class CalendarPage {
         
         const saveBtn = document.createElement('button');
         saveBtn.className = 'btn btn-primary';
+        saveBtn.id = 'saveGoalsBtn';
         saveBtn.type = 'button';
         saveBtn.textContent = 'Save Goals';
-        saveBtn.onclick = () => window.calendarInstance?.saveGoals();
+        // Event handler will be attached in CalendarTab.js
         modalActions.appendChild(saveBtn);
         
         const cancelBtn = document.createElement('button');
         cancelBtn.className = 'btn btn-secondary';
+        cancelBtn.id = 'cancelGoalsBtn';
         cancelBtn.type = 'button';
         cancelBtn.textContent = 'Cancel';
-        cancelBtn.onclick = () => window.calendarInstance?.hideGoalModal();
+        // Event handler will be attached in CalendarTab.js
         modalActions.appendChild(cancelBtn);
         
         goalForm.appendChild(modalActions);
@@ -370,7 +389,7 @@ export class CalendarPage {
         this.updateCalendar();
     }
 
-    renderCalendarDays() {
+    async renderCalendarDays() {
         const grid = document.getElementById('calendarGrid');
         if (!grid) return;
 
@@ -429,6 +448,16 @@ export class CalendarPage {
             dayNumber.className = 'calendar-day-number';
             dayNumber.textContent = day;
             dayElement.appendChild(dayNumber);
+
+            // Learning badges hidden until feature is ready
+            // const hasLearningSession = await this.checkLearningSessionForDate(dateStr);
+            // if (hasLearningSession) {
+            //     const learningBadge = document.createElement('div');
+            //     learningBadge.className = 'learning-badge';
+            //     learningBadge.innerHTML = '🎓';
+            //     learningBadge.title = 'Learning plan session scheduled';
+            //     dayElement.appendChild(learningBadge);
+            // }
 
             if (practiceInfo.practiced) {
                 dayElement.classList.add('has-practice');
@@ -1041,7 +1070,7 @@ export class CalendarPage {
 
 
     // Modal methods
-    showGoalModal() {
+    async showGoalModal() {
         const modal = document.getElementById('goalModal');
         const container = document.getElementById('goalInputs');
 
@@ -1049,6 +1078,9 @@ export class CalendarPage {
             console.error('Goal modal elements not found');
             return;
         }
+
+        // Reload session areas to ensure they're up to date
+        await this.loadSessionAreas();
 
         // Clear and populate inputs
         container.textContent = '';
@@ -1254,10 +1286,42 @@ export class CalendarPage {
         }
     }
 
+    async checkLearningSessionForDate(dateStr) {
+        try {
+            const currentPlan = await this.storageService.getCurrentLearningPlan();
+            if (!currentPlan || !currentPlan.weeks) return false;
+            
+            // Get the start date of the plan
+            const planStartDate = new Date(currentPlan.createdAt);
+            const checkDate = new Date(dateStr);
+            
+            // Calculate which week and session this date would be
+            const daysSinceStart = Math.floor((checkDate - planStartDate) / (1000 * 60 * 60 * 24));
+            const weekIndex = Math.floor(daysSinceStart / 7);
+            const sessionInWeek = daysSinceStart % currentPlan.sessionsPerWeek;
+            
+            // Check if this date falls within the plan and has a session
+            if (weekIndex >= 0 && weekIndex < currentPlan.weeks.length) {
+                const week = currentPlan.weeks[weekIndex];
+                return sessionInWeek < week.sessions.length;
+            }
+            
+            return false;
+        } catch (error) {
+            console.error('Error checking learning session:', error);
+            return false;
+        }
+    }
+
     destroy() {
         // Clean up global reference
         if (window.calendarInstance === this) {
             window.calendarInstance = null;
+        }
+
+        // Remove event listener
+        if (this.sessionAreasHandler) {
+            window.removeEventListener('sessionAreasUpdated', this.sessionAreasHandler);
         }
 
         // Remove modals created by this instance

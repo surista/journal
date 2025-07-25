@@ -1,7 +1,7 @@
 // Practice Form Component - Fixed with proper form synchronization
 import {debounce, TimeUtils} from '../utils/helpers.js';
 import {notificationManager} from '../services/notificationManager.js';
-import { sanitizeInput, escapeHtml } from '../utils/sanitizer.js';
+import { sanitizeInput, escapeHtml, createElement, setTextContent } from '../utils/sanitizer.js';
 
 export class PracticeForm {
     constructor(container, storageService) {
@@ -16,6 +16,11 @@ export class PracticeForm {
         this.currentYouTubeInfo = null; // Track YouTube video info
         this.currentMediaType = 'file'; // 'file' or 'youtube'
         this.isSubmitting = false; // Add this flag to prevent duplicate submissions
+        
+        // Listen for session areas updates from Settings
+        window.addEventListener('sessionAreasUpdated', async () => {
+            await this.updatePracticeAreaOptions();
+        });
 
         // Determine tab suffix from container
         if (container) {
@@ -62,19 +67,7 @@ export class PracticeForm {
                         <div class="form-group">
                             <label for="${practiceAreaId}">Practice Area *</label>
                             <select id="${practiceAreaId}" name="practiceArea" required>
-                                <option value="">Select practice area...</option>
-                                <option value="Scales">Scales</option>
-                                <option value="Chords">Chords</option>
-                                <option value="Arpeggios">Arpeggios</option>
-                                <option value="Songs">Songs</option>
-                                <option value="Technique">Technique</option>
-                                <option value="Theory">Theory</option>
-                                <option value="Improvisation">Improvisation</option>
-                                <option value="Sight Reading">Sight Reading</option>
-                                <option value="Ear Training">Ear Training</option>
-                                <option value="Rhythm">Rhythm</option>
-                                <option value="Audio Practice">Audio Practice</option>
-                                <option value="custom">+ Add Custom Area...</option>
+                                <!-- Options will be populated dynamically -->
                             </select>
                             
                             <!-- Custom area input, hidden by default -->
@@ -171,7 +164,9 @@ export class PracticeForm {
         `;
 
         this.attachEventListeners();
-        this.restoreFormState();
+        this.updatePracticeAreaOptions().then(() => {
+            this.restoreFormState();
+        }); // Populate the dropdown then restore state
 
         // Don't show audio file on initial render unless conditions are met
         this.updateAudioFileDisplay();
@@ -583,9 +578,20 @@ export class PracticeForm {
             let practiceArea = sanitizeInput(formData.get('practiceArea') || '');
             const customArea = sanitizeInput(formData.get('customArea') || '');
             const audioFileValue = sanitizeInput(formData.get('audioFileName') || '');
-            const tempoValue = sanitizeInput(formData.get('tempoValue') || '');
+            let tempoValue = sanitizeInput(formData.get('tempoValue') || '');
             const key = sanitizeInput(formData.get('key') || '');
             const notes = sanitizeInput(formData.get('notes') || '');
+
+            // If this is a metronome session and no tempo was entered, get it from the metronome
+            if (this.tabSuffix === 'Metronome' && !tempoValue) {
+                const metronome = window.app?.currentPage?.components?.metronome;
+                if (metronome && typeof metronome.getCurrentBPM === 'function') {
+                    const metronomeBPM = metronome.getCurrentBPM();
+                    if (metronomeBPM) {
+                        tempoValue = metronomeBPM.toString();
+                    }
+                }
+            }
 
             // Parse media info
             let audioFile = null;
@@ -624,8 +630,8 @@ export class PracticeForm {
                         notificationManager.error('Practice area name must be less than 50 characters!');
                         return;
                     }
-                    // Add the custom area to localStorage for future use
-                    this.addCustomPracticeArea(practiceArea);
+                    // Add the custom area to storage for future use
+                    await this.addCustomPracticeArea(practiceArea);
                 } else {
                     notificationManager.error('Please enter a custom practice area!');
                     const customAreaEl = document.getElementById(`customArea${this.tabSuffix}`);
@@ -847,70 +853,50 @@ export class PracticeForm {
         }
     }
 
-    addCustomPracticeArea(area) {
-        const customAreasKey = 'customPracticeAreas';
-        let customAreas = [];
-
+    async addCustomPracticeArea(area) {
         try {
-            const stored = localStorage.getItem(customAreasKey);
-            if (stored) {
-                customAreas = JSON.parse(stored);
+            // Use storage service to add the area
+            const success = await this.storageService.addSessionArea(area);
+            
+            if (success) {
+                // Update the select options
+                await this.updatePracticeAreaOptions();
+            } else {
+                notificationManager.error('Failed to save custom area');
             }
         } catch (error) {
-            console.error('Error loading custom areas:', error);
-        }
-
-        // Add if not already exists
-        if (!customAreas.includes(area)) {
-            customAreas.push(area);
-            customAreas.sort(); // Keep alphabetical
-
-            try {
-                localStorage.setItem(customAreasKey, JSON.stringify(customAreas));
-
-                // Update the select options
-                this.updatePracticeAreaOptions();
-            } catch (error) {
-                console.error('Error saving custom areas:', error);
-            }
+            console.error('Error adding custom practice area:', error);
+            notificationManager.error('Failed to save custom area');
         }
     }
 
-    updatePracticeAreaOptions() {
+    async updatePracticeAreaOptions() {
         const select = document.getElementById(`practiceArea${this.tabSuffix}`);
         if (!select) return;
 
         // Store current value
         const currentValue = select.value;
 
-        // Get custom areas
-        let customAreas = [];
-        try {
-            const stored = localStorage.getItem('customPracticeAreas');
-            if (stored) {
-                customAreas = JSON.parse(stored);
-            }
-        } catch (error) {
-            console.error('Error loading custom areas:', error);
-        }
+        // Get session areas from storage service
+        const sessionAreas = await this.storageService.getSessionAreas();
 
-        // Rebuild options
-        select.innerHTML = `
-            <option value="">Select practice area...</option>
-            <option value="Scales">Scales</option>
-            <option value="Chords">Chords</option>
-            <option value="Arpeggios">Arpeggios</option>
-            <option value="Songs">Songs</option>
-            <option value="Technique">Technique</option>
-            <option value="Theory">Theory</option>
-            <option value="Improvisation">Improvisation</option>
-            <option value="Sight Reading">Sight Reading</option>
-            <option value="Ear Training">Ear Training</option>
-            <option value="Rhythm">Rhythm</option>
-            <option value="Audio Practice">Audio Practice</option>
-            ${customAreas.map(area => `<option value="${area}">${area}</option>`).join('')}
-            <option value="custom">+ Add Custom Area...</option>
-        `;
+        // Rebuild options - clear and rebuild safely
+        select.innerHTML = ''; // Clear existing options
+        
+        // Add empty option
+        const emptyOption = createElement('option', 'Select practice area...', { value: '' });
+        select.appendChild(emptyOption);
+        
+        // Add all session areas with proper escaping
+        sessionAreas.forEach(area => {
+            const option = createElement('option', '', { value: area });
+            setTextContent(option, area); // Safely set text content
+            select.appendChild(option);
+        });
+        
+        // Add the custom option
+        const customOption = createElement('option', '+ Add Custom Area...', { value: 'custom' });
+        select.appendChild(customOption);
 
         // Restore value
         select.value = currentValue;
@@ -993,8 +979,7 @@ export class PracticeForm {
     }
 
     restoreFormState() {
-        // Load custom areas first
-        this.updatePracticeAreaOptions();
+        // Note: updatePracticeAreaOptions is called before this in render()
 
         if (!this.formState) return;
 

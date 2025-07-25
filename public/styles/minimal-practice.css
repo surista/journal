@@ -923,7 +923,8 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.95) !important;
+    backdrop-filter: blur(10px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -932,13 +933,29 @@
 }
 
 .save-session-popup {
-    background: var(--bg-card);
+    /* Basic structure */
     border-radius: 16px;
+    padding: 24px;
     width: 90%;
     max-width: 500px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    animation: slideUp 0.3s ease;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    z-index: 10000000;
+    animation: popupFadeIn 0.3s ease;
+    /* Styling handled by theme-specific rules below */
 }
+
+/* Simple fade-in animation for popup */
+@keyframes popupFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
 
 @keyframes slideUp {
     from {
@@ -956,21 +973,22 @@
     align-items: center;
     justify-content: space-between;
     padding: 1.5rem;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+    margin-bottom: 1rem;
 }
 
 .popup-header h2 {
     margin: 0;
-    font-size: 1.25rem;
+    font-size: 1.5rem;
     font-weight: 600;
-    color: var(--text-primary);
+    color: inherit;
 }
 
 .popup-close {
-    background: none;
+    background: rgba(0, 0, 0, 0.1);
     border: none;
     font-size: 1.5rem;
-    color: var(--text-secondary);
+    color: #374151;
     cursor: pointer;
     width: 32px;
     height: 32px;
@@ -982,8 +1000,8 @@
 }
 
 .popup-close:hover {
-    background: var(--bg-hover);
-    color: var(--text-primary);
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
 }
 
 .popup-close-btn {
@@ -1011,34 +1029,69 @@
 }
 
 .popup-body .form-group {
-    margin-bottom: 1.25rem;
+    margin-bottom: 1.5rem;
 }
 
 .popup-body .form-group label {
     display: block;
     margin-bottom: 0.5rem;
-    font-size: 0.75rem;
+    font-size: 0.875rem;
     font-weight: 600;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    color: inherit;
 }
 
 .popup-body .form-control {
     width: 100%;
     padding: 0.75rem;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
     border-radius: 8px;
-    color: var(--text-primary);
     font-size: 0.875rem;
     transition: all 0.2s ease;
 }
 
 .popup-body .form-control:focus {
     outline: none;
-    border-color: #6366f1;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+/* Select dropdowns in save popup */
+.save-session-form select {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg fill='currentColor' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 20px;
+    padding-right: 32px;
+}
+
+.save-session-form select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+/* Style the optgroups */
+.save-session-form optgroup {
+    font-weight: 700;
+    color: #6366f1;
+    background: white;
+}
+
+.save-session-form option {
+    padding: 8px;
+    background: white;
+    color: #1f2937;
+}
+
+.save-session-form option:hover {
+    background: #f3f4f6;
 }
 
 .popup-body textarea.form-control {
@@ -1139,7 +1192,8 @@
     gap: 1rem;
     justify-content: flex-end;
     padding: 1.5rem;
-    border-top: 1px solid var(--border);
+    border-top: 1px solid rgba(99, 102, 241, 0.2);
+    margin-top: 1rem;
 }
 
 .btn {
@@ -1208,25 +1262,57 @@
 }
 
 .popup-body .btn-secondary {
-    background: var(--bg-secondary);
-    color: var(--text-primary);
+    background: rgba(107, 114, 128, 0.1);
+    color: #374151;
+    border: 2px solid rgba(107, 114, 128, 0.2);
 }
 
 .popup-body .btn-secondary:hover {
-    background: var(--bg-tertiary);
+    background: rgba(107, 114, 128, 0.2);
+    border-color: rgba(107, 114, 128, 0.3);
 }
 
 .popup-body .btn-primary {
-    background: #6366f1;
+    background: linear-gradient(135deg, #6366f1 0%, #5558e3 100%);
     color: white;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    box-shadow: 
+        0 4px 15px rgba(99, 102, 241, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+}
+
+.popup-body .btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255, 255, 255, 0.2) 50%, 
+        transparent 100%
+    );
+    transition: left 0.5s ease;
 }
 
 .popup-body .btn-primary:hover {
-    background: #5558e3;
-    transform: translateY(-1px);
+    background: linear-gradient(135deg, #5558e3 0%, #4446d0 100%);
+    transform: translateY(-2px);
+    box-shadow: 
+        0 6px 20px rgba(99, 102, 241, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.popup-body .btn-primary:hover::before {
+    left: 100%;
 }
 
 .popup-body .btn-primary.success {
@@ -1258,6 +1344,173 @@
 @keyframes pulse {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.5; }
+}
+
+/* Pulse animation for save button */
+@keyframes savePulse {
+    0% {
+        box-shadow: 
+            0 4px 15px rgba(99, 102, 241, 0.3),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1),
+            0 0 0 0 rgba(99, 102, 241, 0.4);
+    }
+    70% {
+        box-shadow: 
+            0 4px 15px rgba(99, 102, 241, 0.3),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1),
+            0 0 0 10px rgba(99, 102, 241, 0);
+    }
+    100% {
+        box-shadow: 
+            0 4px 15px rgba(99, 102, 241, 0.3),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1),
+            0 0 0 0 rgba(99, 102, 241, 0);
+    }
+}
+
+/* Apply pulse to save button */
+.popup-body .btn-primary.save-btn {
+    animation: savePulse 2s infinite;
+}
+
+
+/* Theme-specific adjustments for save popup */
+/* Enhanced contrast for all themes */
+.save-session-popup {
+    /* Use theme colors by default */
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    /* Strong 3D shadow effect */
+    box-shadow: 
+        0 2px 4px rgba(0, 0, 0, 0.1),
+        0 8px 16px rgba(0, 0, 0, 0.15),
+        0 16px 32px rgba(0, 0, 0, 0.2),
+        0 24px 48px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+/* Dark themes - Slightly lighter background */
+[data-theme*="dark"] .save-session-popup,
+[data-theme="solarized-dark"] .save-session-popup,
+[data-theme="tokyo-night"] .save-session-popup,
+[data-theme="dracula"] .save-session-popup,
+[data-theme="github-dark"] .save-session-popup,
+[data-theme="monokai"] .save-session-popup,
+[data-theme="nord"] .save-session-popup,
+[data-theme="ayu-dark"] .save-session-popup,
+[data-theme="material-dark"] .save-session-popup,
+[data-theme="one-dark"] .save-session-popup,
+[data-theme="synthwave"] .save-session-popup,
+[data-theme="palenight"] .save-session-popup,
+[data-theme="high-contrast"] .save-session-popup,
+[data-theme="cyberpunk"] .save-session-popup,
+[data-theme="midnight"] .save-session-popup,
+[data-theme="forest"] .save-session-popup,
+[data-theme="ocean"] .save-session-popup,
+[data-theme="twilight"] .save-session-popup,
+[data-theme="brown"] .save-session-popup,
+[data-theme="coffee"] .save-session-popup {
+    /* Use a lighter version of the background */
+    background: var(--bg-input);
+    color: var(--text-primary);
+    border-color: var(--border);
+    /* Stronger shadow for dark themes */
+    box-shadow: 
+        0 2px 4px rgba(0, 0, 0, 0.2),
+        0 8px 16px rgba(0, 0, 0, 0.3),
+        0 16px 32px rgba(0, 0, 0, 0.4),
+        0 24px 48px rgba(0, 0, 0, 0.5);
+}
+
+/* Light themes - Slightly darker background */
+[data-theme*="light"] .save-session-popup,
+[data-theme="solarized-light"] .save-session-popup,
+[data-theme="github-light"] .save-session-popup,
+[data-theme="pastel-light"] .save-session-popup,
+[data-theme="soft-light"] .save-session-popup,
+[data-theme="sepia"] .save-session-popup,
+[data-theme="pastel"] .save-session-popup {
+    /* Use a subtle darker tint */
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border-color: var(--border);
+    /* Add subtle tint overlay for darkening effect */
+    position: relative;
+    /* Softer shadow for light themes */
+    box-shadow: 
+        0 2px 4px rgba(0, 0, 0, 0.05),
+        0 8px 16px rgba(0, 0, 0, 0.1),
+        0 16px 32px rgba(0, 0, 0, 0.15),
+        0 24px 48px rgba(0, 0, 0, 0.2);
+}
+
+/* Add subtle darkening overlay for light themes */
+[data-theme*="light"] .save-session-popup::before,
+[data-theme="solarized-light"] .save-session-popup::before,
+[data-theme="github-light"] .save-session-popup::before,
+[data-theme="pastel-light"] .save-session-popup::before,
+[data-theme="soft-light"] .save-session-popup::before,
+[data-theme="sepia"] .save-session-popup::before,
+[data-theme="pastel"] .save-session-popup::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Ensure content is above the overlay */
+[data-theme*="light"] .save-session-popup > *,
+[data-theme="solarized-light"] .save-session-popup > *,
+[data-theme="github-light"] .save-session-popup > *,
+[data-theme="pastel-light"] .save-session-popup > *,
+[data-theme="soft-light"] .save-session-popup > *,
+[data-theme="sepia"] .save-session-popup > *,
+[data-theme="pastel"] .save-session-popup > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* Form controls adapt to popup background */
+.save-session-popup .form-control,
+.save-session-popup select,
+.save-session-form select {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+}
+
+/* Ensure form controls have proper contrast */
+.save-session-popup .form-control::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.7;
+}
+
+.save-session-popup .form-control:focus,
+.save-session-popup select:focus,
+.save-session-form select:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+/* Close button always visible */
+.save-session-popup .popup-close {
+    background: rgba(0, 0, 0, 0.1) !important;
+    color: #374151 !important;
+}
+
+.save-session-popup .popup-close:hover {
+    background: rgba(239, 68, 68, 0.1) !important;
+    color: #dc2626 !important;
 }
 
 /* Mobile Responsive */

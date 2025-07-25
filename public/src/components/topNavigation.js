@@ -54,6 +54,13 @@ export class TopNavigation {
                         <span class="nav-label">Calendar</span>
                     </button>
                     
+                    <!-- Hidden until ready
+                    <button class="top-nav-item" data-tab="learning" title="My Learning">
+                        <span class="nav-icon">🎓</span>
+                        <span class="nav-label">Learning</span>
+                    </button>
+                    -->
+                    
                     <button class="top-nav-item" data-tab="settings" title="Settings">
                         <span class="nav-icon">⚙️</span>
                         <span class="nav-label">Settings</span>

@@ -190,15 +190,7 @@ export class RepertoireTab {
                 }
             }
 
-            // Add debugging for the Add Song button
-            const addSongBtn = this.container.querySelector('#addSongBtn');
-            if (addSongBtn) {
-                this.addSongClickHandler = (e) => {
-                    e.preventDefault();
-                    this.showSongModal();
-                };
-                addSongBtn.addEventListener('click', this.addSongClickHandler);
-            }
+            // Add Song button handler is handled by event delegation below
 
             // ESC key handler for modal - store reference for cleanup
             this.escKeyHandler = (e) => {
@@ -266,14 +258,9 @@ export class RepertoireTab {
                     return;
                 }
 
-                // Add Song button - improved detection with debugging
-                if (target.id === 'addSongBtn') {
-                    e.preventDefault();
-                    this.showSongModal();
-                    return;
-                }
-
-                if (target.closest('#addSongBtn')) {
+                // Add Song button
+                if (target.id === 'addSongBtn' || target.closest('#addSongBtn') || 
+                    target.id === 'addFirstSongBtn') {
                     e.preventDefault();
                     this.showSongModal();
                     return;
@@ -403,7 +390,7 @@ export class RepertoireTab {
                 <div class="empty-state">
                     <i class="icon" style="font-size: 3rem;">🎵</i>
                     <p>No songs found</p>
-                    <button class="btn btn-primary" onclick="document.getElementById('addSongBtn').click()">
+                    <button class="btn btn-primary" id="addFirstSongBtn">
                         Add Your First Song
                     </button>
                 </div>
@@ -412,7 +399,7 @@ export class RepertoireTab {
         }
 
         grid.innerHTML = this.filteredRepertoire.map(song => `
-            <div class="song-card" data-id="${song.id}" style="padding: 10px 20px; border-bottom: 1px solid var(--border);">
+            <div class="song-card" data-id="${escapeHtml(song.id)}" style="padding: 10px 20px; border-bottom: 1px solid var(--border);">
                 <div class="song-row" style="display: flex; align-items: center; gap: 16px;">
                     <span class="song-title" style="font-weight: 600; color: var(--text-primary); white-space: nowrap;">
                         ${escapeHtml(song.title)}
@@ -429,10 +416,10 @@ export class RepertoireTab {
                         ${this.formatStatus(song.status)}
                     </span>
                     <div style="flex: 1;"></div>
-                    <button class="btn-icon edit-song-quick" data-id="${song.id}" title="Edit song" style="background: none; border: none; cursor: pointer; font-size: 18px; opacity: 0.7; transition: opacity 0.2s; padding: 4px;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">
+                    <button class="btn-icon edit-song-quick" data-id="${escapeHtml(song.id)}" title="Edit song" style="background: none; border: none; cursor: pointer; font-size: 18px; opacity: 0.7; transition: opacity 0.2s; padding: 4px;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">
                         ✏️
                     </button>
-                    <button class="btn-icon delete-song-quick" data-id="${song.id}" title="Delete song" style="background: none; border: none; cursor: pointer; font-size: 18px; opacity: 0.7; transition: opacity 0.2s; padding: 4px;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">
+                    <button class="btn-icon delete-song-quick" data-id="${escapeHtml(song.id)}" title="Delete song" style="background: none; border: none; cursor: pointer; font-size: 18px; opacity: 0.7; transition: opacity 0.2s; padding: 4px;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">
                         🗑️
                     </button>
                 </div>
@@ -732,7 +719,7 @@ export class RepertoireTab {
     showError(message) {
         const grid = document.getElementById('repertoireGrid');
         if (grid) {
-            grid.innerHTML = `<div class="error-state">${message}</div>`;
+            grid.innerHTML = `<div class="error-state">${escapeHtml(message)}</div>`;
         }
     }
 

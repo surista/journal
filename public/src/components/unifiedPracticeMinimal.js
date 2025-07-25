@@ -7,6 +7,7 @@ import { SessionManager } from './modules/sessionManager.js';
 import { ImageManager } from './modules/imageManager.js';
 import { UIController } from './modules/uiController.js';
 import { AudioService } from '../services/audioService.js';
+import { escapeHtml } from '../utils/sanitizer.js';
 
 export class UnifiedPracticeMinimal {
     constructor(storageService) {
@@ -138,7 +139,9 @@ export class UnifiedPracticeMinimal {
                                     <option value="4">4/4</option>
                                     <option value="3">3/4</option>
                                     <option value="2">2/4</option>
+                                    <option value="5">5/4</option>
                                     <option value="6">6/8</option>
+                                    <option value="7">7/8</option>
                                 </select>
                                 
                                 <select id="soundSelect" class="metronome-btn minimal-select">
@@ -269,8 +272,14 @@ export class UnifiedPracticeMinimal {
                 </div>
             </div>
             <div id="youtubePlayerWrapper" style="display: none;">
-                <!-- YouTube Player -->
-                <div id="youtubePlayer" style="width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 8px; margin-bottom: 1rem; overflow: hidden;"></div>
+                <!-- YouTube Player Container with Resize Button -->
+                <div style="position: relative;">
+                    <button id="youtubeResizeBtn" class="btn-resize" title="Toggle Size" style="position: absolute; top: 10px; right: 10px; z-index: 10; background: rgba(0,0,0,0.7); color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 14px;">
+                        <span class="resize-icon">⛶</span> <span class="resize-text">Expand</span>
+                    </button>
+                    <!-- YouTube Player -->
+                    <div id="youtubePlayer" style="width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 8px; margin-bottom: 1rem; overflow: hidden; transition: all 0.3s ease;"></div>
+                </div>
                 
                 <!-- Progress Bar (waveform placeholder for YouTube) -->
                 <div class="waveform-container" style="position: relative; width: 100%; height: 100px; background: var(--bg-secondary); border-radius: 8px; overflow: hidden; margin-bottom: 1rem;">
@@ -819,6 +828,11 @@ export class UnifiedPracticeMinimal {
         });
         this.imageManager.setImageClearCallback(() => {
             this.uiController.hideImagePreview();
+        });
+        
+        // Listen for loadPracticeSession events
+        window.addEventListener('loadPracticeSession', (event) => {
+            this.handleLoadPracticeSession(event.detail);
         });
     }
 
@@ -1538,14 +1552,19 @@ export class UnifiedPracticeMinimal {
         document.getElementById('audioSavedLoopsList')?.addEventListener('click', (e) => {
             const loopItem = e.target.closest('.audio-loop-item');
             const deleteBtn = e.target.closest('.audio-loop-delete');
+            const editBtn = e.target.closest('.audio-loop-edit');
             
-            if (loopItem) {
-                const index = parseInt(loopItem.dataset.index);
-                this.loadAudioLoop(index);
+            if (editBtn) {
+                e.stopPropagation();
+                const index = parseInt(editBtn.dataset.index);
+                this.editAudioLoop(index);
             } else if (deleteBtn) {
-                e.stopPropagation(); // Prevent triggering the load when clicking delete
+                e.stopPropagation();
                 const index = parseInt(deleteBtn.dataset.index);
                 this.deleteAudioLoop(index);
+            } else if (loopItem) {
+                const index = parseInt(loopItem.dataset.index);
+                this.loadAudioLoop(index);
             }
         });
     }
@@ -1604,6 +1623,124 @@ export class UnifiedPracticeMinimal {
 
         // Initialize YouTube control listeners
         this.attachYouTubeControlListeners();
+        
+        // Add resize button listener
+        const resizeBtn = document.getElementById('youtubeResizeBtn');
+        if (resizeBtn && !resizeBtn.hasAttribute('data-listener-attached')) {
+            resizeBtn.setAttribute('data-listener-attached', 'true');
+            // Function to toggle video size
+            const toggleVideoSize = (expand) => {
+                const playerContainer = document.getElementById('youtubePlayer').parentElement;
+                const youtubePlayer = document.getElementById('youtubePlayer');
+                const resizeText = resizeBtn.querySelector('.resize-text');
+                const modePanels = document.querySelector('.mode-panels');
+                const youtubePlayerWrapper = document.getElementById('youtubePlayerWrapper');
+                
+                if (playerContainer && youtubePlayer) {
+                    if (!expand) {
+                        // Restore normal size
+                        playerContainer.removeAttribute('data-expanded');
+                        // Reset all styles completely
+                        playerContainer.removeAttribute('style');
+                        playerContainer.style.position = 'relative';
+                        
+                        // Reset YouTube player with important to override any lingering styles
+                        youtubePlayer.removeAttribute('style');
+                        youtubePlayer.style.cssText = 'width: 100% !important; aspect-ratio: 16/9 !important; background: #000; border-radius: 8px; margin-bottom: 1rem; overflow: hidden; transition: all 0.3s ease; height: auto !important;';
+                        
+                        // Reset the wrapper completely
+                        if (youtubePlayerWrapper) {
+                            youtubePlayerWrapper.removeAttribute('style');
+                            youtubePlayerWrapper.style.display = 'block';
+                        }
+                        
+                        // Find and reset ALL parent containers up to the mode panel
+                        let parent = playerContainer.parentElement;
+                        while (parent && !parent.classList.contains('mode-panel')) {
+                            parent.style.height = '';
+                            parent.style.minHeight = '';
+                            parent.style.maxHeight = '';
+                            parent = parent.parentElement;
+                        }
+                        
+                        // Restore normal layout for panels
+                        if (modePanels) {
+                            modePanels.removeAttribute('style');
+                        }
+                        
+                        if (resizeText) resizeText.textContent = 'Expand';
+                        
+                        // Remove ESC key handler
+                        if (this.youtubeEscHandler) {
+                            document.removeEventListener('keydown', this.youtubeEscHandler);
+                            this.youtubeEscHandler = null;
+                        }
+                        
+                        // Force a reflow to ensure styles are applied
+                        youtubePlayer.offsetHeight;
+                    } else {
+                        // Expand video
+                        playerContainer.setAttribute('data-expanded', 'true');
+                        
+                        // Set fixed positioning for the video container
+                        playerContainer.style.cssText = `
+                            position: fixed;
+                            top: 50%;
+                            left: 50%;
+                            transform: translate(-50%, -50%);
+                            width: 90vw;
+                            max-width: 1600px;
+                            z-index: 100;
+                            background: var(--bg-dark, #1a1a1a);
+                            padding: 20px;
+                            border-radius: 12px;
+                            box-shadow: 0 10px 50px rgba(0,0,0,0.5);
+                        `;
+                        
+                        // Expand the video player itself
+                        const newHeight = Math.min(window.innerWidth * 0.9 * (9/16), window.innerHeight * 0.8);
+                        youtubePlayer.style.cssText = `
+                            width: 100%;
+                            height: ${newHeight}px;
+                            background: #000;
+                            border-radius: 8px;
+                            overflow: hidden;
+                        `;
+                        
+                        // Add a semi-transparent backdrop
+                        if (modePanels) {
+                            modePanels.style.cssText = 'position: relative; z-index: 1;';
+                        }
+                        
+                        if (resizeText) resizeText.textContent = 'Shrink';
+                        
+                        // Add ESC key handler for expanded state
+                        this.youtubeEscHandler = (e) => {
+                            if (e.key === 'Escape' && playerContainer.hasAttribute('data-expanded')) {
+                                e.stopPropagation(); // Prevent other ESC handlers
+                                toggleVideoSize(false);
+                            }
+                        };
+                        document.addEventListener('keydown', this.youtubeEscHandler);
+                    }
+                    
+                    // Force YouTube iframe to resize
+                    if (this.youtubePlayer && this.youtubePlayer.player && this.youtubePlayer.player.setSize) {
+                        setTimeout(() => {
+                            const width = youtubePlayer.offsetWidth;
+                            const height = youtubePlayer.offsetHeight;
+                            this.youtubePlayer.player.setSize(width, height);
+                        }, 100);
+                    }
+                }
+            };
+            
+            resizeBtn.addEventListener('click', () => {
+                const playerContainer = document.getElementById('youtubePlayer').parentElement;
+                const isExpanded = playerContainer && playerContainer.hasAttribute('data-expanded');
+                toggleVideoSize(!isExpanded);
+            });
+        }
         
         // Draw YouTube waveform visualization
         this.drawYouTubeWaveform();
@@ -1915,13 +2052,19 @@ export class UnifiedPracticeMinimal {
         document.getElementById('youtubeSavedLoopsList')?.addEventListener('click', (e) => {
             const loopItem = e.target.closest('.youtube-loop-item');
             const deleteBtn = e.target.closest('.youtube-loop-delete');
+            const editBtn = e.target.closest('.youtube-loop-edit');
             
-            if (loopItem) {
-                const index = parseInt(loopItem.dataset.index);
-                this.loadYouTubeLoop(index);
+            if (editBtn) {
+                e.stopPropagation();
+                const index = parseInt(editBtn.dataset.index);
+                this.editYouTubeLoop(index);
             } else if (deleteBtn) {
+                e.stopPropagation();
                 const index = parseInt(deleteBtn.dataset.index);
                 this.deleteYouTubeLoop(index);
+            } else if (loopItem) {
+                const index = parseInt(loopItem.dataset.index);
+                this.loadYouTubeLoop(index);
             }
         });
         
@@ -2198,11 +2341,8 @@ export class UnifiedPracticeMinimal {
         const defaultName = this.sessionManager.generateSessionName();
         const formattedDuration = this.sessionManager.formatDuration(duration);
         
-        // Get practice areas
-        const practiceAreas = [
-            'Scales', 'Chords', 'Arpeggios', 'Songs', 'Technique',
-            'Theory', 'Improvisation', 'Sight Reading', 'Ear Training', 'Rhythm'
-        ];
+        // Get practice areas from storage service
+        const practiceAreas = await this.storageService.getSessionAreas();
         
         // Get current media info
         let mediaInfo = '';
@@ -2227,7 +2367,12 @@ export class UnifiedPracticeMinimal {
             const truncatedTitle = this.youtubePlayer.videoTitle.length > 50 
                 ? this.youtubePlayer.videoTitle.substring(0, 47) + '...' 
                 : this.youtubePlayer.videoTitle;
-            mediaInfo = `<p>YouTube: <strong>${truncatedTitle}</strong></p>`;
+            const videoUrl = this.youtubePlayer.videoId ? 
+                `https://youtube.com/watch?v=${this.youtubePlayer.videoId}` : '';
+            mediaInfo = `
+                <p>YouTube: <strong>${truncatedTitle}</strong></p>
+                ${videoUrl ? `<p style="font-size: 0.875rem; color: var(--text-secondary); word-break: break-all;">URL: ${videoUrl}</p>` : ''}
+            `;
         }
         
         return `
@@ -2257,6 +2402,42 @@ export class UnifiedPracticeMinimal {
                 </div>
                 
                 <div class="form-group" style="margin-top: 12px;">
+                    <label>Musical Key:</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 8px;">
+                        <select id="sessionKeyNote" style="padding: 8px;">
+                            <option value="">Key...</option>
+                            <option value="C">C</option>
+                            <option value="C#/Db">C# / Db</option>
+                            <option value="D">D</option>
+                            <option value="D#/Eb">D# / Eb</option>
+                            <option value="E">E</option>
+                            <option value="F">F</option>
+                            <option value="F#/Gb">F# / Gb</option>
+                            <option value="G">G</option>
+                            <option value="G#/Ab">G# / Ab</option>
+                            <option value="A">A</option>
+                            <option value="A#/Bb">A# / Bb</option>
+                            <option value="B">B</option>
+                        </select>
+                        <select id="sessionKeyType" style="padding: 8px;">
+                            <option value="">Major/Minor...</option>
+                            <option value="Major">Major</option>
+                            <option value="Minor">Minor</option>
+                        </select>
+                        <select id="sessionKeyMode" style="padding: 8px;">
+                            <option value="">Mode...</option>
+                            <option value="Ionian">Ionian</option>
+                            <option value="Dorian">Dorian</option>
+                            <option value="Phrygian">Phrygian</option>
+                            <option value="Lydian">Lydian</option>
+                            <option value="Mixolydian">Mixolydian</option>
+                            <option value="Aeolian">Aeolian</option>
+                            <option value="Locrian">Locrian</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group" style="margin-top: 12px;">
                     <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
                         <input type="checkbox" id="favoriteSession" style="width: auto; margin: 0;">
                         <span style="display: flex; align-items: center; gap: 4px;">
@@ -2277,6 +2458,9 @@ export class UnifiedPracticeMinimal {
     attachSaveSessionHandlers(modal, duration) {
         const nameInput = modal.querySelector('#sessionName');
         const practiceAreaSelect = modal.querySelector('#practiceArea');
+        const keyNoteSelect = modal.querySelector('#sessionKeyNote');
+        const keyTypeSelect = modal.querySelector('#sessionKeyType');
+        const keyModeSelect = modal.querySelector('#sessionKeyMode');
         const favoriteCheckbox = modal.querySelector('#favoriteSession');
         const confirmBtn = modal.querySelector('#confirmSaveBtn');
         const cancelBtn = modal.querySelector('#cancelSaveBtn');
@@ -2284,6 +2468,23 @@ export class UnifiedPracticeMinimal {
         confirmBtn?.addEventListener('click', async () => {
             const name = nameInput?.value.trim() || this.sessionManager.generateSessionName();
             const practiceArea = practiceAreaSelect?.value || '';
+            
+            // Combine key information
+            const keyNote = keyNoteSelect?.value || '';
+            const keyType = keyTypeSelect?.value || '';
+            const keyMode = keyModeSelect?.value || '';
+            let key = '';
+            
+            if (keyNote) {
+                key = keyNote;
+                if (keyType) {
+                    key += ` ${keyType}`;
+                }
+                if (keyMode && keyMode !== 'Ionian' && keyMode !== 'Aeolian') {
+                    key += ` ${keyMode}`;
+                }
+            }
+            
             const isFavorite = favoriteCheckbox?.checked || false;
             
             // Create enhanced session data
@@ -2292,6 +2493,7 @@ export class UnifiedPracticeMinimal {
                 duration,
                 date: new Date().toISOString(),
                 practiceArea,
+                key,
                 mode: this.currentMode,
                 isFavorite
             };
@@ -2311,11 +2513,28 @@ export class UnifiedPracticeMinimal {
                 sessionData.timeSignature = this.metronome.state.timeSignature;
             }
             
+            // Add image data if present
+            if (this.imageManager.getCurrentImage()) {
+                sessionData.sheetMusicImage = this.imageManager.getCurrentImage();
+                
+                // Generate thumbnail
+                try {
+                    const thumbnail = await this.imageManager.generateThumbnail(
+                        this.imageManager.getCurrentImage(),
+                        200,  // max width
+                        200   // max height
+                    );
+                    sessionData.sheetMusicThumbnail = thumbnail;
+                } catch (error) {
+                    console.error('Failed to generate thumbnail:', error);
+                    // Continue without thumbnail
+                }
+            }
+            
             // Save the practice entry with all the session data
             const practiceEntry = {
                 ...sessionData,
-                id: Date.now() + Math.random(),
-                state: this.getComponentsState()  // Add state for session restoration
+                id: Date.now() + Math.random()
             };
             
             await this.storageService.savePracticeEntry(practiceEntry);
@@ -2334,10 +2553,12 @@ export class UnifiedPracticeMinimal {
             this.timer.stop();
             this.uiController.updateTimerControls(false);
             modal.remove();
+            this.uiController.isModalOpen = false;
         });
 
         cancelBtn?.addEventListener('click', () => {
             modal.remove();
+            this.uiController.isModalOpen = false;
         });
 
         // Save on Enter
@@ -2391,15 +2612,16 @@ export class UnifiedPracticeMinimal {
         const cancelBtn = modal.querySelector('#cancelLoopSaveBtn');
 
         confirmBtn?.addEventListener('click', () => {
-            const name = nameInput?.value.trim();
-            if (name) {
-                this.youtubePlayer.saveLoop(name);
-                this.updateSavedLoopsList();
-                modal.remove();
-                this.uiController.showNotification('Loop saved successfully', 'success');
-            } else {
-                this.uiController.showNotification('Please enter a loop name', 'error');
+            const inputValue = nameInput?.value.trim();
+            let name = inputValue;
+            if (!name) {
+                // Generate default name if none provided
+                name = `Loop ${this.formatTime(this.youtubePlayer.loopStart)} - ${this.formatTime(this.youtubePlayer.loopEnd)}`;
             }
+            this.youtubePlayer.saveLoop(name);
+            this.updateSavedLoopsList();
+            this.uiController.showNotification(inputValue ? 'Loop saved successfully' : 'Loop saved with default name', 'success');
+            modal.remove();
         });
 
         cancelBtn?.addEventListener('click', () => {
@@ -2421,16 +2643,23 @@ export class UnifiedPracticeMinimal {
             container.innerHTML = loops.map((loop, index) => `
                 <div class="saved-loop-item" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-bottom: 1px solid var(--border); cursor: pointer;">
                     <div class="youtube-loop-item" data-index="${index}" style="flex: 1;">
-                        <div style="font-weight: 500;">${loop.name}</div>
+                        <div style="font-weight: 500;">${escapeHtml(loop.name)}</div>
                         <div style="font-size: 11px; color: var(--text-muted);">
                             ${this.formatTime(loop.start)} - ${this.formatTime(loop.end)}
                         </div>
                     </div>
-                    <button class="youtube-loop-delete" data-index="${index}" 
-                            class="btn btn-xs btn-danger" 
-                            style="padding: 2px 8px; font-size: 11px;">
-                        Delete
-                    </button>
+                    <div class="loop-actions" style="display: flex; gap: 8px;">
+                        <button class="youtube-loop-edit" data-index="${index}" 
+                                title="Edit loop name"
+                                style="background: none; border: none; padding: 4px 8px; cursor: pointer; color: var(--text-muted); transition: color 0.2s;">
+                            ✏️
+                        </button>
+                        <button class="youtube-loop-delete" data-index="${index}" 
+                                title="Delete loop"
+                                style="background: none; border: none; padding: 4px 8px; cursor: pointer; color: var(--text-muted); transition: color 0.2s;">
+                            🗑️
+                        </button>
+                    </div>
                 </div>
             `).join('');
         }
@@ -2455,6 +2684,21 @@ export class UnifiedPracticeMinimal {
         }
     }
     
+    editYouTubeLoop(index) {
+        const loops = this.youtubePlayer.savedLoops;
+        if (!loops || !loops[index]) return;
+        
+        const loop = loops[index];
+        const newName = prompt('Edit loop name:', loop.name);
+        
+        if (newName && newName.trim() && newName !== loop.name) {
+            loop.name = newName.trim();
+            this.youtubePlayer.saveSavedLoops();
+            this.updateSavedLoopsList();
+            this.uiController.showNotification('Loop name updated', 'success');
+        }
+    }
+    
     // Audio Loop Methods
     updateAudioSavedLoopsList() {
         const loopController = this.audioPlayer?.audioPlayer?.loopController;
@@ -2475,16 +2719,23 @@ export class UnifiedPracticeMinimal {
             container.innerHTML = loops.map((loop, index) => `
                 <div class="saved-loop-item" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-bottom: 1px solid var(--border); cursor: pointer;">
                     <div class="audio-loop-item" data-index="${index}" style="flex: 1;">
-                        <div style="font-weight: 500;">${loop.name}</div>
+                        <div style="font-weight: 500;">${escapeHtml(loop.name)}</div>
                         <div style="font-size: 11px; color: var(--text-muted);">
                             ${this.formatTime(loop.start)} - ${this.formatTime(loop.end)}
                         </div>
                     </div>
-                    <button class="audio-loop-delete" data-index="${index}" 
-                            class="btn btn-xs btn-danger" 
-                            style="padding: 2px 8px; font-size: 11px;">
-                        Delete
-                    </button>
+                    <div class="loop-actions" style="display: flex; gap: 8px;">
+                        <button class="audio-loop-edit" data-index="${index}" 
+                                title="Edit loop name"
+                                style="background: none; border: none; padding: 4px 8px; cursor: pointer; color: var(--text-muted); transition: color 0.2s;">
+                            ✏️
+                        </button>
+                        <button class="audio-loop-delete" data-index="${index}" 
+                                title="Delete loop"
+                                style="background: none; border: none; padding: 4px 8px; cursor: pointer; color: var(--text-muted); transition: color 0.2s;">
+                            🗑️
+                        </button>
+                    </div>
                 </div>
             `).join('');
         }
@@ -2510,6 +2761,21 @@ export class UnifiedPracticeMinimal {
                 this.updateAudioSavedLoopsList();
                 this.uiController.showNotification('Loop deleted', 'info');
             }
+        }
+    }
+    
+    editAudioLoop(index) {
+        const loopController = this.audioPlayer?.audioPlayer?.loopController;
+        if (!loopController || !loopController.savedLoops[index]) return;
+        
+        const loop = loopController.savedLoops[index];
+        const newName = prompt('Edit loop name:', loop.name);
+        
+        if (newName && newName.trim() && newName !== loop.name) {
+            loop.name = newName.trim();
+            loopController.saveSavedLoops();
+            this.updateAudioSavedLoopsList();
+            this.uiController.showNotification('Loop name updated', 'success');
         }
     }
     
@@ -2577,17 +2843,18 @@ export class UnifiedPracticeMinimal {
         const cancelBtn = modal.querySelector('#cancelAudioLoopSaveBtn');
         
         confirmBtn?.addEventListener('click', () => {
-            const name = nameInput?.value.trim();
-            if (name) {
-                const loopController = this.audioPlayer?.audioPlayer?.loopController;
-                if (loopController) {
-                    loopController.saveLoop(name);
-                    this.updateAudioSavedLoopsList();
-                    modal.remove();
-                    this.uiController.showNotification('Loop saved successfully', 'success');
+            const loopController = this.audioPlayer?.audioPlayer?.loopController;
+            if (loopController) {
+                const inputValue = nameInput?.value.trim();
+                let name = inputValue;
+                if (!name) {
+                    // Generate default name if none provided
+                    name = `Loop ${this.formatTime(loopController.loopStart)} - ${this.formatTime(loopController.loopEnd)}`;
                 }
-            } else {
-                this.uiController.showNotification('Please enter a loop name', 'error');
+                loopController.saveLoop(name);
+                this.updateAudioSavedLoopsList();
+                this.uiController.showNotification(inputValue ? 'Loop saved successfully' : 'Loop saved with default name', 'success');
+                modal.remove();
             }
         });
         
@@ -2642,6 +2909,19 @@ export class UnifiedPracticeMinimal {
     }
 
     checkForSessionToLoad() {
+        // Check sessionStorage for practice session data
+        const sessionData = sessionStorage.getItem('loadPracticeSession');
+        if (sessionData) {
+            try {
+                const data = JSON.parse(sessionData);
+                sessionStorage.removeItem('loadPracticeSession'); // Clear it after reading
+                this.loadPracticeSessionData(data);
+                return; // Don't check other sources if we loaded from sessionStorage
+            } catch (error) {
+                console.error('Error loading session from sessionStorage:', error);
+            }
+        }
+        
         // Check URL params
         const urlParams = new URLSearchParams(window.location.search);
         const sessionId = urlParams.get('session');
@@ -2652,6 +2932,53 @@ export class UnifiedPracticeMinimal {
             // Check for auto-restore
             this.sessionManager.checkForRestorable(this.getComponentsState());
         }
+    }
+    
+    handleLoadPracticeSession(detail) {
+        // Load session data from event detail
+        const sessionData = sessionStorage.getItem('loadPracticeSession');
+        if (sessionData) {
+            try {
+                const data = JSON.parse(sessionData);
+                sessionStorage.removeItem('loadPracticeSession');
+                this.loadPracticeSessionData(data);
+            } catch (error) {
+                console.error('Error loading practice session:', error);
+            }
+        }
+    }
+    
+    loadPracticeSessionData(data) {
+        // Switch to the appropriate mode
+        if (data.mode) {
+            this.uiController.switchMode(data.mode);
+        }
+        
+        // Load image if present
+        if (data.sheetMusicImage && this.imageManager) {
+            // Set the image directly
+            this.imageManager.currentImage = data.sheetMusicImage;
+            if (this.imageManager.onImageLoadCallback) {
+                this.imageManager.onImageLoadCallback(data.sheetMusicImage);
+            }
+        }
+        
+        // Set metronome settings if in metronome mode
+        if (data.mode === 'metronome' && this.metronome) {
+            if (data.tempo || data.bpm) {
+                this.metronome.setBpm(data.tempo || data.bpm);
+            }
+            if (data.timeSignature) {
+                // Parse time signature like "4/4" to beats per measure
+                const [beats] = data.timeSignature.split('/').map(Number);
+                if (beats) {
+                    this.metronome.setTimeSignature(beats);
+                }
+            }
+        }
+        
+        // Show notification
+        this.uiController.showNotification('Practice session loaded successfully', 'success');
     }
 
     getComponentsState() {

@@ -14,7 +14,6 @@ export class Footer {
 
 
         return `
-            <footer class="app-footer">
                 <div class="footer-container">
                     <div class="footer-left">
                         <div class="footer-branding">
@@ -22,6 +21,16 @@ export class Footer {
                             <span class="footer-version-badge" title="Build ${buildNumber} - ${new Date(buildDate).toLocaleDateString()}">
                                 v${version}
                             </span>
+                            <a href="https://coff.ee/guitar.practice.journal" 
+                               target="_blank" 
+                               rel="noopener noreferrer" 
+                               class="footer-coffee-link"
+                               id="footerCoffeeLink"
+                               style="margin-left: 1rem; display: inline-flex; align-items: center; gap: 0.25rem; color: var(--text-secondary); text-decoration: none; font-size: 0.875rem; transition: all 0.3s ease;"
+                               onmouseover="this.style.color='var(--primary)'"
+                               onmouseout="this.style.color='var(--text-secondary)'">
+                                ☕ Buy Me a Coffee
+                            </a>
                         </div>
                     </div>
                     
@@ -43,6 +52,10 @@ export class Footer {
                                 <a href="#" class="footer-link" data-action="shortcuts">Keyboard Shortcuts</a>
                                 <a href="https://github.com/yourusername/guitar-practice-journal/issues" target="_blank" rel="noopener">Report an Issue</a>
                                 <a href="#" class="footer-link" data-action="contact">Contact Us</a>
+                                <div class="footer-divider" style="margin: 0.5rem 0; border-top: 1px solid var(--border);"></div>
+                                <a href="https://coff.ee/guitar.practice.journal" target="_blank" rel="noopener noreferrer" class="footer-link coffee-link">
+                                    <i class="icon">☕</i> Buy Me a Coffee
+                                </a>
                             </div>
                         </div>
                         
@@ -74,7 +87,6 @@ export class Footer {
                     
                     <!-- REMOVED THE LOGOUT BUTTON FROM FOOTER -->
                 </div>
-            </footer>
         `;
     }
 
@@ -90,6 +102,36 @@ export class Footer {
                 this.handleFooterAction(action);
             });
         });
+        
+        // Add subtle pulse animation to coffee link
+        this.startCoffeePulse();
+    }
+    
+    startCoffeePulse() {
+        const coffeeLink = document.getElementById('footerCoffeeLink');
+        if (!coffeeLink) return;
+        
+        // Define the pulse animation
+        const pulseKeyframes = [
+            { opacity: 1, transform: 'scale(1)' },
+            { opacity: 0.8, transform: 'scale(1.05)' },
+            { opacity: 1, transform: 'scale(1)' }
+        ];
+        
+        // Run pulse every 60 seconds
+        const runPulse = () => {
+            coffeeLink.animate(pulseKeyframes, {
+                duration: 1000,
+                easing: 'ease-in-out'
+            });
+        };
+        
+        // Initial pulse after 60 seconds
+        this.pulseTimeout = setTimeout(() => {
+            runPulse();
+            // Then repeat every 60 seconds
+            this.pulseInterval = setInterval(runPulse, 60000);
+        }, 60000);
     }
 
     handleFooterAction(action) {
@@ -331,5 +373,15 @@ export class Footer {
 
     showNewsletterModal() {
         this.showPageModal('Newsletter', '<p>Newsletter signup coming soon...</p>');
+    }
+    
+    destroy() {
+        // Clean up pulse animation timers
+        if (this.pulseTimeout) {
+            clearTimeout(this.pulseTimeout);
+        }
+        if (this.pulseInterval) {
+            clearInterval(this.pulseInterval);
+        }
     }
 }

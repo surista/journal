@@ -160,7 +160,7 @@ export class GoalsTab {
 
         await this.loadGoals();
         this.attachEventListeners();
-        this.populateCategories();
+        await this.populateCategories();
     }
 
     // Fix for GoalsTab.js - attachEventListeners method
@@ -307,8 +307,8 @@ export class GoalsTab {
         });
 
         // Listen for session areas updates
-        window.addEventListener('sessionAreasUpdated', (e) => {
-            this.populateCategories();
+        window.addEventListener('sessionAreasUpdated', async (e) => {
+            await this.populateCategories();
         });
 
         // Add ESC key handler
@@ -480,7 +480,7 @@ export class GoalsTab {
         if (completionRateEl) completionRateEl.textContent = `${completionRate}%`;
     }
 
-    showGoalModal(goalId = null) {
+    async showGoalModal(goalId = null) {
 
         const modal = document.getElementById('goalModal');
         const modalTitle = document.getElementById('goalModalTitle');
@@ -493,7 +493,7 @@ export class GoalsTab {
         }
 
         // Populate categories before showing modal
-        this.populateCategories();
+        await this.populateCategories();
 
         // Force remove any conflicting styles
         modal.style.removeProperty('opacity');
@@ -825,40 +825,16 @@ export class GoalsTab {
         this.showNotification(message, 'error');
     }
 
-    getSessionAreas() {
-        // Same logic as in SettingsTab and PracticeForm
-        const stored = localStorage.getItem('sessionAreas');
-        if (stored) {
-            try {
-                return JSON.parse(stored);
-            } catch (e) {
-                return this.getDefaultSessionAreas();
-            }
-        }
-        return this.getDefaultSessionAreas();
+    async getSessionAreas() {
+        // Use storage service to get user-specific session areas
+        return await this.storageService.getSessionAreas();
     }
 
-    getDefaultSessionAreas() {
-        return [
-            'Scales',
-            'Chords',
-            'Arpeggios',
-            'Songs',
-            'Technique',
-            'Theory',
-            'Improvisation',
-            'Sight Reading',
-            'Ear Training',
-            'Rhythm',
-            'Audio Practice'
-        ];
-    }
-
-    populateCategories() {
+    async populateCategories() {
         const select = document.getElementById('goalCategory');
         if (!select) return;
 
-        const sessionAreas = this.getSessionAreas();
+        const sessionAreas = await this.getSessionAreas();
 
         select.innerHTML = `
             <option value="">Select category...</option>
@@ -869,7 +845,7 @@ export class GoalsTab {
 
     onActivate() {
         this.loadGoals();
-        this.populateCategories();
+        this.populateCategories().catch(console.error);
     }
 
     destroy() {

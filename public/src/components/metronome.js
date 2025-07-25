@@ -292,6 +292,10 @@ export class Metronome {
         this.updateBeatDisplay();
     }
 
+    getCurrentBPM() {
+        return this.bpm;
+    }
+
     async playBeat() {
         if (!this.audioReady) return;
 

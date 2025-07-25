@@ -90,7 +90,10 @@ export class YouTubePlayer {
             await this.createPlayer(videoId);
         } else {
             this.player.cueVideoById(videoId);
-            this.onPlayerReady();
+            // Wait a bit for the video to be cued before calling onPlayerReady
+            setTimeout(() => {
+                this.onPlayerReady();
+            }, 100);
         }
         
         return true;

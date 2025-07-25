@@ -107,6 +107,54 @@ export class ImageManager {
         }
     }
 
+    async generateThumbnail(imageData, maxWidth = 200, maxHeight = 200) {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            
+            img.onload = () => {
+                // Calculate aspect ratio
+                const aspectRatio = img.width / img.height;
+                let width, height;
+                
+                if (img.width > img.height) {
+                    width = Math.min(img.width, maxWidth);
+                    height = width / aspectRatio;
+                } else {
+                    height = Math.min(img.height, maxHeight);
+                    width = height * aspectRatio;
+                }
+                
+                // Create canvas for thumbnail
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                
+                const ctx = canvas.getContext('2d');
+                
+                // Use better quality settings for thumbnail
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
+                
+                // Draw scaled image
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                // Convert to base64 with reduced quality to save space
+                const thumbnail = canvas.toDataURL('image/jpeg', 0.7);
+                resolve(thumbnail);
+            };
+            
+            img.onerror = () => {
+                reject(new Error('Failed to load image for thumbnail generation'));
+            };
+            
+            img.src = imageData;
+        });
+    }
+
+    getCurrentImage() {
+        return this.currentImage;
+    }
+
     showLightbox(imageSrc) {
         if (!imageSrc) return;
 
