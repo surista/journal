@@ -16,14 +16,16 @@ export class DrillsPage {
             sortBy: 'title'
         };
         this.debounceTimer = null;
+        this.container = null;
     }
 
     async init() {
         console.log('Initializing Drills Page...');
         await this.loadDrills();
         console.log('Loaded drills:', this.drills.length);
-        this.render();
-        this.attachEventListeners();
+        if (this.container) {
+            this.render(this.container);
+        }
     }
 
     async loadDrills() {
@@ -31,12 +33,15 @@ export class DrillsPage {
         this.filteredDrills = [...this.drills];
     }
 
-    render() {
+    async render(container) {
+        this.container = container;
+        await this.loadDrills();
+        
         const content = `
             <div class="drills-page">
-                <div class="page-header">
-                    <h1>Practice Drills</h1>
-                    <p class="subtitle">Structured exercises to improve your guitar skills</p>
+                <div class="drills-header">
+                    <h2>Practice Drills</h2>
+                    <div class="header-subtitle">Structured exercises to improve your guitar skills</div>
                 </div>
 
                 <div class="drills-controls">
@@ -107,11 +112,8 @@ export class DrillsPage {
             </div>
         `;
 
-        // Check if we're in a tab container or standalone
-        const container = document.getElementById('drillsTab') || document.getElementById('app');
-        if (container) {
-            container.innerHTML = content;
-        }
+        this.container.innerHTML = content;
+        this.attachEventListeners();
     }
 
     renderDrills() {
