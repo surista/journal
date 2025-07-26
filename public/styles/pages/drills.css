@@ -6,12 +6,16 @@
     max-width: 1200px !important;
     margin: 0 auto !important;
     width: 100%;
+    min-height: calc(100vh - 200px); /* Account for header and navigation */
+    display: flex;
+    align-items: flex-start;
 }
 
 .drills-page {
     padding: var(--space-xl, 2rem) var(--space-lg, 1.5rem);
     width: 100%;
     box-sizing: border-box;
+    min-height: 100%;
 }
 
 .drills-header {
@@ -167,8 +171,9 @@
 .drills-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 20px;
-    margin-top: 20px;
+    gap: var(--space-lg, 1.5rem);
+    margin-top: var(--space-lg, 1.5rem);
+    width: 100%;
 }
 
 /* Drill Card */
@@ -345,20 +350,30 @@
 .no-drills {
     grid-column: 1 / -1;
     text-align: center;
-    padding: 60px 20px;
+    padding: 80px 20px;
     color: var(--text-secondary, #9ca3af);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
 }
 
 .no-drills svg {
-    margin-bottom: 20px;
+    margin-bottom: var(--space-lg, 1.5rem);
     opacity: 0.3;
     stroke: currentColor;
 }
 
 .no-drills h3 {
-    font-size: 1.5rem;
-    margin-bottom: 8px;
+    font-size: var(--text-xl, 1.25rem);
+    margin-bottom: var(--space-sm, 0.5rem);
     color: var(--text-primary, #f9fafb);
+}
+
+.no-drills p {
+    margin: 0;
+    font-size: var(--text-base, 1rem);
 }
 
 /* Drill Details Modal */

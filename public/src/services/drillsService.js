@@ -190,6 +190,7 @@ class DrillsService {
     async saveToLocalStorage() {
         try {
             localStorage.setItem('guitarDrills', JSON.stringify(this.drills));
+            console.log('DrillsService: Saved to localStorage:', this.drills.length, 'drills');
         } catch (error) {
             console.error('Failed to save drills to localStorage:', error);
         }
