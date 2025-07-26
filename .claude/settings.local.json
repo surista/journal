@@ -45,7 +45,8 @@
       "Bash(curl:*)",
       "Bash(.check-emulators.bat)",
       "Bash(cmd:*)",
-      "Bash(check-emulators.bat)"
+      "Bash(check-emulators.bat)",
+      "Bash(npm:*)"
     ],
     "deny": []
   }
