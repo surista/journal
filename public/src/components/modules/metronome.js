@@ -2,28 +2,64 @@
 import { AudioService } from '../../services/audioService.js';
 
 export class MetronomeController {
-    constructor(audioService) {
+    constructor(audioService, storageService = null) {
         this.audioService = audioService || new AudioService();
+        this.storageService = storageService;
         this.audioContext = null;
         this.state = {
             bpm: 80,
             isPlaying: false,
             timeSignature: 4,
             accentPattern: [true, false, false, false],
-            sound: localStorage.getItem('defaultMetronomeSound') || 'click',
+            sound: 'click', // Default until loaded
             currentBeat: 0,
             interval: null,
             audioReady: false,
             tempoProgression: { enabled: false },
             beatDropout: { enabled: false }
         };
-        
+
         this.nextBeatTime = 0;
         this.beatDuration = 60 / this.state.bpm;
         this.lookAheadTime = 0.1; // How far ahead to schedule (in seconds)
         this.scheduleInterval = 25; // How often to call scheduler (in ms)
         this.timerID = null;
         this.beatCallbacks = [];
+
+        // Load preferences
+        this.loadPreferences();
+    }
+
+    async loadPreferences() {
+        try {
+            if (this.storageService) {
+                const prefs = await this.storageService.getMetronomePreferences();
+                this.state.sound = prefs.defaultSound || 'click';
+            } else {
+                // Fallback to localStorage
+                this.state.sound = localStorage.getItem('defaultMetronomeSound') || 'click';
+            }
+        } catch (error) {
+            console.error('Error loading metronome preferences:', error);
+            this.state.sound = 'click';
+        }
+    }
+
+    async savePreferences() {
+        try {
+            if (this.storageService) {
+                await this.storageService.saveMetronomePreferences({
+                    defaultSound: this.state.sound
+                });
+            } else {
+                // Fallback to localStorage
+                localStorage.setItem('defaultMetronomeSound', this.state.sound);
+            }
+        } catch (error) {
+            console.error('Error saving metronome preferences:', error);
+            // Fallback to localStorage on error
+            localStorage.setItem('defaultMetronomeSound', this.state.sound);
+        }
     }
 
     initialize() {
@@ -35,13 +71,13 @@ export class MetronomeController {
         // The actual AudioContext will be created on first user interaction
         this.state.audioReady = !!this.audioService;
     }
-    
+
     onBeat(callback) {
         if (typeof callback === 'function') {
             this.beatCallbacks.push(callback);
         }
     }
-    
+
     removeOnBeat(callback) {
         const index = this.beatCallbacks.indexOf(callback);
         if (index > -1) {
@@ -52,30 +88,30 @@ export class MetronomeController {
     setBpm(newBpm) {
         console.log('Metronome setBpm called with:', newBpm, 'current BPM:', this.state.bpm);
         newBpm = Math.max(30, Math.min(300, newBpm));
-        
+
         this.state.bpm = newBpm;
         this.beatDuration = 60 / newBpm;
         console.log('Metronome BPM set to:', this.state.bpm, 'beatDuration:', this.beatDuration);
-        
+
         // Note: We don't need to track currentBpm separately
         // We use this.state.bpm directly for progression calculations
-        
+
         // Update UI to reflect new BPM
         if (this.onBpmChange) {
             this.onBpmChange(newBpm);
         }
-        
+
         // Don't restart - just update the beat duration
         // The scheduler will pick up the new duration on the next beat
     }
 
     setTimeSignature(beats) {
         this.state.timeSignature = beats;
-        
+
         // Update accent pattern
         this.state.accentPattern = new Array(beats).fill(false);
         this.state.accentPattern[0] = true;
-        
+
         // Reset current beat
         this.state.currentBeat = 0;
     }
@@ -86,8 +122,9 @@ export class MetronomeController {
         }
     }
 
-    setSound(sound) {
+    async setSound(sound) {
         this.state.sound = sound;
+        await this.savePreferences();
     }
 
     async start(timerCallback) {
@@ -97,7 +134,7 @@ export class MetronomeController {
         }
 
         if (this.state.isPlaying) return;
-        
+
         // Ensure audio context is initialized
         this.audioContext = await this.audioService.getAudioContext();
         if (!this.audioContext) {
@@ -107,7 +144,7 @@ export class MetronomeController {
 
         this.state.isPlaying = true;
         this.state.currentBeat = 0;
-        
+
         // Reset tempo progression
         if (this.state.tempoProgression?.enabled) {
             this.state.tempoProgression.currentMeasure = 0;
@@ -117,12 +154,12 @@ export class MetronomeController {
 
         // Initialize timing
         this.nextBeatTime = this.audioContext.currentTime;
-        
+
         // Start the timer if callback provided
         if (timerCallback) {
             timerCallback();
         }
-        
+
         // Start scheduler
         this.scheduler();
         this.timerID = setInterval(() => this.scheduler(), this.scheduleInterval);
@@ -144,16 +181,16 @@ export class MetronomeController {
 
     scheduler() {
         if (!this.audioService || !this.audioContext) return;
-        
+
         const audioContext = this.audioContext;
-        
+
         while (this.nextBeatTime < audioContext.currentTime + this.lookAheadTime) {
             this.scheduleBeat(this.nextBeatTime);
             this.nextBeatTime += this.beatDuration;
-            
+
             // Update beat counter
             this.state.currentBeat = (this.state.currentBeat + 1) % this.state.timeSignature;
-            
+
             // Handle tempo progression
             if (this.state.currentBeat === 0 && this.state.tempoProgression?.enabled) {
                 this.handleTempoProgression();
@@ -163,22 +200,22 @@ export class MetronomeController {
 
     scheduleBeat(time) {
         const isAccent = this.state.accentPattern[this.state.currentBeat];
-        
+
         // Handle beat dropout
         if (this.state.beatDropout?.enabled) {
             if (this.shouldDropBeat()) return;
         }
-        
+
         // Play the beat
         this.playBeatSound(time, isAccent);
-        
+
         // Trigger beat callbacks
         if (this.audioContext) {
             const currentTime = this.audioContext.currentTime;
             const delay = Math.max(0, (time - currentTime) * 1000); // Convert to milliseconds
-            
+
             setTimeout(() => {
-                this.beatCallbacks.forEach(callback => {
+                this.beatCallbacks.forEach((callback) => {
                     callback(this.state.currentBeat, isAccent);
                 });
             }, delay);
@@ -187,47 +224,47 @@ export class MetronomeController {
 
     playBeatSound(time, isAccent) {
         if (!this.audioContext) return;
-        
+
         const audioContext = this.audioContext;
         const oscillator = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
-        
+
         oscillator.connect(gainNode);
         gainNode.connect(audioContext.destination);
-        
+
         const frequency = this.getFrequencyForSound(this.state.sound, isAccent);
         oscillator.frequency.value = frequency;
-        
+
         // Set oscillator type based on sound
         oscillator.type = this.getOscillatorType(this.state.sound);
-        
+
         // Volume envelope
         const volume = isAccent ? 0.3 : 0.15;
         gainNode.gain.setValueAtTime(volume, time);
         gainNode.gain.exponentialRampToValueAtTime(0.001, time + 0.05);
-        
+
         oscillator.start(time);
         oscillator.stop(time + 0.05);
     }
 
     shouldDropBeat() {
         if (!this.state.beatDropout) return false;
-        
+
         if (this.state.beatDropout.mode === 'random') {
             return Math.random() < (this.state.beatDropout.dropoutProbability || 0.3);
         } else if (this.state.beatDropout.mode === 'pattern') {
             return this.state.beatDropout.pattern?.includes(this.state.currentBeat);
         }
-        
+
         return false;
     }
 
     handleTempoProgression() {
         const prog = this.state.tempoProgression;
         if (!prog || !prog.enabled) return;
-        
+
         prog.currentMeasure++;
-        
+
         // Notify UI of measure progress
         if (this.onProgressionUpdate) {
             this.onProgressionUpdate({
@@ -237,15 +274,15 @@ export class MetronomeController {
                 targetBpm: prog.endBpm
             });
         }
-        
+
         if (prog.currentMeasure >= prog.measuresPerStep) {
             prog.currentMeasure = 0;
             const currentBpm = this.state.bpm;
             const newBpm = Math.min(currentBpm + prog.increment, prog.endBpm);
-            
+
             if (newBpm !== currentBpm) {
                 this.setBpm(newBpm);
-                
+
                 // Notify UI of BPM increase
                 if (this.onBpmIncrease) {
                     this.onBpmIncrease({
@@ -273,7 +310,7 @@ export class MetronomeController {
             triangle: isAccent ? 4000 : 3000,
             shaker: isAccent ? 10000 : 8000
         };
-        
+
         return frequencies[sound] || frequencies.click;
     }
 
@@ -292,7 +329,7 @@ export class MetronomeController {
             triangle: 'sine',
             shaker: 'sawtooth'
         };
-        
+
         return types[sound] || 'square';
     }
 
@@ -305,7 +342,7 @@ export class MetronomeController {
             Object.assign(this.state, newState);
         }
     }
-    
+
     // Set callbacks for UI updates
     setCallbacks(callbacks) {
         if (callbacks.onBpmChange) {

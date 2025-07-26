@@ -27,20 +27,20 @@ export class AudioPlayer {
             this.audioService = audioServiceOrContainer;
             this.storageService = storageServiceOrAudioService || this.ensureStorageService();
         }
-        
+
         // Initialize modules
         this.audioCore = new AudioCore(this.audioService);
-        this.loopController = new LoopController();
+        this.loopController = new LoopController(this.storageService);
         this.pitchTempoController = new PitchTempoController();
         this.waveformController = new WaveformController();
         this.uiControls = new UIControls();
         this.sessionManager = new SessionManager(this);
-        
+
         // State
         this.isInitialized = false;
         this.container = null;
         this.currentFileName = null;
-        
+
         // YouTube support
         this.youtubePlayer = null;
         this.isYouTubeMode = false;
@@ -48,13 +48,13 @@ export class AudioPlayer {
         this.youtubeVideoTitle = null;
         this.youtubeVideoUrl = null;
         this.youtubeUpdateInterval = null;
-        
+
         // Timer sync
         this.syncWithTimer = true;
-        
+
         // Update interval for time display
         this.updateInterval = null;
-        
+
         // Bind methods
         this.handlePlayPause = this.handlePlayPause.bind(this);
         this.handleStop = this.handleStop.bind(this);
@@ -94,19 +94,19 @@ export class AudioPlayer {
 
     async init() {
         if (this.isInitialized) return;
-        
+
         try {
             // Ensure storageService is available (for backward compatibility)
             if (!this.storageService) {
                 this.storageService = this.ensureStorageService();
             }
-            
+
             // Initialize audio core
             await this.audioCore.initialize();
-            
+
             // Set up module connections
             this.setupModuleConnections();
-            
+
             this.isInitialized = true;
             return true;
         } catch (error) {
@@ -122,35 +122,35 @@ export class AudioPlayer {
             this.uiControls.updateLoopInfo(state.loopStart, state.loopEnd, state.isLooping);
             this.waveformController.updateLoopRegion(state.loopStart, state.loopEnd);
         };
-        
+
         this.loopController.onLoopComplete = (loopCount) => {
             this.uiControls.updateLoopCount(loopCount);
         };
-        
+
         this.loopController.onLoopsLoaded = (savedLoops) => {
             // This will be handled by the unified practice component
             // which will update the saved loops UI
         };
-        
+
         this.loopController.onTempoChange = (newTempo) => {
             this.pitchTempoController.setSpeed(newTempo);
             this.audioCore.setPlaybackRate(newTempo);
         };
-        
+
         // Connect pitch/tempo controller callbacks
         this.pitchTempoController.onSpeedChange = (speed) => {
             this.audioCore.setPlaybackRate(speed);
             this.uiControls.updateSpeedDisplay(Math.round(speed * 100));
         };
-        
+
         this.pitchTempoController.onPitchChange = (pitch) => {
             this.audioCore.setPitchShift(pitch);
             this.uiControls.updatePitchDisplay(pitch);
         };
-        
+
         // Connect waveform controller callbacks
         this.waveformController.onSeek = this.handleSeek.bind(this);
-        
+
         // Connect UI callbacks
         console.log('Setting up UI callbacks, handleLoopSave exists:', !!this.handleLoopSave);
         this.uiControls.setCallbacks({
@@ -168,16 +168,16 @@ export class AudioPlayer {
 
     async render(container) {
         this.container = container;
-        
+
         // Initialize UI
         this.uiControls.initialize(container);
-        
+
         // Initialize waveform
         const canvas = this.uiControls.getWaveformCanvas();
         if (canvas) {
             this.waveformController.initialize(canvas);
         }
-        
+
         // Initialize if not done
         if (!this.isInitialized) {
             await this.init();
@@ -186,14 +186,14 @@ export class AudioPlayer {
 
     async loadAudioFile(file) {
         if (!file) return false;
-        
+
         try {
             this.uiControls.showLoading(true);
             this.uiControls.disable();
-            
+
             // Read file as array buffer
             const arrayBuffer = await file.arrayBuffer();
-            
+
             // Decode audio data
             // Note: At this point, user has already interacted with file input
             let audioContext;
@@ -201,31 +201,33 @@ export class AudioPlayer {
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
             } catch (error) {
                 console.error('Failed to create AudioContext:', error);
-                throw new Error('Cannot create AudioContext. Please ensure you have interacted with the page first.');
+                throw new Error(
+                    'Cannot create AudioContext. Please ensure you have interacted with the page first.'
+                );
             }
             const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-            
+
             // Load into audio core
             const success = await this.audioCore.loadAudioBuffer(audioBuffer, file.name);
-            
+
             if (success) {
                 this.currentFileName = file.name;
                 this.isYouTubeMode = false;
-                
+
                 // Set current file in loop controller and load saved loops
-                this.loopController.setCurrentFile(file.name);
-                
+                await this.loopController.setCurrentFile(file.name);
+
                 // Generate waveform
                 await this.waveformController.generateWaveform(audioBuffer);
-                
+
                 // Update UI
                 this.uiControls.updateTime(0, audioBuffer.duration);
                 this.uiControls.enable();
-                
+
                 // Start time update loop
                 this.startTimeUpdates();
             }
-            
+
             return success;
         } catch (error) {
             console.error('Error loading audio file:', error);
@@ -239,34 +241,33 @@ export class AudioPlayer {
         try {
             this.uiControls.showLoading(true);
             this.uiControls.disable();
-            
+
             // Ensure we're initialized
             if (!this.isInitialized) {
                 await this.init();
             }
-            
+
             // Load into audio core
             const success = await this.audioCore.loadAudioBuffer(audioBuffer, fileName);
-            
+
             if (success) {
                 this.currentFileName = fileName;
                 this.isYouTubeMode = false;
-                
+
                 // Set current file in loop controller and load saved loops
-                this.loopController.setCurrentFile(fileName);
-                
+                await this.loopController.setCurrentFile(fileName);
+
                 // Generate waveform
                 await this.waveformController.generateWaveform(audioBuffer);
-                
+
                 // Update UI
                 this.uiControls.updateTime(0, audioBuffer.duration);
                 this.uiControls.enable();
-                
+
                 // Start time update loop
                 this.startTimeUpdates();
-                
             }
-            
+
             return success;
         } catch (error) {
             console.error('Error loading audio buffer:', error);
@@ -281,21 +282,21 @@ export class AudioPlayer {
     async loadYouTubeVideo(url) {
         this.isYouTubeMode = true;
         this.youtubeVideoUrl = url;
-        
+
         // Extract video ID
         this.youtubeVideoId = this.extractYouTubeVideoId(url);
         if (!this.youtubeVideoId) {
             console.error('Invalid YouTube URL');
             return false;
         }
-        
+
         // Initialize YouTube player if needed
         if (!this.youtubePlayer) {
             await this.initializeYouTubePlayer();
         } else {
             this.youtubePlayer.loadVideoById(this.youtubeVideoId);
         }
-        
+
         return true;
     }
 
@@ -304,14 +305,14 @@ export class AudioPlayer {
             /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/,
             /youtube\.com\/shorts\/([^"&?\/\s]{11})/
         ];
-        
+
         for (const pattern of patterns) {
             const match = url.match(pattern);
             if (match && match[1]) {
                 return match[1];
             }
         }
-        
+
         return null;
     }
 
@@ -340,11 +341,11 @@ export class AudioPlayer {
         try {
             const success = await this.audioCore.play();
             console.log('AudioCore.play() returned:', success);
-            
+
             if (success) {
                 this.uiControls.updatePlayPauseButton(true);
                 this.startTimeUpdates();
-                
+
                 // Sync with timer if enabled
                 console.log('Checking timer sync, syncWithTimer:', this.syncWithTimer);
                 if (this.syncWithTimer) {
@@ -354,7 +355,7 @@ export class AudioPlayer {
                     console.log('Timer sync disabled, not starting timer');
                 }
             }
-            
+
             return success;
         } catch (error) {
             console.error('Error in play():', error);
@@ -366,7 +367,7 @@ export class AudioPlayer {
     pause() {
         this.audioCore.pause();
         this.uiControls.updatePlayPauseButton(false);
-        
+
         // Sync with timer if enabled
         if (this.syncWithTimer) {
             this.syncTimerStop();
@@ -379,7 +380,7 @@ export class AudioPlayer {
         this.uiControls.updatePlayPauseButton(false);
         this.uiControls.updateTime(0, this.audioCore.duration);
         this.waveformController.updateProgress(0);
-        
+
         // Sync with timer
         if (this.syncWithTimer) {
             this.syncTimerStop();
@@ -396,7 +397,7 @@ export class AudioPlayer {
     handleLoopStart() {
         const currentTime = this.audioCore.getCurrentTime();
         const success = this.loopController.setLoopStart(currentTime, this.audioCore.duration);
-        
+
         if (success) {
             // Auto-save disabled for now
             // this.sessionManager.saveCurrentSession();
@@ -406,7 +407,7 @@ export class AudioPlayer {
     handleLoopEnd() {
         const currentTime = this.audioCore.getCurrentTime();
         const success = this.loopController.setLoopEnd(currentTime, this.audioCore.duration);
-        
+
         if (success) {
             // Auto-save disabled for now
             // this.sessionManager.saveCurrentSession();
@@ -416,27 +417,27 @@ export class AudioPlayer {
     handleLoopToggle() {
         const isLooping = this.loopController.toggleLooping();
         // Auto-save disabled for now
-            // this.sessionManager.saveCurrentSession();
+        // this.sessionManager.saveCurrentSession();
         return isLooping;
     }
 
     handleLoopClear() {
         this.loopController.clearLoop();
         // Auto-save disabled for now
-            // this.sessionManager.saveCurrentSession();
+        // this.sessionManager.saveCurrentSession();
     }
 
     // Speed/Pitch control methods
     handleSpeedChange(speed) {
         this.pitchTempoController.setSpeed(speed);
         // Auto-save disabled for now
-            // this.sessionManager.saveCurrentSession();
+        // this.sessionManager.saveCurrentSession();
     }
 
     handlePitchChange(pitch) {
         this.pitchTempoController.setPitch(pitch);
         // Auto-save disabled for now
-            // this.sessionManager.saveCurrentSession();
+        // this.sessionManager.saveCurrentSession();
     }
 
     // Time update methods
@@ -444,7 +445,7 @@ export class AudioPlayer {
         if (this.updateInterval) {
             clearInterval(this.updateInterval);
         }
-        
+
         this.updateInterval = setInterval(this.updateTimeDisplay.bind(this), 50);
     }
 
@@ -457,14 +458,14 @@ export class AudioPlayer {
 
     updateTimeDisplay() {
         if (!this.audioCore.isPlaying) return;
-        
+
         const currentTime = this.audioCore.getCurrentTime();
         const duration = this.audioCore.duration;
-        
+
         // Update UI
         this.uiControls.updateTime(currentTime, duration);
         this.waveformController.updateProgress(currentTime);
-        
+
         // Check loop boundary
         const seekTo = this.loopController.checkLoopBoundary(currentTime);
         if (seekTo !== null) {
@@ -502,7 +503,7 @@ export class AudioPlayer {
             console.log('AudioPlayer found timer via registry:', timer);
             return timer;
         }
-        
+
         // Fallback to legacy patterns if registry not available
         if (window.currentTimer) {
             console.log('AudioPlayer found timer via window.currentTimer');
@@ -514,7 +515,7 @@ export class AudioPlayer {
             console.log('AudioPlayer found timer via window.unifiedPracticeMinimal.timer');
             return window.unifiedPracticeMinimal.timer;
         }
-        
+
         console.log('AudioPlayer could not find timer anywhere');
         return null;
     }
@@ -543,15 +544,15 @@ export class AudioPlayer {
 
     setState(state) {
         if (!state) return;
-        
+
         if (state.loops) {
             this.loopController.setState(state.loops);
         }
-        
+
         if (state.pitchTempo) {
             this.pitchTempoController.setState(state.pitchTempo);
         }
-        
+
         if (state.syncWithTimer !== undefined) {
             this.syncWithTimer = state.syncWithTimer;
         }
@@ -606,16 +607,16 @@ export class AudioPlayer {
     // Clean up
     destroy() {
         this.stopTimeUpdates();
-        
+
         if (this.youtubeUpdateInterval) {
             clearInterval(this.youtubeUpdateInterval);
         }
-        
+
         // Destroy all modules
         this.audioCore.destroy();
         this.waveformController.destroy();
         this.uiControls.destroy();
-        
+
         // Clear references
         this.container = null;
         this.youtubePlayer = null;

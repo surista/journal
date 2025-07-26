@@ -1,0 +1,466 @@
+/* Information Pages Styling */
+.about-page,
+.features-page,
+.whats-new-page,
+.roadmap-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+    color: var(--text-primary);
+}
+
+/* Ensure all text elements use theme colors */
+.about-page h1, .about-page h2, .about-page h3,
+.features-page h1, .features-page h2, .features-page h3,
+.whats-new-page h1, .whats-new-page h2, .whats-new-page h3,
+.roadmap-page h1, .roadmap-page h2, .roadmap-page h3 {
+    color: var(--text-primary);
+}
+
+.about-page p, .features-page p, 
+.whats-new-page p, .roadmap-page p {
+    color: var(--text-secondary);
+}
+
+.about-page .lead,
+.about-page blockquote {
+    color: var(--text-secondary);
+}
+
+/* Page header - visible in standalone, hidden in modal */
+.page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.page-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--primary);
+}
+
+.subtitle {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+}
+
+
+/* About Page Specific */
+.hero-section {
+    background: var(--bg-card);
+    padding: 2rem;
+    border-radius: var(--radius-xl);
+    margin-bottom: 3rem;
+}
+
+.lead {
+    font-size: 1.125rem;
+    line-height: 1.8;
+    color: var(--text-secondary);
+}
+
+.philosophy-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.philosophy-card {
+    background: var(--bg-card);
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    text-align: center;
+    transition: transform 0.2s ease;
+}
+
+.philosophy-card:hover {
+    transform: translateY(-4px);
+}
+
+.philosophy-card .icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.story-section,
+.mission-section,
+.team-section,
+.support-section {
+    margin-bottom: 3rem;
+}
+
+.mission-section blockquote {
+    font-size: 1.5rem;
+    font-style: italic;
+    text-align: center;
+    color: var(--primary);
+    margin: 2rem 0;
+    padding: 2rem;
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+}
+
+/* Features Page Specific */
+.features-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+.feature-category h2 {
+    color: var(--primary);
+    margin-bottom: 2rem;
+    font-size: 2rem;
+}
+
+.feature-list {
+    display: grid;
+    gap: 2rem;
+}
+
+.feature-item {
+    background: var(--bg-card);
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    user-select: text;
+    cursor: auto;
+}
+
+.feature-item h3 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.feature-item p {
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    line-height: 1.6;
+}
+
+.feature-item ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 1rem;
+}
+
+.feature-item li {
+    padding: 0.5rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+    color: var(--text-secondary);
+    list-style: none;
+}
+
+.feature-item li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: var(--success);
+}
+
+/* What's New Page Specific */
+.release-section {
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+}
+
+.version-badge {
+    display: inline-block;
+    background: var(--primary);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.release-highlights {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.highlight-card {
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--border);
+    position: relative;
+    overflow: hidden;
+}
+
+.highlight-card.new {
+    border-color: var(--success);
+}
+
+.highlight-card.improved {
+    border-color: var(--info);
+}
+
+.highlight-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+}
+
+.highlight-card.new::before {
+    background: var(--success);
+}
+
+.highlight-card.improved::before {
+    background: var(--info);
+}
+
+.highlight-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.detailed-changes h3 {
+    color: var(--primary);
+    margin: 2rem 0 1rem;
+}
+
+.detailed-changes ul {
+    list-style: none;
+    padding: 0;
+}
+
+.detailed-changes li {
+    padding: 0.5rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.detailed-changes li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: var(--primary);
+}
+
+/* Roadmap Page Specific */
+.roadmap-timeline {
+    position: relative;
+    padding-left: 2rem;
+}
+
+.roadmap-timeline::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--border);
+}
+
+.roadmap-section {
+    margin-bottom: 3rem;
+    position: relative;
+}
+
+.roadmap-section::before {
+    content: "";
+    position: absolute;
+    left: -2rem;
+    top: 2rem;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--bg-card);
+    border: 2px solid var(--primary);
+}
+
+.section-header {
+    margin-bottom: 2rem;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-full);
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.status-badge.in-progress {
+    background: var(--success);
+    color: white;
+}
+
+.status-badge.planned {
+    background: var(--info);
+    color: white;
+}
+
+.status-badge.future {
+    background: var(--warning);
+    color: white;
+}
+
+.roadmap-items {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.roadmap-item {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    transition: transform 0.2s ease;
+}
+
+.roadmap-item:hover {
+    transform: translateX(4px);
+}
+
+.item-icon {
+    font-size: 2.5rem;
+    flex-shrink: 0;
+}
+
+.item-content h3 {
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.features-list {
+    margin-top: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.feature-tag {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: var(--bg-input);
+    border-radius: var(--radius-full);
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+/* Common Elements */
+.cta-section,
+.feedback-section,
+.commitment-section {
+    text-align: center;
+    margin-top: 3rem;
+    padding: 2rem;
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+}
+
+/* Ensure text in sections has proper theme colors */
+.content-section h2,
+.philosophy-section h2,
+.story-section h2,
+.mission-section h2,
+.team-section h2,
+.support-section h2,
+.contact-section h2 {
+    color: var(--text-primary);
+}
+
+.tech-stack h3,
+.tech-stack strong {
+    color: var(--text-primary);
+}
+
+.tech-stack li,
+.support-section li {
+    color: var(--text-secondary);
+}
+
+/* Links in info pages */
+.contact-buttons a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* Legal content specific styling */
+.legal-content h3,
+.legal-content h4 {
+    color: var(--text-primary);
+}
+
+.legal-content p {
+    color: var(--text-secondary);
+}
+
+/* Shortcuts modal content */
+.shortcuts-modal h3 {
+    color: var(--text-primary);
+}
+
+.shortcuts-list .shortcut-item {
+    color: var(--text-primary);
+}
+
+.shortcuts-list .shortcut-item span {
+    color: var(--text-secondary);
+}
+
+.contact-buttons,
+.feedback-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+}
+
+.commitments {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.commitment {
+    text-align: center;
+}
+
+.commitment .icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .about-page,
+    .features-page,
+    .whats-new-page,
+    .roadmap-page {
+        padding: 1rem;
+    }
+
+    .page-header h1 {
+        font-size: 2rem;
+    }
+
+    .roadmap-timeline {
+        padding-left: 1rem;
+    }
+
+    .roadmap-item {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .contact-buttons,
+    .feedback-actions {
+        flex-direction: column;
+    }
+}

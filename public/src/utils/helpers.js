@@ -42,7 +42,7 @@ export function throttle(func, limit) {
         if (!inThrottle) {
             func.apply(this, args);
             inThrottle = true;
-            setTimeout(() => inThrottle = false, limit);
+            setTimeout(() => (inThrottle = false), limit);
         }
     };
 }
@@ -189,13 +189,13 @@ export const CompressionUtils = {
     // Minimal LZ-String implementation
     LZString: {
         compressToUTF16(input) {
-            if (input == null) return "";
-            return this._compress(input, 15) + " ";
+            if (input == null) return '';
+            return this._compress(input, 15) + ' ';
         },
 
         decompressFromUTF16(compressed) {
-            if (compressed == null) return "";
-            if (compressed == "") return null;
+            if (compressed == null) return '';
+            if (compressed == '') return null;
             return this._decompress(compressed.length, 16384, compressed);
         },
 
@@ -203,9 +203,9 @@ export const CompressionUtils = {
             let i, value;
             const context_dictionary = {};
             const context_dictionaryToCreate = {};
-            let context_c = "";
-            let context_wc = "";
-            let context_w = "";
+            let context_c = '';
+            let context_wc = '';
+            let context_w = '';
             let context_enlargeIn = 2;
             let context_dictSize = 3;
             let context_numBits = 2;
@@ -224,10 +224,12 @@ export const CompressionUtils = {
                 if (Object.prototype.hasOwnProperty.call(context_dictionary, context_wc)) {
                     context_w = context_wc;
                 } else {
-                    if (Object.prototype.hasOwnProperty.call(context_dictionaryToCreate, context_w)) {
+                    if (
+                        Object.prototype.hasOwnProperty.call(context_dictionaryToCreate, context_w)
+                    ) {
                         if (context_w.charCodeAt(0) < 256) {
                             for (i = 0; i < context_numBits; i++) {
-                                context_data_val = (context_data_val << 1);
+                                context_data_val = context_data_val << 1;
                                 if (context_data_position == bitsPerChar - 1) {
                                     context_data_position = 0;
                                     context_data.push(String.fromCharCode(context_data_val));
@@ -304,11 +306,11 @@ export const CompressionUtils = {
                 }
             }
 
-            if (context_w !== "") {
+            if (context_w !== '') {
                 if (Object.prototype.hasOwnProperty.call(context_dictionaryToCreate, context_w)) {
                     if (context_w.charCodeAt(0) < 256) {
                         for (i = 0; i < context_numBits; i++) {
-                            context_data_val = (context_data_val << 1);
+                            context_data_val = context_data_val << 1;
                             if (context_data_position == bitsPerChar - 1) {
                                 context_data_position = 0;
                                 context_data.push(String.fromCharCode(context_data_val));
@@ -396,7 +398,7 @@ export const CompressionUtils = {
             }
 
             while (true) {
-                context_data_val = (context_data_val << 1);
+                context_data_val = context_data_val << 1;
                 if (context_data_position == bitsPerChar - 1) {
                     context_data.push(String.fromCharCode(context_data_val));
                     break;
@@ -410,13 +412,13 @@ export const CompressionUtils = {
             let enlargeIn = 4;
             let dictSize = 4;
             let numBits = 3;
-            let entry = "";
+            let entry = '';
             const result = [];
             let i;
             let w;
             let bits, resb, maxpower, power;
             let c;
-            const data = {val: getNextValue.charCodeAt(0), position: resetValue, index: 1};
+            const data = { val: getNextValue.charCodeAt(0), position: resetValue, index: 1 };
 
             for (i = 0; i < 3; i += 1) {
                 dictionary[i] = i;
@@ -471,14 +473,14 @@ export const CompressionUtils = {
                     c = String.fromCharCode(bits);
                     break;
                 case 2:
-                    return "";
+                    return '';
             }
             dictionary[3] = c;
             w = c;
             result.push(c);
             while (true) {
                 if (data.index > length) {
-                    return "";
+                    return '';
                 }
 
                 bits = 0;
@@ -582,9 +584,9 @@ export const ArrayUtils = {
             return [...new Set(array)];
         }
 
-        const keyFn = typeof key === 'function' ? key : item => item[key];
+        const keyFn = typeof key === 'function' ? key : (item) => item[key];
         const seen = new Set();
-        return array.filter(item => {
+        return array.filter((item) => {
             const k = keyFn(item);
             if (seen.has(k)) return false;
             seen.add(k);
@@ -598,7 +600,7 @@ export const ArrayUtils = {
      * @param {Function|string} key - Key function or property name
      */
     groupBy(array, key) {
-        const keyFn = typeof key === 'function' ? key : item => item[key];
+        const keyFn = typeof key === 'function' ? key : (item) => item[key];
         return array.reduce((groups, item) => {
             const k = keyFn(item);
             (groups[k] = groups[k] || []).push(item);
@@ -635,7 +637,9 @@ export const StorageUtils = {
                 quota: estimate.quota || 0,
                 usageInMB: ((estimate.usage || 0) / 1024 / 1024).toFixed(2),
                 quotaInMB: ((estimate.quota || 0) / 1024 / 1024).toFixed(2),
-                percentUsed: estimate.quota ? ((estimate.usage / estimate.quota) * 100).toFixed(2) : 0
+                percentUsed: estimate.quota
+                    ? ((estimate.usage / estimate.quota) * 100).toFixed(2)
+                    : 0
             };
         }
         return null;
@@ -717,7 +721,7 @@ export const PerformanceUtils = {
                     callback(entry);
                 }
             });
-            observer.observe({entryTypes: ['measure', 'navigation']});
+            observer.observe({ entryTypes: ['measure', 'navigation'] });
             return observer;
         }
         return null;

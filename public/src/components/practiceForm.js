@@ -1,6 +1,6 @@
 // Practice Form Component - Fixed with proper form synchronization
-import {debounce, TimeUtils} from '../utils/helpers.js';
-import {notificationManager} from '../services/notificationManager.js';
+import { debounce, TimeUtils } from '../utils/helpers.js';
+import { notificationManager } from '../services/notificationManager.js';
 import { sanitizeInput, escapeHtml, createElement, setTextContent } from '../utils/sanitizer.js';
 
 export class PracticeForm {
@@ -16,7 +16,7 @@ export class PracticeForm {
         this.currentYouTubeInfo = null; // Track YouTube video info
         this.currentMediaType = 'file'; // 'file' or 'youtube'
         this.isSubmitting = false; // Add this flag to prevent duplicate submissions
-        
+
         // Listen for session areas updates from Settings
         window.addEventListener('sessionAreasUpdated', async () => {
             await this.updatePracticeAreaOptions();
@@ -204,7 +204,7 @@ export class PracticeForm {
                     }
 
                     if (isAudioPlaying) {
-                        notificationManager.error("Can't save while audio is playing");
+                        notificationManager.error('Can\'t save while audio is playing');
                         return;
                     }
 
@@ -238,7 +238,7 @@ export class PracticeForm {
 
         // Auto-save form state on input with debouncing
         const form_inputs = form.querySelectorAll('input, select, textarea');
-        form_inputs.forEach(input => {
+        form_inputs.forEach((input) => {
             input.addEventListener('input', () => {
                 this.debouncedSaveFormState();
                 this.updateAutoSaveStatus();
@@ -333,10 +333,13 @@ export class PracticeForm {
     updateAudioFileDisplay() {
         const fileNameInput = document.getElementById(`audioFileName${this.tabSuffix}`);
         const audioFileSection = document.getElementById(`audioFileSection${this.tabSuffix}`);
-        const audioFileNameDisplay = document.getElementById(`audioFileNameDisplay${this.tabSuffix}`);
+        const audioFileNameDisplay = document.getElementById(
+            `audioFileNameDisplay${this.tabSuffix}`
+        );
 
         // Only show audio file if we're in the Audio tab and have media loaded
-        const shouldShowAudio = this.tabSuffix === 'Audio' && (this.currentAudioFileName || this.currentYouTubeInfo);
+        const shouldShowAudio =
+            this.tabSuffix === 'Audio' && (this.currentAudioFileName || this.currentYouTubeInfo);
 
         if (shouldShowAudio) {
             let displayText = '';
@@ -374,12 +377,14 @@ export class PracticeForm {
         const formData = this.getFormData();
 
         // Dispatch event for other tabs to sync
-        window.dispatchEvent(new CustomEvent('practiceFormSync', {
-            detail: {
-                source: this.tabSuffix,
-                formData: formData
-            }
-        }));
+        window.dispatchEvent(
+            new CustomEvent('practiceFormSync', {
+                detail: {
+                    source: this.tabSuffix,
+                    formData: formData
+                }
+            })
+        );
     }
 
     syncFromFormData(formData) {
@@ -404,7 +409,10 @@ export class PracticeForm {
         }
 
         // Sync percentage mode
-        if (formData.isPercentageMode !== undefined && formData.isPercentageMode !== this.isPercentageMode) {
+        if (
+            formData.isPercentageMode !== undefined &&
+            formData.isPercentageMode !== this.isPercentageMode
+        ) {
             this.isPercentageMode = formData.isPercentageMode;
             this.updateTempoModeDisplay();
         }
@@ -425,7 +433,9 @@ export class PracticeForm {
         if (formData.audioFileName) {
             const fileNameInput = document.getElementById(`audioFileName${this.tabSuffix}`);
             const audioFileSection = document.getElementById(`audioFileSection${this.tabSuffix}`);
-            const audioFileNameDisplay = document.getElementById(`audioFileNameDisplay${this.tabSuffix}`);
+            const audioFileNameDisplay = document.getElementById(
+                `audioFileNameDisplay${this.tabSuffix}`
+            );
 
             if (fileNameInput) fileNameInput.value = formData.audioFileName;
             if (audioFileSection) audioFileSection.style.display = 'block';
@@ -482,7 +492,9 @@ export class PracticeForm {
         if (this.isPercentageMode) {
             if (tempoLabel) tempoLabel.textContent = 'TEMPO';
             if (tempoSuffix) tempoSuffix.textContent = 'TEMPO';
-            if (hintText) hintText.textContent = 'Percentage of original tempo (e.g., 75% = slower, 125% = faster)';
+            if (hintText)
+                hintText.textContent =
+                    'Percentage of original tempo (e.g., 75% = slower, 125% = faster)';
             if (formGroup) formGroup.classList.add('percentage-mode');
             if (tempoInput) tempoInput.placeholder = 'Enter percentage';
         } else {
@@ -627,7 +639,9 @@ export class PracticeForm {
                     practiceArea = customArea.trim();
                     // Validate length
                     if (practiceArea.length > 50) {
-                        notificationManager.error('Practice area name must be less than 50 characters!');
+                        notificationManager.error(
+                            'Practice area name must be less than 50 characters!'
+                        );
                         return;
                     }
                     // Add the custom area to storage for future use
@@ -678,7 +692,11 @@ export class PracticeForm {
 
             // Warn if session is very short
             if (duration < 60) {
-                if (!confirm('This practice session is less than 1 minute. Are you sure you want to save it?')) {
+                if (
+                    !confirm(
+                        'This practice session is less than 1 minute. Are you sure you want to save it?'
+                    )
+                ) {
                     return;
                 }
             }
@@ -714,7 +732,7 @@ export class PracticeForm {
                     }
                 }
             }
-            
+
             // Validate notes length
             if (notes && notes.length > 500) {
                 notificationManager.error('Notes must be less than 500 characters!');
@@ -738,7 +756,9 @@ export class PracticeForm {
             // Ensure YouTube URL is clean (defensive programming)
             if (practiceEntry.youtubeUrl && practiceEntry.youtubeUrl.includes('youtube.com')) {
                 // Extract just the YouTube URL if it somehow got concatenated
-                const match = practiceEntry.youtubeUrl.match(/https:\/\/www\.youtube\.com\/watch\?v=[^&]+/);
+                const match = practiceEntry.youtubeUrl.match(
+                    /https:\/\/www\.youtube\.com\/watch\?v=[^&]+/
+                );
                 if (match) {
                     practiceEntry.youtubeUrl = match[0];
                 }
@@ -772,21 +792,24 @@ export class PracticeForm {
             this.clearFormState();
 
             const minutes = Math.floor(duration / 60);
-            notificationManager.success(`Saved ${minutes} minute${minutes !== 1 ? 's' : ''} practice session - rock on! 🎸✨`);
+            notificationManager.success(
+                `Saved ${minutes} minute${minutes !== 1 ? 's' : ''} practice session - rock on! 🎸✨`
+            );
 
             // Show confetti animation
             this.showConfetti();
 
             // Emit event for other components to update
-            window.dispatchEvent(new CustomEvent('practiceSessionSaved', {
-                detail: practiceEntry
-            }));
+            window.dispatchEvent(
+                new CustomEvent('practiceSessionSaved', {
+                    detail: practiceEntry
+                })
+            );
 
             // Close the practice form after a short delay
             setTimeout(() => {
                 this.closeForm();
             }, 1500); // Give time for confetti animation
-
         } catch (error) {
             console.error('Error saving practice session:', error);
             notificationManager.error('Failed to save practice session. Please try again.');
@@ -857,7 +880,7 @@ export class PracticeForm {
         try {
             // Use storage service to add the area
             const success = await this.storageService.addSessionArea(area);
-            
+
             if (success) {
                 // Update the select options
                 await this.updatePracticeAreaOptions();
@@ -882,18 +905,18 @@ export class PracticeForm {
 
         // Rebuild options - clear and rebuild safely
         select.innerHTML = ''; // Clear existing options
-        
+
         // Add empty option
         const emptyOption = createElement('option', 'Select practice area...', { value: '' });
         select.appendChild(emptyOption);
-        
+
         // Add all session areas with proper escaping
-        sessionAreas.forEach(area => {
+        sessionAreas.forEach((area) => {
             const option = createElement('option', '', { value: area });
             setTextContent(option, area); // Safely set text content
             select.appendChild(option);
         });
-        
+
         // Add the custom option
         const customOption = createElement('option', '+ Add Custom Area...', { value: 'custom' });
         select.appendChild(customOption);
@@ -1018,7 +1041,7 @@ export class PracticeForm {
             if (audioInfo) {
                 // Determine if it's a file or YouTube
                 if (audioInfo.includes('youtube:') || audioInfo.includes('YouTube:')) {
-                    this.currentYouTubeInfo = {title: audioInfo};
+                    this.currentYouTubeInfo = { title: audioInfo };
                     this.currentMediaType = 'youtube';
                     this.currentAudioFileName = '';
                 } else {

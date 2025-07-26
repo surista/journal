@@ -1,86 +1,86 @@
 /* Cotton Candy Theme - Sweet pink and blue pastels */
 
-[data-theme="cotton-candy"] {
-    /* Primary Colors - Pink and baby blue */
-    --primary: #FFB6D9;
-    --primary-dark: #FFA0CC;
-    --primary-light: #FFCCE5;
-    --secondary: #A6D8FF;
-    --secondary-dark: #8CC8FF;
-    --secondary-light: #BFE5FF;
+[data-theme='cotton-candy'] {
+  /* Primary Colors - Pink and baby blue */
+  --primary: #ffb6d9;
+  --primary-dark: #ffa0cc;
+  --primary-light: #ffcce5;
+  --secondary: #a6d8ff;
+  --secondary-dark: #8cc8ff;
+  --secondary-light: #bfe5ff;
 
-    /* Status Colors - Candy-bright pastels */
-    --success: #B6FFB6;
-    --success-dark: #99FF99;
-    --success-light: #CCFFCC;
-    --danger: #FFB6B6;
-    --danger-dark: #FF9999;
-    --danger-light: #FFCCCC;
-    --warning: #FFDBB6;
-    --warning-dark: #FFCC99;
-    --warning-light: #FFE8CC;
-    --info: #B6E5FF;
-    --info-dark: #99D9FF;
-    --info-light: #CCF0FF;
+  /* Status Colors - Candy-bright pastels */
+  --success: #b6ffb6;
+  --success-dark: #99ff99;
+  --success-light: #ccffcc;
+  --danger: #ffb6b6;
+  --danger-dark: #ff9999;
+  --danger-light: #ffcccc;
+  --warning: #ffdbb6;
+  --warning-dark: #ffcc99;
+  --warning-light: #ffe8cc;
+  --info: #b6e5ff;
+  --info-dark: #99d9ff;
+  --info-light: #ccf0ff;
 
-    /* Light Backgrounds - Pink cotton */
-    --bg-dark: #FFF0F7;
-    --bg-darker: #FFE8F3;
-    --bg-primary: #FFFBFD;
-    --bg-secondary: #FFF5FA;
-    --bg-tertiary: #FFF0F7;
-    --bg-card: #FFFAFC;
-    --bg-card-hover: #FFF5FA;
-    --bg-input: #FFE0EC;
-    --bg-input-hover: #FFD6E7;
-    --bg-modal: rgba(255, 182, 217, 0.95);
-    --bg-sidebar: #FFEBF5;
-    --bg-overlay: rgba(255, 182, 217, 0.4);
+  /* Light Backgrounds - Pink cotton */
+  --bg-dark: #fff0f7;
+  --bg-darker: #ffe8f3;
+  --bg-primary: #fffbfd;
+  --bg-secondary: #fff5fa;
+  --bg-tertiary: #fff0f7;
+  --bg-card: #fffafc;
+  --bg-card-hover: #fff5fa;
+  --bg-input: #ffe0ec;
+  --bg-input-hover: #ffd6e7;
+  --bg-modal: rgba(255, 182, 217, 0.95);
+  --bg-sidebar: #ffebf5;
+  --bg-overlay: rgba(255, 182, 217, 0.4);
 
-    /* Text Colors */
-    --text-primary: #4C2D3F;
-    --text-secondary: #7C5B6F;
-    --text-tertiary: #9C7B8F;
-    --text-muted: #CCADBF;
-    --text-disabled: #DCC5D1;
+  /* Text Colors */
+  --text-primary: #4c2d3f;
+  --text-secondary: #7c5b6f;
+  --text-tertiary: #9c7b8f;
+  --text-muted: #ccadbf;
+  --text-disabled: #dcc5d1;
 
-    /* Borders - Soft pink tints */
-    --border: #FFE0EC;
-    --border-light: #FFF0F7;
-    --border-focus: #FFA0CC;
-    --border-error: #FFB6B6;
-    --border-success: #B6FFB6;
+  /* Borders - Soft pink tints */
+  --border: #ffe0ec;
+  --border-light: #fff0f7;
+  --border-focus: #ffa0cc;
+  --border-error: #ffb6b6;
+  --border-success: #b6ffb6;
 
-    /* Shadows - Pink cotton candy */
-    --shadow-sm: 0 1px 3px 0 rgba(255, 182, 217, 0.15);
-    --shadow-md: 0 4px 6px -1px rgba(255, 182, 217, 0.2);
-    --shadow-lg: 0 10px 15px -3px rgba(255, 182, 217, 0.25);
-    --shadow-xl: 0 20px 25px -5px rgba(255, 182, 217, 0.3);
-    --shadow-2xl: 0 25px 50px -12px rgba(255, 182, 217, 0.35);
-    --shadow-inner: inset 0 2px 4px 0 rgba(255, 182, 217, 0.1);
-    --shadow-glow: 0 0 20px rgba(255, 182, 217, 0.5);
+  /* Shadows - Pink cotton candy */
+  --shadow-sm: 0 1px 3px 0 rgba(255, 182, 217, 0.15);
+  --shadow-md: 0 4px 6px -1px rgba(255, 182, 217, 0.2);
+  --shadow-lg: 0 10px 15px -3px rgba(255, 182, 217, 0.25);
+  --shadow-xl: 0 20px 25px -5px rgba(255, 182, 217, 0.3);
+  --shadow-2xl: 0 25px 50px -12px rgba(255, 182, 217, 0.35);
+  --shadow-inner: inset 0 2px 4px 0 rgba(255, 182, 217, 0.1);
+  --shadow-glow: 0 0 20px rgba(255, 182, 217, 0.5);
 
-    /* Scrollbar */
-    --scrollbar-track: #FFF0F7;
-    --scrollbar-thumb: #FFB6D9;
-    --scrollbar-thumb-hover: #FFA0CC;
+  /* Scrollbar */
+  --scrollbar-track: #fff0f7;
+  --scrollbar-thumb: #ffb6d9;
+  --scrollbar-thumb-hover: #ffa0cc;
 
-    /* Code */
-    --code-bg: #FFF7FB;
-    --code-text: #7B5B6B;
-    --code-comment: #99CC99;
-    --code-string: #FF99B3;
-    --code-keyword: #99CCFF;
+  /* Code */
+  --code-bg: #fff7fb;
+  --code-text: #7b5b6b;
+  --code-comment: #99cc99;
+  --code-string: #ff99b3;
+  --code-keyword: #99ccff;
 
-    /* Gradients - Cotton candy swirls */
-    --gradient-primary: linear-gradient(135deg, #FFB6D9 0%, #A6D8FF 100%);
-    --gradient-success: linear-gradient(135deg, #B6FFB6 0%, #CCFFCC 100%);
-    --gradient-danger: linear-gradient(135deg, #FFB6B6 0%, #FFCCCC 100%);
-    --gradient-warning: linear-gradient(135deg, #FFDBB6 0%, #FFE8CC 100%);
-    --gradient-light: linear-gradient(135deg, #FFFFFF 0%, #FFF7FB 100%);
+  /* Gradients - Cotton candy swirls */
+  --gradient-primary: linear-gradient(135deg, #ffb6d9 0%, #a6d8ff 100%);
+  --gradient-success: linear-gradient(135deg, #b6ffb6 0%, #ccffcc 100%);
+  --gradient-danger: linear-gradient(135deg, #ffb6b6 0%, #ffcccc 100%);
+  --gradient-warning: linear-gradient(135deg, #ffdbb6 0%, #ffe8cc 100%);
+  --gradient-light: linear-gradient(135deg, #ffffff 0%, #fff7fb 100%);
 
-    /* Opacity values */
-    --opacity-hover: 0.95;
-    --opacity-disabled: 0.6;
-    --opacity-overlay: 0.5;
+  /* Opacity values */
+  --opacity-hover: 0.95;
+  --opacity-disabled: 0.6;
+  --opacity-overlay: 0.5;
 }

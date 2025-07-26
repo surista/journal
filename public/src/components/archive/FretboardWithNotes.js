@@ -4,17 +4,17 @@ class FretboardWithNotes {
     constructor() {
         this.strings = ['E', 'B', 'G', 'D', 'A', 'E']; // High to low
         this.noteNames = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-        
+
         // Open string notes (in semitones from C)
         this.openStringValues = {
-            'E': 4,      // E (high)
-            'B': 11,     // B
-            'G': 7,      // G
-            'D': 2,      // D
-            'A': 9,      // A
-            'E_low': 4   // E (low)
+            E: 4, // E (high)
+            B: 11, // B
+            G: 7, // G
+            D: 2, // D
+            A: 9, // A
+            E_low: 4 // E (low)
         };
-        
+
         // Scale formulas
         this.scaleFormulas = {
             major: [0, 2, 4, 5, 7, 9, 11],
@@ -22,7 +22,7 @@ class FretboardWithNotes {
             minor: [0, 2, 3, 5, 7, 8, 10],
             minorPentatonic: [0, 3, 5, 7, 10]
         };
-        
+
         // Scale configurations
         this.scales = {
             major: {
@@ -59,20 +59,20 @@ class FretboardWithNotes {
             }
         };
     }
-    
+
     generateDiagram(scaleType) {
         const scale = this.scales[scaleType];
         if (!scale) return '';
-        
+
         const scaleNotes = this.getScaleNotes(scale);
         const fretCount = scale.fretEnd - scale.fretStart + 1;
-        
+
         return `
             <div class="fretboard-notes">
                 <h3 class="fretboard-title">${scale.title}</h3>
                 <div class="fretboard-wrapper-notes">
                     <div class="string-labels-notes">
-                        ${this.strings.map(s => `<div class="string-label-note">${s}</div>`).join('')}
+                        ${this.strings.map((s) => `<div class="string-label-note">${s}</div>`).join('')}
                     </div>
                     <div class="fretboard-main">
                         <div class="fret-numbers-notes">
@@ -90,16 +90,16 @@ class FretboardWithNotes {
             </div>
         `;
     }
-    
+
     getScaleNotes(scale) {
         const notes = {};
-        scale.formula.forEach(interval => {
+        scale.formula.forEach((interval) => {
             const noteValue = (scale.rootValue + interval) % 12;
             notes[noteValue] = true;
         });
         return notes;
     }
-    
+
     generateFretNumbers(startFret, count) {
         let numbers = '';
         for (let i = 0; i < count; i++) {
@@ -108,41 +108,41 @@ class FretboardWithNotes {
         }
         return numbers;
     }
-    
+
     generateFretboard(scale, scaleNotes) {
         let fretboard = '';
         const fretCount = scale.fretEnd - scale.fretStart + 1;
-        
+
         // Generate each string
         this.strings.forEach((string, stringIndex) => {
             fretboard += '<div class="string-row">';
-            
+
             const stringKey = stringIndex === 5 ? 'E_low' : string;
             const openNoteValue = this.openStringValues[stringKey];
-            
+
             // Generate each fret
             for (let fret = scale.fretStart; fret <= scale.fretEnd; fret++) {
                 const noteValue = (openNoteValue + fret) % 12;
                 const noteName = this.noteNames[noteValue];
                 const isInScale = scaleNotes[noteValue];
                 const isRoot = noteName === scale.root;
-                
+
                 let cellClass = 'fret-cell-notes';
                 if (fret === 0) cellClass += ' open';
-                
+
                 fretboard += `<div class="${cellClass}">`;
-                
+
                 if (isInScale) {
                     const noteClass = isRoot ? 'note-circle root' : 'note-circle scale';
                     fretboard += `<div class="${noteClass}">${noteName}</div>`;
                 }
-                
+
                 fretboard += '</div>';
             }
-            
+
             fretboard += '</div>';
         });
-        
+
         return fretboard;
     }
 }

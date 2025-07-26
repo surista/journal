@@ -36,7 +36,11 @@
       "Bash(find:*)",
       "Bash(npm run deploy:*)",
       "Bash(sed:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(firebase use:*)",
+      "Bash(npm run lint)",
+      "Bash(npm install:*)",
+      "Bash(npm test:*)"
     ],
     "deny": []
   }

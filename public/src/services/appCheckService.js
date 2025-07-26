@@ -37,10 +37,10 @@ class AppCheckService {
 
             // Initialize App Check
             this.appCheck = firebase.appCheck(app);
-            
+
             // Activate App Check with the provider
             await this.appCheck.activate(provider, true); // true for automatic token refresh
-            
+
             // Get initial token with error handling
             try {
                 const tokenResponse = await this.appCheck.getToken();
@@ -52,20 +52,22 @@ class AppCheckService {
                 }
                 // Continue without token - app will still work
             }
-            
+
             // Set up token refresh listener
             this.setupTokenRefresh();
-            
+
             this.isInitialized = true;
             console.log('✅ Firebase App Check initialized (token may be pending)');
-            
+
             if (isDebugEnabled()) {
                 console.log('🔐 App Check setup complete');
             }
         } catch (error) {
             // Log the error but don't let it break the app
             if (error.message && error.message.includes('ReCAPTCHA')) {
-                console.warn('⚠️ App Check ReCAPTCHA initialization failed. This is normal if the domain is not configured in the ReCAPTCHA admin console.');
+                console.warn(
+                    '⚠️ App Check ReCAPTCHA initialization failed. This is normal if the domain is not configured in the ReCAPTCHA admin console.'
+                );
             } else {
                 console.warn('⚠️ App Check initialization error:', error.message);
             }
@@ -136,7 +138,7 @@ export const initializeAppCheck = async (app) => {
     // Production reCAPTCHA V3 site key
     // You should replace this with your actual reCAPTCHA V3 site key
     const RECAPTCHA_SITE_KEY = '6LcPxC0qAAAAAJZx_gQ1sLc6RmI4Z8YvHeVQX64A';
-    
+
     await appCheckService.initialize(app, RECAPTCHA_SITE_KEY);
 };
 

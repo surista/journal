@@ -9,7 +9,7 @@ export class KeyboardShortcutsManager {
 
     init() {
         document.addEventListener('keydown', this.handleKeyDown.bind(this));
-        
+
         // Register default shortcuts
         this.registerDefaults();
     }
@@ -21,13 +21,15 @@ export class KeyboardShortcutsManager {
         this.register('alt+3', () => this.switchTab('goals'), 'Switch to Goals tab');
         this.register('alt+4', () => this.switchTab('calendar'), 'Switch to Calendar tab');
         this.register('alt+5', () => this.switchTab('statistics'), 'Switch to Statistics tab');
-        
+
         // Practice controls
-        this.register('space', () => this.toggleTimer(), 'Start/Stop timer', { preventDefault: false });
+        this.register('space', () => this.toggleTimer(), 'Start/Stop timer', {
+            preventDefault: false
+        });
         this.register('m', () => this.toggleMetronome(), 'Toggle metronome');
         this.register('r', () => this.resetTimer(), 'Reset timer');
         this.register('s', () => this.saveSession(), 'Save practice session');
-        
+
         // Audio controls
         this.register('p', () => this.togglePlayPause(), 'Play/Pause audio');
         this.register('left', () => this.seekBackward(), 'Seek backward 5s');
@@ -37,20 +39,20 @@ export class KeyboardShortcutsManager {
         this.register('shift+up', () => this.increasePitch(), 'Increase pitch');
         this.register('shift+down', () => this.decreasePitch(), 'Decrease pitch');
         this.register('l', () => this.toggleLoop(), 'Toggle loop');
-        
+
         // Metronome controls
         this.register('[', () => this.decreaseBPM(), 'Decrease BPM');
         this.register(']', () => this.increaseBPM(), 'Increase BPM');
         this.register('shift+[', () => this.decreaseBPM(10), 'Decrease BPM by 10');
         this.register('shift+]', () => this.increaseBPM(10), 'Increase BPM by 10');
         this.register('shift+m', () => this.cycleMetronomeSound(), 'Cycle metronome sound');
-        
+
         // UI controls
         this.register('/', () => this.focusSearch(), 'Focus search');
         this.register('n', () => this.createNew(), 'Create new (context-dependent)');
         this.register('?', () => this.showHelp(), 'Show keyboard shortcuts');
         this.register('escape', () => this.escape(), 'Close modal/cancel');
-        
+
         // Theme
         this.register('ctrl+shift+d', () => this.toggleTheme(), 'Toggle dark mode');
     }
@@ -66,47 +68,44 @@ export class KeyboardShortcutsManager {
     }
 
     normalizeKeys(keys) {
-        return keys.toLowerCase()
-            .replace(/\s+/g, '')
-            .split('+')
-            .sort()
-            .join('+');
+        return keys.toLowerCase().replace(/\s+/g, '').split('+').sort().join('+');
     }
 
     handleKeyDown(e) {
         if (!this.enabled) return;
-        
+
         // Don't trigger shortcuts when typing in inputs (unless it's a global shortcut)
         const tagName = e.target.tagName.toLowerCase();
-        const isInput = ['input', 'textarea', 'select'].includes(tagName) || 
-                       e.target.contentEditable === 'true';
-        
+        const isInput =
+            ['input', 'textarea', 'select'].includes(tagName) ||
+            e.target.contentEditable === 'true';
+
         // Build key combination
         const keys = [];
         if (e.ctrlKey) keys.push('ctrl');
         if (e.altKey) keys.push('alt');
         if (e.shiftKey) keys.push('shift');
         if (e.metaKey) keys.push('meta');
-        
+
         const key = e.key.toLowerCase();
         if (!['control', 'alt', 'shift', 'meta'].includes(key)) {
             keys.push(key);
         }
-        
+
         const keyCombo = keys.sort().join('+');
         const shortcut = this.shortcuts.get(keyCombo);
-        
+
         if (shortcut) {
             // Allow some shortcuts in inputs (like Escape)
             const allowedInInputs = ['escape', 'ctrl+shift+d', '/'];
             if (isInput && !allowedInInputs.includes(shortcut.keys)) {
                 return;
             }
-            
+
             if (shortcut.preventDefault) {
                 e.preventDefault();
             }
-            
+
             shortcut.callback(e);
         }
     }
@@ -171,28 +170,41 @@ export class KeyboardShortcutsManager {
         // Try to find the unified practice component first
         const unifiedPractice = window.app?.currentPage?.tabs?.practice?.unifiedPractice;
         if (unifiedPractice && unifiedPractice.metronomeState) {
-            const sounds = ['click', 'beep', 'tick', 'wood', 'cowbell', 'clave', 'rim', 'hihat', 'kick', 'snare', 'triangle', 'shaker'];
+            const sounds = [
+                'click',
+                'beep',
+                'tick',
+                'wood',
+                'cowbell',
+                'clave',
+                'rim',
+                'hihat',
+                'kick',
+                'snare',
+                'triangle',
+                'shaker'
+            ];
             const currentIndex = sounds.indexOf(unifiedPractice.metronomeState.sound);
             const nextIndex = (currentIndex + 1) % sounds.length;
             const nextSound = sounds[nextIndex];
-            
+
             // Update the metronome state
             unifiedPractice.metronomeState.sound = nextSound;
-            
+
             // Update the dropdown
             const soundSelect = document.getElementById('soundSelect');
             if (soundSelect) {
                 soundSelect.value = nextSound;
             }
-            
+
             // Save to localStorage
             localStorage.setItem('defaultMetronomeSound', nextSound);
-            
+
             // Show notification
             this.showNotification(`Metronome sound: ${nextSound}`);
         }
     }
-    
+
     showNotification(message) {
         // Create a simple notification
         const notification = document.createElement('div');
@@ -211,9 +223,9 @@ export class KeyboardShortcutsManager {
             font-size: 14px;
             animation: slideIn 0.3s ease;
         `;
-        
+
         document.body.appendChild(notification);
-        
+
         setTimeout(() => {
             notification.style.animation = 'slideOut 0.3s ease';
             setTimeout(() => notification.remove(), 300);
@@ -312,13 +324,13 @@ export class KeyboardShortcutsManager {
     escape() {
         // Close any open modals
         const openModals = document.querySelectorAll('.modal[style*="display: flex"], .modal.show');
-        openModals.forEach(modal => {
+        openModals.forEach((modal) => {
             const closeBtn = modal.querySelector('.close-btn, [onclick*="hide"]');
             if (closeBtn) {
                 closeBtn.click();
             }
         });
-        
+
         // Clear any focused inputs
         if (document.activeElement && document.activeElement.blur) {
             document.activeElement.blur();
@@ -351,21 +363,39 @@ export class KeyboardShortcutsManager {
         modal.id = 'keyboardShortcutsModal';
         modal.className = 'modal';
         modal.style.cssText = 'display: flex; z-index: 10000;';
-        
+
         const shortcuts = Array.from(this.shortcuts.entries()).map(([key, info]) => ({
             keys: info.keys,
             description: info.description
         }));
-        
+
         // Group shortcuts by category
         const categories = {
-            'Navigation': shortcuts.filter(s => s.description.includes('Switch')),
-            'Practice': shortcuts.filter(s => s.description.includes('timer') || s.description.includes('session')),
-            'Audio': shortcuts.filter(s => s.description.includes('audio') || s.description.includes('tempo') || s.description.includes('pitch')),
-            'Metronome': shortcuts.filter(s => s.description.includes('metronome') || s.description.includes('BPM')),
-            'General': shortcuts.filter(s => !s.description.includes('Switch') && !s.description.includes('timer') && !s.description.includes('audio') && !s.description.includes('metronome') && !s.description.includes('BPM') && !s.description.includes('tempo') && !s.description.includes('pitch'))
+            Navigation: shortcuts.filter((s) => s.description.includes('Switch')),
+            Practice: shortcuts.filter(
+                (s) => s.description.includes('timer') || s.description.includes('session')
+            ),
+            Audio: shortcuts.filter(
+                (s) =>
+                    s.description.includes('audio') ||
+                    s.description.includes('tempo') ||
+                    s.description.includes('pitch')
+            ),
+            Metronome: shortcuts.filter(
+                (s) => s.description.includes('metronome') || s.description.includes('BPM')
+            ),
+            General: shortcuts.filter(
+                (s) =>
+                    !s.description.includes('Switch') &&
+                    !s.description.includes('timer') &&
+                    !s.description.includes('audio') &&
+                    !s.description.includes('metronome') &&
+                    !s.description.includes('BPM') &&
+                    !s.description.includes('tempo') &&
+                    !s.description.includes('pitch')
+            )
         };
-        
+
         modal.innerHTML = `
             <div class="modal-content" style="max-width: 600px;">
                 <div class="modal-header">
@@ -373,25 +403,35 @@ export class KeyboardShortcutsManager {
                     <button class="modal-close" onclick="this.closest('.modal').remove()">&times;</button>
                 </div>
                 <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
-                    ${Object.entries(categories).map(([category, items]) => items.length > 0 ? `
+                    ${Object.entries(categories)
+                        .map(([category, items]) =>
+                            items.length > 0
+                                ? `
                         <div style="margin-bottom: 2rem;">
                             <h3 style="color: var(--primary); margin-bottom: 1rem;">${category}</h3>
                             <div style="display: grid; gap: 0.5rem;">
-                                ${items.map(item => `
+                                ${items
+                                    .map(
+                                        (item) => `
                                     <div style="display: grid; grid-template-columns: 150px 1fr; gap: 1rem; padding: 0.5rem; border-radius: 4px; background: var(--bg-input);">
                                         <kbd style="font-family: monospace; background: var(--bg-card); padding: 0.25rem 0.5rem; border-radius: 4px; border: 1px solid var(--border); text-align: center;">
                                             ${item.keys.toUpperCase()}
                                         </kbd>
                                         <span>${item.description}</span>
                                     </div>
-                                `).join('')}
+                                `
+                                    )
+                                    .join('')}
                             </div>
                         </div>
-                    ` : '').join('')}
+                    `
+                                : ''
+                        )
+                        .join('')}
                 </div>
             </div>
         `;
-        
+
         document.body.appendChild(modal);
     }
 

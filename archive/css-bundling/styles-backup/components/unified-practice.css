@@ -1,0 +1,748 @@
+/* Unified Practice Component Styles */
+/* Modern, minimalist design with improved spacing and typography */
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Container */
+.unified-practice-minimal {
+    background: var(--bg-card);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 2.5rem;
+    width: 100%;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+    min-height: 500px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Timer Display Section - Sticky at top */
+.timer-display-section {
+    text-align: center;
+    margin-bottom: 2rem;
+    position: sticky;
+    top: 0;
+    background: var(--bg-card);
+    z-index: 100;
+    padding: 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    transition: box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+/* Add shadow when scrolled */
+.timer-display-section.scrolled {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.timer-display {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+    font-size: 3.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: 0.02em;
+    /* Fix fidgety digits */
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+    min-width: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 1rem;
+    line-height: 1;
+    height: auto;
+}
+
+/* Timer Controls */
+.timer-controls-row {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin: 0;
+}
+
+.timer-control-btn {
+    padding: 0.875rem 2.5rem;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.timer-control-btn.primary {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+}
+
+.timer-control-btn.primary:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+}
+
+.timer-control-btn.secondary {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.timer-control-btn.secondary:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Sync Checkbox */
+.timer-sync-row {
+    margin: 0;
+}
+
+.sync-checkbox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-size: 0.938rem;
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+}
+
+.sync-checkbox:hover {
+    opacity: 1;
+}
+
+.sync-checkbox input[type="checkbox"] {
+    cursor: pointer;
+}
+
+/* Save Session Button */
+.save-session-btn {
+    width: 100%;
+    padding: 1rem;
+    background: var(--success);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.save-session-btn:hover {
+    background: var(--success-hover);
+    transform: translateY(-1px);
+}
+
+/* Mode Tabs */
+.mode-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 2.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 4px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.mode-tab {
+    flex: 1;
+    padding: 0.875rem 1.25rem;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.938rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+    position: relative;
+}
+
+.mode-tab:hover {
+    color: var(--text-primary);
+}
+
+.mode-tab.active {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.tab-icon {
+    font-size: 1.25rem;
+}
+
+.tab-text {
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+}
+
+/* Mode Content Area */
+.mode-content-area {
+    min-height: 300px;
+}
+
+/* Mode Panels */
+.mode-panel {
+    display: none;
+    padding-top: 20px; /* Add space to prevent header overlap */
+}
+
+.mode-panel.active {
+    display: block;
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Metronome Panel */
+.metronome-minimal-container {
+    padding: 2rem;
+    background: transparent;
+    border-radius: 0;
+    border: none;
+    overflow: visible;
+}
+
+/* BPM Display - Centralized */
+.bpm-section {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.bpm-display-minimal {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    padding: 0;
+    background: transparent;
+    border-radius: 0;
+    border: none;
+}
+
+.bpm-value {
+    font-size: 3.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    letter-spacing: -0.02em;
+}
+
+.bpm-label {
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.6;
+}
+
+/* BPM Slider */
+.bpm-slider-minimal {
+    margin-bottom: 2.5rem;
+    padding: 0 2rem;
+}
+
+.slider-label {
+    display: block;
+    margin-bottom: 1rem;
+    color: var(--text-secondary);
+    font-size: 0.938rem;
+    font-weight: 500;
+    text-align: center;
+    opacity: 0.8;
+}
+
+.minimal-slider {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    outline: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.minimal-slider:hover {
+    opacity: 0.8;
+}
+
+.minimal-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    background: white;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease;
+}
+
+.minimal-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+.minimal-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: white;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease;
+}
+
+.minimal-slider::-moz-range-thumb:hover {
+    transform: scale(1.2);
+}
+
+/* Metronome Buttons - Evenly Spaced and Centered */
+.metronome-button-row {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+/* Metronome Labels Row */
+.metronome-labels-row {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 0.75rem;
+}
+
+.metronome-label {
+    flex: 1;
+    max-width: 140px;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.938rem;
+    font-weight: 500;
+    opacity: 0.8;
+}
+
+.metronome-btn {
+    flex: 1;
+    max-width: 140px;
+    padding: 0.875rem 1.5rem;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.938rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.metronome-btn.start {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+}
+
+.metronome-btn.start:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+}
+
+.metronome-btn.stop {
+    background: var(--danger);
+    color: white;
+}
+
+.metronome-btn.stop:hover {
+    background: var(--danger-hover);
+    transform: translateY(-1px);
+}
+
+.metronome-btn.tap {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.metronome-btn.tap:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Metronome Options - Side by Side */
+.metronome-options {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+    justify-content: center;
+    width: 100%;
+}
+
+.option-group {
+    width: 140px;
+    flex: 0 0 auto;
+}
+
+.option-group label {
+    display: block;
+    margin-bottom: 0.75rem;
+    color: var(--text-secondary);
+    font-size: 0.938rem;
+    font-weight: 500;
+    text-align: center;
+    opacity: 0.8;
+}
+
+.metronome-btn.minimal-select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: var(--bg-secondary);
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23999999' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1.2rem;
+    padding-right: 2.5rem;
+}
+
+.minimal-select {
+    width: 100%;
+    padding: 0.875rem 2.5rem 0.875rem 1.5rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23999999' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1.2rem;
+    color: var(--text-primary);
+    font-size: 0.938rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    text-align: center;
+}
+
+.minimal-select:hover {
+    background: var(--bg-tertiary);
+    border-color: var(--border-hover);
+}
+
+.minimal-select:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+/* Accent Pattern - Centralized with Circle Buttons */
+.accent-pattern-minimal {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.accent-pattern-minimal label {
+    display: block;
+    margin-bottom: 1rem;
+    color: var(--text-secondary);
+    font-size: 0.938rem;
+    font-weight: 500;
+    opacity: 0.8;
+}
+
+.accent-beats {
+    display: inline-flex;
+    gap: 0.5rem;
+    padding: 0;
+    background: transparent;
+    border-radius: 0;
+    border: none;
+}
+
+.accent-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--text-secondary);
+    font-size: 0.938rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.accent-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.accent-btn.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+    color: white;
+    border-color: var(--primary);
+}
+
+/* Advanced Features */
+.advanced-features-minimal {
+    margin-top: 2.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 1.25rem;
+    transition: all 0.3s ease;
+}
+
+.advanced-features-minimal:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.advanced-features-minimal summary {
+    cursor: pointer;
+    color: var(--text-primary);
+    font-weight: 500;
+    font-size: 0.938rem;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+}
+
+.advanced-features-minimal summary:hover {
+    opacity: 1;
+}
+
+.advanced-features-minimal[open] summary {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    opacity: 1;
+}
+
+/* Feature Sections */
+.feature-section-minimal {
+    margin-bottom: 1rem;
+}
+
+.feature-section-minimal:last-child {
+    margin-bottom: 0;
+}
+
+.feature-section-minimal label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.control-row-minimal {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    padding-left: 1.5rem;
+}
+
+.control-row-minimal input[type="number"] {
+    width: 60px;
+    padding: 0.375rem 0.5rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-primary);
+    font-size: 0.813rem;
+}
+
+/* Dropout Pattern Buttons */
+.dropout-pattern {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    padding-left: 1.5rem;
+}
+
+.dropout-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.dropout-btn.active {
+    background: var(--danger);
+    color: white;
+    border-color: var(--danger);
+}
+
+/* Audio Panel */
+.audio-container {
+    padding: 1.5rem;
+    background: var(--bg-secondary);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+}
+
+/* YouTube Panel */
+.youtube-container {
+    padding: 1.5rem;
+    background: var(--bg-secondary);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+}
+
+.youtube-input-group {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.youtube-input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+}
+
+.youtube-input:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.youtube-load-btn {
+    padding: 0.75rem 1.5rem;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.youtube-load-btn:hover {
+    background: var(--primary-hover);
+}
+
+/* YouTube Player */
+.youtube-player-wrapper {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    height: 0;
+    overflow: hidden;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.youtube-player-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 8px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .unified-practice-minimal {
+        padding: 1.5rem;
+        border-radius: 12px;
+    }
+
+    .timer-display {
+        font-size: 3rem;
+        min-width: 240px;
+    }
+
+    .timer-control-btn {
+        padding: 0.75rem 2rem;
+        font-size: 0.938rem;
+    }
+
+    .mode-tab {
+        font-size: 0.875rem;
+        padding: 0.75rem 1rem;
+    }
+
+    .tab-text {
+        font-size: 0.875rem;
+    }
+
+    .tab-icon {
+        font-size: 1.125rem;
+    }
+
+    .bpm-value {
+        font-size: 3rem;
+    }
+
+    .metronome-btn {
+        padding: 0.75rem 1.25rem;
+        font-size: 0.875rem;
+    }
+}

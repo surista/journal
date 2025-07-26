@@ -4,210 +4,453 @@
    DISPLAY PROPERTIES
    ======================================== */
 
-.d-none { display: none !important; }
-.d-inline { display: inline !important; }
-.d-inline-block { display: inline-block !important; }
-.d-block { display: block !important; }
-.d-table { display: table !important; }
-.d-table-row { display: table-row !important; }
-.d-table-cell { display: table-cell !important; }
-.d-flex { display: flex !important; }
-.d-inline-flex { display: inline-flex !important; }
-.d-grid { display: grid !important; }
-.d-inline-grid { display: inline-grid !important; }
+.d-none {
+  display: none !important;
+}
+.d-inline {
+  display: inline !important;
+}
+.d-inline-block {
+  display: inline-block !important;
+}
+.d-block {
+  display: block !important;
+}
+.d-table {
+  display: table !important;
+}
+.d-table-row {
+  display: table-row !important;
+}
+.d-table-cell {
+  display: table-cell !important;
+}
+.d-flex {
+  display: flex !important;
+}
+.d-inline-flex {
+  display: inline-flex !important;
+}
+.d-grid {
+  display: grid !important;
+}
+.d-inline-grid {
+  display: inline-grid !important;
+}
 
 /* ========================================
    VISIBILITY
    ======================================== */
 
-.visible { visibility: visible !important; }
-.invisible { visibility: hidden !important; }
-.hidden { display: none !important; }
+.visible {
+  visibility: visible !important;
+}
+.invisible {
+  visibility: hidden !important;
+}
+.hidden {
+  display: none !important;
+}
 
 /* ========================================
    OPACITY
    ======================================== */
 
-.opacity-0 { opacity: 0 !important; }
-.opacity-10 { opacity: 0.1 !important; }
-.opacity-20 { opacity: 0.2 !important; }
-.opacity-30 { opacity: 0.3 !important; }
-.opacity-40 { opacity: 0.4 !important; }
-.opacity-50 { opacity: 0.5 !important; }
-.opacity-60 { opacity: 0.6 !important; }
-.opacity-70 { opacity: 0.7 !important; }
-.opacity-80 { opacity: 0.8 !important; }
-.opacity-90 { opacity: 0.9 !important; }
-.opacity-100 { opacity: 1 !important; }
+.opacity-0 {
+  opacity: 0 !important;
+}
+.opacity-10 {
+  opacity: 0.1 !important;
+}
+.opacity-20 {
+  opacity: 0.2 !important;
+}
+.opacity-30 {
+  opacity: 0.3 !important;
+}
+.opacity-40 {
+  opacity: 0.4 !important;
+}
+.opacity-50 {
+  opacity: 0.5 !important;
+}
+.opacity-60 {
+  opacity: 0.6 !important;
+}
+.opacity-70 {
+  opacity: 0.7 !important;
+}
+.opacity-80 {
+  opacity: 0.8 !important;
+}
+.opacity-90 {
+  opacity: 0.9 !important;
+}
+.opacity-100 {
+  opacity: 1 !important;
+}
 
 /* ========================================
    OVERFLOW
    ======================================== */
 
-.overflow-auto { overflow: auto !important; }
-.overflow-hidden { overflow: hidden !important; }
-.overflow-visible { overflow: visible !important; }
-.overflow-scroll { overflow: scroll !important; }
+.overflow-auto {
+  overflow: auto !important;
+}
+.overflow-hidden {
+  overflow: hidden !important;
+}
+.overflow-visible {
+  overflow: visible !important;
+}
+.overflow-scroll {
+  overflow: scroll !important;
+}
 
-.overflow-x-auto { overflow-x: auto !important; }
-.overflow-x-hidden { overflow-x: hidden !important; }
-.overflow-x-visible { overflow-x: visible !important; }
-.overflow-x-scroll { overflow-x: scroll !important; }
+.overflow-x-auto {
+  overflow-x: auto !important;
+}
+.overflow-x-hidden {
+  overflow-x: hidden !important;
+}
+.overflow-x-visible {
+  overflow-x: visible !important;
+}
+.overflow-x-scroll {
+  overflow-x: scroll !important;
+}
 
-.overflow-y-auto { overflow-y: auto !important; }
-.overflow-y-hidden { overflow-y: hidden !important; }
-.overflow-y-visible { overflow-y: visible !important; }
-.overflow-y-scroll { overflow-y: scroll !important; }
+.overflow-y-auto {
+  overflow-y: auto !important;
+}
+.overflow-y-hidden {
+  overflow-y: hidden !important;
+}
+.overflow-y-visible {
+  overflow-y: visible !important;
+}
+.overflow-y-scroll {
+  overflow-y: scroll !important;
+}
 
 /* ========================================
    POSITION
    ======================================== */
 
-.position-static { position: static !important; }
-.position-relative { position: relative !important; }
-.position-absolute { position: absolute !important; }
-.position-fixed { position: fixed !important; }
-.position-sticky { position: sticky !important; }
+.position-static {
+  position: static !important;
+}
+.position-relative {
+  position: relative !important;
+}
+.position-absolute {
+  position: absolute !important;
+}
+.position-fixed {
+  position: fixed !important;
+}
+.position-sticky {
+  position: sticky !important;
+}
 
 /* Position values */
-.top-0 { top: 0 !important; }
-.top-50 { top: 50% !important; }
-.top-100 { top: 100% !important; }
+.top-0 {
+  top: 0 !important;
+}
+.top-50 {
+  top: 50% !important;
+}
+.top-100 {
+  top: 100% !important;
+}
 
-.right-0 { right: 0 !important; }
-.right-50 { right: 50% !important; }
-.right-100 { right: 100% !important; }
+.right-0 {
+  right: 0 !important;
+}
+.right-50 {
+  right: 50% !important;
+}
+.right-100 {
+  right: 100% !important;
+}
 
-.bottom-0 { bottom: 0 !important; }
-.bottom-50 { bottom: 50% !important; }
-.bottom-100 { bottom: 100% !important; }
+.bottom-0 {
+  bottom: 0 !important;
+}
+.bottom-50 {
+  bottom: 50% !important;
+}
+.bottom-100 {
+  bottom: 100% !important;
+}
 
-.left-0 { left: 0 !important; }
-.left-50 { left: 50% !important; }
-.left-100 { left: 100% !important; }
+.left-0 {
+  left: 0 !important;
+}
+.left-50 {
+  left: 50% !important;
+}
+.left-100 {
+  left: 100% !important;
+}
 
-.inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
-.inset-x-0 { left: 0; right: 0; }
-.inset-y-0 { top: 0; bottom: 0; }
+.inset-0 {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+.inset-x-0 {
+  left: 0;
+  right: 0;
+}
+.inset-y-0 {
+  top: 0;
+  bottom: 0;
+}
 
 /* ========================================
    Z-INDEX
    ======================================== */
 
-.z-0 { z-index: 0 !important; }
-.z-10 { z-index: 10 !important; }
-.z-20 { z-index: 20 !important; }
-.z-30 { z-index: 30 !important; }
-.z-40 { z-index: 40 !important; }
-.z-50 { z-index: 50 !important; }
-.z-100 { z-index: 100 !important; }
-.z-1000 { z-index: 1000 !important; }
-.z-9999 { z-index: 9999 !important; }
-.z-auto { z-index: auto !important; }
+.z-0 {
+  z-index: 0 !important;
+}
+.z-10 {
+  z-index: 10 !important;
+}
+.z-20 {
+  z-index: 20 !important;
+}
+.z-30 {
+  z-index: 30 !important;
+}
+.z-40 {
+  z-index: 40 !important;
+}
+.z-50 {
+  z-index: 50 !important;
+}
+.z-100 {
+  z-index: 100 !important;
+}
+.z-1000 {
+  z-index: 1000 !important;
+}
+.z-9999 {
+  z-index: 9999 !important;
+}
+.z-auto {
+  z-index: auto !important;
+}
 
 /* ========================================
    FLOAT
    ======================================== */
 
-.float-left { float: left !important; }
-.float-right { float: right !important; }
-.float-none { float: none !important; }
+.float-left {
+  float: left !important;
+}
+.float-right {
+  float: right !important;
+}
+.float-none {
+  float: none !important;
+}
 .clearfix::after {
-    content: "";
-    display: table;
-    clear: both;
+  content: '';
+  display: table;
+  clear: both;
 }
 
 /* ========================================
    OBJECT FIT
    ======================================== */
 
-.object-contain { object-fit: contain !important; }
-.object-cover { object-fit: cover !important; }
-.object-fill { object-fit: fill !important; }
-.object-none { object-fit: none !important; }
-.object-scale-down { object-fit: scale-down !important; }
+.object-contain {
+  object-fit: contain !important;
+}
+.object-cover {
+  object-fit: cover !important;
+}
+.object-fill {
+  object-fit: fill !important;
+}
+.object-none {
+  object-fit: none !important;
+}
+.object-scale-down {
+  object-fit: scale-down !important;
+}
 
 /* ========================================
    RESPONSIVE DISPLAY
    ======================================== */
 
 /* Mobile (default) */
-.hide-mobile { display: none !important; }
-.show-mobile { display: block !important; }
+.hide-mobile {
+  display: none !important;
+}
+.show-mobile {
+  display: block !important;
+}
 
 /* Tablet (768px and up) */
 @media (min-width: 768px) {
-    .md\:d-none { display: none !important; }
-    .md\:d-inline { display: inline !important; }
-    .md\:d-inline-block { display: inline-block !important; }
-    .md\:d-block { display: block !important; }
-    .md\:d-flex { display: flex !important; }
-    .md\:d-inline-flex { display: inline-flex !important; }
-    .md\:d-grid { display: grid !important; }
+  .md\:d-none {
+    display: none !important;
+  }
+  .md\:d-inline {
+    display: inline !important;
+  }
+  .md\:d-inline-block {
+    display: inline-block !important;
+  }
+  .md\:d-block {
+    display: block !important;
+  }
+  .md\:d-flex {
+    display: flex !important;
+  }
+  .md\:d-inline-flex {
+    display: inline-flex !important;
+  }
+  .md\:d-grid {
+    display: grid !important;
+  }
 
-    .hide-tablet { display: none !important; }
-    .show-tablet { display: block !important; }
+  .hide-tablet {
+    display: none !important;
+  }
+  .show-tablet {
+    display: block !important;
+  }
 }
 
 /* Desktop (1024px and up) */
 @media (min-width: 1024px) {
-    .lg\:d-none { display: none !important; }
-    .lg\:d-inline { display: inline !important; }
-    .lg\:d-inline-block { display: inline-block !important; }
-    .lg\:d-block { display: block !important; }
-    .lg\:d-flex { display: flex !important; }
-    .lg\:d-inline-flex { display: inline-flex !important; }
-    .lg\:d-grid { display: grid !important; }
+  .lg\:d-none {
+    display: none !important;
+  }
+  .lg\:d-inline {
+    display: inline !important;
+  }
+  .lg\:d-inline-block {
+    display: inline-block !important;
+  }
+  .lg\:d-block {
+    display: block !important;
+  }
+  .lg\:d-flex {
+    display: flex !important;
+  }
+  .lg\:d-inline-flex {
+    display: inline-flex !important;
+  }
+  .lg\:d-grid {
+    display: grid !important;
+  }
 
-    .hide-desktop { display: none !important; }
-    .show-desktop { display: block !important; }
+  .hide-desktop {
+    display: none !important;
+  }
+  .show-desktop {
+    display: block !important;
+  }
 }
 
 /* Print utilities */
 @media print {
-    .d-print-none { display: none !important; }
-    .d-print-inline { display: inline !important; }
-    .d-print-inline-block { display: inline-block !important; }
-    .d-print-block { display: block !important; }
+  .d-print-none {
+    display: none !important;
+  }
+  .d-print-inline {
+    display: inline !important;
+  }
+  .d-print-inline-block {
+    display: inline-block !important;
+  }
+  .d-print-block {
+    display: block !important;
+  }
 }
 
 /* ========================================
    CURSOR
    ======================================== */
 
-.cursor-auto { cursor: auto !important; }
-.cursor-default { cursor: default !important; }
-.cursor-pointer { cursor: pointer !important; }
-.cursor-wait { cursor: wait !important; }
-.cursor-text { cursor: text !important; }
-.cursor-move { cursor: move !important; }
-.cursor-not-allowed { cursor: not-allowed !important; }
-.cursor-help { cursor: help !important; }
-.cursor-grab { cursor: grab !important; }
-.cursor-grabbing { cursor: grabbing !important; }
+.cursor-auto {
+  cursor: auto !important;
+}
+.cursor-default {
+  cursor: default !important;
+}
+.cursor-pointer {
+  cursor: pointer !important;
+}
+.cursor-wait {
+  cursor: wait !important;
+}
+.cursor-text {
+  cursor: text !important;
+}
+.cursor-move {
+  cursor: move !important;
+}
+.cursor-not-allowed {
+  cursor: not-allowed !important;
+}
+.cursor-help {
+  cursor: help !important;
+}
+.cursor-grab {
+  cursor: grab !important;
+}
+.cursor-grabbing {
+  cursor: grabbing !important;
+}
 
 /* ========================================
    USER SELECT
    ======================================== */
 
-.user-select-none { user-select: none !important; }
-.user-select-text { user-select: text !important; }
-.user-select-all { user-select: all !important; }
-.user-select-auto { user-select: auto !important; }
+.user-select-none {
+  user-select: none !important;
+}
+.user-select-text {
+  user-select: text !important;
+}
+.user-select-all {
+  user-select: all !important;
+}
+.user-select-auto {
+  user-select: auto !important;
+}
 
 /* ========================================
    POINTER EVENTS
    ======================================== */
 
-.pointer-events-none { pointer-events: none !important; }
-.pointer-events-auto { pointer-events: auto !important; }
+.pointer-events-none {
+  pointer-events: none !important;
+}
+.pointer-events-auto {
+  pointer-events: auto !important;
+}
 
 /* ========================================
    RESIZE
    ======================================== */
 
-.resize-none { resize: none !important; }
-.resize-both { resize: both !important; }
-.resize-horizontal { resize: horizontal !important; }
-.resize-vertical { resize: vertical !important; }
+.resize-none {
+  resize: none !important;
+}
+.resize-both {
+  resize: both !important;
+}
+.resize-horizontal {
+  resize: horizontal !important;
+}
+.resize-vertical {
+  resize: vertical !important;
+}

@@ -1,86 +1,86 @@
 /* Ocean Breeze Theme - Light aqua, teal, and sky blue pastels */
 
-[data-theme="ocean-breeze"] {
-    /* Primary Colors - Ocean blues */
-    --primary: #99D9E5;
-    --primary-dark: #80CCDD;
-    --primary-light: #B3E5EE;
-    --secondary: #99E5D9;
-    --secondary-dark: #80DDCC;
-    --secondary-light: #B3EEE5;
+[data-theme='ocean-breeze'] {
+  /* Primary Colors - Ocean blues */
+  --primary: #99d9e5;
+  --primary-dark: #80ccdd;
+  --primary-light: #b3e5ee;
+  --secondary: #99e5d9;
+  --secondary-dark: #80ddcc;
+  --secondary-light: #b3eee5;
 
-    /* Status Colors - Sea glass */
-    --success: #99E5B3;
-    --success-dark: #80DD99;
-    --success-light: #B3EECC;
-    --danger: #FFB3B3;
-    --danger-dark: #FF9999;
-    --danger-light: #FFCCCC;
-    --warning: #FFE5B3;
-    --warning-dark: #FFDD99;
-    --warning-light: #FFF0CC;
-    --info: #99C7FF;
-    --info-dark: #80B8FF;
-    --info-light: #B3D6FF;
+  /* Status Colors - Sea glass */
+  --success: #99e5b3;
+  --success-dark: #80dd99;
+  --success-light: #b3eecc;
+  --danger: #ffb3b3;
+  --danger-dark: #ff9999;
+  --danger-light: #ffcccc;
+  --warning: #ffe5b3;
+  --warning-dark: #ffdd99;
+  --warning-light: #fff0cc;
+  --info: #99c7ff;
+  --info-dark: #80b8ff;
+  --info-light: #b3d6ff;
 
-    /* Light Backgrounds - Ocean blue */
-    --bg-dark: #F0FAFF;
-    --bg-darker: #E6F5FF;
-    --bg-primary: #F7FEFF;
-    --bg-secondary: #F0FAFF;
-    --bg-tertiary: #E6F5FF;
-    --bg-card: #FAFEFF;
-    --bg-card-hover: #F5FCFF;
-    --bg-input: #D9F0FF;
-    --bg-input-hover: #CCE9FF;
-    --bg-modal: rgba(153, 217, 229, 0.95);
-    --bg-sidebar: #EBF7FF;
-    --bg-overlay: rgba(153, 217, 229, 0.4);
+  /* Light Backgrounds - Ocean blue */
+  --bg-dark: #f0faff;
+  --bg-darker: #e6f5ff;
+  --bg-primary: #f7feff;
+  --bg-secondary: #f0faff;
+  --bg-tertiary: #e6f5ff;
+  --bg-card: #fafeff;
+  --bg-card-hover: #f5fcff;
+  --bg-input: #d9f0ff;
+  --bg-input-hover: #cce9ff;
+  --bg-modal: rgba(153, 217, 229, 0.95);
+  --bg-sidebar: #ebf7ff;
+  --bg-overlay: rgba(153, 217, 229, 0.4);
 
-    /* Text Colors */
-    --text-primary: #1E3A4C;
-    --text-secondary: #4E6A7C;
-    --text-tertiary: #6E8A9C;
-    --text-muted: #9EBACC;
-    --text-disabled: #B8CEDC;
+  /* Text Colors */
+  --text-primary: #1e3a4c;
+  --text-secondary: #4e6a7c;
+  --text-tertiary: #6e8a9c;
+  --text-muted: #9ebacc;
+  --text-disabled: #b8cedc;
 
-    /* Borders - Sea mist */
-    --border: #CCE9F2;
-    --border-light: #E5F7FF;
-    --border-focus: #80CCDD;
-    --border-error: #FFB3B3;
-    --border-success: #99E5B3;
+  /* Borders - Sea mist */
+  --border: #cce9f2;
+  --border-light: #e5f7ff;
+  --border-focus: #80ccdd;
+  --border-error: #ffb3b3;
+  --border-success: #99e5b3;
 
-    /* Shadows - Ocean mist */
-    --shadow-sm: 0 1px 3px 0 rgba(153, 217, 229, 0.15);
-    --shadow-md: 0 4px 6px -1px rgba(153, 217, 229, 0.2);
-    --shadow-lg: 0 10px 15px -3px rgba(153, 217, 229, 0.25);
-    --shadow-xl: 0 20px 25px -5px rgba(153, 217, 229, 0.3);
-    --shadow-2xl: 0 25px 50px -12px rgba(153, 217, 229, 0.35);
-    --shadow-inner: inset 0 2px 4px 0 rgba(153, 217, 229, 0.1);
-    --shadow-glow: 0 0 20px rgba(153, 217, 229, 0.5);
+  /* Shadows - Ocean mist */
+  --shadow-sm: 0 1px 3px 0 rgba(153, 217, 229, 0.15);
+  --shadow-md: 0 4px 6px -1px rgba(153, 217, 229, 0.2);
+  --shadow-lg: 0 10px 15px -3px rgba(153, 217, 229, 0.25);
+  --shadow-xl: 0 20px 25px -5px rgba(153, 217, 229, 0.3);
+  --shadow-2xl: 0 25px 50px -12px rgba(153, 217, 229, 0.35);
+  --shadow-inner: inset 0 2px 4px 0 rgba(153, 217, 229, 0.1);
+  --shadow-glow: 0 0 20px rgba(153, 217, 229, 0.5);
 
-    /* Scrollbar */
-    --scrollbar-track: #E5F7FF;
-    --scrollbar-thumb: #99D9E5;
-    --scrollbar-thumb-hover: #80CCDD;
+  /* Scrollbar */
+  --scrollbar-track: #e5f7ff;
+  --scrollbar-thumb: #99d9e5;
+  --scrollbar-thumb-hover: #80ccdd;
 
-    /* Code */
-    --code-bg: #F0FCFF;
-    --code-text: #4B6B7B;
-    --code-comment: #77CC99;
-    --code-string: #FF99AA;
-    --code-keyword: #6699FF;
+  /* Code */
+  --code-bg: #f0fcff;
+  --code-text: #4b6b7b;
+  --code-comment: #77cc99;
+  --code-string: #ff99aa;
+  --code-keyword: #6699ff;
 
-    /* Gradients - Ocean waves */
-    --gradient-primary: linear-gradient(135deg, #99D9E5 0%, #99E5D9 100%);
-    --gradient-success: linear-gradient(135deg, #99E5B3 0%, #B3EECC 100%);
-    --gradient-danger: linear-gradient(135deg, #FFB3B3 0%, #FFCCCC 100%);
-    --gradient-warning: linear-gradient(135deg, #FFE5B3 0%, #FFF0CC 100%);
-    --gradient-light: linear-gradient(135deg, #FFFFFF 0%, #F0FCFF 100%);
+  /* Gradients - Ocean waves */
+  --gradient-primary: linear-gradient(135deg, #99d9e5 0%, #99e5d9 100%);
+  --gradient-success: linear-gradient(135deg, #99e5b3 0%, #b3eecc 100%);
+  --gradient-danger: linear-gradient(135deg, #ffb3b3 0%, #ffcccc 100%);
+  --gradient-warning: linear-gradient(135deg, #ffe5b3 0%, #fff0cc 100%);
+  --gradient-light: linear-gradient(135deg, #ffffff 0%, #f0fcff 100%);
 
-    /* Opacity values */
-    --opacity-hover: 0.95;
-    --opacity-disabled: 0.6;
-    --opacity-overlay: 0.5;
+  /* Opacity values */
+  --opacity-hover: 0.95;
+  --opacity-disabled: 0.6;
+  --opacity-overlay: 0.5;
 }

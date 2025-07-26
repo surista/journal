@@ -3,302 +3,302 @@
 /* Ensure metronome panel shows all content */
 #metronomePanel .metronome-image-section,
 .mode-panel.active .metronome-image-section {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 /* Image section container */
 .metronome-image-section {
-    margin-bottom: 20px;
-    width: 100%;
-    display: block !important;
-    visibility: visible !important;
-    position: relative;
-    z-index: 10;
+  margin-bottom: 20px;
+  width: 100%;
+  display: block !important;
+  visibility: visible !important;
+  position: relative;
+  z-index: 10;
 }
 
 /* Image preview container */
 .image-preview {
-    position: relative;
-    width: 100%;
-    max-width: 600px;
-    margin: 0 auto 16px;
-    border-radius: 12px;
-    overflow: hidden;
-    background: var(--bg-tertiary);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto 16px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--bg-tertiary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .image-preview img {
-    width: 100%;
-    height: auto;
-    display: block;
-    max-height: 400px;
-    object-fit: contain;
-    background: white;
-    cursor: zoom-in;
-    transition: opacity 0.2s ease;
+  width: 100%;
+  height: auto;
+  display: block;
+  max-height: 400px;
+  object-fit: contain;
+  background: white;
+  cursor: zoom-in;
+  transition: opacity 0.2s ease;
 }
 
 .image-preview img:hover {
-    opacity: 0.9;
+  opacity: 0.9;
 }
 
 /* Remove image button */
 .remove-image-btn {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: rgba(0, 0, 0, 0.7);
-    color: white;
-    border: none;
-    font-size: 20px;
-    line-height: 1;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-    z-index: 10;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  border: none;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 10;
 }
 
 .remove-image-btn:hover {
-    background: rgba(0, 0, 0, 0.9);
-    transform: scale(1.1);
+  background: rgba(0, 0, 0, 0.9);
+  transform: scale(1.1);
 }
 
 .remove-image-btn:active {
-    transform: scale(0.95);
+  transform: scale(0.95);
 }
 
 /* Upload controls */
 .image-upload-controls {
-    text-align: center;
+  text-align: center;
 }
 
 /* Paste hint */
 .paste-hint {
-    margin-top: 8px;
-    font-size: 13px;
-    color: var(--text-muted);
-    font-style: italic;
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--text-muted);
+  font-style: italic;
 }
 
 .upload-image-btn {
-    background: rgba(99, 102, 241, 0.1);
-    color: var(--color-primary);
-    border: 2px dashed var(--color-primary);
-    border-radius: 12px;
-    padding: 12px 24px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: inline-flex !important;
-    align-items: center;
-    gap: 8px;
-    visibility: visible !important;
-    opacity: 1 !important;
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--color-primary);
+  border: 2px dashed var(--color-primary);
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex !important;
+  align-items: center;
+  gap: 8px;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 .upload-image-btn:hover {
-    background: rgba(99, 102, 241, 0.2);
-    border-color: var(--color-primary);
-    color: var(--color-primary);
-    transform: translateY(-1px);
+  background: rgba(99, 102, 241, 0.2);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  transform: translateY(-1px);
 }
 
 .upload-image-btn:active {
-    transform: scale(0.98);
+  transform: scale(0.98);
 }
 
 .upload-image-btn span {
-    font-size: 18px;
+  font-size: 18px;
 }
 
 /* Mobile styles */
 @media (max-width: 768px) {
-    .metronome-image-section {
-        margin-bottom: 16px;
-    }
+  .metronome-image-section {
+    margin-bottom: 16px;
+  }
 
-    .image-preview {
-        margin-bottom: 12px;
-        border-radius: 8px;
-    }
+  .image-preview {
+    margin-bottom: 12px;
+    border-radius: 8px;
+  }
 
-    .image-preview img {
-        max-height: 250px;
-    }
+  .image-preview img {
+    max-height: 250px;
+  }
 
-    .remove-image-btn {
-        width: 28px;
-        height: 28px;
-        font-size: 18px;
-        top: 6px;
-        right: 6px;
-    }
+  .remove-image-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 18px;
+    top: 6px;
+    right: 6px;
+  }
 
-    .upload-image-btn {
-        width: 100%;
-        justify-content: center;
-        padding: 10px 20px;
-        font-size: 13px;
-    }
+  .upload-image-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 10px 20px;
+    font-size: 13px;
+  }
 
-    .paste-hint {
-        font-size: 12px;
-        margin-top: 6px;
-    }
+  .paste-hint {
+    font-size: 12px;
+    margin-top: 6px;
+  }
 }
 
 /* Small phones */
 @media (max-width: 375px) {
-    .image-preview img {
-        max-height: 200px;
-    }
+  .image-preview img {
+    max-height: 200px;
+  }
 
-    .upload-image-btn {
-        padding: 8px 16px;
-        font-size: 12px;
-    }
+  .upload-image-btn {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
 
-    .upload-image-btn span {
-        font-size: 16px;
-    }
+  .upload-image-btn span {
+    font-size: 16px;
+  }
 }
 
 /* Landscape mode */
 @media (max-width: 768px) and (orientation: landscape) {
-    .image-preview img {
-        max-height: 150px;
-    }
+  .image-preview img {
+    max-height: 150px;
+  }
 
-    .metronome-image-section {
-        margin-bottom: 12px;
-    }
+  .metronome-image-section {
+    margin-bottom: 12px;
+  }
 }
 
 /* Dark theme adjustments */
-[data-theme="dark"] .image-preview {
-    background: var(--bg-secondary);
+[data-theme='dark'] .image-preview {
+  background: var(--bg-secondary);
 }
 
-[data-theme="dark"] .upload-image-btn {
-    background: var(--bg-secondary);
-    border-color: var(--border-color);
+[data-theme='dark'] .upload-image-btn {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
 }
 
-[data-theme="dark"] .upload-image-btn:hover {
-    background: var(--bg-tertiary);
+[data-theme='dark'] .upload-image-btn:hover {
+  background: var(--bg-tertiary);
 }
 
 /* Loading state */
 .image-preview.loading {
-    min-height: 200px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .image-preview.loading::after {
-    content: "Loading...";
-    color: var(--text-muted);
-    font-size: 14px;
+  content: 'Loading...';
+  color: var(--text-muted);
+  font-size: 14px;
 }
 
 /* Error state */
 .image-preview.error {
-    min-height: 100px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--color-error);
-    font-size: 14px;
-    padding: 20px;
-    text-align: center;
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-error);
+  font-size: 14px;
+  padding: 20px;
+  text-align: center;
 }
 
 /* Image Lightbox/Popup */
 .image-lightbox {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.9);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-    padding: 20px;
-    cursor: zoom-out;
-    animation: fadeIn 0.3s ease;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+  cursor: zoom-out;
+  animation: fadeIn 0.3s ease;
 }
 
 .image-lightbox img {
-    max-width: 90vw;
-    max-height: 90vh;
-    object-fit: contain;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-    background: white;
-    cursor: default;
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  background: white;
+  cursor: default;
 }
 
 .image-lightbox-close {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 2px solid white;
-    border-radius: 50%;
-    color: white;
-    font-size: 24px;
-    line-height: 1;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-    z-index: 10000;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid white;
+  border-radius: 50%;
+  color: white;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 10000;
 }
 
 .image-lightbox-close:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
 }
 
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* Mobile lightbox adjustments */
 @media (max-width: 768px) {
-    .image-lightbox {
-        padding: 10px;
-    }
-    
-    .image-lightbox img {
-        max-width: 95vw;
-        max-height: 95vh;
-    }
-    
-    .image-lightbox-close {
-        top: 10px;
-        right: 10px;
-        width: 36px;
-        height: 36px;
-        font-size: 20px;
-    }
+  .image-lightbox {
+    padding: 10px;
+  }
+
+  .image-lightbox img {
+    max-width: 95vw;
+    max-height: 95vh;
+  }
+
+  .image-lightbox-close {
+    top: 10px;
+    right: 10px;
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+  }
 }

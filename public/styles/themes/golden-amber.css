@@ -1,92 +1,92 @@
 /* Golden Amber Theme - Warm golds and amber tones */
-[data-theme="golden-amber"] {
-    /* Primary Colors */
-    --primary: #f59e0b;
-    --primary-dark: #d97706;
-    --primary-light: #fbbf24;
-    --primary-rgb: 245, 158, 11;
+[data-theme='golden-amber'] {
+  /* Primary Colors */
+  --primary: #f59e0b;
+  --primary-dark: #d97706;
+  --primary-light: #fbbf24;
+  --primary-rgb: 245, 158, 11;
 
-    /* Background Colors */
-    --bg-dark: #1a1207;
-    --bg-primary: #2e2012;
-    --bg-secondary: #3d2a17;
-    --bg-tertiary: #4d361e;
-    --bg-card: #41301a;
-    --bg-input: #523d23;
-    --bg-hover: #604829;
+  /* Background Colors */
+  --bg-dark: #1a1207;
+  --bg-primary: #2e2012;
+  --bg-secondary: #3d2a17;
+  --bg-tertiary: #4d361e;
+  --bg-card: #41301a;
+  --bg-input: #523d23;
+  --bg-hover: #604829;
 
-    /* Text Colors */
-    --text-primary: #fffbeb;
-    --text-secondary: #fde68a;
-    --text-tertiary: #fdd66b;
-    --text-muted: #fcd34d;
-    --text-inverse: #1a1207;
+  /* Text Colors */
+  --text-primary: #fffbeb;
+  --text-secondary: #fde68a;
+  --text-tertiary: #fdd66b;
+  --text-muted: #fcd34d;
+  --text-inverse: #1a1207;
 
-    /* Border Colors */
-    --border: #4d361e;
-    --border-light: #604829;
-    --border-hover: #f59e0b;
+  /* Border Colors */
+  --border: #4d361e;
+  --border-light: #604829;
+  --border-hover: #f59e0b;
 
-    /* Status Colors */
-    --success: #65a30d;
-    --success-dark: #4d7c0f;
-    --success-light: #84cc16;
+  /* Status Colors */
+  --success: #65a30d;
+  --success-dark: #4d7c0f;
+  --success-light: #84cc16;
 
-    --warning: #f59e0b;
-    --warning-dark: #d97706;
-    --warning-light: #fbbf24;
+  --warning: #f59e0b;
+  --warning-dark: #d97706;
+  --warning-light: #fbbf24;
 
-    --danger: #dc2626;
-    --danger-dark: #b91c1c;
-    --danger-light: #ef4444;
+  --danger: #dc2626;
+  --danger-dark: #b91c1c;
+  --danger-light: #ef4444;
 
-    --info: #0891b2;
-    --info-dark: #0e7490;
-    --info-light: #06b6d4;
+  --info: #0891b2;
+  --info-dark: #0e7490;
+  --info-light: #06b6d4;
 
-    /* Shadows */
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5);
-    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.6);
-    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.7);
-    --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.8);
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.7);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.8);
 
-    /* Special Effects */
-    --glow-primary: 0 0 30px rgba(245, 158, 11, 0.7);
-    --glow-success: 0 0 20px rgba(101, 163, 13, 0.5);
-    --glow-danger: 0 0 20px rgba(220, 38, 38, 0.5);
+  /* Special Effects */
+  --glow-primary: 0 0 30px rgba(245, 158, 11, 0.7);
+  --glow-success: 0 0 20px rgba(101, 163, 13, 0.5);
+  --glow-danger: 0 0 20px rgba(220, 38, 38, 0.5);
 
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, #d97706 0%, #fbbf24 100%);
-    --gradient-dark: linear-gradient(135deg, #2e2012 0%, #1a1207 100%);
-    --gradient-card: linear-gradient(135deg, #41301a 0%, #3d2a17 100%);
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #d97706 0%, #fbbf24 100%);
+  --gradient-dark: linear-gradient(135deg, #2e2012 0%, #1a1207 100%);
+  --gradient-card: linear-gradient(135deg, #41301a 0%, #3d2a17 100%);
 }
 
 /* Golden Amber specific enhancements */
-[data-theme="golden-amber"] .sidebar {
-    background: linear-gradient(180deg, #2e2012 0%, #1a1207 100%);
+[data-theme='golden-amber'] .sidebar {
+  background: linear-gradient(180deg, #2e2012 0%, #1a1207 100%);
 }
 
-[data-theme="golden-amber"] .btn-primary {
-    background: var(--gradient-primary);
-    box-shadow: 0 4px 14px 0 rgba(245, 158, 11, 0.5);
+[data-theme='golden-amber'] .btn-primary {
+  background: var(--gradient-primary);
+  box-shadow: 0 4px 14px 0 rgba(245, 158, 11, 0.5);
 }
 
-[data-theme="golden-amber"] .nav-item.active {
-    background: linear-gradient(90deg, rgba(245, 158, 11, 0.2) 0%, rgba(245, 158, 11, 0.05) 100%);
-    border-left-color: #f59e0b;
+[data-theme='golden-amber'] .nav-item.active {
+  background: linear-gradient(90deg, rgba(245, 158, 11, 0.2) 0%, rgba(245, 158, 11, 0.05) 100%);
+  border-left-color: #f59e0b;
 }
 
-[data-theme="golden-amber"] .header {
-    background: rgba(46, 32, 18, 0.95);
+[data-theme='golden-amber'] .header {
+  background: rgba(46, 32, 18, 0.95);
 }
 
-[data-theme="golden-amber"] .practice-tip {
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(245, 158, 11, 0.05) 100%);
+[data-theme='golden-amber'] .practice-tip {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(245, 158, 11, 0.05) 100%);
 }
 
 /* Header contrast fix */
-[data-theme="golden-amber"] .header #pageTitle,
-[data-theme="golden-amber"] .header .theme-info,
-[data-theme="golden-amber"] .header .sync-status {
-    color: #fffbeb !important;
+[data-theme='golden-amber'] .header #pageTitle,
+[data-theme='golden-amber'] .header .theme-info,
+[data-theme='golden-amber'] .header .sync-status {
+  color: #fffbeb !important;
 }

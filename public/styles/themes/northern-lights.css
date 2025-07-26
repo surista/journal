@@ -1,109 +1,120 @@
 /* Northern Lights Theme - Aurora borealis inspired */
-[data-theme="northern-lights"] {
-    /* Primary Colors */
-    --primary: #4ecca3;
-    --primary-dark: #32b894;
-    --primary-light: #6edfb8;
-    --primary-rgb: 78, 204, 163;
+[data-theme='northern-lights'] {
+  /* Primary Colors */
+  --primary: #4ecca3;
+  --primary-dark: #32b894;
+  --primary-light: #6edfb8;
+  --primary-rgb: 78, 204, 163;
 
-    /* Background Colors */
-    --bg-dark: #0a1929;
-    --bg-primary: #0f2744;
-    --bg-secondary: #173554;
-    --bg-tertiary: #1e4263;
-    --bg-card: #142f4a;
-    --bg-input: #1c3c5a;
-    --bg-hover: #244968;
+  /* Background Colors */
+  --bg-dark: #0a1929;
+  --bg-primary: #0f2744;
+  --bg-secondary: #173554;
+  --bg-tertiary: #1e4263;
+  --bg-card: #142f4a;
+  --bg-input: #1c3c5a;
+  --bg-hover: #244968;
 
-    /* Text Colors */
-    --text-primary: #e8f5ff;
-    --text-secondary: #94d4ff;
-    --text-tertiary: #7ac0ec;
-    --text-muted: #5a9fd4;
-    --text-inverse: #0a1929;
+  /* Text Colors */
+  --text-primary: #e8f5ff;
+  --text-secondary: #94d4ff;
+  --text-tertiary: #7ac0ec;
+  --text-muted: #5a9fd4;
+  --text-inverse: #0a1929;
 
-    /* Border Colors */
-    --border: #244968;
-    --border-light: #2e5a7a;
-    --border-hover: #4ecca3;
+  /* Border Colors */
+  --border: #244968;
+  --border-light: #2e5a7a;
+  --border-hover: #4ecca3;
 
-    /* Status Colors */
-    --success: #4ecca3;
-    --success-dark: #32b894;
-    --success-light: #6edfb8;
+  /* Status Colors */
+  --success: #4ecca3;
+  --success-dark: #32b894;
+  --success-light: #6edfb8;
 
-    --warning: #ffca28;
-    --warning-dark: #ffb300;
-    --warning-light: #ffd54f;
+  --warning: #ffca28;
+  --warning-dark: #ffb300;
+  --warning-light: #ffd54f;
 
-    --danger: #ff6b9d;
-    --danger-dark: #ff4c7d;
-    --danger-light: #ff8abd;
+  --danger: #ff6b9d;
+  --danger-dark: #ff4c7d;
+  --danger-light: #ff8abd;
 
-    --info: #66d9ef;
-    --info-dark: #40cfe7;
-    --info-light: #8ce4f4;
+  --info: #66d9ef;
+  --info-dark: #40cfe7;
+  --info-light: #8ce4f4;
 
-    /* Shadows */
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
-    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.5);
-    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.6);
-    --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.7);
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.6);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.7);
 
-    /* Special Effects */
-    --glow-primary: 0 0 40px rgba(78, 204, 163, 0.7);
-    --glow-success: 0 0 30px rgba(78, 204, 163, 0.6);
-    --glow-danger: 0 0 30px rgba(255, 107, 157, 0.6);
-    --glow-aurora: 0 0 60px rgba(102, 217, 239, 0.4);
+  /* Special Effects */
+  --glow-primary: 0 0 40px rgba(78, 204, 163, 0.7);
+  --glow-success: 0 0 30px rgba(78, 204, 163, 0.6);
+  --glow-danger: 0 0 30px rgba(255, 107, 157, 0.6);
+  --glow-aurora: 0 0 60px rgba(102, 217, 239, 0.4);
 
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, #4ecca3 0%, #66d9ef 50%, #a8e063 100%);
-    --gradient-dark: linear-gradient(135deg, #0f2744 0%, #0a1929 100%);
-    --gradient-card: linear-gradient(135deg, #142f4a 0%, #173554 100%);
-    --gradient-aurora: linear-gradient(135deg, #4ecca3 0%, #66d9ef 33%, #ff6b9d 66%, #feca57 100%);
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #4ecca3 0%, #66d9ef 50%, #a8e063 100%);
+  --gradient-dark: linear-gradient(135deg, #0f2744 0%, #0a1929 100%);
+  --gradient-card: linear-gradient(135deg, #142f4a 0%, #173554 100%);
+  --gradient-aurora: linear-gradient(135deg, #4ecca3 0%, #66d9ef 33%, #ff6b9d 66%, #feca57 100%);
 }
 
 /* Northern Lights specific enhancements */
-[data-theme="northern-lights"] .sidebar {
-    background: linear-gradient(180deg, #0f2744 0%, #0a1929 100%);
+[data-theme='northern-lights'] .sidebar {
+  background: linear-gradient(180deg, #0f2744 0%, #0a1929 100%);
 }
 
-[data-theme="northern-lights"] .btn-primary {
-    background: var(--gradient-primary);
-    box-shadow: 0 4px 14px 0 rgba(78, 204, 163, 0.5), var(--glow-primary);
+[data-theme='northern-lights'] .btn-primary {
+  background: var(--gradient-primary);
+  box-shadow:
+    0 4px 14px 0 rgba(78, 204, 163, 0.5),
+    var(--glow-primary);
 }
 
-[data-theme="northern-lights"] .nav-item.active {
-    background: linear-gradient(90deg, rgba(78, 204, 163, 0.2) 0%, rgba(102, 217, 239, 0.1) 100%);
-    border-left-color: #4ecca3;
-    box-shadow: inset 0 0 30px rgba(78, 204, 163, 0.2);
+[data-theme='northern-lights'] .nav-item.active {
+  background: linear-gradient(90deg, rgba(78, 204, 163, 0.2) 0%, rgba(102, 217, 239, 0.1) 100%);
+  border-left-color: #4ecca3;
+  box-shadow: inset 0 0 30px rgba(78, 204, 163, 0.2);
 }
 
-[data-theme="northern-lights"] .header {
-    background: rgba(15, 39, 68, 0.95);
-    border-bottom: 1px solid rgba(78, 204, 163, 0.3);
+[data-theme='northern-lights'] .header {
+  background: rgba(15, 39, 68, 0.95);
+  border-bottom: 1px solid rgba(78, 204, 163, 0.3);
 }
 
-[data-theme="northern-lights"] .timer-display {
-    background: linear-gradient(135deg, #1c3c5a 0%, #142f4a 100%);
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5), 0 0 30px rgba(78, 204, 163, 0.1);
+[data-theme='northern-lights'] .timer-display {
+  background: linear-gradient(135deg, #1c3c5a 0%, #142f4a 100%);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.5),
+    0 0 30px rgba(78, 204, 163, 0.1);
 }
 
 /* Aurora animation */
-[data-theme="northern-lights"] .sidebar::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: var(--gradient-aurora);
-    opacity: 0.05;
-    animation: aurora 20s ease-in-out infinite;
-    pointer-events: none;
+[data-theme='northern-lights'] .sidebar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--gradient-aurora);
+  opacity: 0.05;
+  animation: aurora 20s ease-in-out infinite;
+  pointer-events: none;
 }
 
 @keyframes aurora {
-    0%, 100% { opacity: 0.05; transform: translateY(0); }
-    50% { opacity: 0.1; transform: translateY(-20px); }
+  0%,
+  100% {
+    opacity: 0.05;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 0.1;
+    transform: translateY(-20px);
+  }
 }

@@ -13,7 +13,7 @@ export class WaveformVisualizer {
         this.loopStartMarker = null;
         this.loopEndMarker = null;
         this.isAnimating = false;
-        
+
         // Add flag to prevent multiple simultaneous draws
         this.isDrawing = false;
         this.pendingDraw = false;
@@ -92,7 +92,6 @@ export class WaveformVisualizer {
         this.displayWidth = Math.max(1, rect.width);
         this.displayHeight = 150;
 
-
         // Redraw if we have data (use immediate flag to skip debouncing)
         if (this.audioService && this.audioService.audioBuffer) {
             this.draw(true);
@@ -128,7 +127,12 @@ export class WaveformVisualizer {
         }
 
         // Check if canvas has valid dimensions
-        if (!this.displayWidth || !this.displayHeight || this.displayWidth <= 0 || this.displayHeight <= 0) {
+        if (
+            !this.displayWidth ||
+            !this.displayHeight ||
+            this.displayWidth <= 0 ||
+            this.displayHeight <= 0
+        ) {
             console.error('Invalid canvas dimensions:', {
                 displayWidth: this.displayWidth,
                 displayHeight: this.displayHeight
@@ -138,7 +142,6 @@ export class WaveformVisualizer {
             this.resizeCanvas();
             return;
         }
-
 
         // Ensure canvas is visible
         if (this.canvas.style.display === 'none' || this.canvas.style.visibility === 'hidden') {
@@ -173,14 +176,14 @@ export class WaveformVisualizer {
             let max = -1.0;
 
             for (let j = 0; j < step; j++) {
-                const datum = data[(i * step) + j] || 0;
+                const datum = data[i * step + j] || 0;
                 if (datum < min) min = datum;
                 if (datum > max) max = datum;
             }
 
             const x = i;
-            const yMin = amp + (min * amp * 0.8); // Scale down slightly to prevent clipping
-            const yMax = amp + (max * amp * 0.8);
+            const yMin = amp + min * amp * 0.8; // Scale down slightly to prevent clipping
+            const yMax = amp + max * amp * 0.8;
 
             if (i === 0) {
                 this.ctx.moveTo(x, yMin);
@@ -200,11 +203,7 @@ export class WaveformVisualizer {
         this.ctx.stroke();
 
         // Store the waveform image
-        this.waveformImageData = this.ctx.getImageData(
-            0, 0,
-            this.canvas.width,
-            this.canvas.height
-        );
+        this.waveformImageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
 
         // Draw loop markers if set
         this.drawLoopMarkers();
@@ -265,7 +264,11 @@ export class WaveformVisualizer {
 
         // Ensure currentTime respects loop boundaries if looping
         let displayTime = currentTime;
-        if (this.audioService.isLooping && this.loopStartMarker !== null && this.loopEndMarker !== null) {
+        if (
+            this.audioService.isLooping &&
+            this.loopStartMarker !== null &&
+            this.loopEndMarker !== null
+        ) {
             // Clamp to loop boundaries
             displayTime = Math.max(this.loopStartMarker, Math.min(displayTime, this.loopEndMarker));
         }
@@ -311,7 +314,11 @@ export class WaveformVisualizer {
 
     updateLoopMarkerElements() {
         // This method is now replaced by updateLoopMarkersSafe
-        updateLoopMarkersSafe(this.loopStartMarker, this.loopEndMarker, this.audioService.getDuration());
+        updateLoopMarkersSafe(
+            this.loopStartMarker,
+            this.loopEndMarker,
+            this.audioService.getDuration()
+        );
     }
 
     drawLoopMarkers() {
@@ -401,11 +408,12 @@ export class WaveformVisualizer {
     startAnimation() {
         const animate = () => {
             // Check if we should continue animating
-            if (this.audioService &&
+            if (
+                this.audioService &&
                 this.audioService.audio &&
                 !this.audioService.audio.paused &&
-                this.audioService.isPlaying) {
-
+                this.audioService.isPlaying
+            ) {
                 // Get current time directly from audio element
                 const currentTime = this.audioService.audio.currentTime;
                 this.updateProgress(currentTime);
@@ -454,8 +462,8 @@ function updateLoopMarkersSafe(loopStart, loopEnd, duration) {
     const existingStartMarkers = container.querySelectorAll('.waveform-loop-start');
     const existingEndMarkers = container.querySelectorAll('.waveform-loop-end');
 
-    existingStartMarkers.forEach(marker => marker.remove());
-    existingEndMarkers.forEach(marker => marker.remove());
+    existingStartMarkers.forEach((marker) => marker.remove());
+    existingEndMarkers.forEach((marker) => marker.remove());
 
     // Create start marker if it exists (independent of end marker)
     if (loopStart !== null && duration) {
@@ -524,13 +532,14 @@ setTimeout(fixDuplicateLoopMarkers, 1000);
 // Set up MutationObserver to watch for DOM changes
 const observer = new MutationObserver((mutations) => {
     // Check if waveform-related elements were added
-    const hasWaveformChanges = mutations.some(mutation => {
-        return Array.from(mutation.addedNodes).some(node => {
-            return node.nodeType === 1 && (
-                node.classList?.contains('waveform-loop-start') ||
-                node.classList?.contains('waveform-loop-end') ||
-                node.querySelector?.('.waveform-loop-start') ||
-                node.querySelector?.('.waveform-loop-end')
+    const hasWaveformChanges = mutations.some((mutation) => {
+        return Array.from(mutation.addedNodes).some((node) => {
+            return (
+                node.nodeType === 1 &&
+                (node.classList?.contains('waveform-loop-start') ||
+                    node.classList?.contains('waveform-loop-end') ||
+                    node.querySelector?.('.waveform-loop-start') ||
+                    node.querySelector?.('.waveform-loop-end'))
             );
         });
     });

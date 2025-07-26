@@ -1,9 +1,9 @@
 // Environment Badge Component - Shows current environment in non-production
-import { 
-    shouldShowEnvironmentBadge, 
-    getEnvironmentName, 
+import {
+    shouldShowEnvironmentBadge,
+    getEnvironmentName,
     getEnvironmentColor,
-    currentEnvironment 
+    currentEnvironment
 } from '../config/environment.js';
 
 export class EnvironmentBadge {

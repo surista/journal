@@ -32,7 +32,7 @@ export class CalendarTab {
 
                 // Initialize calendar in the container
                 await this.calendar.init(calendarContainer);
-                
+
                 // Set up event listener for practice session saves
                 this.practiceSessionListener = (event) => {
                     if (this.calendar) {
@@ -40,7 +40,7 @@ export class CalendarTab {
                     }
                 };
                 window.addEventListener('practiceSessionSaved', this.practiceSessionListener);
-                
+
                 // Set up event listener for practice session deletes
                 this.practiceDeleteListener = (event) => {
                     if (this.calendar) {
@@ -55,10 +55,10 @@ export class CalendarTab {
                         this.calendar.attachEventListeners();
                     }
                 }, 100);
-
             } catch (error) {
                 console.error('Error loading calendar:', error);
-                calendarContainer.innerHTML = '<div class="error-state">Failed to load calendar</div>';
+                calendarContainer.innerHTML =
+                    '<div class="error-state">Failed to load calendar</div>';
             }
         }
 
@@ -71,7 +71,8 @@ export class CalendarTab {
                 this.statsPanel.render();
             } catch (error) {
                 console.error('Error loading stats panel:', error);
-                statsContainer.innerHTML = '<div class="error-state">Failed to load statistics</div>';
+                statsContainer.innerHTML =
+                    '<div class="error-state">Failed to load statistics</div>';
             }
         }
     }
@@ -132,7 +133,7 @@ export class CalendarTab {
             window.removeEventListener('practiceSessionDeleted', this.practiceDeleteListener);
             this.practiceDeleteListener = null;
         }
-        
+
         if (this.calendar?.destroy) {
             this.calendar.destroy();
         }

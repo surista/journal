@@ -47,10 +47,13 @@ export class AudioService {
 
                 // Resume context if suspended
                 if (this.audioContext.state === 'suspended') {
-                    this.audioContext.resume().then(() => {
-                        this.isInitialized = true;
-                        resolve(this.audioContext);
-                    }).catch(reject);
+                    this.audioContext
+                        .resume()
+                        .then(() => {
+                            this.isInitialized = true;
+                            resolve(this.audioContext);
+                        })
+                        .catch(reject);
                 } else {
                     this.isInitialized = true;
                     resolve(this.audioContext);
@@ -92,14 +95,14 @@ export class AudioService {
         oscillator.type = type;
         gainNode.gain.value = 0.1;
 
-        return {oscillator, gainNode};
+        return { oscillator, gainNode };
     }
 
     async playTone(frequency = 440, duration = 0.1) {
         const nodes = await this.createOscillator(frequency);
         if (!nodes) return;
 
-        const {oscillator, gainNode} = nodes;
+        const { oscillator, gainNode } = nodes;
         const now = this.audioContext.currentTime;
 
         oscillator.start(now);

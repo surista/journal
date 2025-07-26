@@ -1,0 +1,793 @@
+/* Audio Player Component Styles */
+
+/* Audio section container */
+.audio-section {
+    background: var(--bg-card);
+    border-radius: var(--radius-xl);
+    padding: var(--space-xl);
+    box-shadow: var(--shadow-xl);
+    border: 1px solid var(--border);
+}
+
+/* Audio upload */
+.audio-upload {
+    text-align: center;
+    margin-bottom: var(--space-xl);
+    padding: var(--space-xl);
+    background: var(--bg-input);
+    border-radius: var(--radius-lg);
+    border: 2px dashed var(--border);
+    transition: var(--transition-base);
+}
+
+.audio-upload:hover {
+    border-color: var(--primary);
+    background: var(--bg-card);
+}
+
+#audioFileName {
+    margin-top: var(--space-sm);
+    color: var(--text-secondary);
+    font-size: var(--text-sm);
+}
+
+#audioError {
+    margin-top: var(--space-sm);
+    color: var(--danger);
+    font-size: var(--text-sm);
+}
+
+/* Audio controls section */
+#audioControls {
+    display: none;
+}
+
+/* Save session controls */
+.save-session-controls {
+    display: flex;
+    align-items: center;
+    margin-bottom: var(--space-xl);
+    padding: var(--space-md);
+    background: var(--bg-input);
+    border-radius: var(--radius-lg);
+}
+
+/* Audio waveform */
+.audio-waveform {
+    position: relative;
+    margin-bottom: var(--space-xl);
+    background: #1a1a2e;
+    border-radius: var(--radius-lg);
+    padding: var(--space-md);
+    border: 1px solid var(--border);
+}
+
+#waveform {
+    width: 100%;
+    height: 150px;
+    cursor: pointer;
+}
+
+/* Loop markers */
+.loop-markers {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+}
+
+.loop-marker {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    display: none;
+}
+
+.loop-marker::before {
+    content: attr(data-label);
+    position: absolute;
+    top: -20px;
+    left: -10px;
+    background: var(--bg-card);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    font-size: var(--text-xs);
+    font-weight: 600;
+}
+
+.loop-start {
+    background: var(--success);
+}
+
+.loop-start::before {
+    color: var(--success);
+}
+
+.loop-end {
+    background: var(--danger);
+}
+
+.loop-end::before {
+    color: var(--danger);
+}
+
+/* Audio time display */
+.audio-time-display {
+    text-align: center;
+    margin-bottom: var(--space-lg);
+    font-size: var(--text-lg);
+    font-family: var(--font-mono);
+    color: var(--text-secondary);
+}
+
+/* Audio controls row */
+.audio-controls-row {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+}
+
+/* Loop controls */
+.loop-controls {
+    background: var(--bg-input);
+    padding: var(--space-xl);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-xl);
+}
+
+.loop-controls h3 {
+    margin-bottom: var(--space-lg);
+    text-align: center;
+}
+
+.loop-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+}
+
+.loop-info {
+    display: flex;
+    justify-content: space-around;
+    padding: var(--space-md);
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+}
+
+.loop-info span {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.loop-count-control {
+    margin-top: var(--space-lg);
+    text-align: center;
+}
+
+.loop-count-control label {
+    display: block;
+    margin-bottom: var(--space-sm);
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+#currentLoop {
+    font-weight: bold;
+    color: var(--primary);
+}
+
+/* Speed control */
+.speed-control {
+    background: var(--bg-input);
+    padding: var(--space-xl);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-xl);
+}
+
+.speed-control label {
+    display: block;
+    text-align: center;
+    margin-bottom: var(--space-md);
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+#speedValue {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.speed-controls-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: var(--space-md);
+    align-items: center;
+    margin-bottom: var(--space-md);
+}
+
+.speed-buttons-left,
+.speed-buttons-right {
+    display: flex;
+    gap: var(--space-xs);
+}
+
+/* Pitch control */
+.pitch-control {
+    background: var(--bg-input);
+    padding: var(--space-xl);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-xl);
+}
+
+.pitch-control label {
+    display: block;
+    text-align: center;
+    margin-bottom: var(--space-md);
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+#pitchValue {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.pitch-controls-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: var(--space-md);
+    align-items: center;
+    margin-bottom: var(--space-md);
+}
+
+.pitch-buttons-left,
+.pitch-buttons-right {
+    display: flex;
+    gap: var(--space-xs);
+}
+
+.pitch-slider-container {
+    position: relative;
+}
+
+.pitch-markers {
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--space-xs);
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+}
+
+.pitch-marker {
+    position: absolute;
+    top: 100%;
+    transform: translateX(-50%);
+}
+
+.pitch-marker.center {
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.pitch-presets {
+    margin-top: var(--space-lg);
+}
+
+.pitch-presets label {
+    display: block;
+    margin-bottom: var(--space-sm);
+}
+
+.preset-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    justify-content: center;
+}
+
+/* Saved sessions */
+.saved-sessions-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-lg);
+}
+
+.saved-sessions-header h3 {
+    margin: 0;
+}
+
+.sessions-search-section {
+    display: flex;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-md);
+}
+
+.session-search-input {
+    flex: 1;
+    padding: var(--space-sm) var(--space-md);
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: var(--text-sm);
+}
+
+.session-filter-select {
+    padding: var(--space-sm) var(--space-md);
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    cursor: pointer;
+    min-width: 200px;
+}
+
+.saved-sessions-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.no-sessions-message {
+    text-align: center;
+    padding: var(--space-2xl);
+    color: var(--text-secondary);
+}
+
+.no-sessions-message .hint-text {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    margin-top: var(--space-sm);
+}
+
+.saved-session-item.filtered-out {
+    display: none;
+}
+
+/* Audio quality control */
+.audio-quality-control {
+    background: var(--bg-input);
+    padding: var(--space-xl);
+    border-radius: var(--radius-lg);
+    margin-top: var(--space-xl);
+    border: 1px solid var(--border);
+}
+
+.audio-quality-control h3 {
+    margin-bottom: var(--space-md);
+    font-size: var(--text-lg);
+}
+
+.quality-controls {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.quality-mode-control {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.quality-select {
+    padding: var(--space-sm) var(--space-md);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: var(--text-base);
+    cursor: pointer;
+}
+
+.quality-description {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+.adaptive-quality-control {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.adaptive-hint {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    margin-left: 28px;
+}
+
+.quality-indicator {
+    padding: var(--space-sm) var(--space-md);
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: var(--space-sm);
+}
+
+.indicator-label {
+    color: var(--text-secondary);
+    font-size: var(--text-sm);
+}
+
+.indicator-status {
+    font-weight: 600;
+    padding: var(--space-xs) var(--space-sm);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+}
+
+.indicator-status.good {
+    color: var(--success);
+    background: rgba(16, 185, 129, 0.1);
+}
+
+.indicator-status.medium {
+    color: var(--warning);
+    background: rgba(245, 158, 11, 0.1);
+}
+
+.indicator-status.poor {
+    color: var(--danger);
+    background: rgba(239, 68, 68, 0.1);
+}
+
+/* Mobile audio player optimizations */
+@media (max-width: 768px) {
+    .audio-player {
+        padding: var(--space-md);
+    }
+
+    .speed-control, .pitch-control, .loop-controls, .volume-control {
+        padding: var(--space-md);
+        margin-bottom: var(--space-md);
+    }
+
+    .audio-controls-row, .playback-controls {
+        flex-direction: column;
+        gap: var(--space-sm);
+    }
+
+    .audio-controls-row .btn, .playback-controls .btn {
+        width: 100%;
+        min-width: unset;
+    }
+
+    .speed-buttons, .pitch-buttons {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .waveform-container {
+        min-height: 120px;
+        padding: var(--space-sm);
+    }
+}
+
+/* ============================================
+   Sticky Timer for Audio Tool & Metronome Tabs
+   ============================================ */
+
+/* Ensure the audio layout is scrollable */
+#audioTab .audio-layout {
+    height: calc(100vh - var(--header-height) - 60px); /* Adjusted calculation */
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-top: 0;
+    position: relative;
+}
+
+/* Sticky Timer for Audio Tool Tab */
+#audioTab .timer-section,
+#timerContainerAudio {
+    position: sticky;
+    top: 0; /* Timer sticks to top of scrollable area */
+    z-index: 50; /* Lower than header */
+    background: var(--bg-dark);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(10px);
+    background: rgba(26, 26, 46, 0.95);
+}
+
+/* Add shadow when scrolled */
+#audioTab .timer-section.scrolled,
+#timerContainerAudio.scrolled {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* For dark themes */
+[data-theme="dark"] #timerContainerAudio,
+[data-theme="dark"] #audioTab .timer-section {
+    background: rgba(10, 10, 10, 0.95);
+}
+
+/* Add shadow when timer is "floating" */
+#audioTab .timer-section.scrolled,
+#timerContainerAudio.scrolled,
+#metronomeTab .timer-section.scrolled,
+#timerContainerMetronome.scrolled {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Ensure wrappers don't add extra top padding */
+#audioTab .audio-player-wrapper,
+#metronomeTab .metronome-wrapper {
+    padding-top: 0;
+}
+
+/* For the Practice Form inside tabs (if it exists) */
+#practiceFormContainerAudio,
+#practiceFormContainerMetronome {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-lg);
+}
+
+/* Smooth scroll behavior */
+#audioTab .audio-layout,
+#metronomeTab .metronome-layout {
+    scroll-behavior: smooth;
+}
+
+/* Ensure proper spacing from footer */
+#audioTab,
+#metronomeTab {
+    padding-bottom: 60px; /* Space for footer */
+}
+
+/* Metronome specific adjustments */
+#metronomeTab .metronome-wrapper {
+    min-height: auto; /* Override the min-height from original styles */
+    padding: var(--space-lg);
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+    #audioTab .timer-section,
+    #timerContainerAudio,
+    #metronomeTab .timer-section,
+    #timerContainerMetronome {
+        padding: 0.75rem;
+    }
+
+    #audioTab .audio-layout,
+    #metronomeTab .metronome-layout {
+        height: calc(100vh - 120px); /* Less space needed on mobile */
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    #audioTab .timer-section.scrolled,
+    #timerContainerAudio.scrolled,
+    #metronomeTab .timer-section.scrolled,
+    #timerContainerMetronome.scrolled {
+        border-bottom: 2px solid var(--primary);
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    #audioTab .audio-layout,
+    #metronomeTab .metronome-layout {
+        scroll-behavior: auto;
+    }
+}
+
+/* Save Loop CSS */
+.save-loop-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.2s ease;
+}
+
+.save-loop-modal-content {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: var(--shadow-xl);
+    animation: slideIn 0.3s ease;
+}
+
+.save-loop-modal h3 {
+    margin: 0 0 1.5rem 0;
+    color: var(--text-primary);
+    text-align: center;
+}
+
+.save-loop-info {
+    background: var(--bg-input);
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    margin-bottom: 1.5rem;
+    border-left: 4px solid var(--primary);
+}
+
+.save-loop-info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.save-loop-info-row:last-child {
+    margin-bottom: 0;
+}
+
+.save-loop-info-label {
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.save-loop-info-value {
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+}
+
+.save-loop-form-group {
+    margin-bottom: 1.5rem;
+}
+
+.save-loop-form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.save-loop-form-group input,
+.save-loop-form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-family: inherit;
+    transition: border-color 0.2s ease;
+}
+
+.save-loop-form-group input:focus,
+.save-loop-form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+}
+
+.save-loop-form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.save-loop-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+.save-loop-buttons .btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9rem;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@media (max-width: 600px) {
+    .save-loop-modal-content {
+        margin: 1rem;
+        padding: 1.5rem;
+    }
+
+    .save-loop-buttons {
+        flex-direction: column;
+    }
+
+    .save-loop-buttons .btn {
+        width: 100%;
+    }
+}
+
+.save-loop-info-value {
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 300px;
+    display: inline-block;
+}
+
+@media (max-width: 600px) {
+    .save-loop-info-value {
+        max-width: 200px;
+    }
+}
+
+/* Z-index fix for sticky elements */
+#audioTab .timer-section,
+#timerContainerAudio {
+    z-index: 100 !important;
+}
+
+#audioTab .audio-player-wrapper {
+    position: relative;
+    z-index: 1;
+}
+
+/* Update the audio layout to have proper scroll container */
+#audioTab .audio-layout,
+#metronomeTab .metronome-layout {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - var(--header-height) - 60px);
+    position: relative;
+}
+
+/* Timer section - make it fixed within the tab */
+#audioTab .timer-section,
+#timerContainerAudio,
+#metronomeTab .timer-section,
+#timerContainerMetronome {
+    position: relative; /* Changed from sticky */
+    z-index: 50;
+    background: var(--bg-dark);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(10px);
+    background: rgba(26, 26, 46, 0.95);
+    flex-shrink: 0; /* Prevent timer from shrinking */
+}
+
+/* Create scrollable content area */
+#audioTab .audio-player-wrapper,
+#metronomeTab .metronome-wrapper {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 1rem 1rem 1rem;
+}
+
+/* Remove scroll from the main layout container */
+#audioTab .audio-layout,
+#metronomeTab .metronome-layout {
+    overflow: hidden;
+}

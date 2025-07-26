@@ -3,44 +3,85 @@ import { notificationManager } from '../../services/notificationManager.js';
 import { timerRegistry } from '../../services/timerRegistry.js';
 
 export class Timer {
-    constructor(container = null) {
+    constructor(container = null, storageService = null) {
         // Core timer properties
         this.startTime = null;
         this.elapsedTime = 0;
         this.isRunning = false;
         this.interval = null;
         this.updateCallback = null;
-        
+        this.storageService = storageService;
+
         // UI-specific properties
         this.container = container;
         this.displayId = null;
         this.keyboardHandler = null;
         this.isDestroyed = false;
         this.lastActiveTime = Date.now();
-        
-        // Sync preference
-        const savedSyncPref = localStorage.getItem('timerSyncWithAudio');
-        this.syncWithAudio = savedSyncPref !== 'false';
-        
+
+        // Sync preference - will be loaded async
+        this.syncWithAudio = true; // Default until loaded
+        this.loadPreferences();
+
         // Bind methods for correct context
         this.start = this.start.bind(this);
         this.pause = this.pause.bind(this);
         this.reset = this.reset.bind(this);
         this.toggleTimer = this.toggleTimer.bind(this);
-        
+
         // Register timer in the registry
         timerRegistry.register('practice', this);
-        
+
         // Initialize UI if container provided
         if (container) {
             this.init();
         }
     }
-    
+
+    async loadPreferences() {
+        try {
+            if (this.storageService) {
+                const prefs = await this.storageService.getTimerPreferences();
+                this.syncWithAudio = prefs.syncWithAudio !== false;
+            } else {
+                // Fallback to localStorage
+                const savedSyncPref = localStorage.getItem('timerSyncWithAudio');
+                this.syncWithAudio = savedSyncPref !== 'false';
+            }
+
+            // Update UI if already rendered
+            if (this.displayId) {
+                const syncCheckbox = document.getElementById(`timerSyncCheckbox_${this.displayId}`);
+                if (syncCheckbox) {
+                    syncCheckbox.checked = this.syncWithAudio;
+                }
+            }
+        } catch (error) {
+            console.error('Error loading timer preferences:', error);
+        }
+    }
+
+    async savePreferences() {
+        try {
+            if (this.storageService) {
+                await this.storageService.saveTimerPreferences({
+                    syncWithAudio: this.syncWithAudio
+                });
+            } else {
+                // Fallback to localStorage
+                localStorage.setItem('timerSyncWithAudio', this.syncWithAudio.toString());
+            }
+        } catch (error) {
+            console.error('Error saving timer preferences:', error);
+            // Fallback to localStorage on error
+            localStorage.setItem('timerSyncWithAudio', this.syncWithAudio.toString());
+        }
+    }
+
     // UI Initialization (only if container provided)
     init() {
         if (this.isDestroyed || !this.container) return;
-        
+
         this.render();
         setTimeout(() => {
             if (!this.isDestroyed) {
@@ -49,13 +90,13 @@ export class Timer {
             }
         }, 100);
     }
-    
+
     render() {
         if (this.isDestroyed || !this.container) return;
-        
+
         const uniqueId = `timerDisplay_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         this.displayId = uniqueId;
-        
+
         this.container.innerHTML = `
         <div class="timer-widget">
             <div class="timer-main-row">
@@ -89,89 +130,92 @@ export class Timer {
         </div>
     `;
     }
-    
+
     attachEventListeners() {
         if (this.isDestroyed || !this.container) return;
-        
+
         const startBtn = document.getElementById(`timerStartBtn_${this.displayId}`);
         const resetBtn = document.getElementById(`timerResetBtn_${this.displayId}`);
         const syncCheckbox = document.getElementById(`timerSyncCheckbox_${this.displayId}`);
         const savePracticeBtn = document.getElementById(`savePracticeLogBtn_${this.displayId}`);
-        
+
         if (startBtn) {
             startBtn.removeEventListener('click', this.toggleTimer);
             startBtn.addEventListener('click', this.toggleTimer);
         }
-        
+
         if (resetBtn) {
             resetBtn.removeEventListener('click', this.reset);
             resetBtn.addEventListener('click', this.reset);
         }
-        
+
         if (syncCheckbox) {
-            syncCheckbox.addEventListener('change', (e) => {
+            syncCheckbox.addEventListener('change', async (e) => {
                 this.syncWithAudio = e.target.checked;
-                localStorage.setItem('timerSyncWithAudio', this.syncWithAudio.toString());
+                await this.savePreferences();
                 console.log('Timer: syncWithAudio changed to', this.syncWithAudio);
-                
+
                 // Notify any media players of the change
                 if (window.unifiedPracticeMinimal) {
                     if (window.unifiedPracticeMinimal.audioPlayer) {
-                        window.unifiedPracticeMinimal.audioPlayer.setSyncWithTimer(this.syncWithAudio);
+                        window.unifiedPracticeMinimal.audioPlayer.setSyncWithTimer(
+                            this.syncWithAudio
+                        );
                     }
                     if (window.unifiedPracticeMinimal.youtubePlayer) {
-                        window.unifiedPracticeMinimal.youtubePlayer.syncWithTimer = this.syncWithAudio;
+                        window.unifiedPracticeMinimal.youtubePlayer.syncWithTimer =
+                            this.syncWithAudio;
                     }
                 }
             });
         }
-        
+
         if (savePracticeBtn) {
             savePracticeBtn.addEventListener('click', () => {
                 this.showSaveDialog();
             });
         }
     }
-    
+
     setupKeyboardShortcuts() {
         if (this.isDestroyed || !this.container) return;
-        
+
         if (this.keyboardHandler) {
             document.removeEventListener('keydown', this.keyboardHandler);
         }
-        
+
         this.keyboardHandler = (e) => {
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-            
+
             if (e.code === 'Space') {
                 e.preventDefault();
                 this.toggleTimer();
             }
         };
-        
+
         document.addEventListener('keydown', this.keyboardHandler);
     }
-    
+
     // Core timer methods
     start() {
         if (!this.isRunning) {
             this.startTime = Date.now() - this.elapsedTime;
             this.isRunning = true;
             this.lastActiveTime = Date.now();
-            
+
             this.interval = setInterval(() => {
                 this.elapsedTime = Date.now() - this.startTime;
                 this.updateDisplay();
-                
+
                 if (this.updateCallback) {
                     this.updateCallback(this.elapsedTime);
                 }
             }, 100);
-            
+
             this.updateUI();
         }
     }
-    
+
     pause() {
         if (this.isRunning) {
             clearInterval(this.interval);
@@ -179,7 +223,7 @@ export class Timer {
             this.updateUI();
         }
     }
-    
+
     stop() {
         clearInterval(this.interval);
         this.isRunning = false;
@@ -187,28 +231,32 @@ export class Timer {
         this.startTime = null;
         this.updateDisplay();
         this.updateUI();
-        
+
         if (this.updateCallback) {
             this.updateCallback(this.elapsedTime);
         }
     }
-    
+
     reset() {
         const wasRunning = this.isRunning;
-        
+
         if (wasRunning && this.elapsedTime > 60) {
-            if (!confirm('Are you sure you want to reset the timer? You have unsaved practice time.')) {
+            if (
+                !confirm(
+                    'Are you sure you want to reset the timer? You have unsaved practice time.'
+                )
+            ) {
                 return;
             }
         }
-        
+
         this.stop();
-        
+
         if (notificationManager && this.elapsedTime > 0) {
             notificationManager.show('Timer reset', 'success');
         }
     }
-    
+
     toggleTimer() {
         if (this.isRunning) {
             this.pause();
@@ -216,25 +264,27 @@ export class Timer {
             this.start();
         }
     }
-    
+
     // Display methods
     updateDisplay() {
         if (!this.container || !this.displayId) return;
-        
+
         const display = document.getElementById(this.displayId);
         if (display) {
             display.textContent = this.getFormattedTime();
         }
-        
-        const savePracticeSection = document.getElementById(`savePracticeLogSection_${this.displayId}`);
+
+        const savePracticeSection = document.getElementById(
+            `savePracticeLogSection_${this.displayId}`
+        );
         if (savePracticeSection) {
             savePracticeSection.style.display = this.elapsedTime > 0 ? 'block' : 'none';
         }
     }
-    
+
     updateUI() {
         if (!this.container || !this.displayId) return;
-        
+
         const startBtn = document.getElementById(`timerStartBtn_${this.displayId}`);
         if (startBtn) {
             startBtn.innerHTML = this.isRunning
@@ -244,7 +294,7 @@ export class Timer {
             startBtn.classList.toggle('btn-primary', !this.isRunning);
         }
     }
-    
+
     showSaveDialog() {
         const practiceForm = document.createElement('div');
         practiceForm.innerHTML = `
@@ -258,7 +308,7 @@ export class Timer {
         `;
         document.body.appendChild(practiceForm);
     }
-    
+
     confirmSave() {
         // Save logic here
         if (notificationManager) {
@@ -266,32 +316,37 @@ export class Timer {
         }
         this.reset();
     }
-    
+
     cancelSave() {
         // Close dialog
     }
-    
+
     // Utility methods
     getElapsedTime() {
         return Math.floor(this.elapsedTime / 1000);
     }
-    
+
     getFormattedTime() {
         const totalSeconds = this.getElapsedTime();
         const hours = Math.floor(totalSeconds / 3600);
         const minutes = Math.floor((totalSeconds % 3600) / 60);
         const seconds = totalSeconds % 60;
-        
+
         return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     }
-    
+
     setUpdateCallback(callback) {
         this.updateCallback = callback;
     }
-    
+
     // Sync methods
     syncStart(source) {
-        console.log(`Timer syncStart called from ${source}, syncWithAudio:`, this.syncWithAudio, ', isRunning:', this.isRunning);
+        console.log(
+            `Timer syncStart called from ${source}, syncWithAudio:`,
+            this.syncWithAudio,
+            ', isRunning:',
+            this.isRunning
+        );
         if (this.syncWithAudio && !this.isRunning) {
             console.log(`Timer auto-starting from ${source}`);
             this.start();
@@ -301,14 +356,14 @@ export class Timer {
             console.log(`Timer already running, not starting from ${source}`);
         }
     }
-    
+
     syncStop(source) {
         if (this.syncWithAudio && this.isRunning) {
             console.log(`Timer auto-pausing from ${source}`);
             this.pause();
         }
     }
-    
+
     // State management
     getState() {
         return {
@@ -317,13 +372,13 @@ export class Timer {
             startTime: this.startTime
         };
     }
-    
+
     setState(state) {
         if (state) {
             this.isRunning = state.isRunning || false;
             this.elapsedTime = state.elapsedTime || 0;
             this.startTime = state.startTime || null;
-            
+
             if (this.isRunning) {
                 this.start();
             } else {
@@ -335,20 +390,20 @@ export class Timer {
             }
         }
     }
-    
+
     // Cleanup
     destroy() {
         this.isDestroyed = true;
-        
+
         clearInterval(this.interval);
-        
+
         if (this.keyboardHandler) {
             document.removeEventListener('keydown', this.keyboardHandler);
         }
-        
+
         // Unregister from timer registry
         timerRegistry.unregister('practice');
-        
+
         this.updateCallback = null;
     }
 }

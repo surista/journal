@@ -1,5 +1,10 @@
 {
   "projects": {
-    "default": "guitar-practice-journal-9f064"
-  }
+    "production": "guitar-practice-journal-9f064",
+    "development": "guitar-practice-journal-dev",
+    "staging": "guitar-practice-journal-staging",
+    "dev": "journal-dev-b6257"
+  },
+  "targets": {},
+  "etags": {}
 }

@@ -11,7 +11,7 @@ export class DailyPracticeSuggestion {
 
     async init(container) {
         this.container = container;
-        
+
         // Check if suggestion was already dismissed today
         if (this.wasDismissedToday()) {
             this.container.innerHTML = '';
@@ -25,7 +25,7 @@ export class DailyPracticeSuggestion {
     wasDismissedToday() {
         const dismissedDate = localStorage.getItem('practiceSuggestionDismissed');
         if (!dismissedDate) return false;
-        
+
         const today = new Date().toDateString();
         return dismissedDate === today;
     }
@@ -33,7 +33,7 @@ export class DailyPracticeSuggestion {
     dismissSuggestion() {
         const today = new Date().toDateString();
         localStorage.setItem('practiceSuggestionDismissed', today);
-        
+
         // Animate out and remove
         const suggestionEl = this.container.querySelector('.daily-practice-suggestion');
         if (suggestionEl) {
@@ -47,10 +47,10 @@ export class DailyPracticeSuggestion {
     async loadSuggestion() {
         try {
             const recommendations = await this.recommendationService.getRecommendations();
-            
+
             // Combine all recommendations and pick the most relevant one
             const allSuggestions = [];
-            
+
             // Priority 1: Repertoire that needs practice
             if (recommendations.repertoire.length > 0) {
                 allSuggestions.push({
@@ -59,7 +59,7 @@ export class DailyPracticeSuggestion {
                     ...recommendations.repertoire[0]
                 });
             }
-            
+
             // Priority 2: Goals that need attention
             if (recommendations.goals.length > 0) {
                 allSuggestions.push({
@@ -68,7 +68,7 @@ export class DailyPracticeSuggestion {
                     ...recommendations.goals[0]
                 });
             }
-            
+
             // Priority 3: General practice suggestions
             if (recommendations.general.length > 0) {
                 allSuggestions.push({
@@ -77,7 +77,7 @@ export class DailyPracticeSuggestion {
                     ...recommendations.general[0]
                 });
             }
-            
+
             // If no specific suggestions, provide a default one
             if (allSuggestions.length === 0) {
                 this.currentSuggestion = this.getDefaultSuggestion();
@@ -85,7 +85,6 @@ export class DailyPracticeSuggestion {
                 // Pick the highest priority suggestion
                 this.currentSuggestion = allSuggestions.sort((a, b) => a.priority - b.priority)[0];
             }
-            
         } catch (error) {
             console.error('Error loading suggestion:', error);
             this.currentSuggestion = this.getDefaultSuggestion();
@@ -101,15 +100,16 @@ export class DailyPracticeSuggestion {
             console.error('Error loading session areas:', error);
             sessionAreas = [];
         }
-        
+
         // Create suggestions based on user's session areas
         const suggestions = [];
-        
+
         // Always include a warmup suggestion
         suggestions.push({
             type: 'warmup',
             title: 'Start with a Warm-up',
-            description: 'Begin your practice with 5-10 minutes of finger exercises and stretches to prevent injury and improve dexterity.',
+            description:
+                'Begin your practice with 5-10 minutes of finger exercises and stretches to prevent injury and improve dexterity.',
             icon: '🤸',
             actionText: 'Start Warm-up Timer',
             exercises: [
@@ -118,16 +118,17 @@ export class DailyPracticeSuggestion {
                 { name: 'Spider exercise', duration: 5 }
             ]
         });
-        
+
         // Add suggestions based on user's session areas
-        sessionAreas.forEach(area => {
+        sessionAreas.forEach((area) => {
             const areaLower = area.toLowerCase();
-            
+
             if (areaLower.includes('scale')) {
                 suggestions.push({
                     type: 'scales',
                     title: `${area} Practice`,
-                    description: 'Focus on scales in different positions. This builds muscle memory and improves your fretboard knowledge.',
+                    description:
+                        'Focus on scales in different positions. This builds muscle memory and improves your fretboard knowledge.',
                     icon: '🎼',
                     actionText: `Practice ${area}`,
                     exercises: [
@@ -140,7 +141,8 @@ export class DailyPracticeSuggestion {
                 suggestions.push({
                     type: 'chords',
                     title: `${area} Practice`,
-                    description: 'Work on chord shapes, transitions, and voicings to improve your rhythm playing.',
+                    description:
+                        'Work on chord shapes, transitions, and voicings to improve your rhythm playing.',
                     icon: '🎸',
                     actionText: `Practice ${area}`,
                     exercises: [
@@ -153,7 +155,8 @@ export class DailyPracticeSuggestion {
                 suggestions.push({
                     type: 'rhythm',
                     title: `${area} Focus`,
-                    description: 'Work on your timing with a metronome. Start slow and gradually increase tempo while maintaining accuracy.',
+                    description:
+                        'Work on your timing with a metronome. Start slow and gradually increase tempo while maintaining accuracy.',
                     icon: '🥁',
                     actionText: 'Start Metronome',
                     exercises: [
@@ -166,7 +169,8 @@ export class DailyPracticeSuggestion {
                 suggestions.push({
                     type: 'technique',
                     title: `${area} Building`,
-                    description: 'Dedicate time to specific techniques to expand your playing abilities.',
+                    description:
+                        'Dedicate time to specific techniques to expand your playing abilities.',
                     icon: '🎸',
                     actionText: `Work on ${area}`,
                     exercises: [
@@ -179,7 +183,8 @@ export class DailyPracticeSuggestion {
                 suggestions.push({
                     type: 'ear',
                     title: `${area} Session`,
-                    description: 'Develop your musical ear by playing along to songs or working on interval recognition.',
+                    description:
+                        'Develop your musical ear by playing along to songs or working on interval recognition.',
                     icon: '👂',
                     actionText: `Start ${area}`,
                     exercises: [
@@ -192,7 +197,8 @@ export class DailyPracticeSuggestion {
                 suggestions.push({
                     type: 'arpeggios',
                     title: `${area} Practice`,
-                    description: 'Work on broken chord patterns to improve your finger independence and melodic playing.',
+                    description:
+                        'Work on broken chord patterns to improve your finger independence and melodic playing.',
                     icon: '🎵',
                     actionText: `Practice ${area}`,
                     exercises: [
@@ -218,9 +224,10 @@ export class DailyPracticeSuggestion {
                 });
             }
         });
-        
+
         // If no suggestions were created from session areas, use defaults
-        if (suggestions.length === 1) { // Only warmup
+        if (suggestions.length === 1) {
+            // Only warmup
             suggestions.push(
                 {
                     type: 'scales',
@@ -248,7 +255,7 @@ export class DailyPracticeSuggestion {
                 }
             );
         }
-        
+
         // Pick a random suggestion based on the day
         const dayIndex = new Date().getDate() % suggestions.length;
         return suggestions[dayIndex];
@@ -276,19 +283,27 @@ export class DailyPracticeSuggestion {
                 <div class="suggestion-content">
                     <h4>${this.currentSuggestion.title}</h4>
                     <p class="suggestion-description">${this.currentSuggestion.description}</p>
-                    ${this.currentSuggestion.exercises ? `
+                    ${
+                        this.currentSuggestion.exercises
+                            ? `
                         <div class="suggested-exercises">
                             <h5>Suggested Routine (${totalDuration} min):</h5>
                             <ul class="exercise-list">
-                                ${this.currentSuggestion.exercises.map(ex => `
+                                ${this.currentSuggestion.exercises
+                                    .map(
+                                        (ex) => `
                                     <li class="exercise-item">
                                         <span class="exercise-name">${ex.name}</span>
                                         <span class="exercise-duration">${ex.duration} min</span>
                                     </li>
-                                `).join('')}
+                                `
+                                    )
+                                    .join('')}
                             </ul>
                         </div>
-                    ` : ''}
+                    `
+                            : ''
+                    }
                     <button class="btn btn-primary start-suggestion-btn">
                         ${this.currentSuggestion.actionText || 'Start Practice'}
                     </button>
@@ -318,29 +333,35 @@ export class DailyPracticeSuggestion {
 
     handleStartPractice() {
         const suggestion = this.currentSuggestion;
-        
+
         if (suggestion.type === 'repertoire' && suggestion.relatedItem) {
             // Navigate to repertoire tab
             window.location.hash = '#repertoire';
-            window.dispatchEvent(new CustomEvent('selectRepertoireItem', {
-                detail: { itemId: suggestion.relatedItem.id }
-            }));
+            window.dispatchEvent(
+                new CustomEvent('selectRepertoireItem', {
+                    detail: { itemId: suggestion.relatedItem.id }
+                })
+            );
         } else if (suggestion.type === 'goal' && suggestion.exercises) {
             // Start exercise routine
-            window.dispatchEvent(new CustomEvent('startExerciseRoutine', {
-                detail: { exercises: suggestion.exercises }
-            }));
+            window.dispatchEvent(
+                new CustomEvent('startExerciseRoutine', {
+                    detail: { exercises: suggestion.exercises }
+                })
+            );
         } else if (suggestion.type === 'rhythm') {
             // Open metronome
             window.dispatchEvent(new CustomEvent('openMetronome'));
         } else {
             // Default: start a general practice session
-            window.dispatchEvent(new CustomEvent('startPracticeSession', {
-                detail: { 
-                    practiceArea: suggestion.practiceArea || suggestion.title,
-                    exercises: suggestion.exercises 
-                }
-            }));
+            window.dispatchEvent(
+                new CustomEvent('startPracticeSession', {
+                    detail: {
+                        practiceArea: suggestion.practiceArea || suggestion.title,
+                        exercises: suggestion.exercises
+                    }
+                })
+            );
         }
     }
 

@@ -34,7 +34,7 @@ export class AudioFilePlayer {
 
             // Read file as ArrayBuffer
             const arrayBuffer = await file.arrayBuffer();
-            
+
             // Decode audio data using Web Audio API
             // Use the AudioService which properly handles user gesture requirements
             console.log('Getting audio context from AudioService...');
@@ -46,18 +46,26 @@ export class AudioFilePlayer {
                 await this.audioService.initializeAudioContext();
                 const context = await this.audioService.getAudioContext();
                 if (!context) {
-                    throw new Error('Cannot initialize audio. Please refresh the page and try again.');
+                    throw new Error(
+                        'Cannot initialize audio. Please refresh the page and try again.'
+                    );
                 }
                 return await this.loadFile(file); // Retry once with initialized context
             }
-            
+
             console.log('Audio context state:', audioContext.state);
             console.log('Decoding audio data, arrayBuffer size:', arrayBuffer.byteLength);
             const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-            console.log('Audio decoded successfully, duration:', audioBuffer.duration, 'channels:', audioBuffer.numberOfChannels);
+            console.log(
+                'Audio decoded successfully, duration:',
+                audioBuffer.duration,
+                'channels:',
+                audioBuffer.numberOfChannels
+            );
 
             // Get player container
-            const playerContainer = this.container || document.getElementById('audioPlayerContainer');
+            const playerContainer =
+                this.container || document.getElementById('audioPlayerContainer');
             if (!playerContainer) {
                 console.error('Audio player container not found');
                 return;
@@ -95,8 +103,8 @@ export class AudioFilePlayer {
     validateFile(file) {
         // Check file type
         const validTypes = ['.mp3', 'audio/mp3', 'audio/mpeg'];
-        const isValidType = validTypes.some(type => 
-            file.type === type || file.name.toLowerCase().endsWith('.mp3')
+        const isValidType = validTypes.some(
+            (type) => file.type === type || file.name.toLowerCase().endsWith('.mp3')
         );
 
         if (!isValidType) {
@@ -132,7 +140,7 @@ export class AudioFilePlayer {
     updateFileName(name) {
         const fileNameElement = document.getElementById('currentFileName');
         const wrapperElement = document.getElementById('currentFileNameWrapper');
-        
+
         if (fileNameElement && wrapperElement) {
             fileNameElement.textContent = `Current: ${name}`;
             wrapperElement.style.display = 'block';
@@ -212,7 +220,7 @@ export class AudioFilePlayer {
             <p>Previously loaded: <strong>${fileName}</strong></p>
             <p>Please reload the audio file to continue.</p>
         `;
-        
+
         const container = this.container || document.getElementById('audioPlayerContainer');
         if (container) {
             container.appendChild(messageDiv);

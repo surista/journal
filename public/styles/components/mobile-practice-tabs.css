@@ -1,121 +1,121 @@
 /* Mobile Practice Tab Styles */
 
 @media (max-width: 768px) {
-    /* Mode tabs container */
-    .mode-tabs {
-        display: flex;
-        justify-content: space-around;
-        gap: 8px;
-        padding: 12px 16px;
-        background: var(--bg-secondary);
-        border-radius: 16px;
-        margin-bottom: 16px;
-    }
+  /* Mode tabs container */
+  .mode-tabs {
+    display: flex;
+    justify-content: space-around;
+    gap: 8px;
+    padding: 12px 16px;
+    background: var(--bg-secondary);
+    border-radius: 16px;
+    margin-bottom: 16px;
+  }
 
-    /* Individual tab buttons */
-    .mode-tab {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 12px 8px;
-        border: none;
-        background: transparent;
-        border-radius: 12px;
-        transition: all 0.2s ease;
-        cursor: pointer;
-        position: relative;
-        min-height: 56px;
-    }
+  /* Individual tab buttons */
+  .mode-tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 8px;
+    border: none;
+    background: transparent;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    position: relative;
+    min-height: 56px;
+  }
 
-    .mode-tab.active {
-        background: var(--bg-primary);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
+  .mode-tab.active {
+    background: var(--bg-primary);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
 
-    /* Tab icons - make them larger on mobile */
-    .mode-tab .tab-icon {
-        font-size: 24px;
-        line-height: 1;
-        display: block;
-        margin-bottom: 0;
-    }
+  /* Tab icons - make them larger on mobile */
+  .mode-tab .tab-icon {
+    font-size: 24px;
+    line-height: 1;
+    display: block;
+    margin-bottom: 0;
+  }
 
-    /* Hide tab text on mobile */
-    .mode-tab .tab-text {
-        display: none;
-    }
+  /* Hide tab text on mobile */
+  .mode-tab .tab-text {
+    display: none;
+  }
 
-    /* Active indicator */
-    .mode-tab.active::after {
-        content: '';
-        position: absolute;
-        bottom: 4px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 24px;
-        height: 3px;
-        background: var(--color-primary);
-        border-radius: 2px;
-    }
+  /* Active indicator */
+  .mode-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24px;
+    height: 3px;
+    background: var(--color-primary);
+    border-radius: 2px;
+  }
 
-    /* Touch feedback */
-    .mode-tab:active {
-        transform: scale(0.95);
-        opacity: 0.8;
-    }
+  /* Touch feedback */
+  .mode-tab:active {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
 }
 
 /* Very small phones */
 @media (max-width: 375px) {
-    .mode-tabs {
-        gap: 4px;
-        padding: 8px;
-    }
+  .mode-tabs {
+    gap: 4px;
+    padding: 8px;
+  }
 
-    .mode-tab {
-        padding: 10px 4px;
-        min-height: 48px;
-    }
+  .mode-tab {
+    padding: 10px 4px;
+    min-height: 48px;
+  }
 
-    .mode-tab .tab-icon {
-        font-size: 20px;
-    }
+  .mode-tab .tab-icon {
+    font-size: 20px;
+  }
 }
 
 /* Landscape mode */
 @media (max-width: 768px) and (orientation: landscape) {
-    .mode-tabs {
-        margin-bottom: 12px;
-        padding: 8px 12px;
-    }
+  .mode-tabs {
+    margin-bottom: 12px;
+    padding: 8px 12px;
+  }
 
-    .mode-tab {
-        min-height: 44px;
-        padding: 8px;
-    }
+  .mode-tab {
+    min-height: 44px;
+    padding: 8px;
+  }
 
-    .mode-tab .tab-icon {
-        font-size: 20px;
-    }
+  .mode-tab .tab-icon {
+    font-size: 20px;
+  }
 }
 
 /* High contrast mode support */
 @media (prefers-contrast: high) {
-    .mode-tab.active {
-        outline: 2px solid var(--color-primary);
-        outline-offset: 2px;
-    }
+  .mode-tab.active {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
 }
 
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
-    .mode-tab {
-        transition: none;
-    }
-    
-    .mode-tab:active {
-        transform: none;
-    }
+  .mode-tab {
+    transition: none;
+  }
+
+  .mode-tab:active {
+    transform: none;
+  }
 }

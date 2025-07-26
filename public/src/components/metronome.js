@@ -1,6 +1,5 @@
 // Metronome Component - Modern UI Design
 
-
 export class Metronome {
     constructor(container, audioService) {
         this.container = container;
@@ -49,9 +48,13 @@ export class Metronome {
                 <!-- Beat indicator -->
                 <div class="beat-indicator">
                     <div class="beat-lights">
-                        ${Array(this.beatsPerMeasure).fill(0).map((_, i) =>
-            `<div class="beat-light ${this.accentPattern[i] ? 'accent' : ''}" data-beat="${i}"></div>`
-        ).join('')}
+                        ${Array(this.beatsPerMeasure)
+                            .fill(0)
+                            .map(
+                                (_, i) =>
+                                    `<div class="beat-light ${this.accentPattern[i] ? 'accent' : ''}" data-beat="${i}"></div>`
+                            )
+                            .join('')}
                     </div>
                     <div class="beat-counter">
                         <span id="currentBeat">1</span> / <span id="totalBeats">${this.beatsPerMeasure}</span>
@@ -112,9 +115,13 @@ export class Metronome {
                     <div class="setting-group">
                         <label>Accent Pattern:</label>
                         <div class="accent-pattern" id="accentPattern">
-                            ${Array(this.beatsPerMeasure).fill(0).map((_, i) =>
-            `<button class="accent-beat-btn ${this.accentPattern[i] ? 'accented' : ''}" data-beat="${i}">${i + 1}</button>`
-        ).join('')}
+                            ${Array(this.beatsPerMeasure)
+                                .fill(0)
+                                .map(
+                                    (_, i) =>
+                                        `<button class="accent-beat-btn ${this.accentPattern[i] ? 'accented' : ''}" data-beat="${i}">${i + 1}</button>`
+                                )
+                                .join('')}
                         </div>
                     </div>
                 </div>
@@ -148,7 +155,7 @@ export class Metronome {
         });
 
         // BPM adjustment buttons
-        document.querySelectorAll('.bpm-adjust-btn[data-adjust]').forEach(btn => {
+        document.querySelectorAll('.bpm-adjust-btn[data-adjust]').forEach((btn) => {
             btn.addEventListener('click', (e) => {
                 const adjustment = parseInt(e.target.dataset.adjust);
                 this.setBpm(this.bpm + adjustment);
@@ -166,7 +173,7 @@ export class Metronome {
         });
 
         // Accent pattern buttons
-        document.querySelectorAll('.accent-beat-btn').forEach(btn => {
+        document.querySelectorAll('.accent-beat-btn').forEach((btn) => {
             btn.addEventListener('click', (e) => {
                 const beat = parseInt(e.target.dataset.beat);
                 this.toggleAccent(beat);
@@ -219,14 +226,22 @@ export class Metronome {
         });
 
         // Listen for audio service ready
-        document.addEventListener('click', () => {
-            setTimeout(() => {
-                if (this.audioService && this.audioService.isReady && this.audioService.isReady()) {
-                    this.audioReady = true;
-                    this.updateUI();
-                }
-            }, 100);
-        }, {once: true});
+        document.addEventListener(
+            'click',
+            () => {
+                setTimeout(() => {
+                    if (
+                        this.audioService &&
+                        this.audioService.isReady &&
+                        this.audioService.isReady()
+                    ) {
+                        this.audioReady = true;
+                        this.updateUI();
+                    }
+                }, 100);
+            },
+            { once: true }
+        );
     }
 
     async togglePlayback() {

@@ -14,7 +14,7 @@ export class CloudSyncManager {
         // Wait for Firebase to initialize
         await this.firebaseSync.waitForInitialization();
         this.isInitialized = true;
-        
+
         // Listen for auth state changes
         window.addEventListener('authStateChanged', () => {
             this.updateUI();
@@ -51,15 +51,21 @@ export class CloudSyncManager {
                         <i class="fas fa-circle"></i>
                         ${isAuthenticated ? 'Connected' : 'Not Connected'}
                     </div>
-                    ${pendingWrites > 0 ? `
+                    ${
+                        pendingWrites > 0
+                            ? `
                         <div class="pending-sync">
                             <i class="fas fa-sync-alt"></i>
                             ${pendingWrites} items pending sync
                         </div>
-                    ` : ''}
+                    `
+                            : ''
+                    }
                 </div>
 
-                ${isAuthenticated ? `
+                ${
+                    isAuthenticated
+                        ? `
                     <div class="sync-controls">
                         <div class="user-info">
                             <i class="fas fa-user"></i>
@@ -98,7 +104,8 @@ export class CloudSyncManager {
                             </button>
                         </div>
                     </div>
-                ` : `
+                `
+                        : `
                     <div class="sync-auth">
                         <p>Sign in to enable cloud sync and protect your practice data</p>
                         <button class="btn btn-primary" id="signInBtn">
@@ -110,7 +117,8 @@ export class CloudSyncManager {
                             Create Account
                         </button>
                     </div>
-                `}
+                `
+                }
                 
                 <div id="syncNotifications" class="sync-notifications"></div>
             </div>
@@ -183,9 +191,9 @@ export class CloudSyncManager {
     async migrateToCloud() {
         const confirmed = confirm(
             'This will upload all your local data to the cloud. ' +
-            'Any existing cloud data will be merged. Continue?'
+                'Any existing cloud data will be merged. Continue?'
         );
-        
+
         if (!confirmed) return;
 
         this.showNotification('Starting migration...', 'info');
@@ -209,9 +217,9 @@ export class CloudSyncManager {
     async downloadFromCloud() {
         const confirmed = confirm(
             'This will download all cloud data and merge with your local data. ' +
-            'Newer versions will be kept. Continue?'
+                'Newer versions will be kept. Continue?'
         );
-        
+
         if (!confirmed) return;
 
         this.showNotification('Downloading from cloud...', 'info');
@@ -267,12 +275,16 @@ export class CloudSyncManager {
                             <label for="password">Password</label>
                             <input type="password" id="password" required class="form-control">
                         </div>
-                        ${mode === 'signup' ? `
+                        ${
+                            mode === 'signup'
+                                ? `
                             <div class="form-group">
                                 <label for="displayName">Display Name (optional)</label>
                                 <input type="text" id="displayName" class="form-control">
                             </div>
-                        ` : ''}
+                        `
+                                : ''
+                        }
                         <div class="form-actions">
                             <button type="submit" class="btn btn-primary">
                                 ${mode === 'signin' ? 'Sign In' : 'Create Account'}
@@ -292,7 +304,7 @@ export class CloudSyncManager {
         const form = modal.querySelector('#authForm');
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             const email = form.email.value;
             const password = form.password.value;
             const displayName = form.displayName?.value;
@@ -307,16 +319,22 @@ export class CloudSyncManager {
 
                 if (result.success) {
                     this.showNotification(
-                        mode === 'signin' ? 'Signed in successfully!' : 'Account created successfully!',
+                        mode === 'signin'
+                            ? 'Signed in successfully!'
+                            : 'Account created successfully!',
                         'success'
                     );
                     modal.remove();
                     this.updateUI();
-                    
+
                     // Offer to migrate local data for new users
                     if (mode === 'signup') {
                         setTimeout(() => {
-                            if (confirm('Would you like to upload your local practice data to the cloud?')) {
+                            if (
+                                confirm(
+                                    'Would you like to upload your local practice data to the cloud?'
+                                )
+                            ) {
                                 this.migrateToCloud();
                             }
                         }, 1000);
@@ -345,7 +363,7 @@ export class CloudSyncManager {
     updateSyncStatus() {
         const pendingWrites = this.firebaseSync.getPendingWritesCount();
         const statusElement = this.container.querySelector('.sync-status');
-        
+
         if (statusElement && pendingWrites > 0) {
             const pendingElement = statusElement.querySelector('.pending-sync');
             if (pendingElement) {
@@ -361,9 +379,13 @@ export class CloudSyncManager {
         const notification = document.createElement('div');
         notification.className = `notification ${type}`;
         notification.innerHTML = `
-            <i class="fas fa-${type === 'success' ? 'check-circle' : 
-                             type === 'error' ? 'exclamation-circle' : 
-                             'info-circle'}"></i>
+            <i class="fas fa-${
+                type === 'success'
+                    ? 'check-circle'
+                    : type === 'error'
+                      ? 'exclamation-circle'
+                      : 'info-circle'
+            }"></i>
             <span>${message}</span>
         `;
 

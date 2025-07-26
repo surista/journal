@@ -1,6 +1,6 @@
 // src/services/storageService.js - Complete fixed version with all goal methods
-import {CompressionUtils, TimeUtils} from '../utils/helpers.js';
-import {AuthService} from './authService.js';
+import { CompressionUtils, TimeUtils } from '../utils/helpers.js';
+import { AuthService } from './authService.js';
 import firebaseSyncService from './firebaseSyncService.js';
 
 export class StorageService {
@@ -51,12 +51,13 @@ export class StorageService {
         try {
             // Wait for Firebase to initialize
             await this.firebaseSync.waitForInitialization();
-            
+
             // Listen for sync events
-            window.addEventListener('practiceSessionSync', (e) => this.handleSyncEvent('practice', e));
+            window.addEventListener('practiceSessionSync', (e) =>
+                this.handleSyncEvent('practice', e)
+            );
             window.addEventListener('goalSync', (e) => this.handleSyncEvent('goal', e));
             window.addEventListener('repertoireSync', (e) => this.handleSyncEvent('repertoire', e));
-            
         } catch (error) {
             console.warn('Cloud sync setup failed, continuing in offline mode:', error);
         }
@@ -68,7 +69,7 @@ export class StorageService {
         // The data is already saved locally when we add it
         // Real-time sync will be handled differently in the future
         return;
-        
+
         // Dispatch UI update events
         // window.dispatchEvent(new CustomEvent('dataUpdated', {
         //     detail: { dataType: type, changeType, data }
@@ -99,7 +100,11 @@ export class StorageService {
 
             if (success) {
                 // Sync individual goal to Firebase
-                if (this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
+                if (
+                    this.cloudSyncEnabled &&
+                    this.firebaseSync &&
+                    this.firebaseSync.isAuthenticated()
+                ) {
                     try {
                         await this.firebaseSync.saveGoal(goal);
                     } catch (cloudError) {
@@ -119,7 +124,7 @@ export class StorageService {
     async updateGoal(goalId, updates) {
         try {
             const goals = await this.getGoals();
-            const goalIndex = goals.findIndex(g => g.id == goalId); // Use loose equality for number type compatibility
+            const goalIndex = goals.findIndex((g) => g.id == goalId); // Use loose equality for number type compatibility
 
             if (goalIndex === -1) {
                 throw new Error(`Goal with ID ${goalId} not found`);
@@ -136,7 +141,11 @@ export class StorageService {
 
             if (success) {
                 // Sync update to Firebase
-                if (this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
+                if (
+                    this.cloudSyncEnabled &&
+                    this.firebaseSync &&
+                    this.firebaseSync.isAuthenticated()
+                ) {
                     try {
                         await this.firebaseSync.updateGoal(goalId, goals[goalIndex]);
                     } catch (cloudError) {
@@ -157,7 +166,7 @@ export class StorageService {
         try {
             const goals = await this.getGoals();
             const initialLength = goals.length;
-            const filteredGoals = goals.filter(g => g.id != goalId); // Use loose inequality for number type compatibility
+            const filteredGoals = goals.filter((g) => g.id != goalId); // Use loose inequality for number type compatibility
 
             if (filteredGoals.length === initialLength) {
                 console.warn(`Goal with ID ${goalId} not found for deletion`);
@@ -169,7 +178,11 @@ export class StorageService {
 
             if (success) {
                 // Sync deletion to Firebase
-                if (this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
+                if (
+                    this.cloudSyncEnabled &&
+                    this.firebaseSync &&
+                    this.firebaseSync.isAuthenticated()
+                ) {
                     try {
                         await this.firebaseSync.deleteGoal(goalId);
                     } catch (cloudError) {
@@ -220,12 +233,17 @@ export class StorageService {
             const stored = localStorage.getItem(key);
 
             // If no local data but user is authenticated, try to load from Firebase
-            if (!stored && this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
+            if (
+                !stored &&
+                this.cloudSyncEnabled &&
+                this.firebaseSync &&
+                this.firebaseSync.isAuthenticated()
+            ) {
                 // Check if we're already loading to prevent duplicate loads
                 if (this._loadingGoals) {
                     return this._loadingGoalsPromise || [];
                 }
-                
+
                 this._loadingGoals = true;
                 this._loadingGoalsPromise = (async () => {
                     try {
@@ -249,7 +267,7 @@ export class StorageService {
                                     console.error('Error parsing local goals during merge:', e);
                                 }
                             }
-                            
+
                             // Save to local storage for next time
                             await this.saveGoals(cloudGoals);
                             return cloudGoals;
@@ -263,7 +281,7 @@ export class StorageService {
                         this._loadingGoalsPromise = null;
                     }
                 })();
-                
+
                 return this._loadingGoalsPromise;
             }
 
@@ -285,10 +303,11 @@ export class StorageService {
             console.error('Error loading goals:', error);
 
             // Try to recover from corruption
-            if (error.message.includes('JSON parse error') ||
+            if (
+                error.message.includes('JSON parse error') ||
                 error.message.includes('SyntaxError') ||
-                error.message.includes('Unexpected token')) {
-
+                error.message.includes('Unexpected token')
+            ) {
                 console.warn('Goals data corrupted, clearing and starting fresh');
                 const key = `${this.prefix}goals`;
                 localStorage.removeItem(key);
@@ -303,7 +322,7 @@ export class StorageService {
     async getGoalById(goalId) {
         try {
             const goals = await this.getGoals();
-            return goals.find(g => g.id === goalId) || null;
+            return goals.find((g) => g.id === goalId) || null;
         } catch (error) {
             console.error('Error getting goal by ID:', error);
             return null;
@@ -313,7 +332,7 @@ export class StorageService {
     async getGoalsByType(type) {
         try {
             const goals = await this.getGoals();
-            return goals.filter(g => g.type === type);
+            return goals.filter((g) => g.type === type);
         } catch (error) {
             console.error('Error getting goals by type:', error);
             return [];
@@ -323,7 +342,7 @@ export class StorageService {
     async getActiveGoals() {
         try {
             const goals = await this.getGoals();
-            return goals.filter(g => !g.completed);
+            return goals.filter((g) => !g.completed);
         } catch (error) {
             console.error('Error getting active goals:', error);
             return [];
@@ -333,7 +352,7 @@ export class StorageService {
     async getCompletedGoals() {
         try {
             const goals = await this.getGoals();
-            return goals.filter(g => g.completed);
+            return goals.filter((g) => g.completed);
         } catch (error) {
             console.error('Error getting completed goals:', error);
             return [];
@@ -377,12 +396,17 @@ export class StorageService {
             const stored = localStorage.getItem(key);
 
             // If no local data but user is authenticated, try to load from Firebase
-            if (!stored && this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
+            if (
+                !stored &&
+                this.cloudSyncEnabled &&
+                this.firebaseSync &&
+                this.firebaseSync.isAuthenticated()
+            ) {
                 // Check if we're already loading to prevent duplicate loads
                 if (this._loadingRepertoire) {
                     return this._loadingRepertoirePromise || [];
                 }
-                
+
                 this._loadingRepertoire = true;
                 this._loadingRepertoirePromise = (async () => {
                     try {
@@ -396,17 +420,26 @@ export class StorageService {
                                 // Merge them properly
                                 try {
                                     const localRepertoire = JSON.parse(currentStored);
-                                    if (Array.isArray(localRepertoire) && localRepertoire.length > 0) {
+                                    if (
+                                        Array.isArray(localRepertoire) &&
+                                        localRepertoire.length > 0
+                                    ) {
                                         // Merge local and cloud data
-                                        const merged = this.mergeData(localRepertoire, cloudRepertoire);
+                                        const merged = this.mergeData(
+                                            localRepertoire,
+                                            cloudRepertoire
+                                        );
                                         await this.saveRepertoire(merged);
                                         return merged;
                                     }
                                 } catch (e) {
-                                    console.error('Error parsing local repertoire during merge:', e);
+                                    console.error(
+                                        'Error parsing local repertoire during merge:',
+                                        e
+                                    );
                                 }
                             }
-                            
+
                             // Save to local storage for next time
                             await this.saveRepertoire(cloudRepertoire);
                             return cloudRepertoire;
@@ -420,7 +453,7 @@ export class StorageService {
                         this._loadingRepertoirePromise = null;
                     }
                 })();
-                
+
                 return this._loadingRepertoirePromise;
             }
 
@@ -442,10 +475,11 @@ export class StorageService {
             console.error('Error loading repertoire:', error);
 
             // Try to recover from corruption
-            if (error.message.includes('JSON parse error') ||
+            if (
+                error.message.includes('JSON parse error') ||
                 error.message.includes('SyntaxError') ||
-                error.message.includes('Unexpected token')) {
-
+                error.message.includes('Unexpected token')
+            ) {
                 console.warn('Repertoire data corrupted, clearing and starting fresh');
                 const key = `${this.prefix}repertoire`;
                 localStorage.removeItem(key);
@@ -503,7 +537,11 @@ export class StorageService {
 
             if (success) {
                 // Sync individual song to Firebase
-                if (this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
+                if (
+                    this.cloudSyncEnabled &&
+                    this.firebaseSync &&
+                    this.firebaseSync.isAuthenticated()
+                ) {
                     try {
                         await this.firebaseSync.saveRepertoireSong(song);
                     } catch (cloudError) {
@@ -523,7 +561,7 @@ export class StorageService {
     async updateRepertoireSong(songId, updates) {
         try {
             const repertoire = await this.getRepertoire();
-            const songIndex = repertoire.findIndex(s => s.id === songId);
+            const songIndex = repertoire.findIndex((s) => s.id === songId);
 
             if (songIndex === -1) {
                 throw new Error(`Song with ID ${songId} not found`);
@@ -553,7 +591,7 @@ export class StorageService {
         try {
             const repertoire = await this.getRepertoire();
             const initialLength = repertoire.length;
-            const filteredRepertoire = repertoire.filter(s => s.id !== songId);
+            const filteredRepertoire = repertoire.filter((s) => s.id !== songId);
 
             if (filteredRepertoire.length === initialLength) {
                 console.warn(`Song with ID ${songId} not found for deletion`);
@@ -565,7 +603,11 @@ export class StorageService {
 
             if (success) {
                 // Sync deletion to Firebase
-                if (this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
+                if (
+                    this.cloudSyncEnabled &&
+                    this.firebaseSync &&
+                    this.firebaseSync.isAuthenticated()
+                ) {
                     try {
                         await this.firebaseSync.deleteRepertoireSong(songId);
                     } catch (cloudError) {
@@ -585,7 +627,7 @@ export class StorageService {
     async updateSongPracticeStats(songId, practiceSession) {
         try {
             const repertoire = await this.getRepertoire();
-            const songIndex = repertoire.findIndex(s => s.id === songId);
+            const songIndex = repertoire.findIndex((s) => s.id === songId);
 
             if (songIndex === -1) {
                 console.warn(`Song with ID ${songId} not found for stats update`);
@@ -596,7 +638,8 @@ export class StorageService {
 
             // Update practice stats
             song.practiceCount = (song.practiceCount || 0) + 1;
-            song.totalPracticeTime = (song.totalPracticeTime || 0) + (practiceSession.duration || 0);
+            song.totalPracticeTime =
+                (song.totalPracticeTime || 0) + (practiceSession.duration || 0);
             song.lastPracticed = new Date().toISOString();
 
             // Save back to storage
@@ -613,7 +656,105 @@ export class StorageService {
         }
     }
 
+    // ===================
+    // LOOPS
+    // ===================
 
+    async saveAudioLoop(fileName, loops) {
+        try {
+            const key = `${this.prefix}audio_loops_${fileName}`;
+            localStorage.setItem(key, JSON.stringify(loops));
+
+            // Sync to Firebase if enabled
+            if (this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
+                try {
+                    await this.firebaseSync.saveLoops('audio', fileName, loops);
+                } catch (cloudError) {
+                    console.warn('Audio loops cloud sync failed:', cloudError);
+                }
+            }
+
+            return true;
+        } catch (error) {
+            console.error('Error saving audio loops:', error);
+            return false;
+        }
+    }
+
+    async getAudioLoops(fileName) {
+        try {
+            const key = `${this.prefix}audio_loops_${fileName}`;
+
+            // Try cloud first if enabled
+            if (this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
+                try {
+                    const cloudLoops = await this.firebaseSync.getLoops('audio', fileName);
+                    if (cloudLoops && cloudLoops.length > 0) {
+                        // Save to local cache
+                        localStorage.setItem(key, JSON.stringify(cloudLoops));
+                        return cloudLoops;
+                    }
+                } catch (cloudError) {
+                    console.warn('Failed to fetch audio loops from cloud:', cloudError);
+                }
+            }
+
+            // Fallback to local
+            const stored = localStorage.getItem(key);
+            return stored ? JSON.parse(stored) : [];
+        } catch (error) {
+            console.error('Error getting audio loops:', error);
+            return [];
+        }
+    }
+
+    async saveYouTubeLoop(videoId, loops) {
+        try {
+            const key = `${this.prefix}youtube_loops_${videoId}`;
+            localStorage.setItem(key, JSON.stringify(loops));
+
+            // Sync to Firebase if enabled
+            if (this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
+                try {
+                    await this.firebaseSync.saveLoops('youtube', videoId, loops);
+                } catch (cloudError) {
+                    console.warn('YouTube loops cloud sync failed:', cloudError);
+                }
+            }
+
+            return true;
+        } catch (error) {
+            console.error('Error saving YouTube loops:', error);
+            return false;
+        }
+    }
+
+    async getYouTubeLoops(videoId) {
+        try {
+            const key = `${this.prefix}youtube_loops_${videoId}`;
+
+            // Try cloud first if enabled
+            if (this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
+                try {
+                    const cloudLoops = await this.firebaseSync.getLoops('youtube', videoId);
+                    if (cloudLoops && cloudLoops.length > 0) {
+                        // Save to local cache
+                        localStorage.setItem(key, JSON.stringify(cloudLoops));
+                        return cloudLoops;
+                    }
+                } catch (cloudError) {
+                    console.warn('Failed to fetch YouTube loops from cloud:', cloudError);
+                }
+            }
+
+            // Fallback to local
+            const stored = localStorage.getItem(key);
+            return stored ? JSON.parse(stored) : [];
+        } catch (error) {
+            console.error('Error getting YouTube loops:', error);
+            return [];
+        }
+    }
 
     // ===================
     // PRACTICE ENTRIES
@@ -624,15 +765,30 @@ export class StorageService {
     cleanPracticeEntry(entry) {
         // Create a clean copy of the entry without circular references
         const cleanEntry = {};
-        
+
         // Define allowed fields
         const allowedFields = [
-            'id', 'name', 'date', 'duration', 'practiceArea', 'key', 'mode',
-            'isFavorite', 'audioFile', 'youtubeTitle', 'youtubeUrl', 'bpm',
-            'timeSignature', 'sheetMusicImage', 'sheetMusicThumbnail',
-            'notes', 'tempo', 'area', 'tempoPercentage'
+            'id',
+            'name',
+            'date',
+            'duration',
+            'practiceArea',
+            'key',
+            'mode',
+            'isFavorite',
+            'audioFile',
+            'youtubeTitle',
+            'youtubeUrl',
+            'bpm',
+            'timeSignature',
+            'sheetMusicImage',
+            'sheetMusicThumbnail',
+            'notes',
+            'tempo',
+            'area',
+            'tempoPercentage'
         ];
-        
+
         // Copy only allowed fields
         for (const field of allowedFields) {
             if (entry.hasOwnProperty(field) && entry[field] !== undefined) {
@@ -650,7 +806,7 @@ export class StorageService {
                 }
             }
         }
-        
+
         return cleanEntry;
     }
 
@@ -658,7 +814,7 @@ export class StorageService {
         try {
             // Clean the entry to remove any circular references
             const cleanedEntry = this.cleanPracticeEntry(entry);
-            
+
             // Prevent duplicate entries by checking if an identical entry was just saved
             const entries = await this.getPracticeEntries();
             // Check for duplicate entry within the last 5 seconds
@@ -669,9 +825,11 @@ export class StorageService {
                 const timeDiff = Math.abs(currentEntryTime - lastEntryTime);
 
                 // If the last entry has the same practice area and duration and was saved within 5 seconds, it's likely a duplicate
-                if (timeDiff < 5000 &&
+                if (
+                    timeDiff < 5000 &&
                     lastEntry.practiceArea === cleanedEntry.practiceArea &&
-                    lastEntry.duration === cleanedEntry.duration) {
+                    lastEntry.duration === cleanedEntry.duration
+                ) {
                     return true; // Return success but don't save
                 }
             }
@@ -700,7 +858,10 @@ export class StorageService {
             // Save backup before compression
             if (entries.length % 10 === 0) {
                 try {
-                    localStorage.setItem(`${this.prefix}practice_entries_backup`, JSON.stringify(entries));
+                    localStorage.setItem(
+                        `${this.prefix}practice_entries_backup`,
+                        JSON.stringify(entries)
+                    );
                 } catch (backupError) {
                     console.warn('Failed to save backup:', backupError);
                 }
@@ -736,10 +897,12 @@ export class StorageService {
             }
 
             // Dispatch event to notify UI components
-            window.dispatchEvent(new CustomEvent('practiceSessionSaved', {
-                detail: { entry: cleanedEntry }
-            }));
-            
+            window.dispatchEvent(
+                new CustomEvent('practiceSessionSaved', {
+                    detail: { entry: cleanedEntry }
+                })
+            );
+
             return true;
         } catch (error) {
             console.error('❌ Error saving practice entry:', error);
@@ -751,7 +914,7 @@ export class StorageService {
         try {
             // Get current entries
             const entries = await this.getPracticeEntries();
-            const entryToDelete = entries.find(e => e.id === entryId);
+            const entryToDelete = entries.find((e) => e.id === entryId);
 
             if (!entryToDelete) {
                 console.warn('Entry not found:', entryId);
@@ -759,7 +922,7 @@ export class StorageService {
             }
 
             // Remove the entry
-            const filteredEntries = entries.filter(e => e.id !== entryId);
+            const filteredEntries = entries.filter((e) => e.id !== entryId);
 
             // Save updated entries
             const key = `${this.prefix}practice_entries`;
@@ -795,12 +958,14 @@ export class StorageService {
                     console.warn('Practice entry deletion cloud sync failed:', cloudError);
                 }
             }
-            
+
             // Dispatch event to notify UI components
-            window.dispatchEvent(new CustomEvent('practiceSessionDeleted', {
-                detail: { entryId }
-            }));
-            
+            window.dispatchEvent(
+                new CustomEvent('practiceSessionDeleted', {
+                    detail: { entryId }
+                })
+            );
+
             return true;
         } catch (error) {
             console.error('❌ Error deleting practice entry:', error);
@@ -812,7 +977,7 @@ export class StorageService {
         try {
             // Get current entries
             const entries = await this.getPracticeEntries();
-            const entryIndex = entries.findIndex(e => e.id === entryId);
+            const entryIndex = entries.findIndex((e) => e.id === entryId);
 
             if (entryIndex === -1) {
                 console.warn('Entry not found:', entryId);
@@ -841,10 +1006,12 @@ export class StorageService {
             }
 
             // Dispatch event to notify UI components
-            window.dispatchEvent(new CustomEvent('practiceSessionUpdated', {
-                detail: { entryId, entry: entries[entryIndex] }
-            }));
-            
+            window.dispatchEvent(
+                new CustomEvent('practiceSessionUpdated', {
+                    detail: { entryId, entry: entries[entryIndex] }
+                })
+            );
+
             return true;
         } catch (error) {
             console.error('❌ Error updating practice entry:', error);
@@ -862,9 +1029,10 @@ export class StorageService {
 
             // Calculate practice areas
             const practiceAreas = {};
-            entries.forEach(entry => {
+            entries.forEach((entry) => {
                 if (entry.practiceArea) {
-                    practiceAreas[entry.practiceArea] = (practiceAreas[entry.practiceArea] || 0) + 1;
+                    practiceAreas[entry.practiceArea] =
+                        (practiceAreas[entry.practiceArea] || 0) + 1;
                 }
             });
 
@@ -907,14 +1075,14 @@ export class StorageService {
 
             // Get unique practice dates
             const practiceDates = new Set();
-            sessions.forEach(session => {
+            sessions.forEach((session) => {
                 const date = new Date(session.date).toDateString();
                 practiceDates.add(date);
             });
 
             // Convert to sorted array
             const sortedDates = Array.from(practiceDates)
-                .map(d => new Date(d))
+                .map((d) => new Date(d))
                 .sort((a, b) => a - b);
 
             let maxStreak = 1;
@@ -943,7 +1111,7 @@ export class StorageService {
     async recalculateSongStats(songId) {
         try {
             const repertoire = await this.getRepertoire();
-            const song = repertoire.find(s => s.id === songId);
+            const song = repertoire.find((s) => s.id === songId);
             if (!song) return;
 
             const entries = await this.getPracticeEntries();
@@ -954,12 +1122,15 @@ export class StorageService {
             song.lastPracticed = null;
 
             // Recalculate based on entries that mention this song
-            entries.forEach(entry => {
+            entries.forEach((entry) => {
                 if (entry.notes && entry.notes.toLowerCase().includes(song.title.toLowerCase())) {
                     song.practiceCount++;
                     song.totalPracticeTime += entry.duration || 0;
 
-                    if (!song.lastPracticed || new Date(entry.date) > new Date(song.lastPracticed)) {
+                    if (
+                        !song.lastPracticed ||
+                        new Date(entry.date) > new Date(song.lastPracticed)
+                    ) {
                         song.lastPracticed = entry.date;
                     }
                 }
@@ -978,12 +1149,17 @@ export class StorageService {
             const stored = localStorage.getItem(key);
 
             // If no local data but user is authenticated, try to load from Firebase
-            if (!stored && this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
+            if (
+                !stored &&
+                this.cloudSyncEnabled &&
+                this.firebaseSync &&
+                this.firebaseSync.isAuthenticated()
+            ) {
                 // Check if we're already loading to prevent duplicate loads
                 if (this._loadingPracticeEntries) {
                     return this._loadingPracticeEntriesPromise || [];
                 }
-                
+
                 this._loadingPracticeEntries = true;
                 this._loadingPracticeEntriesPromise = (async () => {
                     try {
@@ -998,14 +1174,15 @@ export class StorageService {
                                 let localEntries = [];
                                 try {
                                     if (this.useCompression) {
-                                        localEntries = CompressionUtils.decompressObject(currentStored) || [];
+                                        localEntries =
+                                            CompressionUtils.decompressObject(currentStored) || [];
                                     } else {
                                         localEntries = JSON.parse(currentStored);
                                     }
                                 } catch (e) {
                                     console.error('Error parsing local data during merge:', e);
                                 }
-                                
+
                                 if (Array.isArray(localEntries) && localEntries.length > 0) {
                                     // Merge local and cloud data
                                     const merged = this.mergeData(localEntries, cloudSessions);
@@ -1013,7 +1190,7 @@ export class StorageService {
                                     return merged;
                                 }
                             }
-                            
+
                             // Save to local storage for next time
                             await this.savePracticeEntries(cloudSessions);
                             return cloudSessions;
@@ -1027,7 +1204,7 @@ export class StorageService {
                         this._loadingPracticeEntriesPromise = null;
                     }
                 })();
-                
+
                 return this._loadingPracticeEntriesPromise;
             }
 
@@ -1042,7 +1219,7 @@ export class StorageService {
                     `${this.prefix}practice_entries_backup`, // Backup key
                     `${key}_backup` // Direct backup
                 ];
-                
+
                 for (const backupKey of backupKeys) {
                     try {
                         const backupData = localStorage.getItem(backupKey);
@@ -1059,7 +1236,7 @@ export class StorageService {
                         console.warn(`Failed to parse backup key ${backupKey}:`, e);
                     }
                 }
-                
+
                 console.warn('No backup data found, returning empty array');
                 return [];
             }
@@ -1090,10 +1267,11 @@ export class StorageService {
             console.error('❌ Error loading practice entries:', error);
 
             // Try to recover from corruption
-            if (error.message.includes('JSON parse error') ||
+            if (
+                error.message.includes('JSON parse error') ||
                 error.message.includes('SyntaxError') ||
-                error.message.includes('Unterminated string')) {
-
+                error.message.includes('Unterminated string')
+            ) {
                 console.warn('Data corruption detected, attempting recovery...');
 
                 // Clear the corrupted data
@@ -1125,7 +1303,8 @@ export class StorageService {
 
             if (entry.practiceArea) {
                 stats.practiceAreas = stats.practiceAreas || {};
-                stats.practiceAreas[entry.practiceArea] = (stats.practiceAreas[entry.practiceArea] || 0) + 1;
+                stats.practiceAreas[entry.practiceArea] =
+                    (stats.practiceAreas[entry.practiceArea] || 0) + 1;
             }
 
             const key = `${this.prefix}stats`;
@@ -1150,9 +1329,14 @@ export class StorageService {
         try {
             const key = `${this.prefix}stats`;
             const stored = localStorage.getItem(key);
-            
+
             // If no local stats but user is authenticated, try to load from Firebase
-            if (!stored && this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
+            if (
+                !stored &&
+                this.cloudSyncEnabled &&
+                this.firebaseSync &&
+                this.firebaseSync.isAuthenticated()
+            ) {
                 try {
                     const cloudStats = await this.firebaseSync.getStats();
                     if (cloudStats) {
@@ -1164,29 +1348,33 @@ export class StorageService {
                     console.warn('Failed to load stats from cloud:', cloudError);
                 }
             }
-            
+
             if (stored) {
                 return JSON.parse(stored);
             }
-            
+
             // If no stats exist, calculate from practice entries
             const calculatedStats = await this.calculateStats();
             if (calculatedStats && calculatedStats.totalSessions > 0) {
                 // Save calculated stats
                 localStorage.setItem(key, JSON.stringify(calculatedStats));
-                
+
                 // Sync to Firebase
-                if (this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
+                if (
+                    this.cloudSyncEnabled &&
+                    this.firebaseSync &&
+                    this.firebaseSync.isAuthenticated()
+                ) {
                     try {
                         await this.firebaseSync.saveStats(calculatedStats);
                     } catch (cloudError) {
                         console.warn('Stats cloud sync failed:', cloudError);
                     }
                 }
-                
+
                 return calculatedStats;
             }
-            
+
             return {
                 totalSessions: 0,
                 totalSeconds: 0,
@@ -1215,14 +1403,16 @@ export class StorageService {
 
             const today = new Date().toDateString();
             const yesterday = new Date(Date.now() - 86400000).toDateString();
-            const practiceDates = new Set(sessions.map(s => new Date(s.date).toDateString()));
+            const practiceDates = new Set(sessions.map((s) => new Date(s.date).toDateString()));
 
             if (!practiceDates.has(today) && !practiceDates.has(yesterday)) {
                 return 0;
             }
 
             let streak = 0;
-            let checkDate = practiceDates.has(today) ? new Date() : new Date(Date.now() - 86400000);
+            const checkDate = practiceDates.has(today)
+                ? new Date()
+                : new Date(Date.now() - 86400000);
 
             while (practiceDates.has(checkDate.toDateString())) {
                 streak++;
@@ -1245,9 +1435,10 @@ export class StorageService {
             const longestStreak = await this.calculateLongestStreak();
 
             const practiceAreas = {};
-            entries.forEach(entry => {
+            entries.forEach((entry) => {
                 if (entry.practiceArea) {
-                    practiceAreas[entry.practiceArea] = (practiceAreas[entry.practiceArea] || 0) + 1;
+                    practiceAreas[entry.practiceArea] =
+                        (practiceAreas[entry.practiceArea] || 0) + 1;
                 }
             });
 
@@ -1266,10 +1457,11 @@ export class StorageService {
                 totalSeconds,
                 currentStreak,
                 longestStreak: Math.max(longestStreak, currentStreak),
-                averageSessionLength: entries.length > 0 ? Math.floor(totalSeconds / entries.length) : 0,
+                averageSessionLength:
+                    entries.length > 0 ? Math.floor(totalSeconds / entries.length) : 0,
                 practiceAreas,
                 mostPracticedArea,
-                totalDays: new Set(entries.map(e => new Date(e.date).toDateString())).size
+                totalDays: new Set(entries.map((e) => new Date(e.date).toDateString())).size
             };
         } catch (error) {
             console.error('Error calculating stats:', error);
@@ -1326,7 +1518,7 @@ export class StorageService {
             const allSessions = {};
             const keys = Object.keys(localStorage);
 
-            keys.forEach(key => {
+            keys.forEach((key) => {
                 if (key.startsWith(`${this.prefix}audio_sessions_`)) {
                     const fileName = key.replace(`${this.prefix}audio_sessions_`, '');
                     const sessions = localStorage.getItem(key);
@@ -1351,15 +1543,17 @@ export class StorageService {
         try {
             const key = `${this.prefix}settings`;
             const stored = localStorage.getItem(key);
-            return stored ? JSON.parse(stored) : {
-                notificationsEnabled: true,
-                soundEnabled: true,
-                darkMode: true,
-                practiceReminders: {
-                    enabled: false,
-                    time: '19:00'
-                }
-            };
+            return stored
+                ? JSON.parse(stored)
+                : {
+                      notificationsEnabled: true,
+                      soundEnabled: true,
+                      darkMode: true,
+                      practiceReminders: {
+                          enabled: false,
+                          time: '19:00'
+                      }
+                  };
         } catch (error) {
             console.error('Error loading user settings:', error);
             return {};
@@ -1372,6 +1566,16 @@ export class StorageService {
             const currentSettings = await this.getUserSettings();
             const updatedSettings = { ...currentSettings, ...settings };
             localStorage.setItem(key, JSON.stringify(updatedSettings));
+
+            // Sync to cloud if available
+            if (this.cloudSyncEnabled && this.firebaseSync.isAuthenticated()) {
+                try {
+                    await this.firebaseSync.saveSettings(updatedSettings);
+                } catch (syncError) {
+                    console.warn('Failed to sync settings to cloud:', syncError);
+                }
+            }
+
             this.scheduleBackup();
             return true;
         } catch (error) {
@@ -1388,11 +1592,11 @@ export class StorageService {
         try {
             const key = `${this.prefix}session_areas`;
             const stored = localStorage.getItem(key);
-            
+
             if (stored) {
                 return JSON.parse(stored);
             }
-            
+
             // Return default areas if none stored
             return [
                 'Scales',
@@ -1438,15 +1642,17 @@ export class StorageService {
 
             const key = `${this.prefix}session_areas`;
             localStorage.setItem(key, JSON.stringify(areas));
-            
+
             // Dispatch event for other components
-            window.dispatchEvent(new CustomEvent('sessionAreasUpdated', {
-                detail: { areas, userId: this.userId }
-            }));
-            
+            window.dispatchEvent(
+                new CustomEvent('sessionAreasUpdated', {
+                    detail: { areas, userId: this.userId }
+                })
+            );
+
             // Schedule backup
             this.scheduleBackup();
-            
+
             // Sync to Firebase if enabled
             if (this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
                 try {
@@ -1455,7 +1661,7 @@ export class StorageService {
                     console.warn('Failed to sync session areas to cloud:', syncError);
                 }
             }
-            
+
             return true;
         } catch (error) {
             console.error('Error saving session areas:', error);
@@ -1565,7 +1771,7 @@ export class StorageService {
                 userId: this.userId,
                 practiceEntries: await this.getPracticeEntries(),
                 goals: await this.getGoals(),
-                repertoire: await this.getRepertoire(),  // Add this line
+                repertoire: await this.getRepertoire(), // Add this line
                 stats: await this.getStats(),
                 settings: await this.getUserSettings(),
                 audioSessions: this.getAllAudioSessions()
@@ -1614,7 +1820,7 @@ export class StorageService {
     async clearAllData() {
         try {
             const keys = Object.keys(localStorage);
-            keys.forEach(key => {
+            keys.forEach((key) => {
                 if (key.startsWith(this.prefix)) {
                     localStorage.removeItem(key);
                 }
@@ -1634,12 +1840,12 @@ export class StorageService {
         try {
             const key = `${this.prefix}learning_profile`;
             localStorage.setItem(key, JSON.stringify(profile));
-            
+
             // Trigger backup if enabled
             if (this.autoBackupEnabled) {
                 this.scheduleBackup();
             }
-            
+
             return true;
         } catch (error) {
             console.error('Error saving learning profile:', error);
@@ -1663,10 +1869,10 @@ export class StorageService {
             // Add unique ID and timestamp
             plan.id = plan.id || Date.now().toString();
             plan.createdAt = plan.createdAt || new Date().toISOString();
-            
+
             const key = `${this.prefix}learning_plan_current`;
             localStorage.setItem(key, JSON.stringify(plan));
-            
+
             // Also save to plan history
             const historyKey = `${this.prefix}learning_plans`;
             const historyData = localStorage.getItem(historyKey);
@@ -1677,7 +1883,7 @@ export class StorageService {
                 history.length = 5;
             }
             localStorage.setItem(historyKey, JSON.stringify(history));
-            
+
             return true;
         } catch (error) {
             console.error('Error saving learning plan:', error);
@@ -1711,25 +1917,25 @@ export class StorageService {
         try {
             const plan = await this.getCurrentLearningPlan();
             if (!plan || plan.id !== planId) return false;
-            
+
             // Find and update the session
             let updated = false;
-            plan.weeks.forEach(week => {
-                const session = week.sessions.find(s => s.id === sessionId);
+            plan.weeks.forEach((week) => {
+                const session = week.sessions.find((s) => s.id === sessionId);
                 if (session) {
                     session.completed = completed;
                     session.completedAt = completed ? new Date().toISOString() : null;
                     updated = true;
-                    
+
                     // Update week progress
-                    week.completedSessions = week.sessions.filter(s => s.completed).length;
+                    week.completedSessions = week.sessions.filter((s) => s.completed).length;
                 }
             });
-            
+
             if (updated) {
                 await this.saveLearningPlan(plan);
             }
-            
+
             return updated;
         } catch (error) {
             console.error('Error updating learning plan progress:', error);
@@ -1761,12 +1967,12 @@ export class StorageService {
         const localSessions = await this.getPracticeEntries();
         const sessionMap = new Map();
 
-        localSessions.forEach(session => {
+        localSessions.forEach((session) => {
             const key = `${session.date}_${session.duration}`;
             sessionMap.set(key, session);
         });
 
-        cloudSessions.forEach(session => {
+        cloudSessions.forEach((session) => {
             const key = `${session.date}_${session.duration}`;
             sessionMap.set(key, session);
         });
@@ -1818,11 +2024,10 @@ export class StorageService {
         }
     }
 
-
     async debugStorageState() {
         // Check all localStorage keys
         const allKeys = Object.keys(localStorage);
-        const relevantKeys = allKeys.filter(key => key.includes('guitarpractice'));
+        const relevantKeys = allKeys.filter((key) => key.includes('guitarpractice'));
 
         // Try to load data with different approaches
         const key = `${this.prefix}practice_entries`;
@@ -1839,8 +2044,7 @@ export class StorageService {
                     // Method 2: Decompress
                     const decompressed = CompressionUtils.decompressObject(rawData);
                     return decompressed;
-                } catch (e2) {
-                }
+                } catch (e2) {}
             }
         }
 
@@ -1851,8 +2055,7 @@ export class StorageService {
             try {
                 const backup = JSON.parse(backupData);
                 return backup;
-            } catch (e) {
-            }
+            } catch (e) {}
         }
 
         return null;
@@ -1910,13 +2113,13 @@ export class StorageService {
                 practiceReminders: localStorage.getItem('practiceReminders'),
                 dailyGoal: localStorage.getItem('dailyGoal')
             };
-            
+
             try {
                 await this.firebaseSync.saveSettings(settings);
             } catch (error) {
                 console.error('Failed to migrate settings:', error);
             }
-            
+
             // Migrate stats
             const stats = await this.getStats();
             if (stats && stats.totalSessions > 0) {
@@ -1967,7 +2170,10 @@ export class StorageService {
             // Apply cloud settings if newer
             if (cloudSettings && cloudSettings.updatedAt) {
                 const localSettingsTime = localStorage.getItem('settingsUpdatedAt');
-                if (!localSettingsTime || new Date(cloudSettings.updatedAt) > new Date(localSettingsTime)) {
+                if (
+                    !localSettingsTime ||
+                    new Date(cloudSettings.updatedAt) > new Date(localSettingsTime)
+                ) {
                     Object.entries(cloudSettings).forEach(([key, value]) => {
                         if (value && key !== 'updatedAt') {
                             localStorage.setItem(key, value);
@@ -1976,7 +2182,7 @@ export class StorageService {
                     localStorage.setItem('settingsUpdatedAt', cloudSettings.updatedAt);
                 }
             }
-            
+
             // Sync stats from cloud
             const cloudStats = await this.firebaseSync.getStats();
             if (cloudStats) {
@@ -1993,22 +2199,24 @@ export class StorageService {
 
     mergeData(localData, cloudData) {
         const merged = new Map();
-        
+
         // Add all cloud data first
-        cloudData.forEach(item => {
+        cloudData.forEach((item) => {
             merged.set(item.id, item);
         });
 
         // Add or update with local data (keeping newer versions)
-        localData.forEach(item => {
+        localData.forEach((item) => {
             const existing = merged.get(item.id);
             if (!existing) {
                 merged.set(item.id, item);
             } else {
                 // Compare timestamps
                 const localTime = new Date(item.updatedAt || item.date || item.createdAt);
-                const cloudTime = new Date(existing.updatedAt || existing.date || existing.createdAt);
-                
+                const cloudTime = new Date(
+                    existing.updatedAt || existing.date || existing.createdAt
+                );
+
                 if (localTime > cloudTime) {
                     merged.set(item.id, item);
                 }
@@ -2026,18 +2234,127 @@ export class StorageService {
     async savePracticeEntries(entries) {
         try {
             const key = `${this.prefix}practice_entries`;
-            
+
             if (this.useCompression) {
                 const compressed = CompressionUtils.compressObject(entries);
                 localStorage.setItem(key, compressed);
             } else {
                 localStorage.setItem(key, JSON.stringify(entries));
             }
-            
+
             return true;
         } catch (error) {
             console.error('Error saving practice entries:', error);
             return false;
+        }
+    }
+
+    // ===================
+    // THEME AND UI PREFERENCES
+    // ===================
+    async getTheme() {
+        try {
+            // First check user settings
+            const settings = await this.getUserSettings();
+            if (settings && settings.theme) {
+                return settings.theme;
+            }
+
+            // Fallback to legacy localStorage keys
+            const theme = localStorage.getItem('selectedTheme') || localStorage.getItem('theme');
+            return theme || 'dark';
+        } catch (error) {
+            console.error('Error getting theme:', error);
+            return 'dark';
+        }
+    }
+
+    async saveTheme(theme) {
+        try {
+            // Save to user settings
+            await this.saveUserSettings({ theme });
+
+            // Also save to legacy keys for compatibility
+            localStorage.setItem('selectedTheme', theme);
+            localStorage.setItem('theme', theme);
+
+            return true;
+        } catch (error) {
+            console.error('Error saving theme:', error);
+            return false;
+        }
+    }
+
+    // Timer preferences
+    async getTimerPreferences() {
+        try {
+            const settings = await this.getUserSettings();
+            return (
+                settings?.timerPreferences || {
+                    syncWithAudio: localStorage.getItem('timerSyncWithAudio') !== 'false'
+                }
+            );
+        } catch (error) {
+            console.error('Error getting timer preferences:', error);
+            return { syncWithAudio: true };
+        }
+    }
+
+    async saveTimerPreferences(preferences) {
+        try {
+            await this.saveUserSettings({ timerPreferences: preferences });
+
+            // Also save to legacy key for compatibility
+            if (preferences.syncWithAudio !== undefined) {
+                localStorage.setItem('timerSyncWithAudio', preferences.syncWithAudio.toString());
+            }
+
+            return true;
+        } catch (error) {
+            console.error('Error saving timer preferences:', error);
+            return false;
+        }
+    }
+
+    // Metronome preferences
+    async getMetronomePreferences() {
+        try {
+            const settings = await this.getUserSettings();
+            return (
+                settings?.metronomePreferences || {
+                    defaultSound: localStorage.getItem('defaultMetronomeSound') || 'click'
+                }
+            );
+        } catch (error) {
+            console.error('Error getting metronome preferences:', error);
+            return { defaultSound: 'click' };
+        }
+    }
+
+    async saveMetronomePreferences(preferences) {
+        try {
+            await this.saveUserSettings({ metronomePreferences: preferences });
+
+            // Also save to legacy key for compatibility
+            if (preferences.defaultSound) {
+                localStorage.setItem('defaultMetronomeSound', preferences.defaultSound);
+            }
+
+            return true;
+        } catch (error) {
+            console.error('Error saving metronome preferences:', error);
+            return false;
+        }
+    }
+
+    // Auth data (read-only from StorageService, managed by AuthService)
+    async getCurrentUser() {
+        try {
+            const stored = localStorage.getItem('currentUser');
+            return stored ? JSON.parse(stored) : null;
+        } catch (error) {
+            console.error('Error getting current user:', error);
+            return null;
         }
     }
 }

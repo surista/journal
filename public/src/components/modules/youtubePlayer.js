@@ -10,7 +10,7 @@ export class YouTubePlayer {
         this.videoTitle = null;
         this.ready = false;
         this.syncWithTimer = true;
-        
+
         // Loop properties
         this.loopStart = null;
         this.loopEnd = null;
@@ -21,26 +21,26 @@ export class YouTubePlayer {
             type: 'percentage',
             loops: 1
         };
-        
+
         // Playback properties
         this.playbackRate = 1.0;
         this.pitchShift = 0;
         this.volume = 100;
-        
+
         // UI update interval
         this.updateInterval = null;
-        
+
         // Waveform properties
         this.waveformCanvas = null;
         this.waveformCtx = null;
         this.waveformImage = null;
-        
+
         // Extension availability
         this.transposeAvailable = false;
-        
+
         // Saved loops
         this.savedLoops = [];
-        
+
         // Speed progression
         this.speedProgression = {
             enabled: false,
@@ -52,7 +52,7 @@ export class YouTubePlayer {
             currentSpeed: 100
         };
         this.loopCount = 0;
-        
+
         // Callbacks
         this.onSpeedProgressionUpdate = null;
         this.onSpeedIncrease = null;
@@ -64,27 +64,27 @@ export class YouTubePlayer {
             console.error('YouTube API not loaded');
             return false;
         }
-        
+
         // Check for Transpose extension
         this.checkTransposeExtension();
-        
+
         return true;
     }
 
     async loadVideo(urlOrId) {
         // Reset pitch value
         this.pitchShift = 0;
-        
+
         // Extract video ID
         const videoId = this.extractVideoId(urlOrId);
         if (!videoId) {
             throw new Error('Invalid YouTube URL or video ID');
         }
-        
+
         this.videoId = videoId;
         this.videoUrl = urlOrId;
         this.videoTitle = null;
-        
+
         // Create or update player
         if (!this.player) {
             await this.createPlayer(videoId);
@@ -95,7 +95,7 @@ export class YouTubePlayer {
                 this.onPlayerReady();
             }, 100);
         }
-        
+
         return true;
     }
 
@@ -113,16 +113,16 @@ export class YouTubePlayer {
                 return match[1];
             }
         }
-        
+
         return null;
     }
-    
+
     findTimer() {
         // Use timer registry for standardized access
         if (window.timerRegistry) {
             return window.timerRegistry.getPrimary();
         }
-        
+
         // Fallback to legacy patterns if registry not available
         if (window.currentTimer) {
             return window.currentTimer;
@@ -131,7 +131,7 @@ export class YouTubePlayer {
         } else if (window.unifiedPracticeMinimal?.timer) {
             return window.unifiedPracticeMinimal.timer;
         }
-        
+
         return null;
     }
 
@@ -142,22 +142,22 @@ export class YouTubePlayer {
                 width: '100%',
                 videoId: videoId,
                 playerVars: {
-                    'controls': 0,
-                    'rel': 0,
-                    'modestbranding': 1,
-                    'enablejsapi': 1,
-                    'autoplay': 0,
-                    'fs': 0,
-                    'iv_load_policy': 3,
-                    'disablekb': 1
+                    controls: 0,
+                    rel: 0,
+                    modestbranding: 1,
+                    enablejsapi: 1,
+                    autoplay: 0,
+                    fs: 0,
+                    iv_load_policy: 3,
+                    disablekb: 1
                 },
                 events: {
-                    'onReady': () => {
+                    onReady: () => {
                         this.onPlayerReady();
                         resolve();
                     },
-                    'onStateChange': this.onPlayerStateChange.bind(this),
-                    'onError': (error) => {
+                    onStateChange: this.onPlayerStateChange.bind(this),
+                    onError: (error) => {
                         console.error('YouTube player error:', error);
                         reject(error);
                     }
@@ -168,11 +168,11 @@ export class YouTubePlayer {
 
     onPlayerReady() {
         this.ready = true;
-        
+
         // Ensure video is paused on load
         if (this.player) {
             this.player.pauseVideo();
-            
+
             // Try to get video data
             try {
                 const videoData = this.player.getVideoData();
@@ -185,12 +185,12 @@ export class YouTubePlayer {
                 this.videoTitle = 'YouTube Video';
             }
         }
-        
+
         // Load saved loops for this video
         if (this.videoId) {
             this.loadSavedLoops();
         }
-        
+
         // Start update interval
         this.startUpdateInterval();
     }
@@ -198,7 +198,8 @@ export class YouTubePlayer {
     onPlayerStateChange(event) {
         // Use numeric constants instead of YT.PlayerState
         // 1 = PLAYING, 2 = PAUSED
-        if (event.data === 1) { // PLAYING
+        if (event.data === 1) {
+            // PLAYING
             console.log('YouTube playing, syncWithTimer:', this.syncWithTimer);
             // Handle timer sync if needed
             if (this.syncWithTimer) {
@@ -208,7 +209,8 @@ export class YouTubePlayer {
                     timer.start();
                 }
             }
-        } else if (event.data === 2) { // PAUSED
+        } else if (event.data === 2) {
+            // PAUSED
             // Handle timer sync if needed
             if (this.syncWithTimer) {
                 const timer = this.findTimer();
@@ -229,12 +231,12 @@ export class YouTubePlayer {
             if (this.player && this.player.getCurrentTime) {
                 const currentTime = this.player.getCurrentTime();
                 const duration = this.player.getDuration();
-                
+
                 // Handle looping
                 if (this.looping && this.loopEnd !== null && currentTime >= this.loopEnd) {
                     this.handleLoopEnd();
                 }
-                
+
                 // Notify UI updates via callback
                 if (this.onUpdateCallback) {
                     this.onUpdateCallback({
@@ -249,12 +251,12 @@ export class YouTubePlayer {
 
     handleLoopEnd() {
         this.player.seekTo(this.loopStart || 0);
-        
+
         // Handle speed progression
         if (this.speedProgression.enabled) {
             this.loopCount++;
             this.speedProgression.currentLoop++;
-            
+
             // Update UI
             if (this.onSpeedProgressionUpdate) {
                 this.onSpeedProgressionUpdate({
@@ -264,16 +266,19 @@ export class YouTubePlayer {
                     targetSpeed: this.speedProgression.endSpeed
                 });
             }
-            
+
             if (this.speedProgression.currentLoop >= this.speedProgression.loopsPerStep) {
                 this.speedProgression.currentLoop = 0;
-                
+
                 const currentSpeedPercent = Math.round(this.playbackRate * 100);
-                const newSpeedPercent = Math.min(this.speedProgression.endSpeed, currentSpeedPercent + this.speedProgression.increment);
-                
+                const newSpeedPercent = Math.min(
+                    this.speedProgression.endSpeed,
+                    currentSpeedPercent + this.speedProgression.increment
+                );
+
                 if (newSpeedPercent !== currentSpeedPercent) {
                     this.setSpeed(newSpeedPercent / 100);
-                    
+
                     // Notify UI of speed increase
                     if (this.onSpeedIncrease) {
                         this.onSpeedIncrease({
@@ -285,16 +290,19 @@ export class YouTubePlayer {
                 }
             }
         }
-        
+
         // Keep old auto progression for backward compatibility
         else if (this.autoProgress) {
             this.currentLoopCount = (this.currentLoopCount || 0) + 1;
-            
+
             if (this.currentLoopCount >= this.progressionSettings.loops) {
                 this.currentLoopCount = 0;
-                
+
                 if (this.progressionSettings.type === 'percentage') {
-                    const newSpeed = Math.min(1.5, this.playbackRate + (this.progressionSettings.amount / 100));
+                    const newSpeed = Math.min(
+                        1.5,
+                        this.playbackRate + this.progressionSettings.amount / 100
+                    );
                     this.setSpeed(newSpeed);
                 } else if (this.progressionSettings.type === 'bpm') {
                     // BPM progression would require knowing the original BPM
@@ -310,10 +318,13 @@ export class YouTubePlayer {
     play() {
         if (this.player && this.ready) {
             this.player.playVideo();
-            
+
             // Manually trigger timer sync
             if (this.syncWithTimer) {
-                console.log('YouTube play() - checking timer sync, syncWithTimer:', this.syncWithTimer);
+                console.log(
+                    'YouTube play() - checking timer sync, syncWithTimer:',
+                    this.syncWithTimer
+                );
                 const timer = this.findTimer();
                 console.log('YouTube play() - found timer:', timer);
                 if (timer && !timer.isRunning) {
@@ -327,10 +338,13 @@ export class YouTubePlayer {
     pause() {
         if (this.player && this.ready) {
             this.player.pauseVideo();
-            
+
             // Manually trigger timer sync
             if (this.syncWithTimer) {
-                console.log('YouTube pause() - checking timer sync, syncWithTimer:', this.syncWithTimer);
+                console.log(
+                    'YouTube pause() - checking timer sync, syncWithTimer:',
+                    this.syncWithTimer
+                );
                 const timer = this.findTimer();
                 console.log('YouTube pause() - found timer:', timer);
                 if (timer && timer.isRunning) {
@@ -372,7 +386,7 @@ export class YouTubePlayer {
         if (!this.transposeAvailable) {
             return false;
         }
-        
+
         try {
             const success = await transposeAPI.setPitch(semitones);
             if (success) {
@@ -427,46 +441,44 @@ export class YouTubePlayer {
         return this.transposeAvailable;
     }
 
-    saveLoop(name) {
+    async saveLoop(name) {
         if (!this.videoId || this.loopStart === null || this.loopEnd === null) {
             return false;
         }
-        
+
         const loop = {
             name: name,
             start: this.loopStart,
             end: this.loopEnd,
             timestamp: Date.now()
         };
-        
-        // Save to storage
-        const storageKey = `youtube_loops_${this.videoId}`;
-        let savedLoops = [];
-        try {
-            const stored = localStorage.getItem(storageKey);
-            savedLoops = stored ? JSON.parse(stored) : [];
-        } catch (e) {
-            console.error('Error loading saved loops:', e);
-        }
+
+        // Get existing loops
+        const savedLoops = await this.loadSavedLoops();
         savedLoops.push(loop);
-        localStorage.setItem(storageKey, JSON.stringify(savedLoops));
-        
-        this.savedLoops = savedLoops;
-        return true;
+
+        // Save using StorageService for cloud sync
+        const success = await this.storageService.saveYouTubeLoop(this.videoId, savedLoops);
+
+        if (success) {
+            this.savedLoops = savedLoops;
+        }
+
+        return success;
     }
 
-    loadSavedLoops() {
-        if (!this.videoId) return;
-        
-        const storageKey = `youtube_loops_${this.videoId}`;
+    async loadSavedLoops() {
+        if (!this.videoId) return [];
+
         try {
-            const stored = localStorage.getItem(storageKey);
-            this.savedLoops = stored ? JSON.parse(stored) : [];
+            // Use StorageService to get loops (with cloud sync)
+            this.savedLoops = await this.storageService.getYouTubeLoops(this.videoId);
+            return this.savedLoops;
         } catch (e) {
             console.error('Error loading saved loops:', e);
             this.savedLoops = [];
+            return [];
         }
-        return this.savedLoops;
     }
 
     loadLoop(index) {
@@ -479,13 +491,12 @@ export class YouTubePlayer {
         return false;
     }
 
-    deleteLoop(index) {
+    async deleteLoop(index) {
         if (index >= 0 && index < this.savedLoops.length) {
             this.savedLoops.splice(index, 1);
-            
-            // Update storage
-            const storageKey = `youtube_loops_${this.videoId}`;
-            localStorage.setItem(storageKey, JSON.stringify(this.savedLoops));
+
+            // Update storage using StorageService
+            await this.storageService.saveYouTubeLoop(this.videoId, this.savedLoops);
             return true;
         }
         return false;
@@ -498,7 +509,7 @@ export class YouTubePlayer {
     getDuration() {
         return this.player && this.ready ? this.player.getDuration() : 0;
     }
-    
+
     get isPlaying() {
         return this.player && this.ready && this.player.getPlayerState() === 1; // 1 = PLAYING
     }
@@ -523,7 +534,7 @@ export class YouTubePlayer {
 
     setState(state) {
         if (!state) return;
-        
+
         // Note: Cannot restore video automatically due to browser restrictions
         // Just save the state for reference
         if (state.videoId) {
@@ -531,7 +542,7 @@ export class YouTubePlayer {
             this.videoUrl = state.videoUrl;
             this.videoTitle = state.videoTitle;
         }
-        
+
         if (state.loopStart !== undefined) this.loopStart = state.loopStart;
         if (state.loopEnd !== undefined) this.loopEnd = state.loopEnd;
         if (state.looping !== undefined) this.looping = state.looping;
@@ -542,7 +553,7 @@ export class YouTubePlayer {
     setUpdateCallback(callback) {
         this.onUpdateCallback = callback;
     }
-    
+
     setSpeedProgressionCallbacks(callbacks) {
         if (callbacks.onSpeedProgressionUpdate) {
             this.onSpeedProgressionUpdate = callbacks.onSpeedProgressionUpdate;
@@ -557,12 +568,12 @@ export class YouTubePlayer {
             clearInterval(this.updateInterval);
             this.updateInterval = null;
         }
-        
+
         if (this.player) {
             this.player.destroy();
             this.player = null;
         }
-        
+
         this.ready = false;
         this.onUpdateCallback = null;
         this.onSpeedProgressionUpdate = null;

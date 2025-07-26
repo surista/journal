@@ -11,7 +11,7 @@ export class TopNavigation {
 
     updateActiveState() {
         const navItems = document.querySelectorAll('.top-nav-item');
-        navItems.forEach(item => {
+        navItems.forEach((item) => {
             if (item.dataset.tab === this.activeTab) {
                 item.classList.add('active');
             } else {
@@ -72,7 +72,7 @@ export class TopNavigation {
 
     attachEventListeners(onTabChange) {
         const navItems = document.querySelectorAll('.top-nav-item');
-        navItems.forEach(item => {
+        navItems.forEach((item) => {
             item.addEventListener('click', (e) => {
                 const tab = e.currentTarget.dataset.tab;
                 this.setActiveTab(tab);

@@ -144,7 +144,7 @@ export class HistoryTab {
                     }
                 }
             }
-            
+
             const favoriteBtn = e.target.closest('.toggle-favorite-btn');
             if (favoriteBtn) {
                 e.preventDefault();
@@ -157,7 +157,7 @@ export class HistoryTab {
                     }
                 }
             }
-            
+
             const practiceBtn = e.target.closest('.practice-again-btn');
             if (practiceBtn) {
                 e.preventDefault();
@@ -170,7 +170,7 @@ export class HistoryTab {
                     }
                 }
             }
-            
+
             // Handle clicking on session item (but not on buttons or links)
             const sessionItem = e.target.closest('.history-item');
             if (sessionItem && !e.target.closest('button') && !e.target.closest('a')) {
@@ -179,7 +179,7 @@ export class HistoryTab {
                     const numericId = Number(sessionId);
                     if (!isNaN(numericId)) {
                         // Check if this session has an image
-                        const session = this.allSessions.find(s => s.id === numericId);
+                        const session = this.allSessions.find((s) => s.id === numericId);
                         if (session && session.sheetMusicImage) {
                             // If it has an image, load it into metronome
                             await this.handlePracticeAgain(numericId);
@@ -193,15 +193,19 @@ export class HistoryTab {
         });
     }
 
-
     async handleDeleteSession(sessionId) {
         console.log('handleDeleteSession called with sessionId:', sessionId);
 
         // Find the session to get details for confirmation
         // Use == instead of === to handle potential type mismatches
-        const session = this.allSessions.find(s => s.id == sessionId);
+        const session = this.allSessions.find((s) => s.id == sessionId);
         if (!session) {
-            console.error('Session not found:', sessionId, 'Available IDs:', this.allSessions.map(s => s.id));
+            console.error(
+                'Session not found:',
+                sessionId,
+                'Available IDs:',
+                this.allSessions.map((s) => s.id)
+            );
             return;
         }
 
@@ -211,18 +215,21 @@ export class HistoryTab {
         const area = session.practiceArea || 'Practice Session';
 
         // Show confirmation dialog
-        const confirmMessage = `Are you sure you want to delete this practice session?\n\n` +
+        const confirmMessage =
+            `Are you sure you want to delete this practice session?\n\n` +
             `${area}\n` +
             `Date: ${date}\n` +
             `Duration: ${duration}`;
 
         const userConfirmed = confirm(confirmMessage);
         console.log('User confirmation result:', userConfirmed);
-        
+
         if (userConfirmed) {
             try {
                 // Show loading state
-                const deleteBtn = document.querySelector(`.delete-session-btn[data-id="${sessionId}"]`);
+                const deleteBtn = document.querySelector(
+                    `.delete-session-btn[data-id="${sessionId}"]`
+                );
                 if (deleteBtn) {
                     deleteBtn.textContent = '⏳';
                     deleteBtn.disabled = true;
@@ -233,7 +240,7 @@ export class HistoryTab {
 
                 if (success) {
                     // Remove from local array
-                    this.allSessions = this.allSessions.filter(s => s.id !== sessionId);
+                    this.allSessions = this.allSessions.filter((s) => s.id !== sessionId);
 
                     // Re-render the list
                     this.displayHistory(this.allSessions);
@@ -242,9 +249,11 @@ export class HistoryTab {
                     this.showNotification('Practice session deleted successfully', 'success');
 
                     // Emit event for other components to update
-                    window.dispatchEvent(new CustomEvent('practiceSessionDeleted', {
-                        detail: { sessionId }
-                    }));
+                    window.dispatchEvent(
+                        new CustomEvent('practiceSessionDeleted', {
+                            detail: { sessionId }
+                        })
+                    );
                 } else {
                     throw new Error('Failed to delete session');
                 }
@@ -253,7 +262,9 @@ export class HistoryTab {
                 this.showNotification('Failed to delete practice session', 'error');
 
                 // Re-enable button on error
-                const deleteBtn = document.querySelector(`.delete-session-btn[data-id="${sessionId}"]`);
+                const deleteBtn = document.querySelector(
+                    `.delete-session-btn[data-id="${sessionId}"]`
+                );
                 if (deleteBtn) {
                     deleteBtn.textContent = '🗑️';
                     deleteBtn.disabled = false;
@@ -266,13 +277,31 @@ export class HistoryTab {
         console.log('handleEditSession called with ID:', sessionId);
         try {
             // Find the session in our list
-            const session = this.allSessions.find(s => s.id === sessionId);
+            const session = this.allSessions.find((s) => s.id === sessionId);
             console.log('Found session:', session);
             if (!session) {
                 console.error('Session not found in allSessions:', sessionId);
-                console.log('Available session IDs:', this.allSessions.map(s => s.id));
+                console.log(
+                    'Available session IDs:',
+                    this.allSessions.map((s) => s.id)
+                );
                 this.showNotification('Session not found', 'error');
                 return;
+            }
+
+            // Get session areas from storage service
+            const sessionAreas = await this.storageService.getSessionAreas();
+
+            // Build practice area options dynamically
+            let practiceAreaOptions = '<option value="">Select practice area...</option>';
+            sessionAreas.forEach(area => {
+                const selected = session.practiceArea === area ? 'selected' : '';
+                practiceAreaOptions += `<option value="${escapeHtml(area)}" ${selected}>${escapeHtml(area)}</option>`;
+            });
+
+            // If the session has a practice area that's not in the list, add it as an option
+            if (session.practiceArea && !sessionAreas.includes(session.practiceArea)) {
+                practiceAreaOptions += `<option value="${escapeHtml(session.practiceArea)}" selected>${escapeHtml(session.practiceArea)}</option>`;
             }
 
             // Create edit modal
@@ -290,20 +319,7 @@ export class HistoryTab {
                         <div class="form-group" style="margin-bottom: 1rem;">
                             <label style="display: block; margin-bottom: 0.5rem; color: var(--text-primary); font-weight: 500;">Practice Area</label>
                             <select name="practiceArea" class="modal-input" style="width: 100%; padding: 0.75rem; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text-primary);">
-                                <option value="">Select practice area...</option>
-                                <option value="Scales" ${session.practiceArea === 'Scales' ? 'selected' : ''}>Scales</option>
-                                <option value="Chords" ${session.practiceArea === 'Chords' ? 'selected' : ''}>Chords</option>
-                                <option value="Arpeggios" ${session.practiceArea === 'Arpeggios' ? 'selected' : ''}>Arpeggios</option>
-                                <option value="Songs" ${session.practiceArea === 'Songs' ? 'selected' : ''}>Songs</option>
-                                <option value="Technique" ${session.practiceArea === 'Technique' ? 'selected' : ''}>Technique</option>
-                                <option value="Theory" ${session.practiceArea === 'Theory' ? 'selected' : ''}>Theory</option>
-                                <option value="Improvisation" ${session.practiceArea === 'Improvisation' ? 'selected' : ''}>Improvisation</option>
-                                <option value="Sight Reading" ${session.practiceArea === 'Sight Reading' ? 'selected' : ''}>Sight Reading</option>
-                                <option value="Ear Training" ${session.practiceArea === 'Ear Training' ? 'selected' : ''}>Ear Training</option>
-                                <option value="Rhythm" ${session.practiceArea === 'Rhythm' ? 'selected' : ''}>Rhythm</option>
-                                <option value="Audio Practice" ${session.practiceArea === 'Audio Practice' ? 'selected' : ''}>Audio Practice</option>
-                                <option value="YouTube Practice" ${session.practiceArea === 'YouTube Practice' ? 'selected' : ''}>YouTube Practice</option>
-                                <option value="Other" ${session.practiceArea && !['Scales', 'Chords', 'Arpeggios', 'Songs', 'Technique', 'Theory', 'Improvisation', 'Sight Reading', 'Ear Training', 'Rhythm', 'Audio Practice', 'YouTube Practice'].includes(session.practiceArea) ? 'selected' : ''}>Other</option>
+                                ${practiceAreaOptions}
                             </select>
                         </div>
                         
@@ -326,19 +342,19 @@ export class HistoryTab {
             // Handle form submission
             const form = modal.querySelector('#editSessionForm');
             let isSubmitting = false; // Prevent double submission
-            
+
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                
+
                 // Prevent double submission
                 if (isSubmitting) return;
                 isSubmitting = true;
-                
+
                 const submitBtn = form.querySelector('button[type="submit"]');
                 const originalText = submitBtn.textContent;
                 submitBtn.textContent = 'Saving...';
                 submitBtn.disabled = true;
-                
+
                 try {
                     const formData = new FormData(form);
                     const updatedSession = {
@@ -348,18 +364,21 @@ export class HistoryTab {
                     };
 
                     // Update in storage
-                    const success = await this.storageService.updatePracticeEntry(sessionId, updatedSession);
-                    
+                    const success = await this.storageService.updatePracticeEntry(
+                        sessionId,
+                        updatedSession
+                    );
+
                     if (success) {
                         // Update local array
-                        const index = this.allSessions.findIndex(s => s.id === sessionId);
+                        const index = this.allSessions.findIndex((s) => s.id === sessionId);
                         if (index !== -1) {
                             this.allSessions[index] = updatedSession;
                         }
-                        
+
                         // Re-render the list
                         this.displayHistory(this.allSessions);
-                        
+
                         this.showNotification('Session updated successfully', 'success');
                         modal.remove();
                     } else {
@@ -382,7 +401,6 @@ export class HistoryTab {
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) modal.remove();
             });
-
         } catch (error) {
             console.error('Error editing session:', error);
             this.showNotification('Failed to edit session', 'error');
@@ -392,7 +410,7 @@ export class HistoryTab {
     async handleToggleFavorite(sessionId) {
         try {
             // Find the session in our list
-            const session = this.allSessions.find(s => s.id === sessionId);
+            const session = this.allSessions.find((s) => s.id === sessionId);
             if (!session) {
                 this.showNotification('Session not found', 'error');
                 return;
@@ -402,28 +420,42 @@ export class HistoryTab {
             session.isFavorite = !session.isFavorite;
 
             // Update in storage
-            const success = await this.storageService.updatePracticeEntry(sessionId, { isFavorite: session.isFavorite });
-            
+            const success = await this.storageService.updatePracticeEntry(sessionId, {
+                isFavorite: session.isFavorite
+            });
+
             if (success) {
                 // Update the UI
-                const favoriteBtn = document.querySelector(`.toggle-favorite-btn[data-id="${sessionId}"]`);
+                const favoriteBtn = document.querySelector(
+                    `.toggle-favorite-btn[data-id="${sessionId}"]`
+                );
                 if (favoriteBtn) {
                     favoriteBtn.textContent = session.isFavorite ? '⭐' : '☆';
-                    favoriteBtn.title = session.isFavorite ? 'Remove from favorites' : 'Add to favorites';
+                    favoriteBtn.title = session.isFavorite
+                        ? 'Remove from favorites'
+                        : 'Add to favorites';
                 }
 
                 // Update the header star if present
-                const sessionEl = document.querySelector(`.history-item[data-id="${sessionId}"] h4`);
+                const sessionEl = document.querySelector(
+                    `.history-item[data-id="${sessionId}"] h4`
+                );
                 if (sessionEl) {
                     const starSpan = sessionEl.querySelector('span');
                     if (session.isFavorite && !starSpan) {
-                        sessionEl.insertAdjacentHTML('afterbegin', '<span style="color: #facc15; margin-right: 4px;">⭐</span>');
+                        sessionEl.insertAdjacentHTML(
+                            'afterbegin',
+                            '<span style="color: #facc15; margin-right: 4px;">⭐</span>'
+                        );
                     } else if (!session.isFavorite && starSpan) {
                         starSpan.remove();
                     }
                 }
 
-                this.showNotification(session.isFavorite ? 'Added to favorites' : 'Removed from favorites', 'success');
+                this.showNotification(
+                    session.isFavorite ? 'Added to favorites' : 'Removed from favorites',
+                    'success'
+                );
             } else {
                 // Revert on failure
                 session.isFavorite = !session.isFavorite;
@@ -438,31 +470,35 @@ export class HistoryTab {
     async handlePracticeAgain(sessionId) {
         try {
             // Find the session in our list
-            const session = this.allSessions.find(s => s.id === sessionId);
+            const session = this.allSessions.find((s) => s.id === sessionId);
             if (!session || !session.sheetMusicImage) {
                 this.showNotification('Session or sheet music not found', 'error');
                 return;
             }
 
             // Store the session data in sessionStorage for the practice tab to pick up
-            sessionStorage.setItem('loadPracticeSession', JSON.stringify({
-                mode: 'metronome',
-                sheetMusicImage: session.sheetMusicImage,
-                tempo: session.tempo || session.bpm || 80,
-                timeSignature: session.timeSignature || '4/4',
-                practiceArea: session.practiceArea || session.area || ''
-            }));
+            sessionStorage.setItem(
+                'loadPracticeSession',
+                JSON.stringify({
+                    mode: 'metronome',
+                    sheetMusicImage: session.sheetMusicImage,
+                    tempo: session.tempo || session.bpm || 80,
+                    timeSignature: session.timeSignature || '4/4',
+                    practiceArea: session.practiceArea || session.area || ''
+                })
+            );
 
             // Navigate to practice tab
             window.location.hash = '#practice';
-            
+
             // Dispatch event to load the session
             setTimeout(() => {
-                window.dispatchEvent(new CustomEvent('loadPracticeSession', {
-                    detail: { sessionId }
-                }));
+                window.dispatchEvent(
+                    new CustomEvent('loadPracticeSession', {
+                        detail: { sessionId }
+                    })
+                );
             }, 100);
-            
         } catch (error) {
             console.error('Error loading practice session:', error);
             this.showNotification('Failed to load practice session', 'error');
@@ -472,7 +508,7 @@ export class HistoryTab {
     async handleLoadSession(sessionId) {
         try {
             // Find the session in our list
-            const session = this.allSessions.find(s => s.id === sessionId);
+            const session = this.allSessions.find((s) => s.id === sessionId);
             if (!session) {
                 this.showNotification('Session not found', 'error');
                 return;
@@ -511,14 +547,15 @@ export class HistoryTab {
 
             // Navigate to practice tab
             window.location.hash = '#practice';
-            
+
             // Dispatch event to load the session
             setTimeout(() => {
-                window.dispatchEvent(new CustomEvent('loadPracticeSession', {
-                    detail: { sessionId }
-                }));
+                window.dispatchEvent(
+                    new CustomEvent('loadPracticeSession', {
+                        detail: { sessionId }
+                    })
+                );
             }, 100);
-            
         } catch (error) {
             console.error('Error loading session:', error);
             this.showNotification('Failed to load session', 'error');
@@ -539,7 +576,8 @@ export class HistoryTab {
             console.error('Error loading history:', error);
             const container = document.getElementById('historyList');
             if (container) {
-                container.innerHTML = '<p class="error-state">Error loading practice history. Please try refreshing the page.</p>';
+                container.innerHTML =
+                    '<p class="error-state">Error loading practice history. Please try refreshing the page.</p>';
             }
         }
     }
@@ -547,7 +585,6 @@ export class HistoryTab {
     displayHistory(sessions) {
         const container = document.getElementById('historyList');
         if (!container) return;
-
 
         if (sessions.length === 0) {
             container.innerHTML = '<p class="empty-state">No practice sessions found</p>';
@@ -557,54 +594,70 @@ export class HistoryTab {
         // Group sessions by month
         const groupedSessions = this.groupSessionsByMonth(sessions);
 
-        container.innerHTML = Object.entries(groupedSessions).map(([month, monthSessions]) => `
+        container.innerHTML = Object.entries(groupedSessions)
+            .map(
+                ([month, monthSessions]) => `
             <div class="history-month-group">
                 <h3 class="history-month-header">${month}</h3>
-                ${monthSessions.map(session => {
-            const duration = this.formatDuration(session.duration || 0);
+                ${monthSessions
+                    .map((session) => {
+                        const duration = this.formatDuration(session.duration || 0);
 
-            // Format date with fallback
-            let dateStr = '';
-            try {
-                const date = new Date(session.date);
-                // Use native JS date formatting as fallback
-                dateStr = date.toLocaleDateString('en-US', {
-                    weekday: 'short',
-                    month: 'short',
-                    day: 'numeric',
-                    hour: 'numeric',
-                    minute: '2-digit'
-                });
-            } catch (e) {
-                console.error('Date formatting error:', e);
-                dateStr = session.date;
-            }
+                        // Format date with fallback
+                        let dateStr = '';
+                        try {
+                            const date = new Date(session.date);
+                            // Use native JS date formatting as fallback
+                            dateStr = date.toLocaleDateString('en-US', {
+                                weekday: 'short',
+                                month: 'short',
+                                day: 'numeric',
+                                hour: 'numeric',
+                                minute: '2-digit'
+                            });
+                        } catch (e) {
+                            console.error('Date formatting error:', e);
+                            dateStr = session.date;
+                        }
 
-            return `
+                        return `
                         <div class="history-item ${session.sheetMusicImage ? 'has-image' : ''}" data-id="${session.id}">
-                            ${session.sheetMusicImage ? `
+                            ${
+                                session.sheetMusicImage
+                                    ? `
                                 <div class="history-item-thumbnail">
                                     <img src="${sanitizeUrl(session.sheetMusicThumbnail || session.sheetMusicImage) || ''}" alt="Sheet music" class="history-thumbnail" />
                                 </div>
-                            ` : ''}
+                            `
+                                    : ''
+                            }
                             <div class="history-item-content">
                                 <div class="history-item-header">
                                     <h4>
                                         ${session.isFavorite ? '<span style="color: #facc15; margin-right: 4px;">⭐</span>' : ''}
                                         ${escapeHtml(session.name || session.practiceArea || 'Practice Session')}
                                     </h4>
-                                    ${session.practiceArea && session.name && session.practiceArea !== session.name ? 
-                                        `<div style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">📚 ${escapeHtml(session.practiceArea)}</div>` : ''}
+                                    ${
+                                        session.practiceArea &&
+                                        session.name &&
+                                        session.practiceArea !== session.name
+                                            ? `<div style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">📚 ${escapeHtml(session.practiceArea)}</div>`
+                                            : ''
+                                    }
                                 <div class="history-item-actions">
                                     <span class="history-date">${dateStr}</span>
                                     <button class="btn-icon toggle-favorite-btn" data-id="${session.id}" title="${session.isFavorite ? 'Remove from favorites' : 'Add to favorites'}">
                                         ${session.isFavorite ? '⭐' : '☆'}
                                     </button>
-                                    ${session.sheetMusicImage ? `
+                                    ${
+                                        session.sheetMusicImage
+                                            ? `
                                         <button class="btn-icon practice-again-btn" data-id="${session.id}" title="Practice again with this sheet music">
                                             🎸
                                         </button>
-                                    ` : ''}
+                                    `
+                                            : ''
+                                    }
                                     <button class="btn-icon edit-session-btn" data-id="${session.id}" title="Edit session">
                                         ✏️
                                     </button>
@@ -622,23 +675,35 @@ export class HistoryTab {
                                 ${session.key ? `<span class="history-key"><i class="icon">🎼</i> ${escapeHtml(session.key)}</span>` : ''}
                                 ${session.audioFile ? `<span class="history-audio"><i class="icon">🎧</i> Audio: ${escapeHtml(session.audioFile.length > 50 ? session.audioFile.substring(0, 47) + '...' : session.audioFile)}</span>` : ''}
                                 ${session.sheetMusicImage ? `<span class="history-sheet-music"><i class="icon">📄</i> Sheet Music</span>` : ''}
-                                ${session.youtubeTitle ? `
+                                ${
+                                    session.youtubeTitle
+                                        ? `
                                 <span class="history-audio">
-                                    <i class="icon">📺</i> YouTube: ${session.youtubeUrl ?
-                `<a href="#" class="youtube-practice-link" data-url="${sanitizeUrl(session.youtubeUrl) || ''}" style="color: var(--primary); text-decoration: underline;">${escapeHtml(session.youtubeTitle.length > 50 ? session.youtubeTitle.substring(0, 50) + '...' : session.youtubeTitle)}</a>` :
-                escapeHtml(session.youtubeTitle.length > 50 ? session.youtubeTitle.substring(0, 50) + '...' : session.youtubeTitle)
-            }
+                                    <i class="icon">📺</i> YouTube: ${
+                                        session.youtubeUrl
+                                            ? `<a href="#" class="youtube-practice-link" data-url="${sanitizeUrl(session.youtubeUrl) || ''}" style="color: var(--primary); text-decoration: underline;">${escapeHtml(session.youtubeTitle.length > 50 ? session.youtubeTitle.substring(0, 50) + '...' : session.youtubeTitle)}</a>`
+                                            : escapeHtml(
+                                                  session.youtubeTitle.length > 50
+                                                      ? session.youtubeTitle.substring(0, 50) +
+                                                            '...'
+                                                      : session.youtubeTitle
+                                              )
+                                    }
                                 </span>
-                            ` : ''}
+                            `
+                                        : ''
+                                }
                                 </div>
                                 ${session.notes ? `<div class="history-notes">${escapeHtml(session.notes)}</div>` : ''}
                             </div>
                         </div>
                     `;
-        }).join('')}
+                    })
+                    .join('')}
             </div>
-        `).join('');
-
+        `
+            )
+            .join('');
     }
 
     formatDuration(seconds) {
@@ -662,7 +727,7 @@ export class HistoryTab {
     groupSessionsByMonth(sessions) {
         const grouped = {};
 
-        sessions.forEach(session => {
+        sessions.forEach((session) => {
             try {
                 const date = new Date(session.date);
 
@@ -691,7 +756,7 @@ export class HistoryTab {
         const sortedGrouped = {};
         Object.keys(grouped)
             .sort((a, b) => new Date(b) - new Date(a))
-            .forEach(key => {
+            .forEach((key) => {
                 sortedGrouped[key] = grouped[key];
             });
 
@@ -707,19 +772,19 @@ export class HistoryTab {
 
         switch (filter) {
             case 'favorites':
-                filtered = this.allSessions.filter(s => s.isFavorite === true);
+                filtered = this.allSessions.filter((s) => s.isFavorite === true);
                 break;
             case 'week':
                 const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-                filtered = this.allSessions.filter(s => new Date(s.date) >= weekAgo);
+                filtered = this.allSessions.filter((s) => new Date(s.date) >= weekAgo);
                 break;
             case 'month':
                 const monthAgo = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
-                filtered = this.allSessions.filter(s => new Date(s.date) >= monthAgo);
+                filtered = this.allSessions.filter((s) => new Date(s.date) >= monthAgo);
                 break;
             case 'year':
                 const yearAgo = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
-                filtered = this.allSessions.filter(s => new Date(s.date) >= yearAgo);
+                filtered = this.allSessions.filter((s) => new Date(s.date) >= yearAgo);
                 break;
         }
 
@@ -728,9 +793,9 @@ export class HistoryTab {
         if (keyFilter) {
             // Check if filtering by mode only
             if (['Dorian', 'Phrygian', 'Lydian', 'Mixolydian', 'Locrian'].includes(keyFilter)) {
-                filtered = filtered.filter(s => s.key && s.key.includes(keyFilter));
+                filtered = filtered.filter((s) => s.key && s.key.includes(keyFilter));
             } else {
-                filtered = filtered.filter(s => s.key === keyFilter);
+                filtered = filtered.filter((s) => s.key === keyFilter);
             }
         }
 
@@ -742,7 +807,7 @@ export class HistoryTab {
             const sessions = this.allSessions || [];
             const csvContent = this.convertSessionsToCSV(sessions);
 
-            const blob = new Blob([csvContent], {type: 'text/csv'});
+            const blob = new Blob([csvContent], { type: 'text/csv' });
             const url = URL.createObjectURL(blob);
 
             const a = document.createElement('a');
@@ -759,8 +824,16 @@ export class HistoryTab {
     }
 
     convertSessionsToCSV(sessions) {
-        const headers = ['Date', 'Duration (minutes)', 'Practice Area', 'Audio File', 'BPM', 'Key', 'Notes'];
-        const rows = sessions.map(session => [
+        const headers = [
+            'Date',
+            'Duration (minutes)',
+            'Practice Area',
+            'Audio File',
+            'BPM',
+            'Key',
+            'Notes'
+        ];
+        const rows = sessions.map((session) => [
             new Date(session.date).toLocaleDateString(),
             Math.round((session.duration || 0) / 60),
             session.practiceArea || '',
@@ -770,36 +843,34 @@ export class HistoryTab {
             (session.notes || '').replace(/,/g, ';') // Replace commas to avoid CSV issues
         ]);
 
-        return [headers, ...rows]
-            .map(row => row.map(cell => `"${cell}"`).join(','))
-            .join('\n');
+        return [headers, ...rows].map((row) => row.map((cell) => `"${cell}"`).join(',')).join('\n');
     }
 
     showImageLightbox(imageSrc) {
         // Create lightbox elements
         const lightbox = document.createElement('div');
         lightbox.className = 'image-lightbox';
-        
+
         const img = document.createElement('img');
         img.src = imageSrc;
         img.alt = 'Sheet music';
-        
+
         const closeBtn = document.createElement('button');
         closeBtn.className = 'image-lightbox-close';
         closeBtn.innerHTML = '×';
-        
+
         // Close on click
         const closeLightbox = () => {
             lightbox.remove();
         };
-        
+
         closeBtn.addEventListener('click', closeLightbox);
         lightbox.addEventListener('click', (e) => {
             if (e.target === lightbox) {
                 closeLightbox();
             }
         });
-        
+
         // Close on escape key
         const handleEscape = (e) => {
             if (e.key === 'Escape') {
@@ -808,7 +879,7 @@ export class HistoryTab {
             }
         };
         document.addEventListener('keydown', handleEscape);
-        
+
         // Assemble and show
         lightbox.appendChild(img);
         lightbox.appendChild(closeBtn);
@@ -865,7 +936,7 @@ export class HistoryTab {
             window.removeEventListener('practiceSessionSaved', this.practiceSessionListener);
             this.practiceSessionListener = null;
         }
-        
+
         this.allSessions = [];
         this.container = null;
     }

@@ -13,20 +13,20 @@ export class UnifiedPracticeMinimal {
     constructor(storageService) {
         this.storageService = storageService;
         this.audioService = new AudioService();
-        
+
         // Initialize modules
-        this.timer = new Timer();
-        this.metronome = new MetronomeController(this.audioService);
+        this.timer = new Timer(null, storageService);
+        this.metronome = new MetronomeController(this.audioService, storageService);
         this.audioPlayer = new AudioFilePlayer(storageService);
         this.youtubePlayer = new YouTubePlayer(storageService);
         this.sessionManager = new SessionManager(storageService);
         this.imageManager = new ImageManager();
         this.uiController = new UIController();
-        
+
         // State
         this.currentMode = 'metronome';
         this.onSaveCallback = null;
-        
+
         // Tap tempo state
         this.tapTimes = [];
         this.tapTimeout = null;
@@ -701,25 +701,25 @@ export class UnifiedPracticeMinimal {
 
     init(container) {
         container.innerHTML = this.render();
-        
+
         // Make this instance globally accessible for timer discovery
         window.unifiedPracticeMinimal = this;
-        
+
         // Initialize all modules
         this.initializeModules();
-        
+
         // Set up event listeners
         this.attachEventListeners();
-        
+
         // Set initial states
         this.setInitialStates();
-        
+
         // Check and prompt for audio initialization
         this.checkAudioInitialization();
-        
+
         // Check for session to restore
         this.checkForSessionToLoad();
-        
+
         // Timer is now registered via the Timer constructor
         // Just update the app reference for backward compatibility
         if (window.app && window.app.currentPage) {
@@ -730,13 +730,13 @@ export class UnifiedPracticeMinimal {
     initializeModules() {
         // Initialize UI Controller
         this.uiController.initialize();
-        
+
         // Initialize Timer with callback
         this.timer.setUpdateCallback(() => this.updateTimerDisplay());
-        
+
         // Initial timer display update to show save button if needed
         this.updateTimerDisplay();
-        
+
         // Initialize sync settings from checkbox
         const syncCheckbox = document.getElementById('syncMetronome');
         if (syncCheckbox) {
@@ -748,10 +748,10 @@ export class UnifiedPracticeMinimal {
                 this.youtubePlayer.syncWithTimer = isChecked;
             }
         }
-        
+
         // Initialize Metronome
         this.metronome.initialize();
-        
+
         // Set up metronome callbacks for tempo progression
         this.metronome.setCallbacks({
             onBpmChange: (bpm) => {
@@ -779,13 +779,13 @@ export class UnifiedPracticeMinimal {
                 document.getElementById('currentMeasure').textContent = '0';
             }
         });
-        
+
         // Set up BPM pulse animation
         this.setupBpmPulseAnimation();
-        
+
         // Initialize Audio Player
         this.audioPlayer.initialize(document.getElementById('audioPlayerContainer'));
-        
+
         // Initialize YouTube Player
         this.youtubePlayer.initialize('youtubePlayer');
         // Sync the timer preference
@@ -793,7 +793,7 @@ export class UnifiedPracticeMinimal {
             this.youtubePlayer.syncWithTimer = this.timer.syncWithAudio;
             console.log('YouTube initialization: syncWithTimer set to', this.timer.syncWithAudio);
         }
-        
+
         // Set up YouTube speed progression callbacks
         this.youtubePlayer.setSpeedProgressionCallbacks({
             onSpeedProgressionUpdate: (data) => {
@@ -802,8 +802,10 @@ export class UnifiedPracticeMinimal {
                     statusDiv.style.display = 'block';
                     document.getElementById('youtubeCurrentLoop').textContent = data.currentLoop;
                     document.getElementById('youtubeLoopsPerStep').textContent = data.loopsPerStep;
-                    document.getElementById('youtubeCurrentProgressSpeed').textContent = data.currentSpeed;
-                    document.getElementById('youtubeTargetProgressSpeed').textContent = data.targetSpeed;
+                    document.getElementById('youtubeCurrentProgressSpeed').textContent =
+                        data.currentSpeed;
+                    document.getElementById('youtubeTargetProgressSpeed').textContent =
+                        data.targetSpeed;
                 }
             },
             onSpeedIncrease: (data) => {
@@ -813,13 +815,13 @@ export class UnifiedPracticeMinimal {
                 document.getElementById('youtubeCurrentLoop').textContent = '0';
             }
         });
-        
+
         // Initialize Session Manager
         this.sessionManager.initialize();
         this.sessionManager.setAutoSaveCallback(() => {
             this.sessionManager.persistCurrentState(this.getComponentsState());
         });
-        
+
         // Initialize Image Manager
         this.imageManager.initialize();
         this.imageManager.setCurrentMode(this.currentMode);
@@ -829,7 +831,7 @@ export class UnifiedPracticeMinimal {
         this.imageManager.setImageClearCallback(() => {
             this.uiController.hideImagePreview();
         });
-        
+
         // Listen for loadPracticeSession events
         window.addEventListener('loadPracticeSession', (event) => {
             this.handleLoadPracticeSession(event.detail);
@@ -840,18 +842,18 @@ export class UnifiedPracticeMinimal {
         // Hide metronome stop button initially
         const stopBtn = document.getElementById('metronomeStop');
         if (stopBtn) stopBtn.style.display = 'none';
-        
+
         // Set initial sound from saved preference
         const soundSelect = document.getElementById('soundSelect');
         if (soundSelect) {
             soundSelect.value = this.metronome.state.sound;
         }
-        
+
         // Set up mode change callback
         this.uiController.onModeChange((newMode, oldMode) => {
             this.currentMode = newMode;
             this.imageManager.setCurrentMode(newMode);
-            
+
             // Stop any playing audio when switching modes
             if (oldMode === 'metronome' && this.metronome.state.isPlaying) {
                 this.metronome.stop();
@@ -866,22 +868,22 @@ export class UnifiedPracticeMinimal {
     attachEventListeners() {
         // Timer Controls
         this.attachTimerListeners();
-        
+
         // Metronome Controls
         this.attachMetronomeListeners();
-        
+
         // Audio Controls
         this.attachAudioListeners();
-        
+
         // YouTube Controls
         this.attachYouTubeListeners();
-        
+
         // Keyboard Shortcuts
         this.setupKeyboardShortcuts();
-        
+
         // Audio context initialization is now handled by checkAudioInitialization()
     }
-    
+
     setupBpmPulseAnimation() {
         // Add CSS for the pulse animation
         if (!document.getElementById('bpm-pulse-styles')) {
@@ -913,7 +915,7 @@ export class UnifiedPracticeMinimal {
             `;
             document.head.appendChild(style);
         }
-        
+
         // Register beat callback
         this.metronome.onBeat((beat, isAccent) => {
             const bpmElement = document.getElementById('bpmValue');
@@ -922,7 +924,7 @@ export class UnifiedPracticeMinimal {
                 bpmElement.classList.remove('pulsing');
                 void bpmElement.offsetWidth; // Trigger reflow
                 bpmElement.classList.add('pulsing');
-                
+
                 // Remove class after animation completes
                 setTimeout(() => {
                     bpmElement.classList.remove('pulsing');
@@ -930,22 +932,24 @@ export class UnifiedPracticeMinimal {
             }
         });
     }
-    
+
     setupKeyboardShortcuts() {
         // Remove any existing keyboard handler to prevent duplicates
         if (this.keyboardHandler) {
             document.removeEventListener('keydown', this.keyboardHandler);
         }
-        
+
         // Create keyboard shortcut handler
         this.keyboardHandler = (e) => {
             // Don't handle shortcuts when typing in input fields
-            if (e.target.tagName === 'INPUT' || 
-                e.target.tagName === 'TEXTAREA' || 
-                e.target.isContentEditable) {
+            if (
+                e.target.tagName === 'INPUT' ||
+                e.target.tagName === 'TEXTAREA' ||
+                e.target.isContentEditable
+            ) {
                 return;
             }
-            
+
             // Space bar - Play/Pause timer and current audio/metronome
             if (e.code === 'Space') {
                 e.preventDefault();
@@ -954,7 +958,7 @@ export class UnifiedPracticeMinimal {
                     playPauseBtn.click();
                 }
             }
-            
+
             // M key - Toggle metronome
             else if (e.key.toLowerCase() === 'm' && !e.ctrlKey && !e.metaKey) {
                 e.preventDefault();
@@ -965,7 +969,7 @@ export class UnifiedPracticeMinimal {
                     }
                 }
             }
-            
+
             // L key - Set loop points in audio
             else if (e.key.toLowerCase() === 'l' && !e.ctrlKey && !e.metaKey) {
                 e.preventDefault();
@@ -982,7 +986,7 @@ export class UnifiedPracticeMinimal {
                     }
                 }
             }
-            
+
             // Arrow Up/Down - Adjust BPM
             else if (e.code === 'ArrowUp' || e.code === 'ArrowDown') {
                 if (this.currentMode === 'metronome') {
@@ -991,15 +995,16 @@ export class UnifiedPracticeMinimal {
                     if (bpmSlider) {
                         const currentValue = parseInt(bpmSlider.value);
                         const step = e.shiftKey ? 10 : 1; // Hold shift for larger steps
-                        const newValue = e.code === 'ArrowUp' 
-                            ? Math.min(currentValue + step, 250)
-                            : Math.max(currentValue - step, 30);
+                        const newValue =
+                            e.code === 'ArrowUp'
+                                ? Math.min(currentValue + step, 250)
+                                : Math.max(currentValue - step, 30);
                         bpmSlider.value = newValue;
                         bpmSlider.dispatchEvent(new Event('input'));
                     }
                 }
             }
-            
+
             // Number keys 1-9 - Quick BPM presets
             else if (e.key >= '1' && e.key <= '9' && !e.ctrlKey && !e.metaKey && !e.altKey) {
                 if (this.currentMode === 'metronome') {
@@ -1013,7 +1018,7 @@ export class UnifiedPracticeMinimal {
                     }
                 }
             }
-            
+
             // L key - Toggle loop for YouTube
             else if (e.code === 'KeyL') {
                 if (this.currentMode === 'youtube') {
@@ -1024,12 +1029,12 @@ export class UnifiedPracticeMinimal {
                     }
                 }
             }
-            
+
             // Escape key - Close modals
             else if (e.key === 'Escape' || e.key === 'Esc') {
                 // Close any open modals
                 const modals = document.querySelectorAll('.modal-overlay, .practice-log-modal');
-                modals.forEach(modal => {
+                modals.forEach((modal) => {
                     const closeBtn = modal.querySelector('.btn-secondary');
                     if (closeBtn) {
                         closeBtn.click();
@@ -1039,20 +1044,20 @@ export class UnifiedPracticeMinimal {
                 });
             }
         };
-        
+
         // Attach keyboard handler
         document.addEventListener('keydown', this.keyboardHandler);
-        
+
         // Add visual keyboard shortcut guide
         this.addKeyboardShortcutGuide();
     }
-    
+
     addKeyboardShortcutGuide() {
         // Check if guide already exists
         if (document.getElementById('keyboard-shortcuts-guide')) {
             return;
         }
-        
+
         // Create keyboard shortcuts guide button
         const guideButton = document.createElement('button');
         guideButton.id = 'keyboard-shortcuts-toggle';
@@ -1078,7 +1083,7 @@ export class UnifiedPracticeMinimal {
             transition: all 0.2s;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         `;
-        
+
         // Create shortcuts guide panel
         const guidePanel = document.createElement('div');
         guidePanel.id = 'keyboard-shortcuts-guide';
@@ -1096,7 +1101,7 @@ export class UnifiedPracticeMinimal {
             display: none;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         `;
-        
+
         guidePanel.innerHTML = `
             <h3 style="margin: 0 0 15px 0; font-size: 16px; color: var(--text-primary);">
                 Keyboard Shortcuts
@@ -1132,14 +1137,14 @@ export class UnifiedPracticeMinimal {
                 </div>
             </div>
         `;
-        
+
         // Toggle guide visibility
         guideButton.addEventListener('click', () => {
             const isVisible = guidePanel.style.display === 'block';
             guidePanel.style.display = isVisible ? 'none' : 'block';
             guideButton.style.transform = isVisible ? '' : 'scale(1.1)';
         });
-        
+
         // Close guide when clicking outside
         document.addEventListener('click', (e) => {
             if (!guideButton.contains(e.target) && !guidePanel.contains(e.target)) {
@@ -1147,19 +1152,23 @@ export class UnifiedPracticeMinimal {
                 guideButton.style.transform = '';
             }
         });
-        
+
         // Append to document
         document.body.appendChild(guideButton);
         document.body.appendChild(guidePanel);
     }
-    
+
     checkAudioInitialization() {
         // Check if audio context is already initialized
-        if (this.audioService && this.audioService.audioContext && this.audioService.audioContext.state === 'running') {
+        if (
+            this.audioService &&
+            this.audioService.audioContext &&
+            this.audioService.audioContext.state === 'running'
+        ) {
             this.metronome.audioReady = true;
             return;
         }
-        
+
         // Create a subtle prompt that appears above the metronome
         const promptDiv = document.createElement('div');
         promptDiv.className = 'audio-init-prompt';
@@ -1179,7 +1188,7 @@ export class UnifiedPracticeMinimal {
             box-shadow: 0 2px 10px rgba(99, 102, 241, 0.3);
         `;
         promptDiv.innerHTML = '🎵 Click anywhere to enable audio';
-        
+
         // Add animation
         const style = document.createElement('style');
         style.textContent = `
@@ -1190,38 +1199,38 @@ export class UnifiedPracticeMinimal {
             }
         `;
         document.head.appendChild(style);
-        
+
         // Find the metronome panel and add the prompt
         const metronomePanel = document.getElementById('metronomePanel');
         if (metronomePanel) {
             metronomePanel.style.position = 'relative';
             metronomePanel.appendChild(promptDiv);
         }
-        
+
         // Remove prompt once audio is initialized
         const removePrompt = () => {
             promptDiv.remove();
             style.remove();
         };
-        
+
         // Enhanced click handler that initializes audio and removes prompt
         const initAudio = async () => {
             if (this.audioService) {
                 this.audioService.userGestureReceived = true;
                 await this.audioService.initializeAudioContext();
-                
+
                 if (this.metronome) {
                     this.metronome.audioReady = true;
                 }
-                
+
                 removePrompt();
                 document.removeEventListener('click', initAudio);
             }
         };
-        
+
         // Add click listener
         document.addEventListener('click', initAudio);
-        
+
         // Also remove the prompt if clicked directly
         promptDiv.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -1257,15 +1266,17 @@ export class UnifiedPracticeMinimal {
 
         stopBtn?.addEventListener('click', async () => {
             if (this.timer.isRunning && this.timer.elapsedTime > 0) {
-                const userConfirmed = confirm('Stopping will reset the timer. Do you want to save your session first?');
+                const userConfirmed = confirm(
+                    'Stopping will reset the timer. Do you want to save your session first?'
+                );
 
                 if (userConfirmed) {
                     this.timer.pause();
                     this.uiController.updateTimerControls(false);
-                    
+
                     // Stop playback
                     this.stopAllPlayback();
-                    
+
                     // Show save session popup
                     const duration = this.timer.getElapsedTime();
                     this.showSaveSessionPopup(duration);
@@ -1281,7 +1292,7 @@ export class UnifiedPracticeMinimal {
             this.uiController.updateTimerControls(false);
             this.stopAllPlayback();
         });
-        
+
         // Sync checkbox change handler
         syncCheckbox?.addEventListener('change', (e) => {
             const isChecked = e.target.checked;
@@ -1355,13 +1366,13 @@ export class UnifiedPracticeMinimal {
         });
 
         // Sound selection
-        document.getElementById('soundSelect')?.addEventListener('change', (e) => {
-            this.metronome.setSound(e.target.value);
-            localStorage.setItem('defaultMetronomeSound', e.target.value);
+        document.getElementById('soundSelect')?.addEventListener('change', async (e) => {
+            await this.metronome.setSound(e.target.value);
+            // No need to save to localStorage - metronome.setSound handles it
         });
 
         // Accent pattern
-        document.querySelectorAll('.accent-btn').forEach(btn => {
+        document.querySelectorAll('.accent-btn').forEach((btn) => {
             btn.addEventListener('click', (e) => {
                 const beat = parseInt(e.target.dataset.beat);
                 this.metronome.toggleAccent(beat);
@@ -1422,10 +1433,16 @@ export class UnifiedPracticeMinimal {
             if (e.target.checked) {
                 this.metronome.state.tempoProgression = {
                     enabled: true,
-                    startBpm: parseInt(document.getElementById('progressionStartBpm')?.value || 120),
+                    startBpm: parseInt(
+                        document.getElementById('progressionStartBpm')?.value || 120
+                    ),
                     endBpm: parseInt(document.getElementById('progressionEndBpm')?.value || 140),
-                    increment: parseInt(document.getElementById('progressionIncrement')?.value || 5),
-                    measuresPerStep: parseInt(document.getElementById('progressionMeasures')?.value || 4),
+                    increment: parseInt(
+                        document.getElementById('progressionIncrement')?.value || 5
+                    ),
+                    measuresPerStep: parseInt(
+                        document.getElementById('progressionMeasures')?.value || 4
+                    ),
                     currentMeasure: 0
                     // Don't set currentBpm here - let the metronome set it to startBpm when it starts
                 };
@@ -1435,9 +1452,12 @@ export class UnifiedPracticeMinimal {
                     if (statusDiv) {
                         statusDiv.style.display = 'block';
                         document.getElementById('currentMeasure').textContent = '0';
-                        document.getElementById('measuresPerStep').textContent = this.metronome.state.tempoProgression.measuresPerStep;
-                        document.getElementById('currentProgressBpm').textContent = this.metronome.state.tempoProgression.startBpm;
-                        document.getElementById('targetProgressBpm').textContent = this.metronome.state.tempoProgression.endBpm;
+                        document.getElementById('measuresPerStep').textContent =
+                            this.metronome.state.tempoProgression.measuresPerStep;
+                        document.getElementById('currentProgressBpm').textContent =
+                            this.metronome.state.tempoProgression.startBpm;
+                        document.getElementById('targetProgressBpm').textContent =
+                            this.metronome.state.tempoProgression.endBpm;
                     }
                 }
             } else {
@@ -1449,27 +1469,44 @@ export class UnifiedPracticeMinimal {
                 }
             }
         });
-        
+
         // Update tempo progression when input values change
         const updateTempoProgression = () => {
             if (this.metronome.state.tempoProgression?.enabled) {
-                this.metronome.state.tempoProgression.startBpm = parseInt(document.getElementById('progressionStartBpm')?.value || 60);
-                this.metronome.state.tempoProgression.endBpm = parseInt(document.getElementById('progressionEndBpm')?.value || 100);
-                this.metronome.state.tempoProgression.increment = parseInt(document.getElementById('progressionIncrement')?.value || 5);
-                this.metronome.state.tempoProgression.measuresPerStep = parseInt(document.getElementById('progressionMeasures')?.value || 4);
-                
+                this.metronome.state.tempoProgression.startBpm = parseInt(
+                    document.getElementById('progressionStartBpm')?.value || 60
+                );
+                this.metronome.state.tempoProgression.endBpm = parseInt(
+                    document.getElementById('progressionEndBpm')?.value || 100
+                );
+                this.metronome.state.tempoProgression.increment = parseInt(
+                    document.getElementById('progressionIncrement')?.value || 5
+                );
+                this.metronome.state.tempoProgression.measuresPerStep = parseInt(
+                    document.getElementById('progressionMeasures')?.value || 4
+                );
+
                 // Update display if visible
                 const statusDiv = document.getElementById('tempoProgressionStatus');
                 if (statusDiv && statusDiv.style.display !== 'none') {
-                    document.getElementById('targetProgressBpm').textContent = this.metronome.state.tempoProgression.endBpm;
+                    document.getElementById('targetProgressBpm').textContent =
+                        this.metronome.state.tempoProgression.endBpm;
                 }
             }
         };
-        
-        document.getElementById('progressionStartBpm')?.addEventListener('change', updateTempoProgression);
-        document.getElementById('progressionEndBpm')?.addEventListener('change', updateTempoProgression);
-        document.getElementById('progressionIncrement')?.addEventListener('change', updateTempoProgression);
-        document.getElementById('progressionMeasures')?.addEventListener('change', updateTempoProgression);
+
+        document
+            .getElementById('progressionStartBpm')
+            ?.addEventListener('change', updateTempoProgression);
+        document
+            .getElementById('progressionEndBpm')
+            ?.addEventListener('change', updateTempoProgression);
+        document
+            .getElementById('progressionIncrement')
+            ?.addEventListener('change', updateTempoProgression);
+        document
+            .getElementById('progressionMeasures')
+            ?.addEventListener('change', updateTempoProgression);
 
         // Beat Dropout
         const beatDropoutCheckbox = document.getElementById('beatDropoutEnabled');
@@ -1526,34 +1563,40 @@ export class UnifiedPracticeMinimal {
                 // Update sync setting before loading - check timer's sync state
                 if (this.timer && this.timer.syncWithAudio !== undefined) {
                     this.audioPlayer.setSyncWithTimer(this.timer.syncWithAudio);
-                    console.log('Audio: Setting syncWithTimer from timer.syncWithAudio:', this.timer.syncWithAudio);
+                    console.log(
+                        'Audio: Setting syncWithTimer from timer.syncWithAudio:',
+                        this.timer.syncWithAudio
+                    );
                 } else {
                     // Fallback to the syncMetronome checkbox
                     const syncCheckbox = document.getElementById('syncMetronome');
                     if (syncCheckbox) {
                         this.audioPlayer.setSyncWithTimer(syncCheckbox.checked);
-                        console.log('Audio: Setting syncWithTimer from checkbox:', syncCheckbox.checked);
+                        console.log(
+                            'Audio: Setting syncWithTimer from checkbox:',
+                            syncCheckbox.checked
+                        );
                     }
                 }
-                
+
                 const success = await this.audioPlayer.loadFile(file);
                 if (success) {
                     this.uiController.showAudioFileName(file.name);
                     // Update saved loops list when a new file is loaded
                     this.updateAudioSavedLoopsList();
-                    
+
                     // Initialize audio loop save functionality
                     this.initializeAudioLoopSaveFeature();
                 }
             }
         });
-        
+
         // Add event delegation for saved loops list
         document.getElementById('audioSavedLoopsList')?.addEventListener('click', (e) => {
             const loopItem = e.target.closest('.audio-loop-item');
             const deleteBtn = e.target.closest('.audio-loop-delete');
             const editBtn = e.target.closest('.audio-loop-edit');
-            
+
             if (editBtn) {
                 e.stopPropagation();
                 const index = parseInt(editBtn.dataset.index);
@@ -1576,24 +1619,33 @@ export class UnifiedPracticeMinimal {
         loadBtn?.addEventListener('click', async () => {
             const url = urlInput?.value.trim();
             if (url) {
+                // Show loading notification
+                this.uiController.showNotification('Loading YouTube video...', 'info');
+
                 try {
                     // Update sync setting before loading - check timer's sync state
                     if (this.timer && this.timer.syncWithAudio !== undefined) {
                         this.youtubePlayer.syncWithTimer = this.timer.syncWithAudio;
-                        console.log('YouTube: Setting syncWithTimer from timer.syncWithAudio:', this.timer.syncWithAudio);
+                        console.log(
+                            'YouTube: Setting syncWithTimer from timer.syncWithAudio:',
+                            this.timer.syncWithAudio
+                        );
                     } else {
                         // Fallback to the syncMetronome checkbox
                         const syncCheckbox = document.getElementById('syncMetronome');
                         if (syncCheckbox) {
                             this.youtubePlayer.syncWithTimer = syncCheckbox.checked;
-                            console.log('YouTube: Setting syncWithTimer from checkbox:', syncCheckbox.checked);
+                            console.log(
+                                'YouTube: Setting syncWithTimer from checkbox:',
+                                syncCheckbox.checked
+                            );
                         }
                     }
-                    
+
                     await this.youtubePlayer.loadVideo(url);
                     this.uiController.showYouTubePlayer();
                     this.initializeYouTubeUI();
-                    
+
                     // Ensure play button shows correct initial state
                     const playPauseBtn = document.getElementById('youtubePlayPauseBtn');
                     if (playPauseBtn) {
@@ -1603,7 +1655,15 @@ export class UnifiedPracticeMinimal {
                         if (iconPause) iconPause.style.display = 'none';
                     }
                 } catch (error) {
-                    this.uiController.showNotification('Failed to load YouTube video', 'error');
+                    // Only show error if it's not a postMessage origin error
+                    // These errors are common when YouTube player is initializing
+                    if (
+                        !error.message?.includes('postMessage') &&
+                        !error.message?.includes('origin')
+                    ) {
+                        console.error('YouTube load error:', error);
+                        this.uiController.showNotification('Failed to load YouTube video', 'error');
+                    }
                 }
             }
         });
@@ -1623,7 +1683,7 @@ export class UnifiedPracticeMinimal {
 
         // Initialize YouTube control listeners
         this.attachYouTubeControlListeners();
-        
+
         // Add resize button listener
         const resizeBtn = document.getElementById('youtubeResizeBtn');
         if (resizeBtn && !resizeBtn.hasAttribute('data-listener-attached')) {
@@ -1635,7 +1695,7 @@ export class UnifiedPracticeMinimal {
                 const resizeText = resizeBtn.querySelector('.resize-text');
                 const modePanels = document.querySelector('.mode-panels');
                 const youtubePlayerWrapper = document.getElementById('youtubePlayerWrapper');
-                
+
                 if (playerContainer && youtubePlayer) {
                     if (!expand) {
                         // Restore normal size
@@ -1643,17 +1703,18 @@ export class UnifiedPracticeMinimal {
                         // Reset all styles completely
                         playerContainer.removeAttribute('style');
                         playerContainer.style.position = 'relative';
-                        
+
                         // Reset YouTube player with important to override any lingering styles
                         youtubePlayer.removeAttribute('style');
-                        youtubePlayer.style.cssText = 'width: 100% !important; aspect-ratio: 16/9 !important; background: #000; border-radius: 8px; margin-bottom: 1rem; overflow: hidden; transition: all 0.3s ease; height: auto !important;';
-                        
+                        youtubePlayer.style.cssText =
+                            'width: 100% !important; aspect-ratio: 16/9 !important; background: #000; border-radius: 8px; margin-bottom: 1rem; overflow: hidden; transition: all 0.3s ease; height: auto !important;';
+
                         // Reset the wrapper completely
                         if (youtubePlayerWrapper) {
                             youtubePlayerWrapper.removeAttribute('style');
                             youtubePlayerWrapper.style.display = 'block';
                         }
-                        
+
                         // Find and reset ALL parent containers up to the mode panel
                         let parent = playerContainer.parentElement;
                         while (parent && !parent.classList.contains('mode-panel')) {
@@ -1662,26 +1723,26 @@ export class UnifiedPracticeMinimal {
                             parent.style.maxHeight = '';
                             parent = parent.parentElement;
                         }
-                        
+
                         // Restore normal layout for panels
                         if (modePanels) {
                             modePanels.removeAttribute('style');
                         }
-                        
+
                         if (resizeText) resizeText.textContent = 'Expand';
-                        
+
                         // Remove ESC key handler
                         if (this.youtubeEscHandler) {
                             document.removeEventListener('keydown', this.youtubeEscHandler);
                             this.youtubeEscHandler = null;
                         }
-                        
+
                         // Force a reflow to ensure styles are applied
                         youtubePlayer.offsetHeight;
                     } else {
                         // Expand video
                         playerContainer.setAttribute('data-expanded', 'true');
-                        
+
                         // Set fixed positioning for the video container
                         playerContainer.style.cssText = `
                             position: fixed;
@@ -1696,9 +1757,12 @@ export class UnifiedPracticeMinimal {
                             border-radius: 12px;
                             box-shadow: 0 10px 50px rgba(0,0,0,0.5);
                         `;
-                        
+
                         // Expand the video player itself
-                        const newHeight = Math.min(window.innerWidth * 0.9 * (9/16), window.innerHeight * 0.8);
+                        const newHeight = Math.min(
+                            window.innerWidth * 0.9 * (9 / 16),
+                            window.innerHeight * 0.8
+                        );
                         youtubePlayer.style.cssText = `
                             width: 100%;
                             height: ${newHeight}px;
@@ -1706,26 +1770,33 @@ export class UnifiedPracticeMinimal {
                             border-radius: 8px;
                             overflow: hidden;
                         `;
-                        
+
                         // Add a semi-transparent backdrop
                         if (modePanels) {
                             modePanels.style.cssText = 'position: relative; z-index: 1;';
                         }
-                        
+
                         if (resizeText) resizeText.textContent = 'Shrink';
-                        
+
                         // Add ESC key handler for expanded state
                         this.youtubeEscHandler = (e) => {
-                            if (e.key === 'Escape' && playerContainer.hasAttribute('data-expanded')) {
+                            if (
+                                e.key === 'Escape' &&
+                                playerContainer.hasAttribute('data-expanded')
+                            ) {
                                 e.stopPropagation(); // Prevent other ESC handlers
                                 toggleVideoSize(false);
                             }
                         };
                         document.addEventListener('keydown', this.youtubeEscHandler);
                     }
-                    
+
                     // Force YouTube iframe to resize
-                    if (this.youtubePlayer && this.youtubePlayer.player && this.youtubePlayer.player.setSize) {
+                    if (
+                        this.youtubePlayer &&
+                        this.youtubePlayer.player &&
+                        this.youtubePlayer.player.setSize
+                    ) {
                         setTimeout(() => {
                             const width = youtubePlayer.offsetWidth;
                             const height = youtubePlayer.offsetHeight;
@@ -1734,26 +1805,28 @@ export class UnifiedPracticeMinimal {
                     }
                 }
             };
-            
+
             resizeBtn.addEventListener('click', () => {
                 const playerContainer = document.getElementById('youtubePlayer').parentElement;
                 const isExpanded = playerContainer && playerContainer.hasAttribute('data-expanded');
                 toggleVideoSize(!isExpanded);
             });
         }
-        
+
         // Draw YouTube waveform visualization
         this.drawYouTubeWaveform();
-        
+
         // Load and display saved loops for this video
         // Add a small delay to ensure the player is ready
         setTimeout(() => {
             this.updateSavedLoopsList();
         }, 500);
-        
+
         // Also update when player is fully ready
         if (this.youtubePlayer && this.youtubePlayer.player) {
-            const originalStateChange = this.youtubePlayer.onPlayerStateChange.bind(this.youtubePlayer);
+            const originalStateChange = this.youtubePlayer.onPlayerStateChange.bind(
+                this.youtubePlayer
+            );
             this.youtubePlayer.onPlayerStateChange = (event) => {
                 originalStateChange(event);
                 // Update loops list when video is cued (5) or unstarted (-1)
@@ -1763,37 +1836,37 @@ export class UnifiedPracticeMinimal {
             };
         }
     }
-    
+
     drawYouTubeWaveform() {
         const canvas = document.getElementById('youtubeWaveformCanvas');
         if (!canvas) return;
-        
+
         const ctx = canvas.getContext('2d');
-        const width = canvas.width = canvas.offsetWidth;
-        const height = canvas.height = canvas.offsetHeight;
-        
+        const width = (canvas.width = canvas.offsetWidth);
+        const height = (canvas.height = canvas.offsetHeight);
+
         // Store dimensions for position updates
         this.youtubeWaveformDimensions = { width, height };
-        
+
         // Clear canvas
         ctx.clearRect(0, 0, width, height);
-        
+
         // Draw a simple waveform visualization
         const barCount = 100;
         const barWidth = width / barCount;
         const barGap = 1;
-        
+
         ctx.fillStyle = 'rgba(99, 102, 241, 0.3)';
-        
+
         for (let i = 0; i < barCount; i++) {
             // Create a simple wave pattern
             const barHeight = (Math.sin(i * 0.1) * 0.3 + 0.7) * height * 0.8;
             const x = i * barWidth;
             const y = (height - barHeight) / 2;
-            
-            ctx.fillRect(x + barGap/2, y, barWidth - barGap, barHeight);
+
+            ctx.fillRect(x + barGap / 2, y, barWidth - barGap, barHeight);
         }
-        
+
         // Add click handler for seeking
         if (!canvas.hasAttribute('data-click-handler')) {
             canvas.setAttribute('data-click-handler', 'true');
@@ -1801,26 +1874,26 @@ export class UnifiedPracticeMinimal {
                 const rect = canvas.getBoundingClientRect();
                 const x = e.clientX - rect.left;
                 const clickPercent = x / width;
-                
+
                 if (this.youtubePlayer && this.youtubePlayer.player) {
                     const duration = this.youtubePlayer.getDuration();
                     const seekTime = clickPercent * duration;
-                    
+
                     // Simply seek to the clicked position without affecting play state
                     this.youtubePlayer.seekTo(seekTime);
-                    
+
                     // Immediately update the position line
                     this.updateYouTubeWaveformPosition(seekTime, duration);
                 }
             });
-            
+
             // Change cursor on hover
             canvas.style.cursor = 'pointer';
         }
-        
+
         // Draw loop markers
         this.drawYouTubeLoopMarkers(ctx, width, height);
-        
+
         // Draw current playback position
         if (this.youtubePlayer && this.youtubePlayer.player) {
             const currentTime = this.youtubePlayer.getCurrentTime();
@@ -1828,17 +1901,17 @@ export class UnifiedPracticeMinimal {
             this.drawYouTubePlaybackPosition(ctx, currentTime, duration, width, height);
         }
     }
-    
+
     drawYouTubeLoopMarkers(ctx, width, height) {
         if (!this.youtubePlayer) return;
-        
+
         const duration = this.youtubePlayer.getDuration();
         if (duration <= 0) return;
-        
+
         // Draw loop start marker if set
         if (this.youtubePlayer.loopStart !== null) {
             const loopStartX = (this.youtubePlayer.loopStart / duration) * width;
-            
+
             // Draw loop start marker (green)
             ctx.strokeStyle = '#10b981';
             ctx.lineWidth = 3;
@@ -1847,11 +1920,11 @@ export class UnifiedPracticeMinimal {
             ctx.lineTo(loopStartX, height);
             ctx.stroke();
         }
-        
+
         // Draw loop end marker if set
         if (this.youtubePlayer.loopEnd !== null) {
             const loopEndX = (this.youtubePlayer.loopEnd / duration) * width;
-            
+
             // Draw loop end marker (red)
             ctx.strokeStyle = '#ef4444';
             ctx.lineWidth = 3;
@@ -1860,22 +1933,22 @@ export class UnifiedPracticeMinimal {
             ctx.lineTo(loopEndX, height);
             ctx.stroke();
         }
-        
+
         // Draw loop region if both markers are set
         if (this.youtubePlayer.loopStart !== null && this.youtubePlayer.loopEnd !== null) {
             const loopStartX = (this.youtubePlayer.loopStart / duration) * width;
             const loopEndX = (this.youtubePlayer.loopEnd / duration) * width;
-            
+
             // Draw loop region
             ctx.fillStyle = 'rgba(99, 102, 241, 0.2)';
             ctx.fillRect(loopStartX, 0, loopEndX - loopStartX, height);
         }
     }
-    
+
     drawYouTubePlaybackPosition(ctx, currentTime, duration, width, height) {
         if (duration > 0) {
             const posX = (currentTime / duration) * width;
-            
+
             // Draw position line
             ctx.strokeStyle = 'rgba(229, 231, 235, 0.8)'; // Light grey line for current position
             ctx.lineWidth = 2;
@@ -1885,14 +1958,14 @@ export class UnifiedPracticeMinimal {
             ctx.stroke();
         }
     }
-    
+
     updateYouTubeWaveformPosition(currentTime, duration) {
         const canvas = document.getElementById('youtubeWaveformCanvas');
         if (!canvas || !this.youtubeWaveformDimensions) return;
-        
+
         const ctx = canvas.getContext('2d');
         const { width, height } = this.youtubeWaveformDimensions;
-        
+
         // Redraw the waveform
         this.drawYouTubeWaveform();
     }
@@ -1903,13 +1976,14 @@ export class UnifiedPracticeMinimal {
         playPauseBtn?.addEventListener('click', () => {
             const iconPlay = playPauseBtn.querySelector('.icon-play');
             const iconPause = playPauseBtn.querySelector('.icon-pause');
-            
+
             // Check if player is ready and get current state
             if (this.youtubePlayer.player && this.youtubePlayer.ready) {
                 try {
                     const playerState = this.youtubePlayer.player.getPlayerState();
-                    
-                    if (playerState === 1) { // 1 = YT.PlayerState.PLAYING
+
+                    if (playerState === 1) {
+                        // 1 = YT.PlayerState.PLAYING
                         this.youtubePlayer.pause();
                         iconPlay.style.display = 'block';
                         iconPause.style.display = 'none';
@@ -1937,13 +2011,13 @@ export class UnifiedPracticeMinimal {
         // Loop controls (in main control area)
         document.getElementById('youtubeLoopStartBtn')?.addEventListener('click', () => {
             const time = this.youtubePlayer.getCurrentTime();
-            
+
             // If setting start after current end, clear the loop and make this the new start
             if (this.youtubePlayer.loopEnd !== null && time > this.youtubePlayer.loopEnd) {
                 this.youtubePlayer.loopEnd = null;
                 document.getElementById('youtubeLoopEndTime').textContent = '--:--';
             }
-            
+
             this.youtubePlayer.loopStart = time;
             document.getElementById('youtubeLoopStartTime').textContent = this.formatTime(time);
             this.updateYouTubeLoopInfo();
@@ -1952,7 +2026,7 @@ export class UnifiedPracticeMinimal {
 
         document.getElementById('youtubeLoopEndBtn')?.addEventListener('click', () => {
             const time = this.youtubePlayer.getCurrentTime();
-            
+
             // If setting end before current start, clear the loop and make this the new start
             if (this.youtubePlayer.loopStart !== null && time < this.youtubePlayer.loopStart) {
                 this.youtubePlayer.loopStart = time;
@@ -1963,7 +2037,7 @@ export class UnifiedPracticeMinimal {
                 this.youtubePlayer.loopEnd = time;
                 document.getElementById('youtubeLoopEndTime').textContent = this.formatTime(time);
             }
-            
+
             this.updateYouTubeLoopInfo();
             this.drawYouTubeWaveform();
         });
@@ -1973,9 +2047,11 @@ export class UnifiedPracticeMinimal {
             this.youtubePlayer.setLooping(isLooping);
             const toggleBtn = document.getElementById('youtubeLoopToggleBtn');
             if (toggleBtn) {
-                toggleBtn.style.background = isLooping ? 'var(--primary, #6366f1)' : 'var(--bg-card, #374151)';
+                toggleBtn.style.background = isLooping
+                    ? 'var(--primary, #6366f1)'
+                    : 'var(--bg-card, #374151)';
             }
-            
+
             // Show/hide speed progression status if enabled
             if (this.youtubePlayer.speedProgression?.enabled) {
                 const statusDiv = document.getElementById('youtubeSpeedProgressionStatus');
@@ -1983,9 +2059,12 @@ export class UnifiedPracticeMinimal {
                     if (isLooping) {
                         statusDiv.style.display = 'block';
                         document.getElementById('youtubeCurrentLoop').textContent = '0';
-                        document.getElementById('youtubeLoopsPerStep').textContent = this.youtubePlayer.speedProgression.loopsPerStep;
-                        document.getElementById('youtubeCurrentProgressSpeed').textContent = Math.round(this.youtubePlayer.playbackRate * 100);
-                        document.getElementById('youtubeTargetProgressSpeed').textContent = this.youtubePlayer.speedProgression.endSpeed;
+                        document.getElementById('youtubeLoopsPerStep').textContent =
+                            this.youtubePlayer.speedProgression.loopsPerStep;
+                        document.getElementById('youtubeCurrentProgressSpeed').textContent =
+                            Math.round(this.youtubePlayer.playbackRate * 100);
+                        document.getElementById('youtubeTargetProgressSpeed').textContent =
+                            this.youtubePlayer.speedProgression.endSpeed;
                     } else {
                         statusDiv.style.display = 'none';
                     }
@@ -2022,8 +2101,8 @@ export class UnifiedPracticeMinimal {
         });
 
         // Pitch controls (disabled for YouTube)
-        let currentPitch = 0;
-        
+        const currentPitch = 0;
+
         document.getElementById('youtubePitchDown')?.addEventListener('click', () => {
             // Pitch is disabled for YouTube
         });
@@ -2038,22 +2117,25 @@ export class UnifiedPracticeMinimal {
 
         // Pitch info button
         document.getElementById('youtubePitchInfo')?.addEventListener('click', () => {
-            this.uiController.showNotification('Pitch control requires the Transpose Chrome Extension for YouTube videos', 'info');
+            this.uiController.showNotification(
+                'Pitch control requires the Transpose Chrome Extension for YouTube videos',
+                'info'
+            );
         });
 
         // Removed duplicate loop controls event listeners - now using only the main control buttons
-        
+
         // Save loop
         document.getElementById('youtubeSaveLoopBtn')?.addEventListener('click', () => {
             this.showSaveLoopModal();
         });
-        
+
         // Add event delegation for saved loops list
         document.getElementById('youtubeSavedLoopsList')?.addEventListener('click', (e) => {
             const loopItem = e.target.closest('.youtube-loop-item');
             const deleteBtn = e.target.closest('.youtube-loop-delete');
             const editBtn = e.target.closest('.youtube-loop-edit');
-            
+
             if (editBtn) {
                 e.stopPropagation();
                 const index = parseInt(editBtn.dataset.index);
@@ -2067,35 +2149,48 @@ export class UnifiedPracticeMinimal {
                 this.loadYouTubeLoop(index);
             }
         });
-        
+
         // Speed Progression
         const speedProgressionCheckbox = document.getElementById('youtubeSpeedProgressionEnabled');
-        const speedProgressionControls = document.querySelector('.youtube-speed-progression-controls');
-        
+        const speedProgressionControls = document.querySelector(
+            '.youtube-speed-progression-controls'
+        );
+
         speedProgressionCheckbox?.addEventListener('change', (e) => {
             if (speedProgressionControls) {
                 speedProgressionControls.style.display = e.target.checked ? 'block' : 'none';
             }
-            
+
             if (e.target.checked) {
                 this.youtubePlayer.speedProgression = {
                     enabled: true,
-                    startSpeed: parseInt(document.getElementById('youtubeProgressionStartSpeed')?.value || 80),
-                    endSpeed: parseInt(document.getElementById('youtubeProgressionEndSpeed')?.value || 100),
-                    increment: parseInt(document.getElementById('youtubeProgressionIncrement')?.value || 5),
-                    loopsPerStep: parseInt(document.getElementById('youtubeProgressionLoops')?.value || 4),
+                    startSpeed: parseInt(
+                        document.getElementById('youtubeProgressionStartSpeed')?.value || 80
+                    ),
+                    endSpeed: parseInt(
+                        document.getElementById('youtubeProgressionEndSpeed')?.value || 100
+                    ),
+                    increment: parseInt(
+                        document.getElementById('youtubeProgressionIncrement')?.value || 5
+                    ),
+                    loopsPerStep: parseInt(
+                        document.getElementById('youtubeProgressionLoops')?.value || 4
+                    ),
                     currentLoop: 0
                 };
-                
+
                 // Show the progression status if loop is active
                 if (this.youtubePlayer.looping) {
                     const statusDiv = document.getElementById('youtubeSpeedProgressionStatus');
                     if (statusDiv) {
                         statusDiv.style.display = 'block';
                         document.getElementById('youtubeCurrentLoop').textContent = '0';
-                        document.getElementById('youtubeLoopsPerStep').textContent = this.youtubePlayer.speedProgression.loopsPerStep;
-                        document.getElementById('youtubeCurrentProgressSpeed').textContent = this.youtubePlayer.speedProgression.startSpeed;
-                        document.getElementById('youtubeTargetProgressSpeed').textContent = this.youtubePlayer.speedProgression.endSpeed;
+                        document.getElementById('youtubeLoopsPerStep').textContent =
+                            this.youtubePlayer.speedProgression.loopsPerStep;
+                        document.getElementById('youtubeCurrentProgressSpeed').textContent =
+                            this.youtubePlayer.speedProgression.startSpeed;
+                        document.getElementById('youtubeTargetProgressSpeed').textContent =
+                            this.youtubePlayer.speedProgression.endSpeed;
                     }
                 }
             } else {
@@ -2107,27 +2202,44 @@ export class UnifiedPracticeMinimal {
                 }
             }
         });
-        
+
         // Update speed progression when input values change
         const updateSpeedProgression = () => {
             if (this.youtubePlayer.speedProgression?.enabled) {
-                this.youtubePlayer.speedProgression.startSpeed = parseInt(document.getElementById('youtubeProgressionStartSpeed')?.value || 80);
-                this.youtubePlayer.speedProgression.endSpeed = parseInt(document.getElementById('youtubeProgressionEndSpeed')?.value || 100);
-                this.youtubePlayer.speedProgression.increment = parseInt(document.getElementById('youtubeProgressionIncrement')?.value || 5);
-                this.youtubePlayer.speedProgression.loopsPerStep = parseInt(document.getElementById('youtubeProgressionLoops')?.value || 4);
-                
+                this.youtubePlayer.speedProgression.startSpeed = parseInt(
+                    document.getElementById('youtubeProgressionStartSpeed')?.value || 80
+                );
+                this.youtubePlayer.speedProgression.endSpeed = parseInt(
+                    document.getElementById('youtubeProgressionEndSpeed')?.value || 100
+                );
+                this.youtubePlayer.speedProgression.increment = parseInt(
+                    document.getElementById('youtubeProgressionIncrement')?.value || 5
+                );
+                this.youtubePlayer.speedProgression.loopsPerStep = parseInt(
+                    document.getElementById('youtubeProgressionLoops')?.value || 4
+                );
+
                 // Update display if visible
                 const statusDiv = document.getElementById('youtubeSpeedProgressionStatus');
                 if (statusDiv && statusDiv.style.display !== 'none') {
-                    document.getElementById('youtubeTargetProgressSpeed').textContent = this.youtubePlayer.speedProgression.endSpeed;
+                    document.getElementById('youtubeTargetProgressSpeed').textContent =
+                        this.youtubePlayer.speedProgression.endSpeed;
                 }
             }
         };
-        
-        document.getElementById('youtubeProgressionStartSpeed')?.addEventListener('change', updateSpeedProgression);
-        document.getElementById('youtubeProgressionEndSpeed')?.addEventListener('change', updateSpeedProgression);
-        document.getElementById('youtubeProgressionIncrement')?.addEventListener('change', updateSpeedProgression);
-        document.getElementById('youtubeProgressionLoops')?.addEventListener('change', updateSpeedProgression);
+
+        document
+            .getElementById('youtubeProgressionStartSpeed')
+            ?.addEventListener('change', updateSpeedProgression);
+        document
+            .getElementById('youtubeProgressionEndSpeed')
+            ?.addEventListener('change', updateSpeedProgression);
+        document
+            .getElementById('youtubeProgressionIncrement')
+            ?.addEventListener('change', updateSpeedProgression);
+        document
+            .getElementById('youtubeProgressionLoops')
+            ?.addEventListener('change', updateSpeedProgression);
     }
 
     updateYouTubeUI(state) {
@@ -2138,15 +2250,17 @@ export class UnifiedPracticeMinimal {
         }
 
         // Update time display
-        document.getElementById('youtubeCurrentTime').textContent = this.formatTime(state.currentTime);
+        document.getElementById('youtubeCurrentTime').textContent = this.formatTime(
+            state.currentTime
+        );
         document.getElementById('youtubeDuration').textContent = this.formatTime(state.duration);
-        
+
         // Update play/pause button state
         const playPauseBtn = document.getElementById('youtubePlayPauseBtn');
         if (playPauseBtn) {
             const iconPlay = playPauseBtn.querySelector('.icon-play');
             const iconPause = playPauseBtn.querySelector('.icon-pause');
-            
+
             if (state.isPlaying) {
                 if (iconPlay) iconPlay.style.display = 'none';
                 if (iconPause) iconPause.style.display = 'block';
@@ -2155,7 +2269,7 @@ export class UnifiedPracticeMinimal {
                 if (iconPause) iconPause.style.display = 'none';
             }
         }
-        
+
         // Update waveform position immediately
         this.updateYouTubeWaveformPosition(state.currentTime, state.duration);
     }
@@ -2163,28 +2277,28 @@ export class UnifiedPracticeMinimal {
     updateYouTubeLoopInfo() {
         const loopInfo = document.getElementById('youtubeLoopInfo');
         const saveBtn = document.getElementById('youtubeSaveLoopBtn');
-        
+
         // Update all elements with loop time info (there might be multiple)
         const allStartTimeElements = document.querySelectorAll('[id="youtubeLoopStartTime"]');
         const allEndTimeElements = document.querySelectorAll('[id="youtubeLoopEndTime"]');
-        
+
         if (this.youtubePlayer.loopStart !== null && this.youtubePlayer.loopEnd !== null) {
             if (loopInfo) loopInfo.style.display = 'block';
-            
+
             // Update all instances of loop times
-            allStartTimeElements.forEach(el => {
+            allStartTimeElements.forEach((el) => {
                 el.textContent = this.formatTime(this.youtubePlayer.loopStart);
             });
-            allEndTimeElements.forEach(el => {
+            allEndTimeElements.forEach((el) => {
                 el.textContent = this.formatTime(this.youtubePlayer.loopEnd);
             });
-            
+
             const duration = this.youtubePlayer.loopEnd - this.youtubePlayer.loopStart;
             const durationEl = document.getElementById('youtubeLoopDuration');
             if (durationEl) {
                 durationEl.textContent = `(${this.formatTime(duration)})`;
             }
-            
+
             // Show save button when we have a valid loop
             if (saveBtn) {
                 saveBtn.style.display = 'inline-block';
@@ -2194,15 +2308,15 @@ export class UnifiedPracticeMinimal {
             }
         } else {
             if (loopInfo) loopInfo.style.display = 'none';
-            
+
             // Reset all instances
-            allStartTimeElements.forEach(el => {
+            allStartTimeElements.forEach((el) => {
                 el.textContent = '--:--';
             });
-            allEndTimeElements.forEach(el => {
+            allEndTimeElements.forEach((el) => {
                 el.textContent = '--:--';
             });
-            
+
             // Hide save button when no loop
             if (saveBtn) {
                 saveBtn.style.display = 'none';
@@ -2213,7 +2327,7 @@ export class UnifiedPracticeMinimal {
     updateTimerDisplay() {
         const timeString = this.timer.getFormattedTime();
         this.uiController.updateTimerDisplay(timeString);
-        
+
         // Show/hide save button
         const totalSeconds = this.timer.getElapsedTime();
         this.uiController.showSaveButton(totalSeconds > 0);
@@ -2222,12 +2336,20 @@ export class UnifiedPracticeMinimal {
     startMetronome() {
         // Update tempo progression values before starting
         if (this.metronome.state.tempoProgression?.enabled) {
-            this.metronome.state.tempoProgression.startBpm = parseInt(document.getElementById('progressionStartBpm')?.value || 60);
-            this.metronome.state.tempoProgression.endBpm = parseInt(document.getElementById('progressionEndBpm')?.value || 100);
-            this.metronome.state.tempoProgression.increment = parseInt(document.getElementById('progressionIncrement')?.value || 5);
-            this.metronome.state.tempoProgression.measuresPerStep = parseInt(document.getElementById('progressionMeasures')?.value || 4);
+            this.metronome.state.tempoProgression.startBpm = parseInt(
+                document.getElementById('progressionStartBpm')?.value || 60
+            );
+            this.metronome.state.tempoProgression.endBpm = parseInt(
+                document.getElementById('progressionEndBpm')?.value || 100
+            );
+            this.metronome.state.tempoProgression.increment = parseInt(
+                document.getElementById('progressionIncrement')?.value || 5
+            );
+            this.metronome.state.tempoProgression.measuresPerStep = parseInt(
+                document.getElementById('progressionMeasures')?.value || 4
+            );
         }
-        
+
         this.metronome.start(() => {
             if (this.uiController.getElement('syncCheckbox')?.checked && !this.timer.isRunning) {
                 this.timer.start();
@@ -2235,7 +2357,7 @@ export class UnifiedPracticeMinimal {
             }
         });
         this.uiController.updateMetronomeControls(true);
-        
+
         // Show tempo progression status if enabled
         if (this.metronome.state.tempoProgression?.enabled) {
             const statusDiv = document.getElementById('tempoProgressionStatus');
@@ -2255,7 +2377,7 @@ export class UnifiedPracticeMinimal {
     stopMetronome() {
         this.metronome.stop();
         this.uiController.updateMetronomeControls(false);
-        
+
         // Hide tempo progression status
         const statusDiv = document.getElementById('tempoProgressionStatus');
         if (statusDiv) {
@@ -2294,22 +2416,24 @@ export class UnifiedPracticeMinimal {
         }
 
         clearTimeout(this.tapTimeout);
-        this.tapTimeout = setTimeout(() => { this.tapTimes = []; }, 2000);
+        this.tapTimeout = setTimeout(() => {
+            this.tapTimes = [];
+        }, 2000);
     }
 
     async showSaveSessionPopup(duration) {
         try {
             console.log('showSaveSessionPopup called with duration:', duration);
-            
+
             // Check if uiController exists
             if (!this.uiController) {
                 console.error('UIController not initialized!');
                 return;
             }
-            
+
             const modalContent = await this.renderSaveSessionModal(duration);
             // console.log('Modal content generated:', modalContent);
-            
+
             const modal = this.uiController.showModal(modalContent, {
                 onClose: () => {
                     // Resume timer if it was paused
@@ -2319,7 +2443,7 @@ export class UnifiedPracticeMinimal {
                     }
                 }
             });
-            
+
             console.log('Modal created:', modal);
             console.log('Modal in DOM:', document.body.contains(modal));
             console.log('Modal styles:', {
@@ -2328,7 +2452,7 @@ export class UnifiedPracticeMinimal {
                 opacity: modal.style.opacity,
                 zIndex: modal.style.zIndex
             });
-            
+
             // Attach save handlers
             this.attachSaveSessionHandlers(modal, duration);
         } catch (error) {
@@ -2340,23 +2464,26 @@ export class UnifiedPracticeMinimal {
     async renderSaveSessionModal(duration) {
         const defaultName = this.sessionManager.generateSessionName();
         const formattedDuration = this.sessionManager.formatDuration(duration);
-        
+
         // Get practice areas from storage service
         const practiceAreas = await this.storageService.getSessionAreas();
-        
+
         // Get current media info
         let mediaInfo = '';
         let defaultPracticeArea = '';
-        
+
         if (this.currentMode === 'audio' && this.audioPlayer.currentFileName) {
-            const truncatedFileName = this.audioPlayer.currentFileName.length > 50 
-                ? this.audioPlayer.currentFileName.substring(0, 47) + '...' 
-                : this.audioPlayer.currentFileName;
+            const truncatedFileName =
+                this.audioPlayer.currentFileName.length > 50
+                    ? this.audioPlayer.currentFileName.substring(0, 47) + '...'
+                    : this.audioPlayer.currentFileName;
             mediaInfo = `<p>Audio File: <strong>${truncatedFileName}</strong></p>`;
             // Try to find previous practice area for this file
             try {
-                const previousSessions = await this.storageService.getPracticeEntries() || [];
-                const previousSession = previousSessions.find(s => s.audioFile === this.audioPlayer.currentFileName);
+                const previousSessions = (await this.storageService.getPracticeEntries()) || [];
+                const previousSession = previousSessions.find(
+                    (s) => s.audioFile === this.audioPlayer.currentFileName
+                );
                 if (previousSession?.practiceArea) {
                     defaultPracticeArea = previousSession.practiceArea;
                 }
@@ -2364,17 +2491,19 @@ export class UnifiedPracticeMinimal {
                 console.log('Could not load previous sessions:', e);
             }
         } else if (this.currentMode === 'youtube' && this.youtubePlayer.videoTitle) {
-            const truncatedTitle = this.youtubePlayer.videoTitle.length > 50 
-                ? this.youtubePlayer.videoTitle.substring(0, 47) + '...' 
-                : this.youtubePlayer.videoTitle;
-            const videoUrl = this.youtubePlayer.videoId ? 
-                `https://youtube.com/watch?v=${this.youtubePlayer.videoId}` : '';
+            const truncatedTitle =
+                this.youtubePlayer.videoTitle.length > 50
+                    ? this.youtubePlayer.videoTitle.substring(0, 47) + '...'
+                    : this.youtubePlayer.videoTitle;
+            const videoUrl = this.youtubePlayer.videoId
+                ? `https://youtube.com/watch?v=${this.youtubePlayer.videoId}`
+                : '';
             mediaInfo = `
                 <p>YouTube: <strong>${truncatedTitle}</strong></p>
                 ${videoUrl ? `<p style="font-size: 0.875rem; color: var(--text-secondary); word-break: break-all;">URL: ${videoUrl}</p>` : ''}
             `;
         }
-        
+
         return `
             <h3>Save Practice Session</h3>
             <div class="save-session-form">
@@ -2395,9 +2524,12 @@ export class UnifiedPracticeMinimal {
                     <label for="practiceArea">Practice Area:</label>
                     <select id="practiceArea" style="width: 100%; padding: 8px; margin-top: 8px;">
                         <option value="">Select practice area...</option>
-                        ${practiceAreas.map(area => 
-                            `<option value="${area}" ${area === defaultPracticeArea ? 'selected' : ''}>${area}</option>`
-                        ).join('')}
+                        ${practiceAreas
+                            .map(
+                                (area) =>
+                                    `<option value="${area}" ${area === defaultPracticeArea ? 'selected' : ''}>${area}</option>`
+                            )
+                            .join('')}
                     </select>
                 </div>
                 
@@ -2468,13 +2600,13 @@ export class UnifiedPracticeMinimal {
         confirmBtn?.addEventListener('click', async () => {
             const name = nameInput?.value.trim() || this.sessionManager.generateSessionName();
             const practiceArea = practiceAreaSelect?.value || '';
-            
+
             // Combine key information
             const keyNote = keyNoteSelect?.value || '';
             const keyType = keyTypeSelect?.value || '';
             const keyMode = keyModeSelect?.value || '';
             let key = '';
-            
+
             if (keyNote) {
                 key = keyNote;
                 if (keyType) {
@@ -2484,9 +2616,9 @@ export class UnifiedPracticeMinimal {
                     key += ` ${keyMode}`;
                 }
             }
-            
+
             const isFavorite = favoriteCheckbox?.checked || false;
-            
+
             // Create enhanced session data
             const sessionData = {
                 name,
@@ -2497,7 +2629,7 @@ export class UnifiedPracticeMinimal {
                 mode: this.currentMode,
                 isFavorite
             };
-            
+
             // Add media-specific information
             if (this.currentMode === 'audio' && this.audioPlayer.currentFileName) {
                 sessionData.audioFile = this.audioPlayer.currentFileName;
@@ -2512,17 +2644,17 @@ export class UnifiedPracticeMinimal {
                 sessionData.bpm = this.metronome.state.bpm;
                 sessionData.timeSignature = this.metronome.state.timeSignature;
             }
-            
+
             // Add image data if present
             if (this.imageManager.getCurrentImage()) {
                 sessionData.sheetMusicImage = this.imageManager.getCurrentImage();
-                
+
                 // Generate thumbnail
                 try {
                     const thumbnail = await this.imageManager.generateThumbnail(
                         this.imageManager.getCurrentImage(),
-                        200,  // max width
-                        200   // max height
+                        200, // max width
+                        200 // max height
                     );
                     sessionData.sheetMusicThumbnail = thumbnail;
                 } catch (error) {
@@ -2530,25 +2662,25 @@ export class UnifiedPracticeMinimal {
                     // Continue without thumbnail
                 }
             }
-            
+
             // Save the practice entry with all the session data
             const practiceEntry = {
                 ...sessionData,
                 id: Date.now() + Math.random()
             };
-            
+
             await this.storageService.savePracticeEntry(practiceEntry);
-            
+
             // Don't also call sessionManager.saveSession to avoid duplicate entries
             const session = practiceEntry;
-            
+
             if (session && this.onSaveCallback) {
                 this.onSaveCallback(session);
             }
-            
+
             // Show success notification
             this.uiController.showNotification('Practice session saved successfully!', 'success');
-            
+
             // Reset timer after saving
             this.timer.stop();
             this.uiController.updateTimerControls(false);
@@ -2575,7 +2707,10 @@ export class UnifiedPracticeMinimal {
 
     showSaveLoopModal() {
         if (this.youtubePlayer.loopStart === null || this.youtubePlayer.loopEnd === null) {
-            this.uiController.showNotification('Please set loop start and end points first', 'error');
+            this.uiController.showNotification(
+                'Please set loop start and end points first',
+                'error'
+            );
             return;
         }
 
@@ -2620,7 +2755,10 @@ export class UnifiedPracticeMinimal {
             }
             this.youtubePlayer.saveLoop(name);
             this.updateSavedLoopsList();
-            this.uiController.showNotification(inputValue ? 'Loop saved successfully' : 'Loop saved with default name', 'success');
+            this.uiController.showNotification(
+                inputValue ? 'Loop saved successfully' : 'Loop saved with default name',
+                'success'
+            );
             modal.remove();
         });
 
@@ -2634,13 +2772,16 @@ export class UnifiedPracticeMinimal {
     updateSavedLoopsList() {
         const loops = this.youtubePlayer.loadSavedLoops();
         const container = document.getElementById('youtubeSavedLoopsList');
-        
+
         if (!container) return;
-        
+
         if (loops.length === 0) {
-            container.innerHTML = '<p class="empty-state" style="color: var(--text-secondary); text-align: center; font-size: 12px; margin: 0; padding: 16px;">No saved loops for this video</p>';
+            container.innerHTML =
+                '<p class="empty-state" style="color: var(--text-secondary); text-align: center; font-size: 12px; margin: 0; padding: 16px;">No saved loops for this video</p>';
         } else {
-            container.innerHTML = loops.map((loop, index) => `
+            container.innerHTML = loops
+                .map(
+                    (loop, index) => `
                 <div class="saved-loop-item" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-bottom: 1px solid var(--border); cursor: pointer;">
                     <div class="youtube-loop-item" data-index="${index}" style="flex: 1;">
                         <div style="font-weight: 500;">${escapeHtml(loop.name)}</div>
@@ -2661,14 +2802,18 @@ export class UnifiedPracticeMinimal {
                         </button>
                     </div>
                 </div>
-            `).join('');
+            `
+                )
+                .join('');
         }
     }
 
     loadYouTubeLoop(index) {
         if (this.youtubePlayer.loadLoop(index)) {
             const loop = this.youtubePlayer.savedLoops[index];
-            document.getElementById('youtubeLoopStartTime').textContent = this.formatTime(loop.start);
+            document.getElementById('youtubeLoopStartTime').textContent = this.formatTime(
+                loop.start
+            );
             document.getElementById('youtubeLoopEndTime').textContent = this.formatTime(loop.end);
             document.getElementById('youtubeLoopEnabled').checked = true;
             this.youtubePlayer.setLooping(true);
@@ -2683,40 +2828,46 @@ export class UnifiedPracticeMinimal {
             this.uiController.showNotification('Loop deleted', 'info');
         }
     }
-    
-    editYouTubeLoop(index) {
+
+    async editYouTubeLoop(index) {
         const loops = this.youtubePlayer.savedLoops;
         if (!loops || !loops[index]) return;
-        
+
         const loop = loops[index];
         const newName = prompt('Edit loop name:', loop.name);
-        
+
         if (newName && newName.trim() && newName !== loop.name) {
             loop.name = newName.trim();
-            this.youtubePlayer.saveSavedLoops();
+
+            // Save updated loops using StorageService
+            await this.storageService.saveYouTubeLoop(this.youtubePlayer.videoId, loops);
+
             this.updateSavedLoopsList();
             this.uiController.showNotification('Loop name updated', 'success');
         }
     }
-    
+
     // Audio Loop Methods
     updateAudioSavedLoopsList() {
         const loopController = this.audioPlayer?.audioPlayer?.loopController;
         if (!loopController) return;
-        
+
         const container = document.getElementById('audioSavedLoopsList');
         const section = document.getElementById('audioSavedLoopsSection');
-        
+
         if (!container || !section) return;
-        
+
         const loops = loopController.savedLoops || [];
-        
+
         if (loops.length === 0) {
-            container.innerHTML = '<p class="no-loops-message" style="text-align: center; color: var(--text-muted); font-size: 14px;">No saved loops yet</p>';
+            container.innerHTML =
+                '<p class="no-loops-message" style="text-align: center; color: var(--text-muted); font-size: 14px;">No saved loops yet</p>';
             section.style.display = 'none';
         } else {
             section.style.display = 'block';
-            container.innerHTML = loops.map((loop, index) => `
+            container.innerHTML = loops
+                .map(
+                    (loop, index) => `
                 <div class="saved-loop-item" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-bottom: 1px solid var(--border); cursor: pointer;">
                     <div class="audio-loop-item" data-index="${index}" style="flex: 1;">
                         <div style="font-weight: 500;">${escapeHtml(loop.name)}</div>
@@ -2737,63 +2888,69 @@ export class UnifiedPracticeMinimal {
                         </button>
                     </div>
                 </div>
-            `).join('');
+            `
+                )
+                .join('');
         }
     }
-    
+
     loadAudioLoop(index) {
         const loopController = this.audioPlayer?.audioPlayer?.loopController;
         if (!loopController || !loopController.savedLoops[index]) return;
-        
+
         const loop = loopController.savedLoops[index];
         loopController.setLoopStart(loop.start);
         loopController.setLoopEnd(loop.end);
         loopController.setLooping(true);
-        
+
         this.uiController.showNotification(`Loaded loop: ${loop.name}`, 'success');
     }
-    
-    deleteAudioLoop(index) {
+
+    async deleteAudioLoop(index) {
         if (confirm('Delete this saved loop?')) {
             const loopController = this.audioPlayer?.audioPlayer?.loopController;
             if (loopController) {
-                loopController.deleteLoop(index);
+                await loopController.deleteLoop(index);
                 this.updateAudioSavedLoopsList();
                 this.uiController.showNotification('Loop deleted', 'info');
             }
         }
     }
-    
+
     editAudioLoop(index) {
         const loopController = this.audioPlayer?.audioPlayer?.loopController;
         if (!loopController || !loopController.savedLoops[index]) return;
-        
+
         const loop = loopController.savedLoops[index];
         const newName = prompt('Edit loop name:', loop.name);
-        
+
         if (newName && newName.trim() && newName !== loop.name) {
             loop.name = newName.trim();
-            loopController.saveSavedLoops();
+
+            // Save updated loops back to localStorage
+            const storageKey = `audio_loops_${loopController.currentFileName}`;
+            localStorage.setItem(storageKey, JSON.stringify(loopController.savedLoops));
+
             this.updateAudioSavedLoopsList();
             this.uiController.showNotification('Loop name updated', 'success');
         }
     }
-    
+
     initializeAudioLoopSaveFeature() {
         // Get the audio player's loop controller
         const audioPlayer = this.audioPlayer?.audioPlayer;
         if (!audioPlayer || !audioPlayer.loopController) return;
-        
+
         // Set callback for when loops are loaded
         audioPlayer.loopController.onLoopsLoaded = (savedLoops) => {
             this.updateAudioSavedLoopsList();
         };
-        
+
         // Add save loop handler to the audio player
         audioPlayer.handleLoopSave = () => {
             this.showAudioSaveLoopModal();
         };
-        
+
         // Re-set the UI callbacks to include the save handler
         if (audioPlayer.uiControls) {
             audioPlayer.uiControls.setCallbacks({
@@ -2801,18 +2958,25 @@ export class UnifiedPracticeMinimal {
             });
         }
     }
-    
+
     showAudioSaveLoopModal() {
         const loopController = this.audioPlayer?.audioPlayer?.loopController;
-        if (!loopController || loopController.loopStart === null || loopController.loopEnd === null) {
-            this.uiController.showNotification('Please set loop start and end points first', 'error');
+        if (
+            !loopController ||
+            loopController.loopStart === null ||
+            loopController.loopEnd === null
+        ) {
+            this.uiController.showNotification(
+                'Please set loop start and end points first',
+                'error'
+            );
             return;
         }
-        
+
         const modal = this.uiController.showModal(this.renderAudioSaveLoopModal());
         this.attachAudioSaveLoopHandlers(modal);
     }
-    
+
     renderAudioSaveLoopModal() {
         const loopController = this.audioPlayer?.audioPlayer?.loopController;
         const loopDuration = loopController.loopEnd - loopController.loopStart;
@@ -2836,13 +3000,13 @@ export class UnifiedPracticeMinimal {
             </div>
         `;
     }
-    
+
     attachAudioSaveLoopHandlers(modal) {
         const nameInput = modal.querySelector('#audioLoopName');
         const confirmBtn = modal.querySelector('#confirmAudioLoopSaveBtn');
         const cancelBtn = modal.querySelector('#cancelAudioLoopSaveBtn');
-        
-        confirmBtn?.addEventListener('click', () => {
+
+        confirmBtn?.addEventListener('click', async () => {
             const loopController = this.audioPlayer?.audioPlayer?.loopController;
             if (loopController) {
                 const inputValue = nameInput?.value.trim();
@@ -2851,20 +3015,22 @@ export class UnifiedPracticeMinimal {
                     // Generate default name if none provided
                     name = `Loop ${this.formatTime(loopController.loopStart)} - ${this.formatTime(loopController.loopEnd)}`;
                 }
-                loopController.saveLoop(name);
+                await loopController.saveLoop(name);
                 this.updateAudioSavedLoopsList();
-                this.uiController.showNotification(inputValue ? 'Loop saved successfully' : 'Loop saved with default name', 'success');
+                this.uiController.showNotification(
+                    inputValue ? 'Loop saved successfully' : 'Loop saved with default name',
+                    'success'
+                );
                 modal.remove();
             }
         });
-        
+
         cancelBtn?.addEventListener('click', () => {
             modal.remove();
         });
-        
+
         nameInput?.focus();
     }
-    
 
     formatTime(seconds) {
         if (!seconds || seconds < 0) return '0:00';
@@ -2872,19 +3038,19 @@ export class UnifiedPracticeMinimal {
         const secs = Math.floor(seconds % 60);
         return `${mins}:${secs.toString().padStart(2, '0')}`;
     }
-    
+
     showBpmIncreaseAnimation(increment) {
         // Create and show the BPM increase animation
         const animDiv = document.createElement('div');
         animDiv.className = 'bpm-increase-animation';
         animDiv.textContent = `+${increment} BPM!`;
         document.body.appendChild(animDiv);
-        
+
         // Remove after animation completes
         setTimeout(() => {
             animDiv.remove();
         }, 1000);
-        
+
         // Also pulse the BPM display
         const bpmValue = document.getElementById('bpmValue');
         if (bpmValue) {
@@ -2894,14 +3060,14 @@ export class UnifiedPracticeMinimal {
             }, 10);
         }
     }
-    
+
     showSpeedIncreaseAnimation(increment) {
         // Create and show the speed increase animation
         const animDiv = document.createElement('div');
         animDiv.className = 'bpm-increase-animation';
         animDiv.textContent = `+${increment}% Speed!`;
         document.body.appendChild(animDiv);
-        
+
         // Remove after animation completes
         setTimeout(() => {
             animDiv.remove();
@@ -2921,11 +3087,11 @@ export class UnifiedPracticeMinimal {
                 console.error('Error loading session from sessionStorage:', error);
             }
         }
-        
+
         // Check URL params
         const urlParams = new URLSearchParams(window.location.search);
         const sessionId = urlParams.get('session');
-        
+
         if (sessionId) {
             this.sessionManager.restoreSession(parseInt(sessionId), this.getComponentsState());
         } else {
@@ -2933,7 +3099,7 @@ export class UnifiedPracticeMinimal {
             this.sessionManager.checkForRestorable(this.getComponentsState());
         }
     }
-    
+
     handleLoadPracticeSession(detail) {
         // Load session data from event detail
         const sessionData = sessionStorage.getItem('loadPracticeSession');
@@ -2947,22 +3113,21 @@ export class UnifiedPracticeMinimal {
             }
         }
     }
-    
+
     loadPracticeSessionData(data) {
         // Switch to the appropriate mode
         if (data.mode) {
             this.uiController.switchMode(data.mode);
         }
-        
+
         // Load image if present
         if (data.sheetMusicImage && this.imageManager) {
             // Set the image directly
             this.imageManager.currentImage = data.sheetMusicImage;
-            if (this.imageManager.onImageLoadCallback) {
-                this.imageManager.onImageLoadCallback(data.sheetMusicImage);
-            }
+            // Call the UI controller to show the image preview
+            this.uiController.showImagePreview(data.sheetMusicImage);
         }
-        
+
         // Set metronome settings if in metronome mode
         if (data.mode === 'metronome' && this.metronome) {
             if (data.tempo || data.bpm) {
@@ -2976,7 +3141,7 @@ export class UnifiedPracticeMinimal {
                 }
             }
         }
-        
+
         // Show notification
         this.uiController.showNotification('Practice session loaded successfully', 'success');
     }
@@ -3007,24 +3172,24 @@ export class UnifiedPracticeMinimal {
         this.sessionManager.destroy();
         this.imageManager.destroy();
         this.uiController.destroy();
-        
+
         // Clear timeouts
         if (this.tapTimeout) {
             clearTimeout(this.tapTimeout);
         }
-        
+
         // Remove keyboard shortcuts
         if (this.keyboardHandler) {
             document.removeEventListener('keydown', this.keyboardHandler);
             this.keyboardHandler = null;
         }
-        
+
         // Remove keyboard guide UI
         const guideButton = document.getElementById('keyboard-shortcuts-toggle');
         const guidePanel = document.getElementById('keyboard-shortcuts-guide');
         if (guideButton) guideButton.remove();
         if (guidePanel) guidePanel.remove();
-        
+
         // Clear global references
         if (window.currentTimer === this.timer) {
             window.currentTimer = null;

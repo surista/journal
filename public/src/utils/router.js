@@ -34,9 +34,8 @@ export class Router {
         const routePath = this.config.getRouteUrl(routeName);
 
         // Add parameters if any
-        const queryString = Object.keys(params).length > 0
-            ? '?' + new URLSearchParams(params).toString()
-            : '';
+        const queryString =
+            Object.keys(params).length > 0 ? '?' + new URLSearchParams(params).toString() : '';
 
         this.navigate(routePath + queryString);
     }
@@ -98,8 +97,8 @@ export class Router {
         const relativeActualPath = this.getRelativePath(actualPath);
 
         // Simple pattern matching for routes like /user/:id
-        const routeParts = relativeRoutePath.split('/').filter(p => p);
-        const actualParts = relativeActualPath.split('/').filter(p => p);
+        const routeParts = relativeRoutePath.split('/').filter((p) => p);
+        const actualParts = relativeActualPath.split('/').filter((p) => p);
 
         if (routeParts.length !== actualParts.length) {
             return false;
@@ -125,8 +124,12 @@ export class Router {
 
         if (!routePath) return params;
 
-        const routeParts = this.getRelativePath(routePath).split('/').filter(p => p);
-        const actualParts = this.getRelativePath(path).split('/').filter(p => p);
+        const routeParts = this.getRelativePath(routePath)
+            .split('/')
+            .filter((p) => p);
+        const actualParts = this.getRelativePath(path)
+            .split('/')
+            .filter((p) => p);
 
         for (let i = 0; i < routeParts.length; i++) {
             if (routeParts[i].startsWith(':')) {
@@ -167,9 +170,8 @@ export class Router {
             ? path
             : this.config.basePath + path.replace(/^\//, '');
 
-        const queryString = Object.keys(params).length > 0
-            ? '?' + new URLSearchParams(params).toString()
-            : '';
+        const queryString =
+            Object.keys(params).length > 0 ? '?' + new URLSearchParams(params).toString() : '';
 
         return fullPath + queryString;
     }

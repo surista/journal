@@ -1,7 +1,7 @@
 // Achievement Badges Component - Fixed to handle async storage properly
-import {notificationManager} from '../services/notificationManager.js';
-import {TimeUtils} from '../utils/helpers.js';
-import {LazyAchievementBadges} from './LazyImage.js';
+import { notificationManager } from '../services/notificationManager.js';
+import { TimeUtils } from '../utils/helpers.js';
+import { LazyAchievementBadges } from './LazyImage.js';
 
 export class AchievementBadges {
     constructor(container, storageService) {
@@ -208,14 +208,17 @@ export class AchievementBadges {
                 name: 'Marathon Session',
                 icon: '🏃',
                 description: 'Practice for 2 hours in one session',
-                check: (stats, entries) => Array.isArray(entries) && entries.some(e => e.duration >= 7200)
+                check: (stats, entries) =>
+                    Array.isArray(entries) && entries.some((e) => e.duration >= 7200)
             },
             {
                 id: 'quick-practice',
                 name: 'Quick Practice',
                 icon: '⚡',
                 description: 'Complete 10 sessions under 15 minutes',
-                check: (stats, entries) => Array.isArray(entries) && entries.filter(e => e.duration < 900 && e.duration >= 60).length >= 10
+                check: (stats, entries) =>
+                    Array.isArray(entries) &&
+                    entries.filter((e) => e.duration < 900 && e.duration >= 60).length >= 10
             },
 
             // Practice Areas
@@ -224,21 +227,26 @@ export class AchievementBadges {
                 name: 'Well Rounded',
                 icon: '🎨',
                 description: 'Practice 5 different areas',
-                check: (stats, entries) => Array.isArray(entries) && new Set(entries.map(e => e.practiceArea)).size >= 5
+                check: (stats, entries) =>
+                    Array.isArray(entries) && new Set(entries.map((e) => e.practiceArea)).size >= 5
             },
             {
                 id: 'scale-specialist',
                 name: 'Scale Specialist',
                 icon: '🎼',
                 description: '25 scale practice sessions',
-                check: (stats, entries) => Array.isArray(entries) && entries.filter(e => e.practiceArea === 'Scales').length >= 25
+                check: (stats, entries) =>
+                    Array.isArray(entries) &&
+                    entries.filter((e) => e.practiceArea === 'Scales').length >= 25
             },
             {
                 id: 'chord-champion',
                 name: 'Chord Champion',
                 icon: '🎵',
                 description: '25 chord practice sessions',
-                check: (stats, entries) => Array.isArray(entries) && entries.filter(e => e.practiceArea === 'Chords').length >= 25
+                check: (stats, entries) =>
+                    Array.isArray(entries) &&
+                    entries.filter((e) => e.practiceArea === 'Chords').length >= 25
             },
 
             // Goals
@@ -254,7 +262,8 @@ export class AchievementBadges {
                 name: 'Goal Achiever',
                 icon: '✅',
                 description: 'Complete 5 goals',
-                check: (stats, entries, goals) => Array.isArray(goals) && goals.filter(g => g.completed).length >= 5
+                check: (stats, entries, goals) =>
+                    Array.isArray(goals) && goals.filter((g) => g.completed).length >= 5
             },
 
             // Special
@@ -263,21 +272,22 @@ export class AchievementBadges {
                 name: 'Early Bird',
                 icon: '🌅',
                 description: 'Practice before 7 AM',
-                check: (stats, entries) => Array.isArray(entries) && entries.some(e => new Date(e.date).getHours() < 7)
+                check: (stats, entries) =>
+                    Array.isArray(entries) && entries.some((e) => new Date(e.date).getHours() < 7)
             },
             {
                 id: 'night-owl',
                 name: 'Night Owl',
                 icon: '🦉',
                 description: 'Practice after 10 PM',
-                check: (stats, entries) => Array.isArray(entries) && entries.some(e => new Date(e.date).getHours() >= 22)
+                check: (stats, entries) =>
+                    Array.isArray(entries) && entries.some((e) => new Date(e.date).getHours() >= 22)
             }
         ];
     }
 
     async render() {
         try {
-
             // Show loading state first
             this.container.innerHTML = `
                 <div class="achievements-section">
@@ -292,7 +302,6 @@ export class AchievementBadges {
             const stats = await this.storageService.calculateStats();
             const entries = await this.storageService.getPracticeEntries();
             const goals = await this.storageService.getGoals();
-
 
             this.earnedAchievements = await this.getEarnedAchievements(stats, entries, goals);
             const totalEarned = this.earnedAchievements.length;
@@ -349,19 +358,21 @@ export class AchievementBadges {
             let achievementsToRender = this.achievements;
 
             if (filter === 'earned') {
-                achievementsToRender = this.achievements.filter(a =>
+                achievementsToRender = this.achievements.filter((a) =>
                     this.earnedAchievements.includes(a.id)
                 );
             } else if (filter === 'locked') {
-                achievementsToRender = this.achievements.filter(a =>
-                    !this.earnedAchievements.includes(a.id)
+                achievementsToRender = this.achievements.filter(
+                    (a) => !this.earnedAchievements.includes(a.id)
                 );
             }
 
-            return achievementsToRender.map(achievement => {
-                const isEarned = this.earnedAchievements.includes(achievement.id);
-                return this.renderBadge(achievement, isEarned);
-            }).join('');
+            return achievementsToRender
+                .map((achievement) => {
+                    const isEarned = this.earnedAchievements.includes(achievement.id);
+                    return this.renderBadge(achievement, isEarned);
+                })
+                .join('');
         } catch (error) {
             console.error('Error rendering achievements:', error);
             return '<div style="color: #ef4444;">Error rendering achievements</div>';
@@ -372,22 +383,35 @@ export class AchievementBadges {
         try {
             // Get only streak-related achievements (first 18)
             const streakIds = [
-                'first-day', 'streak-starter', 'week-warrior', 'double-digit', 'fortnight-hero',
-                'commitment-keeper', 'monthly-master', 'habit-builder',
-                'streak-master', 'quarterly-legend', 'persistence-pro', 'consistency-champion',
-                'half-year-hero', 'dedication-deity', 'unstoppable-force', 'legendary-discipline',
-                'year-master', 'zen-master'
+                'first-day',
+                'streak-starter',
+                'week-warrior',
+                'double-digit',
+                'fortnight-hero',
+                'commitment-keeper',
+                'monthly-master',
+                'habit-builder',
+                'streak-master',
+                'quarterly-legend',
+                'persistence-pro',
+                'consistency-champion',
+                'half-year-hero',
+                'dedication-deity',
+                'unstoppable-force',
+                'legendary-discipline',
+                'year-master',
+                'zen-master'
             ];
-            
-            let streakAchievements = this.achievements.filter(a => streakIds.includes(a.id));
+
+            let streakAchievements = this.achievements.filter((a) => streakIds.includes(a.id));
 
             if (filter === 'earned') {
-                streakAchievements = streakAchievements.filter(a =>
+                streakAchievements = streakAchievements.filter((a) =>
                     this.earnedAchievements.includes(a.id)
                 );
             } else if (filter === 'locked') {
-                streakAchievements = streakAchievements.filter(a =>
-                    !this.earnedAchievements.includes(a.id)
+                streakAchievements = streakAchievements.filter(
+                    (a) => !this.earnedAchievements.includes(a.id)
                 );
             }
 
@@ -400,10 +424,12 @@ export class AchievementBadges {
                 return getDays(a) - getDays(b);
             });
 
-            return streakAchievements.map(achievement => {
-                const isEarned = this.earnedAchievements.includes(achievement.id);
-                return this.renderBadge(achievement, isEarned);
-            }).join('');
+            return streakAchievements
+                .map((achievement) => {
+                    const isEarned = this.earnedAchievements.includes(achievement.id);
+                    return this.renderBadge(achievement, isEarned);
+                })
+                .join('');
         } catch (error) {
             console.error('Error rendering streak achievements:', error);
             return '<div style="color: #ef4444;">Error rendering streak achievements</div>';
@@ -414,29 +440,44 @@ export class AchievementBadges {
         try {
             // Get non-streak achievements
             const streakIds = [
-                'first-day', 'streak-starter', 'week-warrior', 'double-digit', 'fortnight-hero',
-                'commitment-keeper', 'monthly-master', 'habit-builder',
-                'streak-master', 'quarterly-legend', 'persistence-pro', 'consistency-champion',
-                'half-year-hero', 'dedication-deity', 'unstoppable-force', 'legendary-discipline',
-                'year-master', 'zen-master'
+                'first-day',
+                'streak-starter',
+                'week-warrior',
+                'double-digit',
+                'fortnight-hero',
+                'commitment-keeper',
+                'monthly-master',
+                'habit-builder',
+                'streak-master',
+                'quarterly-legend',
+                'persistence-pro',
+                'consistency-champion',
+                'half-year-hero',
+                'dedication-deity',
+                'unstoppable-force',
+                'legendary-discipline',
+                'year-master',
+                'zen-master'
             ];
-            
-            let otherAchievements = this.achievements.filter(a => !streakIds.includes(a.id));
+
+            let otherAchievements = this.achievements.filter((a) => !streakIds.includes(a.id));
 
             if (filter === 'earned') {
-                otherAchievements = otherAchievements.filter(a =>
+                otherAchievements = otherAchievements.filter((a) =>
                     this.earnedAchievements.includes(a.id)
                 );
             } else if (filter === 'locked') {
-                otherAchievements = otherAchievements.filter(a =>
-                    !this.earnedAchievements.includes(a.id)
+                otherAchievements = otherAchievements.filter(
+                    (a) => !this.earnedAchievements.includes(a.id)
                 );
             }
 
-            return otherAchievements.map(achievement => {
-                const isEarned = this.earnedAchievements.includes(achievement.id);
-                return this.renderBadge(achievement, isEarned);
-            }).join('');
+            return otherAchievements
+                .map((achievement) => {
+                    const isEarned = this.earnedAchievements.includes(achievement.id);
+                    return this.renderBadge(achievement, isEarned);
+                })
+                .join('');
         } catch (error) {
             console.error('Error rendering other achievements:', error);
             return '<div style="color: #ef4444;">Error rendering other achievements</div>';
@@ -446,7 +487,7 @@ export class AchievementBadges {
     renderBadge(achievement, isEarned) {
         // Use LazyAchievementBadges for rendering
         const badgeElement = this.lazyBadges.renderBadge(achievement, isEarned);
-        
+
         // Convert DOM element to HTML string for compatibility
         const wrapper = document.createElement('div');
         wrapper.appendChild(badgeElement);
@@ -457,10 +498,10 @@ export class AchievementBadges {
         try {
             // Filter buttons
             const filterBtns = this.container.querySelectorAll('.filter-btn');
-            filterBtns.forEach(btn => {
+            filterBtns.forEach((btn) => {
                 btn.addEventListener('click', (e) => {
                     // Update active state
-                    filterBtns.forEach(b => b.classList.remove('active'));
+                    filterBtns.forEach((b) => b.classList.remove('active'));
                     btn.classList.add('active');
 
                     // Re-render achievements
@@ -496,12 +537,12 @@ export class AchievementBadges {
 
     async getEarnedAchievements(stats, entries, goals) {
         try {
-
             const earned = JSON.parse(localStorage.getItem('guitarJournalAchievements') || '[]');
             const newlyEarned = [];
 
             // Ensure all data is valid
-            if (!stats) stats = {totalTime: 0, totalSessions: 0, currentStreak: 0, longestStreak: 0};
+            if (!stats)
+                stats = { totalTime: 0, totalSessions: 0, currentStreak: 0, longestStreak: 0 };
             if (!Array.isArray(entries)) entries = [];
             if (!Array.isArray(goals)) goals = [];
 
@@ -621,7 +662,7 @@ export class AchievementBadges {
             if (this.lazyBadges) {
                 this.lazyBadges.destroy();
             }
-            
+
             // Remove event listeners
             window.removeEventListener('practiceSessionSaved', this.checkAchievements);
         } catch (error) {

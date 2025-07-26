@@ -3,7 +3,11 @@
 
 import { firebaseConfig, validateFirebaseConfig } from '../config/firebaseConfig.js';
 import { initializeAppCheck } from './appCheckService.js';
-import { validatePracticeSession, validateGoal, validateRepertoireSong } from '../utils/validation.js';
+import {
+    validatePracticeSession,
+    validateGoal,
+    validateRepertoireSong
+} from '../utils/validation.js';
 
 class FirebaseSyncService {
     constructor() {
@@ -16,9 +20,9 @@ class FirebaseSyncService {
         this.listeners = new Map();
         this.pendingWrites = [];
         this.retryTimeout = null;
-        
+
         // Initialize Firebase when ready
-        this.initialize().catch(err => {
+        this.initialize().catch((err) => {
             // Initialization errors are logged but don't break the app
             console.warn('Firebase initialization error:', err);
         });
@@ -29,7 +33,7 @@ class FirebaseSyncService {
             // Wait for Firebase to be available
             let attempts = 0;
             while (typeof firebase === 'undefined' && attempts < 50) {
-                await new Promise(resolve => setTimeout(resolve, 100));
+                await new Promise((resolve) => setTimeout(resolve, 100));
                 attempts++;
             }
 
@@ -51,11 +55,11 @@ class FirebaseSyncService {
 
             this.auth = firebase.auth();
             this.db = firebase.firestore();
-            
+
             console.log('✅ Firebase auth and firestore initialized');
-            
+
             // Initialize App Check for additional security (non-blocking)
-            Promise.resolve(initializeAppCheck(this.app)).catch(err => {
+            Promise.resolve(initializeAppCheck(this.app)).catch((err) => {
                 // App Check failure is non-critical - log but don't throw
                 if (err !== null && err !== undefined) {
                     console.warn('App Check initialization skipped:', err?.message || err);
@@ -69,16 +73,20 @@ class FirebaseSyncService {
                 // Temporarily suppress the deprecation warning
                 const originalWarn = console.warn;
                 console.warn = (...args) => {
-                    if (args[0] && args[0].includes && args[0].includes('enableIndexedDbPersistence')) {
+                    if (
+                        args[0] &&
+                        args[0].includes &&
+                        args[0].includes('enableIndexedDbPersistence')
+                    ) {
                         return; // Suppress this specific warning
                     }
                     originalWarn.apply(console, args);
                 };
-                
+
                 await this.db.enablePersistence({
                     synchronizeTabs: true
                 });
-                
+
                 // Restore console.warn
                 console.warn = originalWarn;
             } catch (err) {
@@ -97,31 +105,33 @@ class FirebaseSyncService {
             // (auth and db are the critical parts)
             this.isInitialized = true;
             console.log('✅ Firebase core services initialized');
-            
+
             // Set up auth state listener
             this.auth.onAuthStateChanged((user) => {
                 // Wrap in Promise to handle async operations properly
-                Promise.resolve().then(async () => {
-                    try {
-                        this.currentUser = user;
-                        if (user) {
-                            await this.ensureUserDocument();
-                            this.processPendingWrites();
-                            // Temporarily disable real-time listeners to avoid permission errors
-                            // this.setupRealtimeListeners();
-                        } else {
-                            this.removeRealtimeListeners();
+                Promise.resolve()
+                    .then(async () => {
+                        try {
+                            this.currentUser = user;
+                            if (user) {
+                                await this.ensureUserDocument();
+                                this.processPendingWrites();
+                                // Temporarily disable real-time listeners to avoid permission errors
+                                // this.setupRealtimeListeners();
+                            } else {
+                                this.removeRealtimeListeners();
+                            }
+                        } catch (error) {
+                            console.error('Auth state change error:', error);
+                            // Don't let auth errors prevent app from loading
                         }
-                    } catch (error) {
-                        console.error('Auth state change error:', error);
-                        // Don't let auth errors prevent app from loading
-                    }
-                }).catch(err => {
-                    // Catch any promise rejections
-                    if (err !== null && err !== undefined) {
-                        console.error('Auth handler error:', err);
-                    }
-                });
+                    })
+                    .catch((err) => {
+                        // Catch any promise rejections
+                        if (err !== null && err !== undefined) {
+                            console.error('Auth handler error:', err);
+                        }
+                    });
             });
 
             // Monitor connection state - disabled due to permission issues
@@ -177,7 +187,7 @@ class FirebaseSyncService {
     // ===================
     // Practice Sessions
     // ===================
-    
+
     async savePracticeSession(session) {
         // Validate the session data first
         let validatedSession;
@@ -211,12 +221,13 @@ class FirebaseSyncService {
         }
 
         try {
-            await this.db.collection('users')
+            await this.db
+                .collection('users')
                 .doc(this.currentUser.uid)
                 .collection('practice_sessions')
                 .doc(String(session.id))
                 .set(sessionData);
-            
+
             return session.id;
         } catch (error) {
             console.error('❌ Failed to save practice session:', error);
@@ -233,13 +244,14 @@ class FirebaseSyncService {
         if (!this.currentUser) return [];
 
         try {
-            const snapshot = await this.db.collection('users')
+            const snapshot = await this.db
+                .collection('users')
                 .doc(this.currentUser.uid)
                 .collection('practice_sessions')
                 .orderBy('date', 'desc')
                 .get();
 
-            return snapshot.docs.map(doc => ({
+            return snapshot.docs.map((doc) => ({
                 id: doc.id,
                 ...doc.data()
             }));
@@ -266,12 +278,12 @@ class FirebaseSyncService {
         }
 
         try {
-            await this.db.collection('users')
+            await this.db
+                .collection('users')
                 .doc(this.currentUser.uid)
                 .collection('practice_sessions')
                 .doc(String(sessionId))
                 .update(updateData);
-            
         } catch (error) {
             console.error('❌ Failed to update practice session:', error);
             this.pendingWrites.push({
@@ -295,12 +307,12 @@ class FirebaseSyncService {
         }
 
         try {
-            await this.db.collection('users')
+            await this.db
+                .collection('users')
                 .doc(this.currentUser.uid)
                 .collection('practice_sessions')
                 .doc(String(sessionId))
                 .delete();
-            
         } catch (error) {
             console.error('❌ Failed to delete practice session:', error);
             this.pendingWrites.push({
@@ -347,12 +359,13 @@ class FirebaseSyncService {
         }
 
         try {
-            await this.db.collection('users')
+            await this.db
+                .collection('users')
                 .doc(this.currentUser.uid)
                 .collection('goals')
                 .doc(String(goal.id))
                 .set(goalData);
-            
+
             return goal.id;
         } catch (error) {
             console.error('❌ Failed to save goal:', error);
@@ -369,13 +382,14 @@ class FirebaseSyncService {
         if (!this.currentUser) return [];
 
         try {
-            const snapshot = await this.db.collection('users')
+            const snapshot = await this.db
+                .collection('users')
                 .doc(this.currentUser.uid)
                 .collection('goals')
                 .orderBy('createdAt', 'desc')
                 .get();
 
-            return snapshot.docs.map(doc => ({
+            return snapshot.docs.map((doc) => ({
                 id: doc.id,
                 ...doc.data()
             }));
@@ -402,12 +416,12 @@ class FirebaseSyncService {
         }
 
         try {
-            await this.db.collection('users')
+            await this.db
+                .collection('users')
                 .doc(this.currentUser.uid)
                 .collection('goals')
                 .doc(String(goalId))
                 .update(updateData);
-            
         } catch (error) {
             console.error('❌ Failed to update goal:', error);
             this.pendingWrites.push({
@@ -431,12 +445,12 @@ class FirebaseSyncService {
         }
 
         try {
-            await this.db.collection('users')
+            await this.db
+                .collection('users')
                 .doc(this.currentUser.uid)
                 .collection('goals')
                 .doc(String(goalId))
                 .delete();
-            
         } catch (error) {
             console.error('❌ Failed to delete goal:', error);
             this.pendingWrites.push({
@@ -483,12 +497,13 @@ class FirebaseSyncService {
         }
 
         try {
-            await this.db.collection('users')
+            await this.db
+                .collection('users')
                 .doc(this.currentUser.uid)
                 .collection('repertoire')
                 .doc(String(song.id))
                 .set(songData);
-            
+
             return song.id;
         } catch (error) {
             console.error('❌ Failed to save repertoire song:', error);
@@ -505,13 +520,14 @@ class FirebaseSyncService {
         if (!this.currentUser) return [];
 
         try {
-            const snapshot = await this.db.collection('users')
+            const snapshot = await this.db
+                .collection('users')
                 .doc(this.currentUser.uid)
                 .collection('repertoire')
                 .orderBy('createdAt', 'desc')
                 .get();
 
-            return snapshot.docs.map(doc => ({
+            return snapshot.docs.map((doc) => ({
                 id: doc.id,
                 ...doc.data()
             }));
@@ -538,12 +554,12 @@ class FirebaseSyncService {
         }
 
         try {
-            await this.db.collection('users')
+            await this.db
+                .collection('users')
                 .doc(this.currentUser.uid)
                 .collection('repertoire')
                 .doc(String(songId))
                 .update(updateData);
-            
         } catch (error) {
             console.error('❌ Failed to update repertoire song:', error);
             this.pendingWrites.push({
@@ -567,12 +583,12 @@ class FirebaseSyncService {
         }
 
         try {
-            await this.db.collection('users')
+            await this.db
+                .collection('users')
                 .doc(this.currentUser.uid)
                 .collection('repertoire')
                 .doc(String(songId))
                 .delete();
-            
         } catch (error) {
             console.error('❌ Failed to delete repertoire song:', error);
             this.pendingWrites.push({
@@ -580,6 +596,62 @@ class FirebaseSyncService {
                 operation: 'delete',
                 id: songId
             });
+            throw error;
+        }
+    }
+
+    // ===================
+    // Loops
+    // ===================
+
+    async saveLoops(type, identifier, loops) {
+        const loopData = {
+            type,
+            identifier,
+            loops,
+            userId: this.currentUser?.uid,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        if (!this.currentUser || !this.isInitialized) {
+            this.pendingWrites.push({
+                type: 'loops',
+                operation: 'save',
+                data: loopData
+            });
+            return;
+        }
+
+        try {
+            await this.db
+                .collection('loops')
+                .doc(`${this.currentUser.uid}_${type}_${identifier}`)
+                .set(loopData);
+            console.log('✅ Loops saved to cloud');
+        } catch (error) {
+            console.error('❌ Failed to save loops:', error);
+            throw error;
+        }
+    }
+
+    async getLoops(type, identifier) {
+        if (!this.currentUser || !this.isInitialized) {
+            return null;
+        }
+
+        try {
+            const doc = await this.db
+                .collection('loops')
+                .doc(`${this.currentUser.uid}_${type}_${identifier}`)
+                .get();
+
+            if (doc.exists) {
+                const data = doc.data();
+                return data.loops || [];
+            }
+            return [];
+        } catch (error) {
+            console.error('❌ Failed to get loops:', error);
             throw error;
         }
     }
@@ -599,13 +671,10 @@ class FirebaseSyncService {
         }
 
         try {
-            await this.db.collection('users')
-                .doc(this.currentUser.uid)
-                .update({
-                    settings: settings,
-                    'settings.updatedAt': firebase.firestore.FieldValue.serverTimestamp()
-                });
-            
+            await this.db.collection('users').doc(this.currentUser.uid).update({
+                settings: settings,
+                'settings.updatedAt': firebase.firestore.FieldValue.serverTimestamp()
+            });
         } catch (error) {
             console.error('❌ Failed to save settings:', error);
             this.pendingWrites.push({
@@ -621,9 +690,7 @@ class FirebaseSyncService {
         if (!this.currentUser) return null;
 
         try {
-            const userDoc = await this.db.collection('users')
-                .doc(this.currentUser.uid)
-                .get();
+            const userDoc = await this.db.collection('users').doc(this.currentUser.uid).get();
 
             if (userDoc.exists) {
                 return userDoc.data().settings || {};
@@ -650,17 +717,15 @@ class FirebaseSyncService {
         }
 
         try {
-            await this.db.collection('users')
-                .doc(this.currentUser.uid)
-                .update({
-                    stats: stats,
-                    'stats.updatedAt': firebase.firestore.FieldValue.serverTimestamp()
-                });
-            
+            await this.db.collection('users').doc(this.currentUser.uid).update({
+                stats: stats,
+                'stats.updatedAt': firebase.firestore.FieldValue.serverTimestamp()
+            });
         } catch (error) {
             // If update fails, try set (for new users)
             try {
-                await this.db.collection('users')
+                await this.db
+                    .collection('users')
                     .doc(this.currentUser.uid)
                     .set({ stats: stats }, { merge: true });
             } catch (setError) {
@@ -679,9 +744,7 @@ class FirebaseSyncService {
         if (!this.currentUser) return null;
 
         try {
-            const userDoc = await this.db.collection('users')
-                .doc(this.currentUser.uid)
-                .get();
+            const userDoc = await this.db.collection('users').doc(this.currentUser.uid).get();
 
             if (userDoc.exists) {
                 return userDoc.data().stats || null;
@@ -701,67 +764,85 @@ class FirebaseSyncService {
         if (!this.currentUser) return;
 
         // Practice Sessions listener
-        const practiceUnsubscribe = this.db.collection('users')
+        const practiceUnsubscribe = this.db
+            .collection('users')
             .doc(this.currentUser.uid)
             .collection('practice_sessions')
             .limit(50)
-            .onSnapshot((snapshot) => {
-                snapshot.docChanges().forEach((change) => {
-                    const data = { id: change.doc.id, ...change.doc.data() };
-                    
-                    // Dispatch events for UI updates
-                    window.dispatchEvent(new CustomEvent('practiceSessionSync', {
-                        detail: {
-                            type: change.type,
-                            data: data
-                        }
-                    }));
-                });
-            }, (error) => {
-                console.error('Practice sessions listener error:', error);
-            });
+            .onSnapshot(
+                (snapshot) => {
+                    snapshot.docChanges().forEach((change) => {
+                        const data = { id: change.doc.id, ...change.doc.data() };
+
+                        // Dispatch events for UI updates
+                        window.dispatchEvent(
+                            new CustomEvent('practiceSessionSync', {
+                                detail: {
+                                    type: change.type,
+                                    data: data
+                                }
+                            })
+                        );
+                    });
+                },
+                (error) => {
+                    console.error('Practice sessions listener error:', error);
+                }
+            );
 
         this.listeners.set('practice_sessions', practiceUnsubscribe);
 
         // Goals listener
-        const goalsUnsubscribe = this.db.collection('users')
+        const goalsUnsubscribe = this.db
+            .collection('users')
             .doc(this.currentUser.uid)
             .collection('goals')
-            .onSnapshot((snapshot) => {
-                snapshot.docChanges().forEach((change) => {
-                    const data = { id: change.doc.id, ...change.doc.data() };
-                    
-                    window.dispatchEvent(new CustomEvent('goalSync', {
-                        detail: {
-                            type: change.type,
-                            data: data
-                        }
-                    }));
-                });
-            }, (error) => {
-                console.error('Goals listener error:', error);
-            });
+            .onSnapshot(
+                (snapshot) => {
+                    snapshot.docChanges().forEach((change) => {
+                        const data = { id: change.doc.id, ...change.doc.data() };
+
+                        window.dispatchEvent(
+                            new CustomEvent('goalSync', {
+                                detail: {
+                                    type: change.type,
+                                    data: data
+                                }
+                            })
+                        );
+                    });
+                },
+                (error) => {
+                    console.error('Goals listener error:', error);
+                }
+            );
 
         this.listeners.set('goals', goalsUnsubscribe);
 
         // Repertoire listener
-        const repertoireUnsubscribe = this.db.collection('users')
+        const repertoireUnsubscribe = this.db
+            .collection('users')
             .doc(this.currentUser.uid)
             .collection('repertoire')
-            .onSnapshot((snapshot) => {
-                snapshot.docChanges().forEach((change) => {
-                    const data = { id: change.doc.id, ...change.doc.data() };
-                    
-                    window.dispatchEvent(new CustomEvent('repertoireSync', {
-                        detail: {
-                            type: change.type,
-                            data: data
-                        }
-                    }));
-                });
-            }, (error) => {
-                console.error('Repertoire listener error:', error);
-            });
+            .onSnapshot(
+                (snapshot) => {
+                    snapshot.docChanges().forEach((change) => {
+                        const data = { id: change.doc.id, ...change.doc.data() };
+
+                        window.dispatchEvent(
+                            new CustomEvent('repertoireSync', {
+                                detail: {
+                                    type: change.type,
+                                    data: data
+                                }
+                            })
+                        );
+                    });
+                },
+                (error) => {
+                    console.error('Repertoire listener error:', error);
+                }
+            );
 
         this.listeners.set('repertoire', repertoireUnsubscribe);
     }
@@ -837,10 +918,16 @@ class FirebaseSyncService {
                     await this.saveSettings(write.data);
                 }
                 break;
-            
+
             case 'stats':
                 if (write.operation === 'save') {
                     await this.saveStats(write.data);
+                }
+                break;
+
+            case 'loops':
+                if (write.operation === 'save') {
+                    await this.saveLoops(write.data.type, write.data.identifier, write.data.loops);
                 }
                 break;
         }
@@ -859,7 +946,7 @@ class FirebaseSyncService {
         try {
             // Migrate practice sessions
             const localSessions = await storageService.getPracticeEntries();
-            
+
             for (const session of localSessions) {
                 try {
                     await this.savePracticeSession(session);
@@ -870,7 +957,7 @@ class FirebaseSyncService {
 
             // Migrate goals
             const localGoals = await storageService.getGoals();
-            
+
             for (const goal of localGoals) {
                 try {
                     await this.saveGoal(goal);
@@ -881,7 +968,7 @@ class FirebaseSyncService {
 
             // Migrate repertoire
             const localRepertoire = await storageService.getRepertoire();
-            
+
             for (const song of localRepertoire) {
                 try {
                     await this.saveRepertoireSong(song);
@@ -903,21 +990,21 @@ class FirebaseSyncService {
 
     async signIn(email, password) {
         console.log('🔐 FirebaseSyncService.signIn called for:', email);
-        
+
         if (!this.auth) {
             console.error('❌ Firebase auth not initialized');
             return { success: false, error: 'Authentication service not initialized' };
         }
-        
+
         try {
             console.log('🔐 Calling Firebase signInWithEmailAndPassword...');
-            
+
             // Much shorter timeout - 3 seconds max
             const authPromise = this.auth.signInWithEmailAndPassword(email, password);
-            const timeoutPromise = new Promise((_, reject) => 
+            const timeoutPromise = new Promise((_, reject) =>
                 setTimeout(() => reject(new Error('Firebase authentication timeout')), 3000)
             );
-            
+
             const credential = await Promise.race([authPromise, timeoutPromise]);
             console.log('🔐 Firebase sign in successful');
             return { success: true, user: credential.user };
@@ -925,10 +1012,13 @@ class FirebaseSyncService {
             console.error('❌ Firebase sign in error:', error);
             console.error('Error code:', error.code);
             console.error('Error details:', error);
-            
+
             // Provide more specific error messages
             if (error.message === 'Firebase authentication timeout') {
-                return { success: false, error: 'Connection timeout. Please check your internet connection and try again.' };
+                return {
+                    success: false,
+                    error: 'Connection timeout. Please check your internet connection and try again.'
+                };
             } else if (error.code === 'auth/user-not-found') {
                 return { success: false, error: 'No account found with this email address.' };
             } else if (error.code === 'auth/wrong-password') {
@@ -936,9 +1026,12 @@ class FirebaseSyncService {
             } else if (error.code === 'auth/invalid-email') {
                 return { success: false, error: 'Invalid email address.' };
             } else if (error.code === 'auth/network-request-failed') {
-                return { success: false, error: 'Network error. Please check your internet connection.' };
+                return {
+                    success: false,
+                    error: 'Network error. Please check your internet connection.'
+                };
             }
-            
+
             return { success: false, error: error.message };
         }
     }
@@ -946,13 +1039,13 @@ class FirebaseSyncService {
     async signUp(email, password, displayName = null) {
         try {
             const credential = await this.auth.createUserWithEmailAndPassword(email, password);
-            
+
             if (displayName) {
                 await credential.user.updateProfile({ displayName });
             }
 
             await this.ensureUserDocument();
-            
+
             return { success: true, user: credential.user };
         } catch (error) {
             console.error('Sign up error:', error);
@@ -1000,10 +1093,10 @@ class FirebaseSyncService {
     async waitForInitialization() {
         let attempts = 0;
         while (!this.isInitialized && attempts < 100) {
-            await new Promise(resolve => setTimeout(resolve, 100));
+            await new Promise((resolve) => setTimeout(resolve, 100));
             attempts++;
         }
-        
+
         // After timeout, return whether initialized or not
         if (!this.isInitialized) {
             console.warn('⚠️ Firebase initialization timeout - proceeding without cloud sync');

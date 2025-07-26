@@ -1,0 +1,406 @@
+/* Light Theme Styles */
+
+/* ========================================
+   LIGHT THEME VARIABLES
+   ======================================== */
+[data-theme="light"] {
+    /* Primary Colors - Keep vibrant */
+    --primary: #6366f1;
+    --primary-dark: #4f46e5;
+    --primary-light: #818cf8;
+    --secondary: #a855f7;
+    --secondary-dark: #9333ea;
+    --secondary-light: #c084fc;
+
+    /* Status Colors - Slightly adjusted for light backgrounds */
+    --success: #10b981;
+    --success-dark: #059669;
+    --success-light: #34d399;
+    --danger: #ef4444;
+    --danger-dark: #dc2626;
+    --danger-light: #f87171;
+    --warning: #f59e0b;
+    --warning-dark: #d97706;
+    --warning-light: #fbbf24;
+    --info: #3b82f6;
+    --info-dark: #2563eb;
+    --info-light: #60a5fa;
+
+    /* Light Backgrounds */
+    --bg-dark: #ffffff;
+    --bg-darker: #f9fafb;
+    --bg-primary: #ffffff;
+    --bg-secondary: #f9fafb;
+    --bg-tertiary: #f3f4f6;
+    --bg-card: #ffffff;
+    --bg-card-hover: #f9fafb;
+    --bg-input: #f3f4f6;
+    --bg-input-hover: #e5e7eb;
+    --bg-modal: rgba(0, 0, 0, 0.5);
+    --bg-sidebar: #f9fafb;
+    --bg-overlay: rgba(0, 0, 0, 0.3);
+
+    /* Text Colors */
+    --text-primary: #111827;
+    --text-secondary: #6b7280;
+    --text-tertiary: #9ca3af;
+    --text-muted: #d1d5db;
+    --text-disabled: #e5e7eb;
+
+    /* Borders */
+    --border: #e5e7eb;
+    --border-light: #f3f4f6;
+    --border-focus: #6366f1;
+    --border-error: #ef4444;
+    --border-success: #10b981;
+
+    /* Shadows for light theme */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+    --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.2);
+
+    /* Scrollbar */
+    --scrollbar-track: #f3f4f6;
+    --scrollbar-thumb: #d1d5db;
+    --scrollbar-thumb-hover: #9ca3af;
+
+    /* Code */
+    --code-bg: #f3f4f6;
+    --code-text: #374151;
+    --code-comment: #059669;
+    --code-string: #dc2626;
+    --code-keyword: #2563eb;
+
+    /* Gradients - Keep vibrant */
+    --gradient-primary: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    --gradient-danger: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    --gradient-light: linear-gradient(135deg, #ffffff 0%, #f3f4f6 100%);
+
+    /* Opacity values for light theme */
+    --opacity-hover: 0.95;
+    --opacity-disabled: 0.6;
+    --opacity-overlay: 0.5;
+}
+
+/* ========================================
+   LIGHT THEME SPECIFIC OVERRIDES
+   ======================================== */
+
+/* Body and base elements */
+[data-theme="light"] body {
+    background: var(--bg-darker);
+    color: var(--text-primary);
+}
+
+/* Sidebar adjustments */
+[data-theme="light"] .sidebar {
+    background: var(--bg-sidebar);
+    border-right-color: var(--border);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Top bar */
+[data-theme="light"] .top-bar {
+    background: var(--bg-card);
+    border-bottom-color: var(--border);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Cards and surfaces */
+[data-theme="light"] .card,
+[data-theme="light"] .stat-card,
+[data-theme="light"] .modal-content {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-md);
+}
+
+[data-theme="light"] .card:hover,
+[data-theme="light"] .stat-card:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+}
+
+/* Input elements */
+[data-theme="light"] input,
+[data-theme="light"] select,
+[data-theme="light"] textarea {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+}
+
+[data-theme="light"] input:hover,
+[data-theme="light"] select:hover,
+[data-theme="light"] textarea:hover {
+    background: var(--bg-input);
+    border-color: var(--border-focus);
+}
+
+[data-theme="light"] input:focus,
+[data-theme="light"] select:focus,
+[data-theme="light"] textarea:focus {
+    background: white;
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* Buttons - Keep vibrant */
+[data-theme="light"] .btn {
+    box-shadow: var(--shadow-sm);
+}
+
+[data-theme="light"] .btn:hover {
+    box-shadow: var(--shadow-md);
+}
+
+[data-theme="light"] .btn-secondary {
+    background: white;
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+}
+
+[data-theme="light"] .btn-secondary:hover {
+    background: var(--bg-input);
+    border-color: var(--border-focus);
+}
+
+/* Navigation */
+[data-theme="light"] .nav-item {
+    color: var(--text-secondary);
+}
+
+[data-theme="light"] .nav-item:hover {
+    background: rgba(99, 102, 241, 0.05);
+    color: var(--text-primary);
+}
+
+[data-theme="light"] .nav-item.active {
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--primary);
+}
+
+/* Calendar specific */
+[data-theme="light"] .calendar-day {
+    background: white;
+    border: 1px solid var(--border);
+}
+
+[data-theme="light"] .calendar-day:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+}
+
+[data-theme="light"] .calendar-day.today {
+    border: 2px solid var(--primary);
+    background: rgba(99, 102, 241, 0.05);
+}
+
+[data-theme="light"] .calendar-day.has-practice {
+    background: var(--bg-card);
+}
+
+/* Modals */
+[data-theme="light"] .modal {
+    background: var(--bg-modal);
+}
+
+[data-theme="light"] .modal-content {
+    box-shadow: var(--shadow-2xl);
+}
+
+/* Tables */
+[data-theme="light"] table {
+    border-color: var(--border);
+}
+
+[data-theme="light"] th {
+    background: var(--bg-input);
+    border-color: var(--border);
+    font-weight: 600;
+}
+
+[data-theme="light"] td {
+    border-color: var(--border);
+}
+
+[data-theme="light"] tr:hover {
+    background: var(--bg-input);
+}
+
+/* Code blocks */
+[data-theme="light"] code,
+[data-theme="light"] pre {
+    background: var(--code-bg);
+    color: var(--code-text);
+    border: 1px solid var(--border);
+}
+
+/* Progress bars */
+[data-theme="light"] .progress-bar-container {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+}
+
+/* Loading states */
+[data-theme="light"] .skeleton {
+    background: linear-gradient(
+        90deg,
+        var(--bg-input) 0%,
+        var(--border) 50%,
+        var(--bg-input) 100%
+    );
+}
+
+/* Tooltips */
+[data-theme="light"] .tooltip {
+    background: var(--text-primary);
+    color: white;
+    box-shadow: var(--shadow-lg);
+}
+
+/* Badges */
+[data-theme="light"] .badge {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+}
+
+/* Achievement badges keep their vibrancy */
+[data-theme="light"] .achievement-badge.earned {
+    border-color: var(--primary);
+    background: rgba(99, 102, 241, 0.05);
+}
+
+/* Scrollbars */
+[data-theme="light"] ::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 5px;
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+}
+
+/* Selection */
+[data-theme="light"] ::selection {
+    background: var(--primary);
+    color: white;
+}
+
+/* Focus rings */
+[data-theme="light"] *:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+/* Links */
+[data-theme="light"] a {
+    color: var(--primary);
+}
+
+[data-theme="light"] a:hover {
+    color: var(--primary-dark);
+}
+
+[data-theme="light"] a:visited {
+    color: var(--secondary);
+}
+
+/* Dividers */
+[data-theme="light"] hr,
+[data-theme="light"] .divider {
+    border-color: var(--border);
+}
+
+/* Empty states */
+[data-theme="light"] .empty-state {
+    color: var(--text-tertiary);
+}
+
+/* ========================================
+   LIGHT THEME SPECIFIC COMPONENTS
+   ======================================== */
+
+/* Notifications - keep vibrant */
+[data-theme="light"] .notification {
+    box-shadow: var(--shadow-lg);
+}
+
+/* Stat cards gradient text remains vibrant */
+[data-theme="light"] .stat-value {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Timer display keeps gradient */
+[data-theme="light"] .timer-display,
+[data-theme="light"] .compact-timer-display {
+    color: var(--primary);
+}
+
+/* Heatmap adjustments */
+[data-theme="light"] .heatmap-day[data-level="0"] {
+    background: #f3f4f6;
+}
+
+/* Loading spinner */
+[data-theme="light"] .loading-spinner {
+    border-color: var(--border);
+    border-top-color: var(--primary);
+}
+
+/* Audio waveform */
+[data-theme="light"] .audio-waveform {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+}
+
+/* Practice form highlights */
+[data-theme="light"] .form-group input:focus,
+[data-theme="light"] .form-group select:focus,
+[data-theme="light"] .form-group textarea:focus {
+    background: white;
+}
+
+/* Session cards */
+[data-theme="light"] .session-card {
+    border: 1px solid var(--border);
+}
+
+[data-theme="light"] .session-duration {
+    background: var(--gradient-success);
+    color: white;
+}
+
+/* ========================================
+   LIGHT THEME ANIMATIONS
+   ======================================== */
+
+/* Softer shadows for hover states */
+[data-theme="light"] .card {
+    transition: all 200ms ease;
+}
+
+[data-theme="light"] .btn {
+    transition: all 150ms ease;
+}
+
+/* Reduced glow effects for light theme */
+[data-theme="light"] .glow {
+    box-shadow: 0 0 15px rgba(99, 102, 241, 0.15);
+}
+
+[data-theme="light"] .glow:hover {
+    box-shadow: 0 0 25px rgba(99, 102, 241, 0.25);
+}

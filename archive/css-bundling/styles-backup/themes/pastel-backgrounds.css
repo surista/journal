@@ -1,0 +1,133 @@
+/* Pastel Theme Background Fixes - Ensures colored backgrounds are visible */
+
+/* Pastel Dream - Lavender */
+[data-theme="pastel-dream"] {
+    background-color: #F3EBFF !important;
+}
+
+[data-theme="pastel-dream"] body,
+[data-theme="pastel-dream"] html,
+[data-theme="pastel-dream"] #app,
+[data-theme="pastel-dream"] #root,
+[data-theme="pastel-dream"] .app-container,
+[data-theme="pastel-dream"] .main-container,
+[data-theme="pastel-dream"] .content-area,
+[data-theme="pastel-dream"] main {
+    background: #F3EBFF !important;
+    background-image: linear-gradient(to bottom right, #F3EBFF, #F8F3FF) !important;
+}
+
+/* Cotton Candy - Pink/Blue */
+[data-theme="cotton-candy"] {
+    background-color: #FFE8F3 !important;
+}
+
+[data-theme="cotton-candy"] body,
+[data-theme="cotton-candy"] html,
+[data-theme="cotton-candy"] #app,
+[data-theme="cotton-candy"] #root,
+[data-theme="cotton-candy"] .app-container,
+[data-theme="cotton-candy"] .main-container,
+[data-theme="cotton-candy"] .content-area,
+[data-theme="cotton-candy"] main {
+    background: #FFE8F3 !important;
+    background-image: linear-gradient(to bottom right, #FFE8F3, #E6F5FF) !important;
+}
+
+/* Spring Meadow - Mint Green */
+[data-theme="spring-meadow"] {
+    background-color: #E8FFE8 !important;
+}
+
+[data-theme="spring-meadow"] body,
+[data-theme="spring-meadow"] html,
+[data-theme="spring-meadow"] #app,
+[data-theme="spring-meadow"] #root,
+[data-theme="spring-meadow"] .app-container,
+[data-theme="spring-meadow"] .main-container,
+[data-theme="spring-meadow"] .content-area,
+[data-theme="spring-meadow"] main {
+    background: #E8FFE8 !important;
+    background-image: linear-gradient(to bottom right, #E8FFE8, #FFF0F7) !important;
+}
+
+/* Sunset Sherbet - Peach/Orange */
+[data-theme="sunset-sherbet"] {
+    background-color: #FFE8D9 !important;
+}
+
+[data-theme="sunset-sherbet"] body,
+[data-theme="sunset-sherbet"] html,
+[data-theme="sunset-sherbet"] #app,
+[data-theme="sunset-sherbet"] #root,
+[data-theme="sunset-sherbet"] .app-container,
+[data-theme="sunset-sherbet"] .main-container,
+[data-theme="sunset-sherbet"] .content-area,
+[data-theme="sunset-sherbet"] main {
+    background: #FFE8D9 !important;
+    background-image: linear-gradient(to bottom right, #FFE8D9, #FFF0E6) !important;
+}
+
+/* Ocean Breeze - Aqua/Blue */
+[data-theme="ocean-breeze"] {
+    background-color: #E6F5FF !important;
+}
+
+[data-theme="ocean-breeze"] body,
+[data-theme="ocean-breeze"] html,
+[data-theme="ocean-breeze"] #app,
+[data-theme="ocean-breeze"] #root,
+[data-theme="ocean-breeze"] .app-container,
+[data-theme="ocean-breeze"] .main-container,
+[data-theme="ocean-breeze"] .content-area,
+[data-theme="ocean-breeze"] main {
+    background: #E6F5FF !important;
+    background-image: linear-gradient(to bottom right, #E6F5FF, #F0FAFF) !important;
+}
+
+/* Bubblegum Pop - Bright Pink/Purple */
+[data-theme="bubblegum-pop"] {
+    background-color: #FFE0F0 !important;
+}
+
+[data-theme="bubblegum-pop"] body,
+[data-theme="bubblegum-pop"] html,
+[data-theme="bubblegum-pop"] #app,
+[data-theme="bubblegum-pop"] #root,
+[data-theme="bubblegum-pop"] .app-container,
+[data-theme="bubblegum-pop"] .main-container,
+[data-theme="bubblegum-pop"] .content-area,
+[data-theme="bubblegum-pop"] main {
+    background: #FFE0F0 !important;
+    background-image: linear-gradient(to bottom right, #FFE0F0, #F0E6FF) !important;
+}
+
+/* Additional container fixes for all pastel themes */
+[data-theme="pastel-dream"] .practice-page,
+[data-theme="cotton-candy"] .practice-page,
+[data-theme="spring-meadow"] .practice-page,
+[data-theme="sunset-sherbet"] .practice-page,
+[data-theme="ocean-breeze"] .practice-page,
+[data-theme="bubblegum-pop"] .practice-page {
+    background: transparent !important;
+}
+
+[data-theme="pastel-dream"] .dashboard,
+[data-theme="cotton-candy"] .dashboard,
+[data-theme="spring-meadow"] .dashboard,
+[data-theme="sunset-sherbet"] .dashboard,
+[data-theme="ocean-breeze"] .dashboard,
+[data-theme="bubblegum-pop"] .dashboard {
+    background: transparent !important;
+}
+
+/* Ensure sidebar has semi-transparent background */
+[data-theme="pastel-dream"] .sidebar,
+[data-theme="cotton-candy"] .sidebar,
+[data-theme="spring-meadow"] .sidebar,
+[data-theme="sunset-sherbet"] .sidebar,
+[data-theme="ocean-breeze"] .sidebar,
+[data-theme="bubblegum-pop"] .sidebar {
+    background: rgba(255, 255, 255, 0.7) !important;
+    backdrop-filter: blur(10px) !important;
+}

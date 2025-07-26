@@ -1,0 +1,44 @@
+[
+  {
+    "url": "https://unpkg.com/tone@14.8.49/build/Tone.js",
+    "id": "tone-js",
+    "crossorigin": "anonymous",
+    "sri": "sha384-c6Uo4N9c3SOEigMVzP6IshUG1wQ5uMp3xeoQFiHWAQ86joWdgyajkvopySyKy/Z6",
+    "size": "340.99 KB"
+  },
+  {
+    "url": "https://cdn.jsdelivr.net/npm/soundtouchjs@0.1.30/dist/soundtouch.min.js",
+    "id": "soundtouch-js",
+    "crossorigin": "anonymous",
+    "sri": "sha384-Uvyu44z8kqtTKP6Rm71dWcU5UCOwGbN8N6LiDYTVq0da8XnMKU99g+O3QBXc7Ftl",
+    "size": "14.34 KB"
+  },
+  {
+    "url": "https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js",
+    "id": "firebase-app",
+    "crossorigin": "anonymous",
+    "sri": "sha384-ViccRjS0k/lvYsrtaKXk+ES61/4PAZlFI/mPHmLC1YWzK0AIbXbI5ZXDzcm3F8gH",
+    "size": "28.27 KB"
+  },
+  {
+    "url": "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js",
+    "id": "firebase-auth",
+    "crossorigin": "anonymous",
+    "sri": "sha384-+/4lqMnmLqwbdHXshvGDmBTeWlNoPRdjXi4ZsiBj10EhQXaTBe3RF5JZktdSjug6",
+    "size": "129.10 KB"
+  },
+  {
+    "url": "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js",
+    "id": "firebase-firestore",
+    "crossorigin": "anonymous",
+    "sri": "sha384-7TetnPNdXXu6qURzIEXWCwpXedGGBJSXIR5Cv0gOWTB34UD5TxPHx33PhjA6wFQ3",
+    "size": "331.16 KB"
+  },
+  {
+    "url": "https://www.gstatic.com/firebasejs/9.22.0/firebase-app-check-compat.js",
+    "id": "firebase-app-check",
+    "crossorigin": "anonymous",
+    "sri": "sha384-iF93NE9DFYjJ/GJcb4h18LKfvMn3Ppl4GSSFZ8RFvwc7OtGGQSHQXbHEdO8Rknhj",
+    "size": "22.52 KB"
+  }
+]

@@ -10,7 +10,7 @@ export class ReminderService {
     async init() {
         // Load saved reminders
         await this.loadReminders();
-        
+
         // Check notification permission
         if ('Notification' in window) {
             this.notificationPermission = Notification.permission;
@@ -18,7 +18,7 @@ export class ReminderService {
                 // Don't ask immediately, wait for user to enable reminders
             }
         }
-        
+
         // Start checking reminders
         this.startReminderCheck();
     }
@@ -31,8 +31,20 @@ export class ReminderService {
             } else {
                 // Default reminders
                 this.reminders = [
-                    { id: 1, time: '09:00', enabled: false, days: [1,2,3,4,5], message: '🎸 Time for morning practice!' },
-                    { id: 2, time: '18:00', enabled: false, days: [1,2,3,4,5,6,0], message: '🎵 Evening practice session!' }
+                    {
+                        id: 1,
+                        time: '09:00',
+                        enabled: false,
+                        days: [1, 2, 3, 4, 5],
+                        message: '🎸 Time for morning practice!'
+                    },
+                    {
+                        id: 2,
+                        time: '18:00',
+                        enabled: false,
+                        days: [1, 2, 3, 4, 5, 6, 0],
+                        message: '🎵 Evening practice session!'
+                    }
                 ];
                 await this.saveReminders();
             }
@@ -66,7 +78,7 @@ export class ReminderService {
     }
 
     async updateReminder(id, updates) {
-        const index = this.reminders.findIndex(r => r.id === id);
+        const index = this.reminders.findIndex((r) => r.id === id);
         if (index !== -1) {
             this.reminders[index] = { ...this.reminders[index], ...updates };
             await this.saveReminders();
@@ -76,15 +88,15 @@ export class ReminderService {
     }
 
     async deleteReminder(id) {
-        this.reminders = this.reminders.filter(r => r.id !== id);
+        this.reminders = this.reminders.filter((r) => r.id !== id);
         await this.saveReminders();
     }
 
     async toggleReminder(id) {
-        const reminder = this.reminders.find(r => r.id === id);
+        const reminder = this.reminders.find((r) => r.id === id);
         if (reminder) {
             reminder.enabled = !reminder.enabled;
-            
+
             // Request permission if enabling and don't have it
             if (reminder.enabled && this.notificationPermission !== 'granted') {
                 const granted = await this.requestNotificationPermission();
@@ -93,7 +105,7 @@ export class ReminderService {
                     alert('Please enable notifications to use practice reminders.');
                 }
             }
-            
+
             await this.saveReminders();
             return reminder;
         }
@@ -105,7 +117,7 @@ export class ReminderService {
         this.reminderInterval = setInterval(() => {
             this.checkReminders();
         }, 60000);
-        
+
         // Check immediately
         this.checkReminders();
     }
@@ -122,12 +134,13 @@ export class ReminderService {
         const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
         const currentDay = now.getDay(); // 0 = Sunday, 6 = Saturday
 
-        this.reminders.forEach(reminder => {
-            if (reminder.enabled && 
-                reminder.time === currentTime && 
+        this.reminders.forEach((reminder) => {
+            if (
+                reminder.enabled &&
+                reminder.time === currentTime &&
                 reminder.days.includes(currentDay) &&
-                (!reminder.lastShown || reminder.lastShown !== now.toDateString())) {
-                
+                (!reminder.lastShown || reminder.lastShown !== now.toDateString())
+            ) {
                 this.showReminder(reminder);
                 reminder.lastShown = now.toDateString();
                 this.saveReminders();
@@ -180,7 +193,7 @@ export class ReminderService {
                 </div>
             </div>
         `;
-        
+
         notification.style.cssText = `
             position: fixed;
             bottom: 20px;
@@ -208,31 +221,31 @@ export class ReminderService {
     // Get next practice reminder
     getNextReminder() {
         const now = new Date();
-        const enabledReminders = this.reminders.filter(r => r.enabled);
-        
+        const enabledReminders = this.reminders.filter((r) => r.enabled);
+
         if (enabledReminders.length === 0) return null;
 
         let nextReminder = null;
         let minMinutes = Infinity;
 
-        enabledReminders.forEach(reminder => {
+        enabledReminders.forEach((reminder) => {
             const [hours, minutes] = reminder.time.split(':').map(Number);
-            
+
             // Check each day the reminder is active
-            reminder.days.forEach(day => {
+            reminder.days.forEach((day) => {
                 const reminderDate = new Date();
                 reminderDate.setHours(hours, minutes, 0, 0);
-                
+
                 // Calculate days until this reminder day
                 let daysUntil = (day - now.getDay() + 7) % 7;
                 if (daysUntil === 0 && reminderDate <= now) {
                     daysUntil = 7; // Next week
                 }
-                
+
                 reminderDate.setDate(reminderDate.getDate() + daysUntil);
-                
+
                 const minutesUntil = (reminderDate - now) / 60000;
-                
+
                 if (minutesUntil < minMinutes) {
                     minMinutes = minutesUntil;
                     nextReminder = {

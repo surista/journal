@@ -1,21 +1,21 @@
 /* Calendar Stats Container Styles */
 
 .calendar-stats-container {
-    margin-top: 2rem;
-    padding-top: 2rem;
-    border-top: 1px solid var(--border);
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
 }
 
 /* Ensure stats panel looks good below calendar */
 .calendar-stats-container .stats-panel {
-    max-width: 1200px;
-    margin: 0 auto;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 /* Add some spacing between calendar and stats on smaller screens */
 @media (max-width: 768px) {
-    .calendar-stats-container {
-        margin-top: 1.5rem;
-        padding-top: 1.5rem;
-    }
+  .calendar-stats-container {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+  }
 }

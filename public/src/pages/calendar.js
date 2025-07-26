@@ -1,5 +1,5 @@
 // Calendar Page Component - Optimized and Cleaned
-import {TimeUtils} from '../utils/helpers.js';
+import { TimeUtils } from '../utils/helpers.js';
 
 export class CalendarPage {
     constructor(storageService) {
@@ -26,14 +26,14 @@ export class CalendarPage {
         await this.loadSessionAreas();
         await this.loadPracticeData();
         this.isInitialized = true;
-        
+
         // Listen for session areas updates
         this.sessionAreasHandler = async () => {
             await this.loadSessionAreas();
         };
         window.addEventListener('sessionAreasUpdated', this.sessionAreasHandler);
     }
-    
+
     async loadSessionAreas() {
         try {
             this.practiceAreas = await this.storageService.getSessionAreas();
@@ -41,16 +41,35 @@ export class CalendarPage {
             console.error('Error loading session areas:', error);
             // Fallback to defaults if loading fails
             this.practiceAreas = [
-                'Scales', 'Chords', 'Arpeggios', 'Songs', 'Technique',
-                'Theory', 'Improvisation', 'Sight Reading', 'Ear Training', 'Speed', 'Rhythm'
+                'Scales',
+                'Chords',
+                'Arpeggios',
+                'Songs',
+                'Technique',
+                'Theory',
+                'Improvisation',
+                'Sight Reading',
+                'Ear Training',
+                'Speed',
+                'Rhythm'
             ];
         }
     }
 
     getMonthName(monthIndex) {
         const months = [
-            'January', 'February', 'March', 'April', 'May', 'June',
-            'July', 'August', 'September', 'October', 'November', 'December'
+            'January',
+            'February',
+            'March',
+            'April',
+            'May',
+            'June',
+            'July',
+            'August',
+            'September',
+            'October',
+            'November',
+            'December'
         ];
         return months[monthIndex];
     }
@@ -68,25 +87,25 @@ export class CalendarPage {
         // Create header
         const header = document.createElement('div');
         header.className = 'calendar-header';
-        
+
         const h1 = document.createElement('h1');
         h1.textContent = 'Practice Calendar';
         header.appendChild(h1);
 
         const actions = document.createElement('div');
         actions.className = 'calendar-actions';
-        
+
         const addGoalBtn = document.createElement('button');
         addGoalBtn.className = 'btn btn-primary';
         addGoalBtn.id = 'addGoalBtn';
         addGoalBtn.onclick = () => window.calendarInstance?.showGoalModal();
-        
+
         const icon = document.createElement('i');
         icon.className = 'icon';
         icon.textContent = '🎯';
         addGoalBtn.appendChild(icon);
         addGoalBtn.appendChild(document.createTextNode(' Set Daily Goals'));
-        
+
         actions.appendChild(addGoalBtn);
         header.appendChild(actions);
         calendarPage.appendChild(header);
@@ -98,7 +117,7 @@ export class CalendarPage {
         // Create navigation
         const nav = document.createElement('div');
         nav.className = 'calendar-navigation';
-        
+
         const prevBtn = document.createElement('button');
         prevBtn.className = 'nav-btn';
         prevBtn.onclick = () => window.calendarInstance?.previousMonth();
@@ -106,11 +125,11 @@ export class CalendarPage {
         prevIcon.className = 'icon';
         prevIcon.textContent = '◀';
         prevBtn.appendChild(prevIcon);
-        
+
         const currentMonth = document.createElement('h2');
         currentMonth.id = 'currentMonth';
         currentMonth.textContent = `${this.getMonthName(this.currentMonth)} ${this.currentYear}`;
-        
+
         const nextBtn = document.createElement('button');
         nextBtn.className = 'nav-btn';
         nextBtn.onclick = () => window.calendarInstance?.nextMonth();
@@ -118,7 +137,7 @@ export class CalendarPage {
         nextIcon.className = 'icon';
         nextIcon.textContent = '▶';
         nextBtn.appendChild(nextIcon);
-        
+
         nav.appendChild(prevBtn);
         nav.appendChild(currentMonth);
         nav.appendChild(nextBtn);
@@ -133,117 +152,117 @@ export class CalendarPage {
         // Create legend
         const legend = document.createElement('div');
         legend.className = 'calendar-legend';
-        
+
         const legendItems = [
             { color: 'var(--success-light)', text: 'Practiced' },
             { color: 'var(--primary-light)', text: 'Goal Met' },
             { color: 'var(--warning-light)', text: 'Partial Goal' }
         ];
-        
-        legendItems.forEach(item => {
+
+        legendItems.forEach((item) => {
             const span = document.createElement('span');
             span.className = 'legend-item';
-            
+
             const box = document.createElement('span');
             box.className = 'legend-box';
             box.style.background = item.color;
-            
+
             span.appendChild(box);
             span.appendChild(document.createTextNode(item.text));
             legend.appendChild(span);
         });
-        
+
         calendarContainer.appendChild(legend);
         calendarPage.appendChild(calendarContainer);
 
         // Create stats section
         const stats = document.createElement('div');
         stats.className = 'calendar-stats';
-        
+
         // Create headers row
         const statsHeaders = document.createElement('div');
         statsHeaders.className = 'stats-headers';
-        
+
         const monthHeader = document.createElement('h3');
         monthHeader.className = 'stat-header-title';
         monthHeader.textContent = 'THIS MONTH';
-        
+
         const allTimeHeader = document.createElement('h3');
         allTimeHeader.className = 'stat-header-title';
         allTimeHeader.textContent = 'ALL TIME';
-        
+
         statsHeaders.appendChild(monthHeader);
         statsHeaders.appendChild(allTimeHeader);
         stats.appendChild(statsHeaders);
-        
+
         // Create stats boxes row
         const statsBoxes = document.createElement('div');
         statsBoxes.className = 'stats-boxes';
-        
+
         // Create stat box helper function
         const createStatBox = (daysId, hoursId, minutesId) => {
             const box = document.createElement('div');
             box.className = 'stat-box';
-            
+
             // Days section
             const daysSection = document.createElement('div');
             daysSection.className = 'stat-days-section';
-            
+
             const daysValue = document.createElement('span');
             daysValue.className = 'stat-days-value';
             daysValue.id = daysId;
             daysValue.textContent = '0';
-            
+
             const daysLabel = document.createElement('span');
             daysLabel.className = 'stat-days-label';
             daysLabel.textContent = 'days';
-            
+
             daysSection.appendChild(daysValue);
             daysSection.appendChild(daysLabel);
-            
+
             const practicedLabel = document.createElement('div');
             practicedLabel.className = 'stat-practiced-label';
             practicedLabel.textContent = 'PRACTICED';
-            
+
             // Time section
             const timeSection = document.createElement('div');
             timeSection.className = 'stat-time-section';
-            
+
             const timeValue = document.createElement('div');
             timeValue.className = 'stat-time-value';
-            
+
             const hours = document.createElement('span');
             hours.id = hoursId;
             hours.textContent = '0h';
-            
+
             const minutes = document.createElement('span');
             minutes.id = minutesId;
             minutes.textContent = '0m';
-            
+
             timeValue.appendChild(hours);
             timeValue.appendChild(document.createTextNode(' '));
             timeValue.appendChild(minutes);
-            
+
             const totalTimeLabel = document.createElement('div');
             totalTimeLabel.className = 'stat-total-time-label';
             totalTimeLabel.textContent = 'TOTAL TIME';
-            
+
             timeSection.appendChild(timeValue);
             timeSection.appendChild(totalTimeLabel);
-            
+
             box.appendChild(daysSection);
             box.appendChild(practicedLabel);
             box.appendChild(timeSection);
-            
+
             return box;
         };
-        
+
         // Create This Month box
         statsBoxes.appendChild(createStatBox('monthPracticeDays', 'monthHours', 'monthMinutes'));
-        
+
         // Create All Time box
         statsBoxes.appendChild(createStatBox('totalPracticeDays', 'totalHours', 'totalMinutes'));
-        
+
         stats.appendChild(statsBoxes);
         calendarPage.appendChild(stats);
 
@@ -275,52 +294,53 @@ export class CalendarPage {
         const goalModal = document.createElement('div');
         goalModal.className = 'modal';
         goalModal.id = 'goalModal';
-        
+
         const goalContent = document.createElement('div');
         goalContent.className = 'modal-content';
-        
+
         const goalCloseBtn = document.createElement('span');
         goalCloseBtn.className = 'close-btn';
         goalCloseBtn.textContent = '×';
         goalCloseBtn.onclick = () => window.calendarInstance?.hideGoalModal();
         goalContent.appendChild(goalCloseBtn);
-        
+
         const goalH3 = document.createElement('h3');
         goalH3.textContent = 'Set Daily Practice Goals';
         goalContent.appendChild(goalH3);
-        
+
         const goalP = document.createElement('p');
-        goalP.textContent = 'Set up to 4 practice area goals. Each completed goal will fill one quadrant of the calendar day.';
+        goalP.textContent =
+            'Set up to 4 practice area goals. Each completed goal will fill one quadrant of the calendar day.';
         goalContent.appendChild(goalP);
-        
+
         const goalForm = document.createElement('div');
         goalForm.id = 'goalForm';
-        
+
         const goalInputs = document.createElement('div');
         goalInputs.className = 'goal-inputs';
         goalInputs.id = 'goalInputs';
         goalForm.appendChild(goalInputs);
-        
+
         const goalFormActions = document.createElement('div');
         goalFormActions.className = 'goal-form-actions';
-        
+
         const addBtn = document.createElement('button');
         addBtn.className = 'btn btn-secondary';
         addBtn.type = 'button';
         addBtn.onclick = () => window.calendarInstance?.addGoalInput();
-        
+
         const addIcon = document.createElement('i');
         addIcon.className = 'icon';
         addIcon.textContent = '➕';
         addBtn.appendChild(addIcon);
         addBtn.appendChild(document.createTextNode(' Add Practice Area'));
-        
+
         goalFormActions.appendChild(addBtn);
         goalForm.appendChild(goalFormActions);
-        
+
         const modalActions = document.createElement('div');
         modalActions.className = 'modal-actions';
-        
+
         const saveBtn = document.createElement('button');
         saveBtn.className = 'btn btn-primary';
         saveBtn.id = 'saveGoalsBtn';
@@ -328,7 +348,7 @@ export class CalendarPage {
         saveBtn.textContent = 'Save Goals';
         // Event handler will be attached in CalendarTab.js
         modalActions.appendChild(saveBtn);
-        
+
         const cancelBtn = document.createElement('button');
         cancelBtn.className = 'btn btn-secondary';
         cancelBtn.id = 'cancelGoalsBtn';
@@ -336,35 +356,35 @@ export class CalendarPage {
         cancelBtn.textContent = 'Cancel';
         // Event handler will be attached in CalendarTab.js
         modalActions.appendChild(cancelBtn);
-        
+
         goalForm.appendChild(modalActions);
         goalContent.appendChild(goalForm);
         goalModal.appendChild(goalContent);
-        
+
         // Create day detail modal
         const dayModal = document.createElement('div');
         dayModal.className = 'modal';
         dayModal.id = 'dayDetailModal';
-        
+
         const dayContent = document.createElement('div');
         dayContent.className = 'modal-content';
-        
+
         const dayCloseBtn = document.createElement('span');
         dayCloseBtn.className = 'close-btn';
         dayCloseBtn.textContent = '×';
         dayCloseBtn.onclick = () => window.calendarInstance?.hideDayModal();
         dayContent.appendChild(dayCloseBtn);
-        
+
         const modalDate = document.createElement('h3');
         modalDate.id = 'modalDate';
         dayContent.appendChild(modalDate);
-        
+
         const modalContent = document.createElement('div');
         modalContent.id = 'modalContent';
         dayContent.appendChild(modalContent);
-        
+
         dayModal.appendChild(dayContent);
-        
+
         // Append modals to body
         document.body.appendChild(goalModal);
         document.body.appendChild(dayModal);
@@ -398,7 +418,7 @@ export class CalendarPage {
 
         // Add day headers
         const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-        dayHeaders.forEach(day => {
+        dayHeaders.forEach((day) => {
             const header = document.createElement('div');
             header.className = 'calendar-day-header';
             header.textContent = day;
@@ -425,9 +445,11 @@ export class CalendarPage {
 
             // Check if today
             const today = new Date();
-            if (day === today.getDate() &&
+            if (
+                day === today.getDate() &&
                 this.currentMonth === today.getMonth() &&
-                this.currentYear === today.getFullYear()) {
+                this.currentYear === today.getFullYear()
+            ) {
                 dayElement.classList.add('today');
             }
 
@@ -435,13 +457,17 @@ export class CalendarPage {
             const practiceInfo = this.getPracticeInfoForDate(dateStr);
 
             // Calculate total daily goal minutes
-            const totalGoalMinutes = this.dailyGoals.reduce((sum, goal) => sum + (goal.minutes || 0), 0);
+            const totalGoalMinutes = this.dailyGoals.reduce(
+                (sum, goal) => sum + (goal.minutes || 0),
+                0
+            );
             const totalPracticeMinutes = Math.floor(practiceInfo.totalTime / 60);
 
             // Calculate percentage for progress circle
-            const progressPercentage = totalGoalMinutes > 0 ?
-                Math.min((totalPracticeMinutes / totalGoalMinutes) * 100, 100) : 0;
-            
+            const progressPercentage =
+                totalGoalMinutes > 0
+                    ? Math.min((totalPracticeMinutes / totalGoalMinutes) * 100, 100)
+                    : 0;
 
             // Add day number (always at top-left, not in wrapper)
             const dayNumber = document.createElement('div');
@@ -526,7 +552,7 @@ export class CalendarPage {
                         // Check if there's a goal for this quadrant
                         if (i < this.dailyGoals.length) {
                             const goal = this.dailyGoals[i];
-                            const completion = goalCompletions.find(gc => gc.area === goal.area);
+                            const completion = goalCompletions.find((gc) => gc.area === goal.area);
 
                             if (completion) {
                                 if (completion.completed) {
@@ -549,7 +575,10 @@ export class CalendarPage {
             }
 
             // Add click handler using onclick attribute
-            dayElement.setAttribute('onclick', `window.calendarInstance?.showDayPopup('${dateStr}', event)`);
+            dayElement.setAttribute(
+                'onclick',
+                `window.calendarInstance?.showDayPopup('${dateStr}', event)`
+            );
 
             grid.appendChild(dayElement);
         }
@@ -561,7 +590,6 @@ export class CalendarPage {
         const radius = (size - strokeWidth) / 2;
         const circumference = 2 * Math.PI * radius;
         const offset = circumference - (percentage / 100) * circumference;
-        
 
         const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         svg.setAttribute('class', 'progress-circle');
@@ -640,15 +668,15 @@ export class CalendarPage {
         if (!practiceInfo.practiced) {
             // Clear popup
             popup.textContent = '';
-            
+
             // Create header
             const header = document.createElement('div');
             header.className = 'session-popup-header';
-            
+
             const h4 = document.createElement('h4');
             h4.textContent = dateFormatted;
             header.appendChild(h4);
-            
+
             const closeBtn = document.createElement('button');
             closeBtn.className = 'session-popup-close';
             closeBtn.textContent = '×';
@@ -658,7 +686,7 @@ export class CalendarPage {
             };
             header.appendChild(closeBtn);
             popup.appendChild(header);
-            
+
             // Create no practice message
             const p = document.createElement('p');
             p.style.cssText = 'color: var(--text-secondary); text-align: center; padding: 1rem;';
@@ -667,15 +695,15 @@ export class CalendarPage {
         } else {
             // Clear popup
             popup.textContent = '';
-            
+
             // Create header
             const header = document.createElement('div');
             header.className = 'session-popup-header';
-            
+
             const h4 = document.createElement('h4');
             h4.textContent = dateFormatted;
             header.appendChild(h4);
-            
+
             const closeBtn = document.createElement('button');
             closeBtn.className = 'session-popup-close';
             closeBtn.textContent = '×';
@@ -685,58 +713,62 @@ export class CalendarPage {
             };
             header.appendChild(closeBtn);
             popup.appendChild(header);
-            
+
             // Create session list
             const sessionList = document.createElement('div');
             sessionList.className = 'session-list';
-            
+
             // Create summary
             const summary = document.createElement('div');
             summary.style.marginBottom = '1rem';
-            
+
             const strong = document.createElement('strong');
             strong.textContent = `Total: ${TimeUtils.formatDuration(practiceInfo.totalTime, true)}`;
             summary.appendChild(strong);
-            summary.appendChild(document.createTextNode(` (${practiceInfo.sessions.length} session${practiceInfo.sessions.length > 1 ? 's' : ''})`))
+            summary.appendChild(
+                document.createTextNode(
+                    ` (${practiceInfo.sessions.length} session${practiceInfo.sessions.length > 1 ? 's' : ''})`
+                )
+            );
             sessionList.appendChild(summary);
-            
+
             // Create session items
-            practiceInfo.sessions.forEach(session => {
+            practiceInfo.sessions.forEach((session) => {
                 const time = new Date(session.date).toLocaleTimeString('en-US', {
                     hour: 'numeric',
                     minute: '2-digit'
                 });
-                
+
                 const sessionItem = document.createElement('div');
                 sessionItem.className = 'session-item';
-                
+
                 const sessionTime = document.createElement('div');
                 sessionTime.className = 'session-time';
                 sessionTime.textContent = `${time} - ${TimeUtils.formatDuration(session.duration || 0, true)}`;
                 sessionItem.appendChild(sessionTime);
-                
+
                 const sessionArea = document.createElement('div');
                 sessionArea.className = 'session-area';
                 sessionArea.textContent = session.practiceArea || 'General Practice';
                 sessionItem.appendChild(sessionArea);
-                
+
                 if (session.notes) {
                     const details = document.createElement('div');
                     details.className = 'session-details';
                     details.textContent = session.notes;
                     sessionItem.appendChild(details);
                 }
-                
+
                 if (session.bpm) {
                     const tempoDetails = document.createElement('div');
                     tempoDetails.className = 'session-details';
                     tempoDetails.textContent = `Tempo: ${session.bpm} BPM`;
                     sessionItem.appendChild(tempoDetails);
                 }
-                
+
                 sessionList.appendChild(sessionItem);
             });
-            
+
             popup.appendChild(sessionList);
         }
 
@@ -753,7 +785,7 @@ export class CalendarPage {
 
             // Load daily goals
             const goals = await this.storageService.getGoals();
-            this.dailyGoals = goals.filter(g => g.type === 'daily');
+            this.dailyGoals = goals.filter((g) => g.type === 'daily');
 
             // Update display
             this.updateCalendar();
@@ -788,10 +820,10 @@ export class CalendarPage {
         const monthEnd = new Date(this.currentYear, this.currentMonth + 1, 0);
 
         let monthTime = 0;
-        let allTimeDays = new Set();
+        const allTimeDays = new Set();
         let allTimeTotal = 0;
 
-        this.practiceData.forEach(session => {
+        this.practiceData.forEach((session) => {
             const sessionDate = new Date(session.date);
             const dateStr = this.getLocalDateString(sessionDate);
 
@@ -807,7 +839,7 @@ export class CalendarPage {
 
         // Count unique days in current month
         const monthDaysSet = new Set();
-        this.practiceData.forEach(session => {
+        this.practiceData.forEach((session) => {
             const sessionDate = new Date(session.date);
             if (sessionDate >= monthStart && sessionDate <= monthEnd) {
                 monthDaysSet.add(this.getLocalDateString(sessionDate));
@@ -841,7 +873,7 @@ export class CalendarPage {
         // Calculate longest streak
         const streak = this.calculateLongestStreak();
         if (longestStreakEl) longestStreakEl.textContent = streak;
-        
+
         // Update streak display
         this.updateStreakDisplay();
     }
@@ -851,7 +883,7 @@ export class CalendarPage {
 
         // Get unique practice dates
         const practiceDates = new Set();
-        this.practiceData.forEach(session => {
+        this.practiceData.forEach((session) => {
             const date = this.getLocalDateString(new Date(session.date));
             practiceDates.add(date);
         });
@@ -887,32 +919,32 @@ export class CalendarPage {
 
         // Clear container
         container.textContent = '';
-        
+
         // Create streak header
         const h3 = document.createElement('h3');
         h3.textContent = `Current Streak: ${currentStreak} days`;
         container.appendChild(h3);
-        
+
         // Create badges container
         const badgesDiv = document.createElement('div');
         badgesDiv.className = 'badges';
-        
+
         // Create each badge
-        badges.forEach(badge => {
+        badges.forEach((badge) => {
             const badgeDiv = document.createElement('div');
             badgeDiv.className = 'badge';
             if (badge.earned) {
                 badgeDiv.classList.add('earned');
             }
-            
+
             const icon = document.createElement('span');
             icon.className = 'badge-icon';
             icon.textContent = badge.icon;
             badgeDiv.appendChild(icon);
-            
+
             const labelSpan = document.createElement('span');
             labelSpan.className = 'badge-label';
-            
+
             // Handle line breaks in label
             const labelParts = badge.label.split('\n');
             labelParts.forEach((part, index) => {
@@ -921,11 +953,11 @@ export class CalendarPage {
                 }
                 labelSpan.appendChild(document.createTextNode(part));
             });
-            
+
             badgeDiv.appendChild(labelSpan);
             badgesDiv.appendChild(badgeDiv);
         });
-        
+
         container.appendChild(badgesDiv);
     }
 
@@ -934,14 +966,14 @@ export class CalendarPage {
 
         // Get all practice dates
         const practiceDates = new Set();
-        this.practiceData.forEach(session => {
+        this.practiceData.forEach((session) => {
             const date = this.getLocalDateString(new Date(session.date));
             practiceDates.add(date);
         });
 
         // Sort dates in descending order (most recent first)
         const sortedDates = Array.from(practiceDates).sort((a, b) => new Date(b) - new Date(a));
-        
+
         if (sortedDates.length === 0) return 0;
 
         // Get today's date and yesterday's date
@@ -949,78 +981,77 @@ export class CalendarPage {
         const yesterday = new Date();
         yesterday.setDate(yesterday.getDate() - 1);
         const yesterdayStr = this.getLocalDateString(yesterday);
-        
+
         // Check if practiced today or yesterday
         const practicedToday = practiceDates.has(today);
         const practicedYesterday = practiceDates.has(yesterdayStr);
-        
+
         // If didn't practice today or yesterday, streak is 0
         if (!practicedToday && !practicedYesterday) {
             return 0;
         }
-        
+
         // Start counting from the most recent practice day (today or yesterday)
         let streak = 0;
-        let checkDate = new Date();
-        
+        const checkDate = new Date();
+
         // If practiced today, start from today; otherwise start from yesterday
         if (!practicedToday) {
             checkDate.setDate(checkDate.getDate() - 1);
         }
-        
+
         // Count backwards from the starting date
         while (practiceDates.has(this.getLocalDateString(checkDate))) {
             streak++;
             checkDate.setDate(checkDate.getDate() - 1);
         }
-        
+
         return streak;
     }
 
     getStreakBadges(currentStreak) {
         const badges = [
-            {days: 1, icon: '🎸', label: '1 Day\nStreak'},
-            {days: 3, icon: '🔥', label: '3 Day\nStreak'},
-            {days: 7, icon: '🗓️', label: '7 Day\nStreak'},
-            {days: 10, icon: '🔟', label: '10 Day\nStreak'},
-            {days: 14, icon: '💪', label: '14 Day\nStreak'},
-            {days: 21, icon: '💎', label: '21 Day\nStreak'},
-            {days: 30, icon: '📅', label: '30 Day\nStreak'},
-            {days: 45, icon: '🌟', label: '45 Day\nStreak'},
-            {days: 60, icon: '👑', label: '60 Day\nStreak'},
-            {days: 90, icon: '🏆', label: '90 Day\nStreak'},
-            {days: 100, icon: '💫', label: '100 Day\nStreak'},
-            {days: 150, icon: '🏅', label: '150 Day\nStreak'},
-            {days: 180, icon: '🌟', label: '180 Day\nStreak'},
-            {days: 200, icon: '⚡', label: '200 Day\nStreak'},
-            {days: 250, icon: '🚀', label: '250 Day\nStreak'},
-            {days: 300, icon: '🌠', label: '300 Day\nStreak'},
-            {days: 365, icon: '🎖️', label: '365 Day\nStreak'},
-            {days: 500, icon: '🧘', label: '500 Day\nStreak'}
+            { days: 1, icon: '🎸', label: '1 Day\nStreak' },
+            { days: 3, icon: '🔥', label: '3 Day\nStreak' },
+            { days: 7, icon: '🗓️', label: '7 Day\nStreak' },
+            { days: 10, icon: '🔟', label: '10 Day\nStreak' },
+            { days: 14, icon: '💪', label: '14 Day\nStreak' },
+            { days: 21, icon: '💎', label: '21 Day\nStreak' },
+            { days: 30, icon: '📅', label: '30 Day\nStreak' },
+            { days: 45, icon: '🌟', label: '45 Day\nStreak' },
+            { days: 60, icon: '👑', label: '60 Day\nStreak' },
+            { days: 90, icon: '🏆', label: '90 Day\nStreak' },
+            { days: 100, icon: '💫', label: '100 Day\nStreak' },
+            { days: 150, icon: '🏅', label: '150 Day\nStreak' },
+            { days: 180, icon: '🌟', label: '180 Day\nStreak' },
+            { days: 200, icon: '⚡', label: '200 Day\nStreak' },
+            { days: 250, icon: '🚀', label: '250 Day\nStreak' },
+            { days: 300, icon: '🌠', label: '300 Day\nStreak' },
+            { days: 365, icon: '🎖️', label: '365 Day\nStreak' },
+            { days: 500, icon: '🧘', label: '500 Day\nStreak' }
         ];
 
-        return badges.map(badge => ({
+        return badges.map((badge) => ({
             ...badge,
             earned: currentStreak >= badge.days
         }));
     }
 
     getPracticeInfoForDate(dateStr) {
-        const sessions = this.practiceData.filter(session => {
+        const sessions = this.practiceData.filter((session) => {
             const sessionDate = this.getLocalDateString(new Date(session.date));
             return sessionDate === dateStr;
         });
 
         if (sessions.length === 0) {
-            return {practiced: false};
+            return { practiced: false };
         }
 
         const totalTime = sessions.reduce((sum, session) => sum + (session.duration || 0), 0);
         const areas = {};
-        
 
         // Calculate total time per practice area (case-insensitive)
-        sessions.forEach(session => {
+        sessions.forEach((session) => {
             if (session.practiceArea) {
                 // Normalize the practice area name for comparison
                 const normalizedArea = session.practiceArea.trim();
@@ -1068,7 +1099,6 @@ export class CalendarPage {
         });
     }
 
-
     // Modal methods
     async showGoalModal() {
         const modal = document.getElementById('goalModal');
@@ -1087,7 +1117,7 @@ export class CalendarPage {
 
         // Add goal inputs
         if (this.dailyGoals.length > 0) {
-            this.dailyGoals.forEach(goal => this.addGoalInput(goal));
+            this.dailyGoals.forEach((goal) => this.addGoalInput(goal));
         } else {
             // Add 4 empty goal inputs
             for (let i = 0; i < 4; i++) {
@@ -1153,19 +1183,19 @@ export class CalendarPage {
             minutesInput.value = existingGoal.minutes;
         }
         goalDiv.appendChild(minutesInput);
-        
+
         // Create select element
         const select = document.createElement('select');
         select.className = 'goal-area-select';
-        
+
         // Create default option
         const defaultOption = document.createElement('option');
         defaultOption.value = '';
         defaultOption.textContent = 'Select practice area';
         select.appendChild(defaultOption);
-        
+
         // Create options for each practice area
-        this.practiceAreas.forEach(area => {
+        this.practiceAreas.forEach((area) => {
             const option = document.createElement('option');
             option.value = area;
             option.textContent = area;
@@ -1175,7 +1205,7 @@ export class CalendarPage {
             select.appendChild(option);
         });
         goalDiv.appendChild(select);
-        
+
         // Create remove button
         const removeBtn = document.createElement('button');
         removeBtn.className = 'btn btn-sm btn-danger remove-goal-btn';
@@ -1229,7 +1259,7 @@ export class CalendarPage {
         try {
             // Remove old daily goals and add new ones
             const allGoals = await this.storageService.getGoals();
-            const otherGoals = allGoals.filter(g => g.type !== 'daily');
+            const otherGoals = allGoals.filter((g) => g.type !== 'daily');
             const updatedGoals = [...otherGoals, ...newGoals];
 
             await this.storageService.saveGoals(updatedGoals);
@@ -1290,22 +1320,22 @@ export class CalendarPage {
         try {
             const currentPlan = await this.storageService.getCurrentLearningPlan();
             if (!currentPlan || !currentPlan.weeks) return false;
-            
+
             // Get the start date of the plan
             const planStartDate = new Date(currentPlan.createdAt);
             const checkDate = new Date(dateStr);
-            
+
             // Calculate which week and session this date would be
             const daysSinceStart = Math.floor((checkDate - planStartDate) / (1000 * 60 * 60 * 24));
             const weekIndex = Math.floor(daysSinceStart / 7);
             const sessionInWeek = daysSinceStart % currentPlan.sessionsPerWeek;
-            
+
             // Check if this date falls within the plan and has a session
             if (weekIndex >= 0 && weekIndex < currentPlan.weeks.length) {
                 const week = currentPlan.weeks[weekIndex];
                 return sessionInWeek < week.sessions.length;
             }
-            
+
             return false;
         } catch (error) {
             console.error('Error checking learning session:', error);

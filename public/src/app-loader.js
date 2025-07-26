@@ -1,12 +1,16 @@
 // Application loader and error handling
-import { handleDomainRedirect, handleAuthRedirect, detectBasePath, setAppVersion } from './utils/init.js';
+import {
+    handleDomainRedirect,
+    handleAuthRedirect,
+    detectBasePath,
+    setAppVersion
+} from './utils/init.js';
 
 // Initialize early setup
 handleDomainRedirect();
 handleAuthRedirect();
 detectBasePath();
 setAppVersion();
-
 
 const debugInfo = document.getElementById('debug-info');
 const errorDiv = document.getElementById('error-message');
@@ -36,13 +40,13 @@ window.clearCacheAndReload = async function () {
     try {
         if ('caches' in window) {
             const cacheNames = await caches.keys();
-            await Promise.all(cacheNames.map(name => caches.delete(name)));
+            await Promise.all(cacheNames.map((name) => caches.delete(name)));
         }
         localStorage.clear();
         sessionStorage.clear();
         if ('serviceWorker' in navigator) {
             const registrations = await navigator.serviceWorker.getRegistrations();
-            for (let registration of registrations) {
+            for (const registration of registrations) {
                 await registration.unregister();
             }
         }
@@ -105,7 +109,7 @@ async function initializeApp() {
         );
 
         const appModule = await Promise.race([appPromise, appTimeout]);
-        const {App} = appModule;
+        const { App } = appModule;
 
         showDebugInfo('Application module loaded, initializing...');
 
@@ -115,22 +119,24 @@ async function initializeApp() {
         showDebugInfo('Calling app.init()...');
         await window.app.init();
 
-
         // Hide loading screen
         const loader = document.querySelector('.app-loading');
         if (loader) {
             loader.style.display = 'none';
         }
-
     } catch (error) {
         console.error('❌ App initialization failed:', error);
 
         if (error.message.includes('timeout')) {
             showError('App loading timed out. This might be a network issue or missing files.');
         } else if (error.message.includes('Failed to resolve module specifier')) {
-            showError(`Module not found: ${error.message}. Check that all files exist in the src/ directory.`);
+            showError(
+                `Module not found: ${error.message}. Check that all files exist in the src/ directory.`
+            );
         } else if (error.message.includes('Failed to fetch')) {
-            showError('Failed to load required files. Check your internet connection and file structure.');
+            showError(
+                'Failed to load required files. Check your internet connection and file structure.'
+            );
         } else {
             showError(`Initialization failed: ${error.message}`);
         }
@@ -148,6 +154,8 @@ if (document.readyState === 'loading') {
 setTimeout(() => {
     const loader = document.querySelector('.app-loading');
     if (loader && loader.style.display !== 'none') {
-        showError('App failed to load within 30 seconds. There may be a problem with the application files.');
+        showError(
+            'App failed to load within 30 seconds. There may be a problem with the application files.'
+        );
     }
 }, 30000);

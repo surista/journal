@@ -1,0 +1,70 @@
+/* Tips Popup Styles */
+.tips-popup {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    max-width: 350px;
+    background: rgba(99, 102, 241, 0.95);
+    color: white;
+    border-radius: 12px;
+    padding: 16px 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    transform: translateX(-120%);
+    transition: transform 0.4s ease-out;
+    z-index: 1500;
+    backdrop-filter: blur(10px);
+}
+
+.tips-popup.show {
+    transform: translateX(0);
+}
+
+.tips-popup-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.tips-popup-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.tips-popup-text {
+    font-size: 14px;
+    line-height: 1.4;
+    font-weight: 500;
+}
+
+/* Light theme adjustments */
+[data-theme="light"] .tips-popup {
+    background: rgba(99, 102, 241, 0.9);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .tips-popup {
+        bottom: 70px; /* Above mobile navigation */
+        left: 10px;
+        right: 10px;
+        max-width: none;
+    }
+}
+
+/* Animation keyframes for subtle entrance */
+@keyframes slideInBounce {
+    0% {
+        transform: translateX(-120%);
+    }
+    70% {
+        transform: translateX(10px);
+    }
+    100% {
+        transform: translateX(0);
+    }
+}
+
+.tips-popup.show {
+    animation: slideInBounce 0.5s ease-out;
+}

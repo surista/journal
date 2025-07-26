@@ -9,12 +9,12 @@ export function getTimer() {
     // First try the registry
     const timer = timerRegistry.getPrimary();
     if (timer) return timer;
-    
+
     // Try to migrate legacy timer if registry is empty
     if (timerRegistry.migrateLegacyTimer()) {
         return timerRegistry.getPrimary();
     }
-    
+
     return null;
 }
 
@@ -79,7 +79,7 @@ export function pauseTimerIfNeeded() {
 export function getTimerState() {
     const timer = getTimer();
     if (!timer) return null;
-    
+
     return {
         isRunning: timer.isRunning,
         elapsedTime: timer.elapsedTime,
@@ -96,7 +96,7 @@ export function getTimerState() {
 export function syncTimerWithAudio(source, shouldStart) {
     const timer = getTimer();
     if (!timer || !timer.syncWithAudio) return;
-    
+
     if (shouldStart) {
         if (!timer.isRunning) {
             console.log(`Timer sync: Starting timer from ${source}`);

@@ -6,85 +6,85 @@
 
 /* Main container for audio controls */
 .audio-controls {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
 }
 
 /* Speed control section */
 .speed-control-section {
-    background: var(--bg-input);
-    border-radius: var(--radius-lg);
-    padding: var(--space-lg);
+  background: var(--bg-input);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
 }
 
 /* Speed buttons container - proper alignment */
 .speed-buttons {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: var(--space-md);
-    margin-bottom: var(--space-lg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
 }
 
 /* Negative speed buttons group (left aligned) */
 .speed-decrease-buttons {
-    display: flex;
-    gap: var(--space-sm);
+  display: flex;
+  gap: var(--space-sm);
 }
 
 /* Positive speed buttons group (right aligned) */
 .speed-increase-buttons {
-    display: flex;
-    gap: var(--space-sm);
-    margin-left: auto;
+  display: flex;
+  gap: var(--space-sm);
+  margin-left: auto;
 }
 
 /* If buttons are direct children of speed-buttons */
 .speed-buttons > .btn {
-    min-width: 60px;
+  min-width: 60px;
 }
 
 /* Force alignment using nth-child if structure is flat */
 .speed-buttons > .btn:nth-child(1),
 .speed-buttons > .btn:nth-child(2),
 .speed-buttons > .btn:nth-child(3) {
-    margin-right: 0;
+  margin-right: 0;
 }
 
 .speed-buttons > .btn:nth-child(4) {
-    margin-left: auto;
+  margin-left: auto;
 }
 
 .speed-buttons > .btn:nth-child(4),
 .speed-buttons > .btn:nth-child(5),
 .speed-buttons > .btn:nth-child(6) {
-    margin-left: var(--space-sm);
+  margin-left: var(--space-sm);
 }
 
 /* Speed display in the center */
 .speed-display {
-    flex: 1;
-    text-align: center;
-    font-size: var(--text-lg);
-    font-weight: 600;
-    color: var(--primary);
+  flex: 1;
+  text-align: center;
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--primary);
 }
 
 /* Alternative grid-based layout */
 .speed-control-grid {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    align-items: center;
-    gap: var(--space-lg);
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-lg);
 }
 
 .speed-control-grid .speed-decrease-buttons {
-    justify-self: start;
+  justify-self: start;
 }
 
 .speed-control-grid .speed-increase-buttons {
-    justify-self: end;
+  justify-self: end;
 }
 
 /* ============================= */
@@ -96,8 +96,8 @@
 #audioTab .metronome-container,
 #audioTab .metronome-section,
 #audioTab .metronome-component,
-#audioTab [class*="metronome"]:not(.btn) {
-    display: none !important;
+#audioTab [class*='metronome']:not(.btn) {
+  display: none !important;
 }
 
 /* Secondary method - hide by layout class */
@@ -105,14 +105,14 @@
 .audio-layout .metronome-container,
 .audio-layout .metronome-section,
 .audio-layout .metronome-component {
-    display: none !important;
+  display: none !important;
 }
 
 /* Tertiary method - hide by tab pane class */
-.tab-pane[data-tab="audio"] .metronome-widget,
-.tab-pane[data-tab="audio"] .metronome-container,
-.tab-pane[data-tab="audio"] .metronome-section {
-    display: none !important;
+.tab-pane[data-tab='audio'] .metronome-widget,
+.tab-pane[data-tab='audio'] .metronome-container,
+.tab-pane[data-tab='audio'] .metronome-section {
+  display: none !important;
 }
 
 /* Ensure metronome IS visible in its own tab */
@@ -120,12 +120,12 @@
 #metronomeTab .metronome-container,
 #metronomeTab .metronome-section,
 #metronomeTab .metronome-component {
-    display: block !important;
+  display: block !important;
 }
 
-.tab-pane[data-tab="metronome"] .metronome-widget,
-.tab-pane[data-tab="metronome"] .metronome-container {
-    display: block !important;
+.tab-pane[data-tab='metronome'] .metronome-widget,
+.tab-pane[data-tab='metronome'] .metronome-container {
+  display: block !important;
 }
 
 /* ============================= */
@@ -134,29 +134,29 @@
 
 /* Similar structure for pitch controls */
 .pitch-control-section {
-    background: var(--bg-input);
-    border-radius: var(--radius-lg);
-    padding: var(--space-lg);
-    margin-top: var(--space-lg);
+  background: var(--bg-input);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-top: var(--space-lg);
 }
 
 .pitch-buttons {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: var(--space-md);
-    margin-bottom: var(--space-lg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
 }
 
 .pitch-decrease-buttons {
-    display: flex;
-    gap: var(--space-sm);
+  display: flex;
+  gap: var(--space-sm);
 }
 
 .pitch-increase-buttons {
-    display: flex;
-    gap: var(--space-sm);
-    margin-left: auto;
+  display: flex;
+  gap: var(--space-sm);
+  margin-left: auto;
 }
 
 /* ============================= */
@@ -164,32 +164,32 @@
 /* ============================= */
 
 @media (max-width: 768px) {
-    /* Stack speed controls on mobile */
-    .speed-buttons,
-    .pitch-buttons {
-        flex-direction: column;
-        gap: var(--space-md);
-    }
+  /* Stack speed controls on mobile */
+  .speed-buttons,
+  .pitch-buttons {
+    flex-direction: column;
+    gap: var(--space-md);
+  }
 
-    .speed-decrease-buttons,
-    .speed-increase-buttons,
-    .pitch-decrease-buttons,
-    .pitch-increase-buttons {
-        width: 100%;
-        justify-content: center;
-        margin-left: 0;
-    }
+  .speed-decrease-buttons,
+  .speed-increase-buttons,
+  .pitch-decrease-buttons,
+  .pitch-increase-buttons {
+    width: 100%;
+    justify-content: center;
+    margin-left: 0;
+  }
 
-    .speed-display {
-        order: -1;
-        margin-bottom: var(--space-md);
-    }
+  .speed-display {
+    order: -1;
+    margin-bottom: var(--space-md);
+  }
 
-    /* Ensure buttons maintain minimum width on mobile */
-    .speed-buttons .btn,
-    .pitch-buttons .btn {
-        min-width: 80px;
-    }
+  /* Ensure buttons maintain minimum width on mobile */
+  .speed-buttons .btn,
+  .pitch-buttons .btn {
+    min-width: 80px;
+  }
 }
 
 /* ============================= */
@@ -198,134 +198,134 @@
 
 /* Ensure proper spacing in audio player section */
 .audio-player-container {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
 }
 
 .audio-player-controls {
-    background: var(--bg-card);
-    border-radius: var(--radius-lg);
-    padding: var(--space-xl);
-    box-shadow: var(--shadow-lg);
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  box-shadow: var(--shadow-lg);
 }
 
 /* Transport controls */
 .transport-controls {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: var(--space-md);
-    margin-bottom: var(--space-lg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
 }
 
 /* Progress bar section */
 .progress-section {
-    margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-lg);
 }
 
 /* Compact Loop controls layout */
 .loop-controls {
-    background: var(--bg-input);
-    border-radius: var(--radius-lg);
-    padding: var(--space-md);
-    margin-top: var(--space-lg);
+  background: var(--bg-input);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  margin-top: var(--space-lg);
 }
 
 .loop-controls h4 {
-    margin: 0 0 var(--space-sm) 0;
-    font-size: var(--text-base);
+  margin: 0 0 var(--space-sm) 0;
+  font-size: var(--text-base);
 }
 
 .loop-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
 }
 
 .loop-main-controls {
-    display: flex;
-    align-items: center;
-    gap: var(--space-md);
-    flex: 0 0 75%;
-    justify-content: space-between;
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  flex: 0 0 75%;
+  justify-content: space-between;
 }
 
 .loop-main-controls .btn-sm {
-    padding: var(--space-xs) var(--space-sm);
-    font-size: var(--text-sm);
-    white-space: nowrap;
-    flex: 0 0 auto;
+  padding: var(--space-xs) var(--space-sm);
+  font-size: var(--text-sm);
+  white-space: nowrap;
+  flex: 0 0 auto;
 }
 
 .loop-info {
-    color: var(--primary);
-    font-weight: 600;
-    font-size: var(--text-sm);
-    background: var(--bg-dark);
-    padding: var(--space-xs) var(--space-md);
-    border-radius: var(--radius-md);
-    border: 1px solid var(--border);
-    white-space: nowrap;
-    flex: 0 0 auto;
+  color: var(--primary);
+  font-weight: 600;
+  font-size: var(--text-sm);
+  background: var(--bg-dark);
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  white-space: nowrap;
+  flex: 0 0 auto;
 }
 
 .loop-enable {
-    margin: 0;
-    font-size: var(--text-sm);
-    display: flex;
-    align-items: center;
-    gap: var(--space-xs);
-    white-space: nowrap;
-    flex: 0 0 auto;
+  margin: 0;
+  font-size: var(--text-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  white-space: nowrap;
+  flex: 0 0 auto;
 }
 
 /* Mobile adjustments */
 @media (max-width: 768px) {
-    .loop-content {
-        flex-direction: column;
-        gap: var(--space-sm);
-    }
+  .loop-content {
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
 
-    .loop-main-controls {
-        flex: 1 1 100%;
-        width: 100%;
-        justify-content: center;
-        gap: var(--space-sm);
-    }
+  .loop-main-controls {
+    flex: 1 1 100%;
+    width: 100%;
+    justify-content: center;
+    gap: var(--space-sm);
+  }
 
-    .loop-enable {
-        width: auto;
-    }
+  .loop-enable {
+    width: auto;
+  }
 }
 
 /* Tablet adjustments */
 @media (max-width: 1024px) {
-    .loop-main-controls {
-        flex: 0 0 70%;
-        gap: var(--space-sm);
-    }
+  .loop-main-controls {
+    flex: 0 0 70%;
+    gap: var(--space-sm);
+  }
 }
 
 /* Save session button */
 .save-session-btn {
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
-    margin: var(--space-lg) auto 0;
-    padding: var(--space-md) var(--space-xl);
-    background: var(--success);
-    color: white;
-    border: none;
-    border-radius: var(--radius-lg);
-    font-weight: 600;
-    cursor: pointer;
-    transition: var(--transition-base);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin: var(--space-lg) auto 0;
+  padding: var(--space-md) var(--space-xl);
+  background: var(--success);
+  color: white;
+  border: none;
+  border-radius: var(--radius-lg);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-base);
 }
 
 .save-session-btn:hover {
-    background: var(--success-dark);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
+  background: var(--success-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
 }

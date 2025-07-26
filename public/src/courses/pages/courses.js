@@ -32,12 +32,12 @@ class CoursesPage {
                 </div>
             </div>
         `;
-        
+
         container.innerHTML = html;
-        
+
         // Add modals to body to ensure they're on top
         this.createModals();
-        
+
         await this.init();
     }
 
@@ -45,7 +45,7 @@ class CoursesPage {
         // Prevent multiple initializations
         if (this.initialized) return;
         this.initialized = true;
-        
+
         window.coursesPage = this;
         await courseService.initializeDefaultCourses();
         await this.loadCourses();
@@ -55,7 +55,7 @@ class CoursesPage {
         try {
             this.courses = await courseService.getAllCourses();
             const user = this.authService.getCurrentUser();
-            
+
             // Load progress for all courses
             if (user) {
                 for (const course of this.courses) {
@@ -73,7 +73,7 @@ class CoursesPage {
 
     renderCourseList() {
         const courseList = document.getElementById('courseList');
-        
+
         if (this.courses.length === 0) {
             courseList.innerHTML = '<p class="no-courses">No courses available yet.</p>';
             return;
@@ -81,20 +81,20 @@ class CoursesPage {
 
         // Clear existing content
         courseList.innerHTML = '';
-        
+
         // Create course cards with lazy loaded images
-        this.courses.forEach(course => {
+        this.courses.forEach((course) => {
             const progress = this.userProgress[course.id];
             const progressPercent = Math.min(100, Math.max(0, progress?.percentComplete || 0));
-            
+
             const courseCard = document.createElement('div');
             courseCard.className = 'course-card';
             courseCard.setAttribute('data-course-id', course.id);
-            
+
             // Create thumbnail container
             const thumbnailDiv = document.createElement('div');
             thumbnailDiv.className = 'course-thumbnail';
-            
+
             if (course.thumbnail) {
                 // Use lazy loading for thumbnail
                 const lazyImage = this.lazyLoader.create(
@@ -103,22 +103,23 @@ class CoursesPage {
                     {
                         className: 'course-thumb-img',
                         showSpinner: true,
-                        placeholder: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect width="100" height="100" fill="%23f3f4f6"/%3E%3C/svg%3E'
+                        placeholder:
+                            'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect width="100" height="100" fill="%23f3f4f6"/%3E%3C/svg%3E'
                     }
                 );
                 thumbnailDiv.appendChild(lazyImage);
             } else {
                 thumbnailDiv.innerHTML = `<div class="placeholder-thumb">${this.getIcon(course.category)}</div>`;
             }
-            
+
             // Add difficulty badge
             const difficultyDiv = document.createElement('div');
             difficultyDiv.className = `course-difficulty ${course.difficulty}`;
             difficultyDiv.textContent = course.difficulty;
             thumbnailDiv.appendChild(difficultyDiv);
-            
+
             courseCard.appendChild(thumbnailDiv);
-            
+
             // Add the rest of the course card content
             const infoDiv = document.createElement('div');
             infoDiv.className = 'course-info';
@@ -129,29 +130,33 @@ class CoursesPage {
                     <span class="lesson-count">${escapeHtml(course.lessons.length)} lessons</span>
                     <span class="duration">~${escapeHtml(course.estimatedHours)}h</span>
                 </div>
-                ${progress ? `
+                ${
+                    progress
+                        ? `
                     <div class="course-progress">
                         <div class="progress-bar">
                             <div class="progress-fill" style="width: ${progressPercent}%"></div>
                         </div>
                         <span class="progress-text">${escapeHtml(progress.completedLessons)}/${escapeHtml(progress.totalLessons)} completed</span>
                     </div>
-                ` : ''}
+                `
+                        : ''
+                }
             `;
-            
+
             courseCard.appendChild(infoDiv);
             courseList.appendChild(courseCard);
         });
-        
+
         // Add click listeners to course cards
-        courseList.querySelectorAll('.course-card').forEach(card => {
+        courseList.querySelectorAll('.course-card').forEach((card) => {
             card.addEventListener('click', async (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                
+
                 // Prevent multiple rapid clicks
                 if (this.isOpening) return;
-                
+
                 const courseId = card.dataset.courseId;
                 await this.openCourse(courseId);
             });
@@ -161,16 +166,15 @@ class CoursesPage {
     async openCourse(courseId) {
         if (this.isOpening) return;
         this.isOpening = true;
-        
+
         try {
             this.selectedCourse = await courseService.getCourse(courseId);
-            
+
             if (!this.selectedCourse) {
                 console.error('Course not found:', courseId);
                 showToast('Course not found', 'error');
                 return;
             }
-
 
             const modal = document.getElementById('courseModal');
             const title = document.getElementById('courseTitle');
@@ -184,7 +188,6 @@ class CoursesPage {
             title.textContent = this.selectedCourse.title;
             const courseDetailsHTML = await this.renderCourseDetails();
             content.innerHTML = courseDetailsHTML;
-            
 
             modal.classList.add('open');
             modal.style.display = 'flex';
@@ -204,8 +207,11 @@ class CoursesPage {
 
         const lessonProgress = {};
         if (user) {
-            const userProgress = await courseService.getUserProgress(user.id, this.selectedCourse.id);
-            userProgress.forEach(p => {
+            const userProgress = await courseService.getUserProgress(
+                user.id,
+                this.selectedCourse.id
+            );
+            userProgress.forEach((p) => {
                 lessonProgress[p.lessonId] = p;
             });
         }
@@ -232,12 +238,17 @@ class CoursesPage {
 
                 <div class="lesson-list">
                     <h3>Lessons</h3>
-                    ${this.selectedCourse.lessons.map((lesson, index) => {
-                        const lessonProg = lessonProgress[lesson.id];
-                        const isCompleted = lessonProg?.completed;
-                        const isLocked = index > 0 && lesson.requiresPrevious && !lessonProgress[this.selectedCourse.lessons[index - 1].id]?.completed;
-                        
-                        return `
+                    ${this.selectedCourse.lessons
+                        .map((lesson, index) => {
+                            const lessonProg = lessonProgress[lesson.id];
+                            const isCompleted = lessonProg?.completed;
+                            const isLocked =
+                                index > 0 &&
+                                lesson.requiresPrevious &&
+                                !lessonProgress[this.selectedCourse.lessons[index - 1].id]
+                                    ?.completed;
+
+                            return `
                             <div class="lesson-item ${isCompleted ? 'completed' : ''} ${isLocked ? 'locked' : ''}" 
                                  onclick="window.coursesPage.openLesson('${lesson.id}')"
                                  data-lesson-id="${lesson.id}">
@@ -245,16 +256,21 @@ class CoursesPage {
                                 <div class="lesson-info">
                                     <h4>${lesson.title}</h4>
                                     <p>${lesson.description}</p>
-                                    ${lesson.goals.length > 0 ? `
+                                    ${
+                                        lesson.goals.length > 0
+                                            ? `
                                         <span class="goal-count">${lesson.goals.length} practice goals</span>
-                                    ` : ''}
+                                    `
+                                            : ''
+                                    }
                                 </div>
                                 <div class="lesson-status">
                                     ${isCompleted ? '✓' : isLocked ? '🔒' : ''}
                                 </div>
                             </div>
                         `;
-                    }).join('')}
+                        })
+                        .join('')}
                 </div>
             </div>
         `;
@@ -279,7 +295,7 @@ class CoursesPage {
             return;
         }
 
-        this.selectedLesson = this.selectedCourse.lessons.find(l => l.id === lessonId);
+        this.selectedLesson = this.selectedCourse.lessons.find((l) => l.id === lessonId);
         if (!this.selectedLesson) {
             showToast('Lesson not found', 'error');
             return;
@@ -322,11 +338,11 @@ class CoursesPage {
                         </div>
                     `;
                     break;
-                    
+
                 case 'text':
                     contentHtml += `<div class="lesson-text">${this.parseMarkdown(section.content)}</div>`;
                     break;
-                    
+
                 case 'image':
                     contentHtml += `
                         <div class="lesson-image">
@@ -335,7 +351,7 @@ class CoursesPage {
                         </div>
                     `;
                     break;
-                    
+
                 case 'tab':
                     contentHtml += `
                         <div class="guitar-tab">
@@ -344,7 +360,7 @@ class CoursesPage {
                         </div>
                     `;
                     break;
-                    
+
                 case 'exercise':
                     contentHtml += `
                         <div class="lesson-exercise">
@@ -353,16 +369,20 @@ class CoursesPage {
                             ${section.content.tab ? `<pre class="exercise-tab">${section.content.tab}</pre>` : ''}
                             ${section.content.tempo ? `<p class="exercise-tempo"><strong>Tempo:</strong> ${section.content.tempo}</p>` : ''}
                             ${section.content.focus ? `<p class="exercise-focus"><strong>Focus:</strong> ${section.content.focus}</p>` : ''}
-                            ${section.content.steps ? `
+                            ${
+                                section.content.steps
+                                    ? `
                                 <ol class="exercise-steps">
-                                    ${section.content.steps.map(step => `<li>${step}</li>`).join('')}
+                                    ${section.content.steps.map((step) => `<li>${step}</li>`).join('')}
                                 </ol>
-                            ` : ''}
+                            `
+                                    : ''
+                            }
                             ${section.content.challenge ? `<p class="exercise-challenge"><strong>Challenge:</strong> ${section.content.challenge}</p>` : ''}
                         </div>
                     `;
                     break;
-                    
+
                 case 'callout':
                     contentHtml += `
                         <div class="lesson-callout callout-${section.style}">
@@ -370,7 +390,7 @@ class CoursesPage {
                         </div>
                     `;
                     break;
-                    
+
                 case 'video':
                     contentHtml += `
                         <div class="lesson-video">
@@ -384,18 +404,18 @@ class CoursesPage {
                         </div>
                     `;
                     break;
-                    
+
                 case 'practice':
                     contentHtml += `
                         <div class="lesson-practice">
                             <h3>${section.title}</h3>
                             <ul class="practice-points">
-                                ${section.points.map(point => `<li>${point}</li>`).join('')}
+                                ${section.points.map((point) => `<li>${point}</li>`).join('')}
                             </ul>
                         </div>
                     `;
                     break;
-                    
+
                 case 'backing-track':
                     contentHtml += `
                         <div class="backing-track">
@@ -412,7 +432,7 @@ class CoursesPage {
                         </div>
                     `;
                     break;
-                    
+
                 case 'interactive':
                     contentHtml += `
                         <div class="lesson-interactive" data-component="${section.component}" data-config='${JSON.stringify(section.data)}'>
@@ -420,7 +440,7 @@ class CoursesPage {
                         </div>
                     `;
                     break;
-                    
+
                 case 'diagram':
                     contentHtml += `<div class="lesson-diagram" data-diagram="${section.content}">Diagram: ${section.content}</div>`;
                     break;
@@ -432,14 +452,17 @@ class CoursesPage {
             contentHtml += `
                 <div class="lesson-goals">
                     <h3>Practice Goals</h3>
-                    ${this.selectedLesson.goals.map(goal => {
-                        const isCompleted = progress?.goalsCompleted?.includes(goal.id);
-                        return `
+                    ${this.selectedLesson.goals
+                        .map((goal) => {
+                            const isCompleted = progress?.goalsCompleted?.includes(goal.id);
+                            return `
                             <div class="practice-goal ${isCompleted ? 'completed' : ''}" data-goal-id="${goal.id}">
                                 <div class="goal-status">${isCompleted ? '✓' : '○'}</div>
                                 <div class="goal-info">
                                     <p>${goal.description}</p>
-                                    ${goal.type === 'metronome' ? `
+                                    ${
+                                        goal.type === 'metronome'
+                                            ? `
                                         <div class="goal-details">
                                             <span>BPM: ${goal.bpm}</span>
                                             <span>Duration: ${goal.duration}s</span>
@@ -447,17 +470,20 @@ class CoursesPage {
                                         <button class="practice-btn" onclick="window.coursesPage.startMetronomePractice('${goal.id}', ${goal.bpm}, ${goal.duration})">
                                             Start Practice
                                         </button>
-                                    ` : ''}
+                                    `
+                                            : ''
+                                    }
                                 </div>
                             </div>
                         `;
-                    }).join('')}
+                        })
+                        .join('')}
                 </div>
             `;
         }
 
         // Complete lesson button
-        const allGoalsCompleted = this.selectedLesson.goals.every(g => 
+        const allGoalsCompleted = this.selectedLesson.goals.every((g) =>
             progress?.goalsCompleted?.includes(g.id)
         );
 
@@ -479,7 +505,7 @@ class CoursesPage {
         try {
             // Import metronome component
             const { default: metronome } = await import('../../components/metronome.js');
-            
+
             // Configure metronome for this goal
             metronome.setBPM(bpm);
             metronome.start();
@@ -488,7 +514,7 @@ class CoursesPage {
             let timeElapsed = 0;
             const timer = setInterval(() => {
                 timeElapsed++;
-                
+
                 if (timeElapsed >= duration) {
                     clearInterval(timer);
                     metronome.stop();
@@ -499,7 +525,6 @@ class CoursesPage {
 
             // Show practice overlay
             this.showPracticeOverlay(goalId, bpm, duration, timer);
-
         } catch (error) {
             console.error('Error starting metronome practice:', error);
             showToast('Failed to start metronome', 'error');
@@ -524,7 +549,7 @@ class CoursesPage {
         const updateTimer = setInterval(() => {
             elapsed++;
             document.getElementById('practiceTimer').textContent = `${elapsed} / ${duration}s`;
-            
+
             if (elapsed >= duration) {
                 clearInterval(updateTimer);
                 overlay.remove();
@@ -550,15 +575,15 @@ class CoursesPage {
 
     async completeGoal(goalId) {
         const user = this.authService.getCurrentUser();
-        const progress = await courseService.getLessonProgress(
+        const progress = (await courseService.getLessonProgress(
             user.id,
             this.selectedCourse.id,
             this.selectedLesson.id
-        ) || { goalsCompleted: [] };
+        )) || { goalsCompleted: [] };
 
         if (!progress.goalsCompleted.includes(goalId)) {
             progress.goalsCompleted.push(goalId);
-            
+
             await courseService.saveProgress({
                 userId: user.id,
                 courseId: this.selectedCourse.id,
@@ -575,7 +600,7 @@ class CoursesPage {
             }
 
             // Check if all goals are completed
-            const allCompleted = this.selectedLesson.goals.every(g => 
+            const allCompleted = this.selectedLesson.goals.every((g) =>
                 progress.goalsCompleted.includes(g.id)
             );
 
@@ -587,18 +612,14 @@ class CoursesPage {
 
     async completeLesson() {
         const user = this.authService.getCurrentUser();
-        await courseService.completeLesson(
-            user.id,
-            this.selectedCourse.id,
-            this.selectedLesson.id
-        );
+        await courseService.completeLesson(user.id, this.selectedCourse.id, this.selectedLesson.id);
 
         showToast('Lesson completed! Great work!', 'success');
-        
+
         // Refresh course details
         await this.loadCourses();
         await this.renderCourseDetails();
-        
+
         // Close lesson modal
         this.closeLessonModal();
     }
@@ -626,14 +647,14 @@ class CoursesPage {
         };
         return icons[category] || '🎸';
     }
-    
+
     createModals() {
         // Remove existing modals if they exist
         const existingCourseModal = document.getElementById('courseModal');
         const existingLessonModal = document.getElementById('lessonModal');
         if (existingCourseModal) existingCourseModal.remove();
         if (existingLessonModal) existingLessonModal.remove();
-        
+
         // Create modal HTML
         const modalsHtml = `
             <!-- Course Detail Modal -->
@@ -663,7 +684,7 @@ class CoursesPage {
                 </div>
             </div>
         `;
-        
+
         // Add modals to body
         document.body.insertAdjacentHTML('beforeend', modalsHtml);
     }
@@ -699,25 +720,25 @@ class CoursesPage {
     playBackingTrack(key, tempo) {
         // Placeholder for backing track functionality
         showToast(`Playing backing track in ${key} at ${tempo} BPM`, 'info');
-        
+
         // In a real implementation, this would:
         // 1. Load an audio file or generate a backing track
         // 2. Set the tempo using Web Audio API
         // 3. Play the track with proper time sync
     }
-    
+
     cleanup() {
         // Clean up lazy loader
         if (this.lazyLoader) {
             this.lazyLoader.disconnect();
         }
-        
+
         // Remove modals when leaving the page
         const courseModal = document.getElementById('courseModal');
         const lessonModal = document.getElementById('lessonModal');
         if (courseModal) courseModal.remove();
         if (lessonModal) lessonModal.remove();
-        
+
         // Clear window reference
         if (window.coursesPage === this) {
             window.coursesPage = null;

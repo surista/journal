@@ -21,14 +21,17 @@ export class CloudSyncSettings {
                     </div>
                 </div>
                 
-                ${!isAuthenticated ? `
+                ${
+                    !isAuthenticated
+                        ? `
                     <div class="auth-required">
                         <p>Sign in to enable cloud sync across all your devices</p>
                         <button class="btn btn-primary" id="signInForSync">
                             Sign In to Enable Sync
                         </button>
                     </div>
-                ` : `
+                `
+                        : `
                     <div class="sync-controls">
                         <div class="sync-toggle">
                             <label class="toggle-switch">
@@ -38,7 +41,9 @@ export class CloudSyncSettings {
                             <label for="syncEnabled">Enable Cloud Sync</label>
                         </div>
                         
-                        ${syncStatus.enabled ? `
+                        ${
+                            syncStatus.enabled
+                                ? `
                             <div class="sync-info">
                                 <div class="info-item">
                                     <span class="info-label">Last Sync:</span>
@@ -82,9 +87,12 @@ export class CloudSyncSettings {
                                     </div>
                                 </div>
                             </div>
-                        ` : ''}
+                        `
+                                : ''
+                        }
                     </div>
-                `}
+                `
+                }
                 
                 <div class="sync-benefits">
                     <h4>Benefits of Cloud Sync</h4>
@@ -172,7 +180,9 @@ export class CloudSyncSettings {
                 if (devices.length === 0) {
                     deviceList.innerHTML = '<p class="no-devices">No other devices connected</p>';
                 } else {
-                    deviceList.innerHTML = devices.map(device => `
+                    deviceList.innerHTML = devices
+                        .map(
+                            (device) => `
                         <div class="device-item">
                             <div class="device-icon">${this.getDeviceIcon(device.platform)}</div>
                             <div class="device-info">
@@ -180,7 +190,9 @@ export class CloudSyncSettings {
                                 <div class="device-last-sync">Last sync: ${this.formatLastSync(device.lastSync)}</div>
                             </div>
                         </div>
-                    `).join('');
+                    `
+                        )
+                        .join('');
                 }
             }
         } catch (error) {
@@ -201,12 +213,12 @@ export class CloudSyncSettings {
 
     getDeviceIcon(platform) {
         const icons = {
-            'Windows': '💻',
-            'Mac': '🖥️',
-            'iPhone': '📱',
-            'iPad': '📱',
-            'Android': '📱',
-            'Linux': '🐧'
+            Windows: '💻',
+            Mac: '🖥️',
+            iPhone: '📱',
+            iPad: '📱',
+            Android: '📱',
+            Linux: '🐧'
         };
 
         for (const [key, icon] of Object.entries(icons)) {

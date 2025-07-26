@@ -240,7 +240,10 @@ export class SettingsTab {
 
         document.getElementById('audioBufferSize')?.addEventListener('change', (e) => {
             localStorage.setItem('audioBufferSize', e.target.value);
-            this.showNotification('Audio buffer size updated. Reload the app for changes to take effect.', 'info');
+            this.showNotification(
+                'Audio buffer size updated. Reload the app for changes to take effect.',
+                'info'
+            );
         });
 
         // Theme settings
@@ -270,7 +273,9 @@ export class SettingsTab {
         // Delete session area buttons (using event delegation)
         document.getElementById('sessionAreasContainer')?.addEventListener('click', (e) => {
             // Check both the button and its parent in case of event target issues
-            const deleteBtn = e.target.classList.contains('delete-area-btn') ? e.target : e.target.closest('.delete-area-btn');
+            const deleteBtn = e.target.classList.contains('delete-area-btn')
+                ? e.target
+                : e.target.closest('.delete-area-btn');
             if (deleteBtn) {
                 e.stopPropagation();
                 const area = deleteBtn.dataset.area;
@@ -342,7 +347,9 @@ export class SettingsTab {
                 const text = await file.text();
                 const data = JSON.parse(text);
 
-                if (confirm('This will merge the imported data with your existing data. Continue?')) {
+                if (
+                    confirm('This will merge the imported data with your existing data. Continue?')
+                ) {
                     await this.storageService.importData(data);
                     this.showNotification('Data imported successfully', 'success');
 
@@ -360,8 +367,16 @@ export class SettingsTab {
     }
 
     async clearData() {
-        if (confirm('Are you sure you want to delete all your practice data? This cannot be undone!')) {
-            if (confirm('This will permanently delete ALL your data including practice sessions, repertoire, and goals. Are you absolutely sure?')) {
+        if (
+            confirm(
+                'Are you sure you want to delete all your practice data? This cannot be undone!'
+            )
+        ) {
+            if (
+                confirm(
+                    'This will permanently delete ALL your data including practice sessions, repertoire, and goals. Are you absolutely sure?'
+                )
+            ) {
                 try {
                     await this.storageService.clearAllData();
                     localStorage.clear();
@@ -404,7 +419,9 @@ export class SettingsTab {
 
     showPrivacyPolicy() {
         // This would show a modal with privacy policy
-        alert('Privacy Policy: Your data is stored locally on your device and only synced to the cloud if you enable cloud sync.');
+        alert(
+            'Privacy Policy: Your data is stored locally on your device and only synced to the cloud if you enable cloud sync.'
+        );
     }
 
     showNotification(message, type = 'info') {
@@ -446,8 +463,9 @@ export class SettingsTab {
         // Create a compact chip/tag layout
         container.innerHTML = `
             <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-                ${areas.map((area, index) => {
-            return `
+                ${areas
+                    .map((area, index) => {
+                        return `
                         <span class="session-area-chip" style="
                             display: inline-flex;
                             align-items: center;
@@ -477,7 +495,8 @@ export class SettingsTab {
                             </button>
                         </span>
                     `;
-        }).join('')}
+                    })
+                    .join('')}
             </div>
         `;
     }
@@ -495,7 +514,7 @@ export class SettingsTab {
         const areas = await this.getSessionAreas();
 
         // Check if already exists
-        if (areas.some(area => area.toLowerCase() === newArea.toLowerCase())) {
+        if (areas.some((area) => area.toLowerCase() === newArea.toLowerCase())) {
             this.showNotification('This session area already exists', 'error');
             return;
         }
@@ -516,7 +535,7 @@ export class SettingsTab {
         }
 
         const areas = await this.getSessionAreas();
-        const filtered = areas.filter(area => area !== areaToDelete);
+        const filtered = areas.filter((area) => area !== areaToDelete);
         await this.saveSessionAreas(filtered);
 
         await this.loadSessionAreas();

@@ -83,16 +83,20 @@ export class NotificationManager {
         // Set background based on type
         switch (notification.type) {
             case 'error':
-                this.container.style.background = 'linear-gradient(135deg, var(--danger) 0%, #dc2626 100%)';
+                this.container.style.background =
+                    'linear-gradient(135deg, var(--danger) 0%, #dc2626 100%)';
                 break;
             case 'warning':
-                this.container.style.background = 'linear-gradient(135deg, var(--warning) 0%, #d97706 100%)';
+                this.container.style.background =
+                    'linear-gradient(135deg, var(--warning) 0%, #d97706 100%)';
                 break;
             case 'info':
-                this.container.style.background = 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)';
+                this.container.style.background =
+                    'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)';
                 break;
             default: // success
-                this.container.style.background = 'linear-gradient(135deg, var(--success) 0%, #059669 100%)';
+                this.container.style.background =
+                    'linear-gradient(135deg, var(--success) 0%, #059669 100%)';
         }
 
         // Apply all necessary styles
@@ -119,10 +123,12 @@ export class NotificationManager {
 
     shouldShowBrowserNotification(type) {
         // Only show browser notifications for important messages
-        return (type === 'success' || type === 'warning') &&
+        return (
+            (type === 'success' || type === 'warning') &&
             'Notification' in window &&
             Notification.permission === 'granted' &&
-            document.hidden; // Only when tab is not active
+            document.hidden
+        ); // Only when tab is not active
     }
 
     showBrowserNotification(message) {

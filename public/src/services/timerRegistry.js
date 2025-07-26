@@ -5,39 +5,39 @@ class TimerRegistry {
     constructor() {
         this.timers = new Map();
         this.primaryTimerId = 'practice'; // Default primary timer
-        
+
         // For backward compatibility
         this.setupLegacyAccess();
     }
-    
+
     // Register a timer instance with an identifier
     register(id, timerInstance) {
         if (!id || !timerInstance) {
             console.error('TimerRegistry: Invalid timer registration', { id, timerInstance });
             return false;
         }
-        
+
         this.timers.set(id, timerInstance);
-        
+
         // If this is the primary timer, update legacy references
         if (id === this.primaryTimerId) {
             this.updateLegacyReferences(timerInstance);
         }
-        
+
         console.log(`TimerRegistry: Registered timer '${id}'`);
         return true;
     }
-    
+
     // Get a timer by ID
     get(id) {
         return this.timers.get(id);
     }
-    
+
     // Get the primary timer (most commonly used)
     getPrimary() {
         return this.timers.get(this.primaryTimerId);
     }
-    
+
     // Set which timer should be considered primary
     setPrimary(id) {
         if (this.timers.has(id)) {
@@ -47,24 +47,24 @@ class TimerRegistry {
         }
         return false;
     }
-    
+
     // Unregister a timer
     unregister(id) {
         const timer = this.timers.get(id);
         if (timer) {
             this.timers.delete(id);
-            
+
             // Clean up legacy references if this was the primary timer
             if (id === this.primaryTimerId) {
                 this.updateLegacyReferences(null);
             }
-            
+
             console.log(`TimerRegistry: Unregistered timer '${id}'`);
             return true;
         }
         return false;
     }
-    
+
     // Get all registered timers
     getAll() {
         return Array.from(this.timers.entries()).map(([id, timer]) => ({
@@ -73,25 +73,27 @@ class TimerRegistry {
             isPrimary: id === this.primaryTimerId
         }));
     }
-    
+
     // Check if a timer is registered
     has(id) {
         return this.timers.has(id);
     }
-    
+
     // Clear all timers
     clear() {
         this.timers.clear();
         this.updateLegacyReferences(null);
     }
-    
+
     // Setup backward compatibility with legacy timer access patterns
     setupLegacyAccess() {
         // Intercept window.currentTimer access
         Object.defineProperty(window, 'currentTimer', {
             get: () => this.getPrimary(),
             set: (timer) => {
-                console.warn('Direct assignment to window.currentTimer is deprecated. Use timerRegistry.register() instead.');
+                console.warn(
+                    'Direct assignment to window.currentTimer is deprecated. Use timerRegistry.register() instead.'
+                );
                 if (timer) {
                     this.register(this.primaryTimerId, timer);
                 }
@@ -99,20 +101,20 @@ class TimerRegistry {
             configurable: true
         });
     }
-    
+
     // Update legacy references for backward compatibility
     updateLegacyReferences(timer) {
         // Update app.currentPage.timer if it exists
         if (window.app?.currentPage) {
             window.app.currentPage.timer = timer;
         }
-        
+
         // Update unifiedPracticeMinimal.timer if it exists
         if (window.unifiedPracticeMinimal) {
             window.unifiedPracticeMinimal.timer = timer;
         }
     }
-    
+
     // Find timer using legacy patterns (for migration)
     findTimerLegacy() {
         // Check all the old locations
@@ -123,7 +125,7 @@ class TimerRegistry {
             () => window.app?.currentPage?.components?.timer,
             () => window.app?.currentPage?.sharedTimer
         ];
-        
+
         for (const getTimer of locations) {
             try {
                 const timer = getTimer();
@@ -135,10 +137,10 @@ class TimerRegistry {
                 // Continue checking other locations
             }
         }
-        
+
         return null;
     }
-    
+
     // Helper to migrate from legacy to registry
     migrateLegacyTimer() {
         const legacyTimer = this.findTimerLegacy();

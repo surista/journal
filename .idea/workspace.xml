@@ -6,41 +6,227 @@
   <component name="ChangeListManager">
     <list default="true" id="26bd4cab-c121-4726-98e5-b7c42f2fd2f8" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.claude/settings.local.json" beforeDir="false" afterPath="$PROJECT_DIR$/.claude/settings.local.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.firebaserc" beforeDir="false" afterPath="$PROJECT_DIR$/.firebaserc" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CLAUDE.md" beforeDir="false" afterPath="$PROJECT_DIR$/CLAUDE.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DEPLOYMENT_CACHE_FIX.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/firebase.json" beforeDir="false" afterPath="$PROJECT_DIR$/firebase.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/404.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/404.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/ACCESSIBILITY_IMPROVEMENTS.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/FEATURE_ROADMAP_2025.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/IMPROVEMENT_IDEAS_SUMMARY.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/MOBILE_FIX_SUMMARY.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/MOBILE_SPECIFIC_IMPROVEMENTS.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/MOBILE_TESTING_GUIDE.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/PERFORMANCE_OPTIMIZATION_IDEAS.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/PROJECT_REVIEW_FINDINGS.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/SYNC_GUIDE.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/TYPESCRIPT_MIGRATION_PLAN.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/UI_UX_IMPROVEMENTS.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/build-info.json" beforeDir="false" afterPath="$PROJECT_DIR$/public/build-info.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/build.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/build.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/deployment-workflow.html" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/src/components/FretboardDiagram.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/src/components/FretboardDiagramSimple.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/src/components/FretboardDiagramV2.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/src/components/FretboardWithNotes.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/src/components/audioPlayer.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/src/components/audioPlayer.js.backup" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/src/components/audioPlayerDOM.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/src/components/audioPlayer_backup_dom_conversion.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/src/components/audioPlayer_render_backup.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/src/components/cloudSyncSettings.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/login.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/package.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/app-loader.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/app-loader.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/app.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/CMajorFretboard.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/CMajorFretboard.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/CloudSyncManager.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/CloudSyncManager.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/LazyImage.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/LazyImage.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/VirtualScrollList.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/VirtualScrollList.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/achievementBadges.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/achievementBadges.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/archive/FretboardDiagram.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/archive/FretboardDiagram.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/archive/FretboardDiagramSimple.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/archive/FretboardDiagramSimple.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/archive/FretboardDiagramV2.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/archive/FretboardDiagramV2.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/archive/FretboardWithNotes.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/archive/FretboardWithNotes.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/archive/audioPlayer.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/archive/audioPlayer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/archive/audioPlayerDOM.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/archive/audioPlayerDOM.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/archive/audioPlayer_backup_dom_conversion.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/archive/audioPlayer_backup_dom_conversion.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/archive/cloudSyncSettings.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/archive/cloudSyncSettings.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/archive/testIntegration.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/archive/testIntegration.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/archive/timer_old.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/archive/timer_old.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/audio/sessionManager.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/audio/sessionManager.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/audioModules/audioCore.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/audioModules/audioCore.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/audioModules/loopController.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/audioModules/loopController.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/audioModules/pitchTempoController.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/audioModules/pitchTempoController.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/audioModules/uiControls.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/audioModules/uiControls.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/audioModules/waveformController.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/audioModules/waveformController.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/audioPlayerRefactored.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/audioPlayerRefactored.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/dailyPracticeSuggestion.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/dailyPracticeSuggestion.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/environmentBadge.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/environmentBadge.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/footer.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/footer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/goalsList.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/goalsList.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/header.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/header.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/metronome.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/metronome.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/metronomeEnhanced.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/metronomeEnhanced.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/modal.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/modal.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/src/components/modules/audioFilePlayer.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/modules/audioFilePlayer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/modules/imageManager.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/modules/imageManager.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/src/components/modules/metronome.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/modules/metronome.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/src/components/modules/sessionManager.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/modules/sessionManager.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/modules/timer.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/modules/timer.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/src/components/modules/uiController.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/modules/uiController.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/src/components/modules/youtubePlayer.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/modules/youtubePlayer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/practiceForm.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/practiceForm.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/practiceRecommendations.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/practiceRecommendations.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/statsPanel.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/statsPanel.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/streakHeatMap.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/streakHeatMap.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/src/components/tabs/AudioTab.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/tabs/AudioTab.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/src/components/testIntegration.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/tabs/CalendarTab.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/tabs/CalendarTab.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/tabs/GoalsTab.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/tabs/GoalsTab.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/tabs/HistoryTab.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/tabs/HistoryTab.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/tabs/MetronomeTab.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/tabs/MetronomeTab.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/tabs/PracticeTab.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/tabs/PracticeTab.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/tabs/PracticeTabSimple.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/tabs/PracticeTabSimple.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/tabs/RepertoireTab.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/tabs/RepertoireTab.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/tabs/SettingsTab.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/tabs/SettingsTab.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/tabs/StatsTab.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/tabs/StatsTab.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/tipsPopup.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/tipsPopup.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/topNavigation.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/topNavigation.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/src/components/unifiedPracticeMinimal.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/unifiedPracticeMinimal.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/src/data/pentatonicLessons.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/src/data/sweepPickingLessons.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/src/pages/courses.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/components/waveform.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/components/waveform.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/config.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/config.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/config/environment.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/config/environment.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/config/firebaseConfig.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/config/firebaseConfig.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/config/version.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/config/version.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/courses/data/pentatonicLessons.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/courses/data/pentatonicLessons.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/courses/data/sweepPickingLessons.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/courses/data/sweepPickingLessons.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/courses/pages/courses.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/courses/pages/courses.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/courses/services/courseService.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/courses/services/courseService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/pages/about.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/pages/about.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/pages/auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/pages/auth.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/pages/calendar.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/pages/calendar.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/src/pages/dashboard.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/pages/dashboard.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/pages/features.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/pages/features.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/pages/learning.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/pages/learning.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/pages/roadmap.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/pages/roadmap.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/pages/whatsnew.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/pages/whatsnew.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/services/appCheckService.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/services/appCheckService.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/src/services/audioService.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/services/audioService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/src/services/courseService.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/styles/courses.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/services/authService.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/services/authService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/services/firebaseSyncService.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/services/firebaseSyncService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/services/notificationManager.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/services/notificationManager.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/services/planGeneratorService.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/services/planGeneratorService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/services/pushNotificationService.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/services/pushNotificationService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/services/rateLimitService.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/services/rateLimitService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/services/recommendationService.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/services/recommendationService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/services/reminderService.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/services/reminderService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/services/sessionStateService.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/services/sessionStateService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/services/storageService.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/services/storageService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/services/themeService.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/services/themeService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/services/timerRegistry.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/services/timerRegistry.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/services/tipsService.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/services/tipsService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/services/transposeExtensionAPI.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/services/transposeExtensionAPI.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/services/youtubeAudioProcessor.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/services/youtubeAudioProcessor.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/utils/cspNonce.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/utils/cspNonce.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/utils/helpers.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/utils/helpers.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/utils/init.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/utils/init.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/utils/keyboardShortcuts.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/utils/keyboardShortcuts.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/utils/mobileEnhancements.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/utils/mobileEnhancements.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/utils/router.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/utils/router.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/utils/sanitizer.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/utils/sanitizer.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/utils/timerUtils.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/utils/timerUtils.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/utils/toast.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/utils/toast.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/src/utils/validation.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/src/utils/validation.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/base/animations.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/base/animations.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/base/mobile-enhancements.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/base/mobile-enhancements.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/base/reset.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/base/reset.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/base/typography.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/base/typography.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/base/variables.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/base/variables.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/achievements.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/achievements.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/audio-player.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/audio-player.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/buttons.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/buttons.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/c-major-fretboard.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/c-major-fretboard.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/calendar-stats.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/calendar-stats.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/cards.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/cards.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/cloud-sync-manager.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/cloud-sync-manager.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/cloudSync.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/cloudSync.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/daily-suggestion.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/daily-suggestion.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/footer.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/footer.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/forms.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/forms.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/fretboard-notes.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/fretboard-notes.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/fretboard-simple.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/fretboard-simple.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/fretboard-v2.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/fretboard-v2.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/fretboard.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/fretboard.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/goals.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/goals.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/header-new.css.backup" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/heatmap.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/heatmap.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/history-delete-button.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/history-delete-button.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/history-practice-again.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/history-practice-again.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/history-thumbnails.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/history-thumbnails.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/lazy-image.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/lazy-image.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/metronome-image.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/metronome-image.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/metronome.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/metronome.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/mobile-audio-player.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/mobile-audio-player.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/mobile-navigation.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/mobile-navigation.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/mobile-practice-tabs.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/mobile-practice-tabs.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/mobile-unified-practice.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/mobile-unified-practice.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/modals.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/modals.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/notifications.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/notifications.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/practice-form.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/practice-form.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/practice-log-modal.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/practice-log-modal.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/quick-stats.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/quick-stats.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/recent-sessions.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/recent-sessions.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/repertoire.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/repertoire.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/save-session-image.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/save-session-image.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/stats.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/stats.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/timer.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/timer.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/tips-popup.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/tips-popup.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/top-navigation.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/top-navigation.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/unified-practice.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/unified-practice.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/components/waveform.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/components/waveform.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/courses/courses.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/courses/courses.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/layout/grid.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/layout/grid.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/layout/header.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/layout/header.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/layout/responsive.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/layout/responsive.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/layout/sidebar.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/layout/sidebar.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/loading.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/loading.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/styles/main.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/main.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/tests/test-audio-player.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/tests/test-audio-syntax.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/tests/test-cloud-sync.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/tests/test-firebase-sync.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/tests/test-firebase.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/tests/test-module.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/tests/test-practice-tab.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/minimal-practice.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/minimal-practice.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/mobile-improvements.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/mobile-improvements.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/pages/auth.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/pages/auth.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/pages/calendar.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/pages/calendar.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/pages/dashboard-new.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/pages/dashboard-new.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/pages/info-pages.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/pages/info-pages.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/pages/learning.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/pages/learning.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/pages/settings.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/pages/settings.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/themes/bubblegum-pop.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/themes/bubblegum-pop.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/themes/cherry-blossom.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/themes/cherry-blossom.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/themes/coffee-brown.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/themes/coffee-brown.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/themes/cosmic-purple.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/themes/cosmic-purple.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/themes/cotton-candy.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/themes/cotton-candy.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/themes/crimson-red.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/themes/crimson-red.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/themes/cyberpunk.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/themes/cyberpunk.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/themes/dark.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/themes/dark.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/themes/earth-tone.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/themes/earth-tone.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/themes/emerald-green.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/themes/emerald-green.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/themes/forest-green.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/themes/forest-green.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/themes/golden-amber.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/themes/golden-amber.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/themes/light.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/themes/light.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/themes/midnight-blue.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/themes/midnight-blue.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/themes/neon-cyber.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/themes/neon-cyber.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/themes/nordic-ice.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/themes/nordic-ice.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/themes/northern-lights.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/themes/northern-lights.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/themes/ocean-breeze.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/themes/ocean-breeze.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/themes/ocean-teal.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/themes/ocean-teal.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/themes/pastel-backgrounds.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/themes/pastel-backgrounds.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/themes/pastel-dream.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/themes/pastel-dream.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/themes/pastel-overrides.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/themes/pastel-overrides.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/themes/royal-purple.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/themes/royal-purple.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/themes/slate-gray.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/themes/slate-gray.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/themes/spring-meadow.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/themes/spring-meadow.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/themes/sunset-orange.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/themes/sunset-orange.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/themes/sunset-sherbet.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/themes/sunset-sherbet.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/utilities/audio-player-fixes.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/utilities/audio-player-fixes.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/utilities/display.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/utilities/display.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/utilities/helpers.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/utilities/helpers.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/utilities/spacing.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/utilities/spacing.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/styles/utilities/text.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/styles/utilities/text.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/test-integration.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/test-mobile.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/test.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/testFix.html" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -119,7 +305,9 @@
       <workItem from="1752995194544" duration="27742000" />
       <workItem from="1753053746720" duration="143432000" />
       <workItem from="1753331731800" duration="107000" />
-      <workItem from="1753331848008" duration="8255000" />
+      <workItem from="1753331848008" duration="31474000" />
+      <workItem from="1753370830544" duration="32136000" />
+      <workItem from="1753442309750" duration="22112000" />
     </task>
     <servers />
   </component>

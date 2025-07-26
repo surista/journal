@@ -1,258 +1,272 @@
 /* Enhanced Fretboard Diagram Styles V2 */
 .fretboard-diagram-v2 {
-    margin: 30px 0;
-    padding: 20px;
-    background: var(--bg-secondary);
-    border-radius: 8px;
+  margin: 30px 0;
+  padding: 20px;
+  background: var(--bg-secondary);
+  border-radius: 8px;
 }
 
 .fretboard-title {
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin-bottom: 20px;
-    color: var(--text-primary);
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: var(--text-primary);
 }
 
 .fretboard-wrapper {
-    overflow-x: auto;
-    margin-bottom: 20px;
+  overflow-x: auto;
+  margin-bottom: 20px;
 }
 
 .fretboard-container-v2 {
-    min-width: 500px;
-    max-width: 800px;
-    margin: 0 auto;
+  min-width: 500px;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 /* Fret Numbers */
 .fret-numbers-v2 {
-    display: flex;
-    padding-left: 20px;
-    margin-bottom: 5px;
+  display: flex;
+  padding-left: 20px;
+  margin-bottom: 5px;
 }
 
 .fret-number-v2 {
-    flex: 1;
-    text-align: center;
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-    font-weight: 600;
+  flex: 1;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 600;
 }
 
 /* Main Fretboard */
 .fretboard-v2 {
-    position: relative;
-    background: #f3e5c1; /* Light wood color */
-    border: 3px solid #2a2a2a;
-    border-radius: 4px;
-    height: 180px;
-    overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  position: relative;
+  background: #f3e5c1; /* Light wood color */
+  border: 3px solid #2a2a2a;
+  border-radius: 4px;
+  height: 180px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 /* Dark mode fretboard */
-[data-theme*="dark"] .fretboard-v2,
+[data-theme*='dark'] .fretboard-v2,
 .dark-mode .fretboard-v2 {
-    background: #3a2f1f; /* Dark wood */
-    border-color: #1a1a1a;
+  background: #3a2f1f; /* Dark wood */
+  border-color: #1a1a1a;
 }
 
 /* Frets Container */
 .frets-v2 {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
 }
 
 /* Individual Frets */
 .fret-v2 {
-    flex: 1;
-    position: relative;
-    border-right: 3px solid #c0c0c0;
-    background: linear-gradient(
-        135deg,
-        transparent 30%,
-        rgba(255, 255, 255, 0.1) 50%,
-        transparent 70%
-    );
+  flex: 1;
+  position: relative;
+  border-right: 3px solid #c0c0c0;
+  background: linear-gradient(
+    135deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 70%
+  );
 }
 
 .fret-v2:last-child {
-    border-right: none;
+  border-right: none;
 }
 
 /* Nut (0th fret) */
 .fret-v2.nut {
-    flex: 0 0 40px;
-    background: #fffef0;
-    border-right: 6px solid #2a2a2a;
-    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.3);
+  flex: 0 0 40px;
+  background: #fffef0;
+  border-right: 6px solid #2a2a2a;
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.3);
 }
 
 /* Position Markers */
 .position-marker {
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    background: radial-gradient(circle, #e0e0e0, #b0b0b0);
-    border-radius: 50%;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.5),
-                inset 0 -1px 3px rgba(0, 0, 0, 0.3);
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: radial-gradient(circle, #e0e0e0, #b0b0b0);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow:
+    inset 0 1px 3px rgba(255, 255, 255, 0.5),
+    inset 0 -1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .position-marker.double-marker::after {
-    content: '';
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    background: radial-gradient(circle, #e0e0e0, #b0b0b0);
-    border-radius: 50%;
-    top: -40px;
-    left: 0;
-    box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.5),
-                inset 0 -1px 3px rgba(0, 0, 0, 0.3);
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: radial-gradient(circle, #e0e0e0, #b0b0b0);
+  border-radius: 50%;
+  top: -40px;
+  left: 0;
+  box-shadow:
+    inset 0 1px 3px rgba(255, 255, 255, 0.5),
+    inset 0 -1px 3px rgba(0, 0, 0, 0.3);
 }
 
 /* Strings */
 .strings-v2 {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
 }
 
 .string-v2 {
-    position: absolute;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(to bottom, #888, #666);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(to bottom, #888, #666);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 /* String positions - evenly spaced */
-.string-v2[data-string="0"] { top: 10%; }
-.string-v2[data-string="1"] { top: 26%; }
-.string-v2[data-string="2"] { top: 42%; }
-.string-v2[data-string="3"] { top: 58%; }
-.string-v2[data-string="4"] { top: 74%; }
-.string-v2[data-string="5"] { top: 90%; }
-
-/* Thicker bass strings */
-.string-v2[data-string="3"],
-.string-v2[data-string="4"],
-.string-v2[data-string="5"] {
-    height: 3px;
+.string-v2[data-string='0'] {
+  top: 10%;
+}
+.string-v2[data-string='1'] {
+  top: 26%;
+}
+.string-v2[data-string='2'] {
+  top: 42%;
+}
+.string-v2[data-string='3'] {
+  top: 58%;
+}
+.string-v2[data-string='4'] {
+  top: 74%;
+}
+.string-v2[data-string='5'] {
+  top: 90%;
 }
 
-.string-v2[data-string="5"] {
-    height: 4px;
+/* Thicker bass strings */
+.string-v2[data-string='3'],
+.string-v2[data-string='4'],
+.string-v2[data-string='5'] {
+  height: 3px;
+}
+
+.string-v2[data-string='5'] {
+  height: 4px;
 }
 
 /* Notes Container */
 .notes-v2 {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
 }
 
 /* Individual Notes */
 .note-v2 {
-    position: absolute;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 0.9rem;
-    color: white;
-    border: 2px solid rgba(0, 0, 0, 0.3);
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.9rem;
+  color: white;
+  border: 2px solid rgba(0, 0, 0, 0.3);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
 }
 
 .note-v2.root {
-    background: radial-gradient(circle at 30% 30%, #ff6b6b, #d32f2f);
-    z-index: 2;
+  background: radial-gradient(circle at 30% 30%, #ff6b6b, #d32f2f);
+  z-index: 2;
 }
 
 .note-v2.scale {
-    background: radial-gradient(circle at 30% 30%, #4a4a4a, #2a2a2a);
+  background: radial-gradient(circle at 30% 30%, #4a4a4a, #2a2a2a);
 }
 
 /* Legend */
 .fretboard-legend-v2 {
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-    margin: 20px 0;
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin: 20px 0;
 }
 
 .fretboard-legend-v2 .legend-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .legend-dot-v2 {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 0.8rem;
-    color: white;
-    border: 2px solid rgba(0, 0, 0, 0.3);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.8rem;
+  color: white;
+  border: 2px solid rgba(0, 0, 0, 0.3);
 }
 
 .legend-dot-v2.root {
-    background: radial-gradient(circle at 30% 30%, #ff6b6b, #d32f2f);
+  background: radial-gradient(circle at 30% 30%, #ff6b6b, #d32f2f);
 }
 
 .legend-dot-v2.scale {
-    background: radial-gradient(circle at 30% 30%, #4a4a4a, #2a2a2a);
+  background: radial-gradient(circle at 30% 30%, #4a4a4a, #2a2a2a);
 }
 
 /* Scale Info */
 .scale-info-v2 {
-    background: var(--bg-card);
-    padding: 15px;
-    border-radius: 6px;
-    font-size: 0.9rem;
+  background: var(--bg-card);
+  padding: 15px;
+  border-radius: 6px;
+  font-size: 0.9rem;
 }
 
 .scale-info-v2 div {
-    margin: 5px 0;
+  margin: 5px 0;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-    .fretboard-container-v2 {
-        min-width: 400px;
-    }
-    
-    .fretboard-v2 {
-        height: 150px;
-    }
-    
-    .note-v2 {
-        width: 24px;
-        height: 24px;
-        font-size: 0.8rem;
-    }
+  .fretboard-container-v2 {
+    min-width: 400px;
+  }
+
+  .fretboard-v2 {
+    height: 150px;
+  }
+
+  .note-v2 {
+    width: 24px;
+    height: 24px;
+    font-size: 0.8rem;
+  }
 }

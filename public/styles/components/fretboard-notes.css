@@ -1,226 +1,226 @@
 /* Fretboard with Note Names */
 .fretboard-notes {
-    margin: 30px 0;
-    padding: 20px;
-    background: var(--bg-secondary);
-    border-radius: 8px;
+  margin: 30px 0;
+  padding: 20px;
+  background: var(--bg-secondary);
+  border-radius: 8px;
 }
 
 .fretboard-notes .fretboard-title {
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin-bottom: 20px;
-    color: var(--text-primary);
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: var(--text-primary);
 }
 
 .fretboard-wrapper-notes {
-    display: flex;
-    gap: 5px;
-    max-width: 900px;
-    margin: 0 auto;
-    overflow-x: auto;
+  display: flex;
+  gap: 5px;
+  max-width: 900px;
+  margin: 0 auto;
+  overflow-x: auto;
 }
 
 /* String labels */
 .string-labels-notes {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    padding: 30px 0 10px 0;
-    min-width: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  padding: 30px 0 10px 0;
+  min-width: 30px;
 }
 
 .string-label-note {
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 1rem;
-    color: var(--text-primary);
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--text-primary);
 }
 
 /* Main fretboard */
 .fretboard-main {
-    flex: 1;
+  flex: 1;
 }
 
 /* Fret numbers */
 .fret-numbers-notes {
-    display: flex;
-    padding-bottom: 5px;
+  display: flex;
+  padding-bottom: 5px;
 }
 
 .fret-num {
-    flex: 1;
-    text-align: center;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--text-secondary);
-    min-width: 60px;
+  flex: 1;
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  min-width: 60px;
 }
 
 /* Fretboard body */
 .fretboard-body-notes {
-    background: #fffcf0;
-    border: 2px solid #333;
-    border-radius: 4px;
-    position: relative;
+  background: #fffcf0;
+  border: 2px solid #333;
+  border-radius: 4px;
+  position: relative;
 }
 
-[data-theme*="dark"] .fretboard-body-notes,
+[data-theme*='dark'] .fretboard-body-notes,
 .dark-mode .fretboard-body-notes {
-    background: #2a2820;
-    border-color: #555;
+  background: #2a2820;
+  border-color: #555;
 }
 
 /* String rows */
 .string-row {
-    display: flex;
-    height: 40px;
-    position: relative;
+  display: flex;
+  height: 40px;
+  position: relative;
 }
 
 .string-row:not(:last-child) {
-    border-bottom: 1px solid #888;
+  border-bottom: 1px solid #888;
 }
 
 /* Add string line effect */
 .string-row::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 50%;
-    height: 1px;
-    background: #666;
-    z-index: 1;
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: #666;
+  z-index: 1;
 }
 
 /* Fret cells */
 .fret-cell-notes {
-    flex: 1;
-    min-width: 60px;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-right: 2px solid #aaa;
+  flex: 1;
+  min-width: 60px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 2px solid #aaa;
 }
 
 .fret-cell-notes:last-child {
-    border-right: none;
+  border-right: none;
 }
 
 /* Open string (nut) */
 .fret-cell-notes.open {
-    background: #e8e8e8;
-    border-right: 4px solid #333;
+  background: #e8e8e8;
+  border-right: 4px solid #333;
 }
 
-[data-theme*="dark"] .fret-cell-notes.open,
+[data-theme*='dark'] .fret-cell-notes.open,
 .dark-mode .fret-cell-notes.open {
-    background: #3a3a3a;
-    border-right-color: #666;
+  background: #3a3a3a;
+  border-right-color: #666;
 }
 
 /* Note circles */
 .note-circle {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 0.9rem;
-    z-index: 2;
-    position: relative;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  z-index: 2;
+  position: relative;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .note-circle.root {
-    background: #e74c3c;
-    color: white;
+  background: #e74c3c;
+  color: white;
 }
 
 .note-circle.scale {
-    background: #2c3e50;
-    color: white;
+  background: #2c3e50;
+  color: white;
 }
 
 /* Legend */
 .legend-notes {
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-    margin-top: 20px;
-    font-size: 0.9rem;
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 20px;
+  font-size: 0.9rem;
 }
 
 .legend-notes span {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .legend-dot {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    font-weight: 700;
-    font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 0.8rem;
 }
 
 .legend-dot.root {
-    background: #e74c3c;
-    color: white;
+  background: #e74c3c;
+  color: white;
 }
 
 .legend-dot.scale {
-    background: #2c3e50;
-    color: white;
+  background: #2c3e50;
+  color: white;
 }
 
 /* Position markers on fretboard */
 .fretboard-body-notes::before {
-    content: '';
-    position: absolute;
-    bottom: -25px;
-    left: 0;
-    right: 0;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-around;
+  content: '';
+  position: absolute;
+  bottom: -25px;
+  left: 0;
+  right: 0;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
 }
 
 /* Fret markers */
 .fret-cell-notes:nth-child(3)::after,
 .fret-cell-notes:nth-child(5)::after {
-    content: '';
-    position: absolute;
-    bottom: -35px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 8px;
-    height: 8px;
-    background: #999;
-    border-radius: 50%;
+  content: '';
+  position: absolute;
+  bottom: -35px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 8px;
+  background: #999;
+  border-radius: 50%;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-    .fret-cell-notes {
-        min-width: 50px;
-    }
-    
-    .note-circle {
-        width: 28px;
-        height: 28px;
-        font-size: 0.8rem;
-    }
+  .fret-cell-notes {
+    min-width: 50px;
+  }
+
+  .note-circle {
+    width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+  }
 }

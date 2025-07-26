@@ -18,7 +18,7 @@ export default class LearningPage {
         };
         this.steps = [
             'goals',
-            'interests', 
+            'interests',
             'artists',
             'ability',
             'assessment',
@@ -32,7 +32,7 @@ export default class LearningPage {
 
     async render(container) {
         this.container = container;
-        
+
         // Check if user has existing profile
         const existingProfile = await this.storageService.getLearningProfile();
         if (existingProfile) {
@@ -76,7 +76,7 @@ export default class LearningPage {
     }
 
     renderCurrentStep() {
-        switch(this.steps[this.currentStep]) {
+        switch (this.steps[this.currentStep]) {
             case 'goals':
                 return this.renderGoalsStep();
             case 'interests':
@@ -100,8 +100,16 @@ export default class LearningPage {
         const goals = [
             { id: 'lead', label: '🎸 Lead Guitar', desc: 'Solos, scales, and improvisation' },
             { id: 'rhythm', label: '🎵 Rhythm Guitar', desc: 'Chords, strumming, and timing' },
-            { id: 'fingerstyle', label: '🤌 Fingerstyle', desc: 'Fingerpicking patterns and techniques' },
-            { id: 'theory', label: '📚 Music Theory', desc: 'Understanding scales, modes, and harmony' },
+            {
+                id: 'fingerstyle',
+                label: '🤌 Fingerstyle',
+                desc: 'Fingerpicking patterns and techniques'
+            },
+            {
+                id: 'theory',
+                label: '📚 Music Theory',
+                desc: 'Understanding scales, modes, and harmony'
+            },
             { id: 'songwriting', label: '✍️ Songwriting', desc: 'Creating original music' },
             { id: 'technique', label: '💪 Technique', desc: 'Speed, accuracy, and dexterity' },
             { id: 'songs', label: '🎵 Learn Songs', desc: 'Master specific songs' },
@@ -114,14 +122,18 @@ export default class LearningPage {
                 <p>Select all that apply</p>
                 
                 <div class="goals-grid">
-                    ${goals.map(goal => `
+                    ${goals
+                        .map(
+                            (goal) => `
                         <div class="goal-card ${this.userProfile.goals.includes(goal.id) ? 'selected' : ''}" 
                              data-goal="${goal.id}">
                             <div class="goal-icon">${goal.label.split(' ')[0]}</div>
                             <h3>${goal.label}</h3>
                             <p>${goal.desc}</p>
                         </div>
-                    `).join('')}
+                    `
+                        )
+                        .join('')}
                 </div>
             </div>
         `;
@@ -129,14 +141,26 @@ export default class LearningPage {
 
     renderInterestsStep() {
         const defaultGenres = [
-            'Rock', 'Metal', 'Blues', 'Jazz', 'Classical',
-            'Pop', 'Country', 'Folk', 'Punk', 'Indie',
-            'R&B', 'Funk', 'Progressive', 'Acoustic', 'Alternative'
+            'Rock',
+            'Metal',
+            'Blues',
+            'Jazz',
+            'Classical',
+            'Pop',
+            'Country',
+            'Folk',
+            'Punk',
+            'Indie',
+            'R&B',
+            'Funk',
+            'Progressive',
+            'Acoustic',
+            'Alternative'
         ];
-        
+
         // Get custom genres (ones not in default list)
-        const customGenres = this.userProfile.interests.filter(g => !defaultGenres.includes(g));
-        
+        const customGenres = this.userProfile.interests.filter((g) => !defaultGenres.includes(g));
+
         // Combine all genres for display
         const allGenres = [...defaultGenres, ...customGenres];
 
@@ -146,12 +170,16 @@ export default class LearningPage {
                 <p>Select your favorite genres</p>
                 
                 <div class="interests-grid">
-                    ${allGenres.map(genre => `
+                    ${allGenres
+                        .map(
+                            (genre) => `
                         <button class="genre-tag ${this.userProfile.interests.includes(genre) ? 'selected' : ''}"
                                 data-genre="${genre}">
                             ${genre}
                         </button>
-                    `).join('')}
+                    `
+                        )
+                        .join('')}
                 </div>
                 
                 <div class="custom-input-section">
@@ -172,12 +200,16 @@ export default class LearningPage {
                 
                 <div class="artists-input">
                     <div class="artist-tags">
-                        ${this.userProfile.favoriteArtists.map(artist => `
+                        ${this.userProfile.favoriteArtists
+                            .map(
+                                (artist) => `
                             <span class="artist-tag">
                                 ${artist}
                                 <button class="remove-tag" data-artist="${artist}">×</button>
                             </span>
-                        `).join('')}
+                        `
+                            )
+                            .join('')}
                     </div>
                     
                     <input type="text" id="artistInput" 
@@ -187,11 +219,15 @@ export default class LearningPage {
                     <div class="artist-suggestions">
                         <p>Popular suggestions based on your genres:</p>
                         <div class="suggestion-tags">
-                            ${this.getArtistSuggestions().map(artist => `
+                            ${this.getArtistSuggestions()
+                                .map(
+                                    (artist) => `
                                 <button class="suggestion-tag" data-artist="${artist}">
                                     + ${artist}
                                 </button>
-                            `).join('')}
+                            `
+                                )
+                                .join('')}
                         </div>
                     </div>
                 </div>
@@ -305,13 +341,17 @@ export default class LearningPage {
                         <h3>🎵 Scale Knowledge</h3>
                         <p>Which pentatonic positions can you play?</p>
                         <div class="position-selector">
-                            ${[1,2,3,4,5].map(pos => `
+                            ${[1, 2, 3, 4, 5]
+                                .map(
+                                    (pos) => `
                                 <label class="position-checkbox">
                                     <input type="checkbox" value="position-${pos}"
                                            ${this.userProfile.assessmentResults.pentatonicPositions?.includes(pos) ? 'checked' : ''}>
                                     <span>Position ${pos}</span>
                                 </label>
-                            `).join('')}
+                            `
+                                )
+                                .join('')}
                         </div>
                     </div>
                 </div>
@@ -329,12 +369,16 @@ export default class LearningPage {
                     <div class="form-group">
                         <label>How many days per week can you practice?</label>
                         <div class="frequency-selector">
-                            ${[1,2,3,4,5,6,7].map(days => `
+                            ${[1, 2, 3, 4, 5, 6, 7]
+                                .map(
+                                    (days) => `
                                 <button class="frequency-btn ${this.userProfile.practiceFrequency == days ? 'selected' : ''}"
                                         data-days="${days}">
                                     ${days} ${days === 1 ? 'day' : 'days'}
                                 </button>
-                            `).join('')}
+                            `
+                                )
+                                .join('')}
                         </div>
                     </div>
                     
@@ -426,16 +470,16 @@ export default class LearningPage {
 
     getArtistSuggestions() {
         const genreArtists = {
-            'Rock': ['Led Zeppelin', 'Pink Floyd', 'Queen', 'AC/DC'],
-            'Metal': ['Metallica', 'Iron Maiden', 'Black Sabbath', 'Pantera'],
-            'Blues': ['B.B. King', 'Stevie Ray Vaughan', 'Eric Clapton', 'Buddy Guy'],
-            'Jazz': ['Joe Pass', 'Pat Metheny', 'George Benson', 'Wes Montgomery'],
-            'Grunge': ['Nirvana', 'Pearl Jam', 'Soundgarden', 'Alice in Chains'],
-            'Alternative': ['Radiohead', 'Foo Fighters', 'Red Hot Chili Peppers', 'Muse']
+            Rock: ['Led Zeppelin', 'Pink Floyd', 'Queen', 'AC/DC'],
+            Metal: ['Metallica', 'Iron Maiden', 'Black Sabbath', 'Pantera'],
+            Blues: ['B.B. King', 'Stevie Ray Vaughan', 'Eric Clapton', 'Buddy Guy'],
+            Jazz: ['Joe Pass', 'Pat Metheny', 'George Benson', 'Wes Montgomery'],
+            Grunge: ['Nirvana', 'Pearl Jam', 'Soundgarden', 'Alice in Chains'],
+            Alternative: ['Radiohead', 'Foo Fighters', 'Red Hot Chili Peppers', 'Muse']
         };
 
         let suggestions = [];
-        this.userProfile.interests.forEach(genre => {
+        this.userProfile.interests.forEach((genre) => {
             if (genreArtists[genre]) {
                 suggestions = [...suggestions, ...genreArtists[genre]];
             }
@@ -456,15 +500,17 @@ export default class LearningPage {
     attachStepListeners() {
         const step = this.steps[this.currentStep];
 
-        switch(step) {
+        switch (step) {
             case 'goals':
-                document.querySelectorAll('.goal-card').forEach(card => {
+                document.querySelectorAll('.goal-card').forEach((card) => {
                     card.addEventListener('click', (e) => {
                         const goal = e.currentTarget.dataset.goal;
                         e.currentTarget.classList.toggle('selected');
-                        
+
                         if (this.userProfile.goals.includes(goal)) {
-                            this.userProfile.goals = this.userProfile.goals.filter(g => g !== goal);
+                            this.userProfile.goals = this.userProfile.goals.filter(
+                                (g) => g !== goal
+                            );
                         } else {
                             this.userProfile.goals.push(goal);
                         }
@@ -473,19 +519,21 @@ export default class LearningPage {
                 break;
 
             case 'interests':
-                document.querySelectorAll('.genre-tag').forEach(tag => {
+                document.querySelectorAll('.genre-tag').forEach((tag) => {
                     tag.addEventListener('click', (e) => {
                         const genre = e.currentTarget.dataset.genre;
                         e.currentTarget.classList.toggle('selected');
-                        
+
                         if (this.userProfile.interests.includes(genre)) {
-                            this.userProfile.interests = this.userProfile.interests.filter(g => g !== genre);
+                            this.userProfile.interests = this.userProfile.interests.filter(
+                                (g) => g !== genre
+                            );
                         } else {
                             this.userProfile.interests.push(genre);
                         }
                     });
                 });
-                
+
                 // Handle custom genre input
                 const customGenreInput = document.getElementById('customGenre');
                 customGenreInput?.addEventListener('keypress', (e) => {
@@ -515,7 +563,7 @@ export default class LearningPage {
                     }
                 });
 
-                document.querySelectorAll('.suggestion-tag').forEach(tag => {
+                document.querySelectorAll('.suggestion-tag').forEach((tag) => {
                     tag.addEventListener('click', (e) => {
                         this.addArtist(e.currentTarget.dataset.artist);
                         this.updateArtistDisplay();
@@ -535,7 +583,7 @@ export default class LearningPage {
                         this.startMetronome(parseInt(e.target.value));
                     }
                 });
-                
+
                 // Metronome button
                 const metronomeBtn = document.getElementById('startMetronome');
                 metronomeBtn?.addEventListener('click', () => {
@@ -546,7 +594,7 @@ export default class LearningPage {
                         this.startMetronome(tempo);
                     }
                 });
-                
+
                 // Timer button
                 const timerBtn = document.getElementById('startTimer');
                 timerBtn?.addEventListener('click', () => {
@@ -554,34 +602,38 @@ export default class LearningPage {
                 });
 
                 // Chord changes counter
-                document.querySelectorAll('.count-btn').forEach(btn => {
+                document.querySelectorAll('.count-btn').forEach((btn) => {
                     btn.addEventListener('click', (e) => {
                         const input = document.getElementById('chordChanges');
                         const current = parseInt(input.value) || 0;
-                        
+
                         if (e.target.classList.contains('plus')) {
                             input.value = Math.min(100, current + 1);
                         } else {
                             input.value = Math.max(0, current - 1);
                         }
-                        
+
                         this.userProfile.assessmentResults.chordChanges = parseInt(input.value);
                     });
                 });
                 break;
 
             case 'schedule':
-                document.querySelectorAll('.frequency-btn').forEach(btn => {
+                document.querySelectorAll('.frequency-btn').forEach((btn) => {
                     btn.addEventListener('click', (e) => {
-                        document.querySelectorAll('.frequency-btn').forEach(b => b.classList.remove('selected'));
+                        document
+                            .querySelectorAll('.frequency-btn')
+                            .forEach((b) => b.classList.remove('selected'));
                         e.currentTarget.classList.add('selected');
                         this.userProfile.practiceFrequency = e.currentTarget.dataset.days;
                     });
                 });
 
-                document.querySelectorAll('.duration-btn').forEach(btn => {
+                document.querySelectorAll('.duration-btn').forEach((btn) => {
                     btn.addEventListener('click', (e) => {
-                        document.querySelectorAll('.duration-btn').forEach(b => b.classList.remove('selected'));
+                        document
+                            .querySelectorAll('.duration-btn')
+                            .forEach((b) => b.classList.remove('selected'));
                         e.currentTarget.classList.add('selected');
                         this.userProfile.sessionDuration = e.currentTarget.dataset.duration;
                     });
@@ -603,8 +655,13 @@ export default class LearningPage {
     }
 
     async handleNext() {
-        console.log('handleNext called, current step:', this.currentStep, 'of', this.steps.length - 1);
-        
+        console.log(
+            'handleNext called, current step:',
+            this.currentStep,
+            'of',
+            this.steps.length - 1
+        );
+
         // Save current step data
         this.saveStepData();
 
@@ -628,13 +685,14 @@ export default class LearningPage {
     saveStepData() {
         const step = this.steps[this.currentStep];
 
-        switch(step) {
+        switch (step) {
             case 'ability':
                 const duration = document.getElementById('playingDuration')?.value;
-                const skills = Array.from(document.querySelectorAll('.skill-checkboxes input:checked'))
-                    .map(cb => cb.value);
+                const skills = Array.from(
+                    document.querySelectorAll('.skill-checkboxes input:checked')
+                ).map((cb) => cb.value);
                 const specific = document.getElementById('specificSkills')?.value;
-                
+
                 this.userProfile.currentAbility = {
                     duration,
                     skills,
@@ -643,22 +701,25 @@ export default class LearningPage {
                 break;
 
             case 'assessment':
-                const positions = Array.from(document.querySelectorAll('.position-selector input:checked'))
-                    .map(cb => parseInt(cb.value.split('-')[1]));
+                const positions = Array.from(
+                    document.querySelectorAll('.position-selector input:checked')
+                ).map((cb) => parseInt(cb.value.split('-')[1]));
                 this.userProfile.assessmentResults.pentatonicPositions = positions;
                 break;
 
             case 'schedule':
-                const times = Array.from(document.querySelectorAll('.time-preferences input:checked'))
-                    .map(cb => cb.value);
+                const times = Array.from(
+                    document.querySelectorAll('.time-preferences input:checked')
+                ).map((cb) => cb.value);
                 this.userProfile.preferredTimes = times;
                 break;
 
             case 'equipment':
-                const equipment = Array.from(document.querySelectorAll('.equipment-grid input:checked'))
-                    .map(cb => cb.value);
+                const equipment = Array.from(
+                    document.querySelectorAll('.equipment-grid input:checked')
+                ).map((cb) => cb.value);
                 const notes = document.getElementById('additionalNotes')?.value;
-                
+
                 this.userProfile.equipment = equipment;
                 this.userProfile.additionalNotes = notes;
                 break;
@@ -708,7 +769,7 @@ export default class LearningPage {
             console.log('Plan saved:', saved);
 
             // Wait a moment to ensure storage is complete
-            await new Promise(resolve => setTimeout(resolve, 100));
+            await new Promise((resolve) => setTimeout(resolve, 100));
 
             // Show dashboard with plan
             await this.showDashboard();
@@ -720,7 +781,7 @@ export default class LearningPage {
 
     async showDashboard() {
         const plan = await this.storageService.getCurrentLearningPlan();
-        
+
         this.container.innerHTML = `
             <div class="learning-dashboard">
                 <div class="dashboard-header">
@@ -738,7 +799,7 @@ export default class LearningPage {
             this.currentStep = 0;
             this.showQuestionnaire();
         });
-        
+
         document.getElementById('startQuestionnaireBtn')?.addEventListener('click', () => {
             this.currentStep = 0;
             this.showQuestionnaire();
@@ -786,12 +847,14 @@ export default class LearningPage {
                 <div class="week-goals">
                     <h4>Goals:</h4>
                     <ul>
-                        ${week.goals.map(goal => `<li>${goal}</li>`).join('')}
+                        ${week.goals.map((goal) => `<li>${goal}</li>`).join('')}
                     </ul>
                 </div>
                 
                 <div class="week-sessions">
-                    ${week.sessions.map(session => `
+                    ${week.sessions
+                        .map(
+                            (session) => `
                         <div class="session-card ${session.completed ? 'completed' : ''}" 
                              data-session-id="${session.id}">
                             <h5>${session.title}</h5>
@@ -799,14 +862,22 @@ export default class LearningPage {
                             <div class="session-hover-details">
                                 <div class="exercises-preview">
                                     <h6>Today's Exercises:</h6>
-                                    ${session.exercises ? session.exercises.map(ex => `
+                                    ${
+                                        session.exercises
+                                            ? session.exercises
+                                                  .map(
+                                                      (ex) => `
                                         <div class="exercise-item">
                                             <span class="exercise-name">${ex.name}</span>
                                             <span class="exercise-time">${ex.duration}min</span>
                                             ${ex.tempo ? `<span class="exercise-tempo">${ex.tempo}</span>` : ''}
                                             ${ex.description ? `<p class="exercise-desc">${ex.description}</p>` : ''}
                                         </div>
-                                    `).join('') : '<p>Loading exercises...</p>'}
+                                    `
+                                                  )
+                                                  .join('')
+                                            : '<p>Loading exercises...</p>'
+                                    }
                                 </div>
                             </div>
                             <button class="btn btn-sm ${session.completed ? 'btn-secondary' : 'btn-primary'}"
@@ -815,7 +886,9 @@ export default class LearningPage {
                                 ${session.completed ? 'Review' : 'Start Practice'}
                             </button>
                         </div>
-                    `).join('')}
+                    `
+                        )
+                        .join('')}
                 </div>
             </div>
         `;
@@ -850,15 +923,15 @@ export default class LearningPage {
         if (!this.audioContext) {
             this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
         }
-        
+
         const interval = 60000 / tempo; // Convert BPM to milliseconds
-        let nextBeat = this.audioContext.currentTime;
-        
+        const nextBeat = this.audioContext.currentTime;
+
         const metronomeBtn = document.getElementById('startMetronome');
         if (metronomeBtn) {
             metronomeBtn.innerHTML = '<span class="metronome-icon">⏸</span> Stop Metronome';
         }
-        
+
         this.metronomeInterval = setInterval(() => {
             // Visual indicator
             const indicator = document.getElementById('metronomeIndicator');
@@ -866,40 +939,40 @@ export default class LearningPage {
                 indicator.classList.add('beat');
                 setTimeout(() => indicator.classList.remove('beat'), 100);
             }
-            
+
             // Audio click
             const oscillator = this.audioContext.createOscillator();
             const gain = this.audioContext.createGain();
-            
+
             oscillator.connect(gain);
             gain.connect(this.audioContext.destination);
-            
+
             oscillator.frequency.value = 1000;
             gain.gain.setValueAtTime(0.3, this.audioContext.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.05);
-            
+
             oscillator.start(this.audioContext.currentTime);
             oscillator.stop(this.audioContext.currentTime + 0.05);
         }, interval);
     }
-    
+
     stopMetronome() {
         if (this.metronomeInterval) {
             clearInterval(this.metronomeInterval);
             this.metronomeInterval = null;
-            
+
             const metronomeBtn = document.getElementById('startMetronome');
             if (metronomeBtn) {
                 metronomeBtn.innerHTML = '<span class="metronome-icon">🎵</span> Start Metronome';
             }
         }
     }
-    
+
     startChordTimer() {
         let timeLeft = 60;
         const timerDisplay = document.getElementById('timerDisplay');
         const timerBtn = document.getElementById('startTimer');
-        
+
         if (this.timerInterval) {
             clearInterval(this.timerInterval);
             this.timerInterval = null;
@@ -907,31 +980,34 @@ export default class LearningPage {
             timerBtn.innerHTML = '<span class="timer-icon">⏱️</span> Start 60s Timer';
             return;
         }
-        
+
         timerBtn.innerHTML = '<span class="timer-icon">⏹️</span> Stop Timer';
-        
+
         this.timerInterval = setInterval(() => {
             timeLeft--;
             timerDisplay.textContent = `${timeLeft}s`;
-            
+
             if (timeLeft <= 0) {
                 clearInterval(this.timerInterval);
                 this.timerInterval = null;
                 timerDisplay.textContent = 'Time\'s up!';
                 timerBtn.innerHTML = '<span class="timer-icon">⏱️</span> Start 60s Timer';
-                
+
                 // Play a sound to indicate time's up
                 if (this.audioContext) {
                     const oscillator = this.audioContext.createOscillator();
                     const gain = this.audioContext.createGain();
-                    
+
                     oscillator.connect(gain);
                     gain.connect(this.audioContext.destination);
-                    
+
                     oscillator.frequency.value = 800;
                     gain.gain.setValueAtTime(0.5, this.audioContext.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.5);
-                    
+                    gain.gain.exponentialRampToValueAtTime(
+                        0.001,
+                        this.audioContext.currentTime + 0.5
+                    );
+
                     oscillator.start(this.audioContext.currentTime);
                     oscillator.stop(this.audioContext.currentTime + 0.5);
                 }

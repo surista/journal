@@ -1,86 +1,86 @@
 /* Bubblegum Pop Theme - Bright pink, purple, and blue pastels */
 
-[data-theme="bubblegum-pop"] {
-    /* Primary Colors - Bubblegum pink and purple */
-    --primary: #FF99CC;
-    --primary-dark: #FF80C0;
-    --primary-light: #FFB3D9;
-    --secondary: #CC99FF;
-    --secondary-dark: #C080FF;
-    --secondary-light: #D9B3FF;
+[data-theme='bubblegum-pop'] {
+  /* Primary Colors - Bubblegum pink and purple */
+  --primary: #ff99cc;
+  --primary-dark: #ff80c0;
+  --primary-light: #ffb3d9;
+  --secondary: #cc99ff;
+  --secondary-dark: #c080ff;
+  --secondary-light: #d9b3ff;
 
-    /* Status Colors - Pop candy bright */
-    --success: #99FF99;
-    --success-dark: #80FF80;
-    --success-light: #B3FFB3;
-    --danger: #FF9999;
-    --danger-dark: #FF8080;
-    --danger-light: #FFB3B3;
-    --warning: #FFCC99;
-    --warning-dark: #FFC080;
-    --warning-light: #FFD9B3;
-    --info: #99CCFF;
-    --info-dark: #80C0FF;
-    --info-light: #B3D9FF;
+  /* Status Colors - Pop candy bright */
+  --success: #99ff99;
+  --success-dark: #80ff80;
+  --success-light: #b3ffb3;
+  --danger: #ff9999;
+  --danger-dark: #ff8080;
+  --danger-light: #ffb3b3;
+  --warning: #ffcc99;
+  --warning-dark: #ffc080;
+  --warning-light: #ffd9b3;
+  --info: #99ccff;
+  --info-dark: #80c0ff;
+  --info-light: #b3d9ff;
 
-    /* Light Backgrounds - Bubblegum pink */
-    --bg-dark: #FFEBF5;
-    --bg-darker: #FFE0F0;
-    --bg-primary: #FFFBFE;
-    --bg-secondary: #FFF5FB;
-    --bg-tertiary: #FFEBF5;
-    --bg-card: #FFFAFD;
-    --bg-card-hover: #FFF5FB;
-    --bg-input: #FFD6EB;
-    --bg-input-hover: #FFCCE5;
-    --bg-modal: rgba(255, 153, 204, 0.95);
-    --bg-sidebar: #FFE8F3;
-    --bg-overlay: rgba(255, 153, 204, 0.4);
+  /* Light Backgrounds - Bubblegum pink */
+  --bg-dark: #ffebf5;
+  --bg-darker: #ffe0f0;
+  --bg-primary: #fffbfe;
+  --bg-secondary: #fff5fb;
+  --bg-tertiary: #ffebf5;
+  --bg-card: #fffafd;
+  --bg-card-hover: #fff5fb;
+  --bg-input: #ffd6eb;
+  --bg-input-hover: #ffcce5;
+  --bg-modal: rgba(255, 153, 204, 0.95);
+  --bg-sidebar: #ffe8f3;
+  --bg-overlay: rgba(255, 153, 204, 0.4);
 
-    /* Text Colors */
-    --text-primary: #4C1E3A;
-    --text-secondary: #7C4E6A;
-    --text-tertiary: #9C6E8A;
-    --text-muted: #CC9EBA;
-    --text-disabled: #DCB8CA;
+  /* Text Colors */
+  --text-primary: #4c1e3a;
+  --text-secondary: #7c4e6a;
+  --text-tertiary: #9c6e8a;
+  --text-muted: #cc9eba;
+  --text-disabled: #dcb8ca;
 
-    /* Borders - Bubble pink */
-    --border: #FFE0F0;
-    --border-light: #FFF0FA;
-    --border-focus: #FF80C0;
-    --border-error: #FF9999;
-    --border-success: #99FF99;
+  /* Borders - Bubble pink */
+  --border: #ffe0f0;
+  --border-light: #fff0fa;
+  --border-focus: #ff80c0;
+  --border-error: #ff9999;
+  --border-success: #99ff99;
 
-    /* Shadows - Bubblegum glow */
-    --shadow-sm: 0 1px 3px 0 rgba(255, 153, 204, 0.2);
-    --shadow-md: 0 4px 6px -1px rgba(255, 153, 204, 0.25);
-    --shadow-lg: 0 10px 15px -3px rgba(255, 153, 204, 0.3);
-    --shadow-xl: 0 20px 25px -5px rgba(255, 153, 204, 0.35);
-    --shadow-2xl: 0 25px 50px -12px rgba(255, 153, 204, 0.4);
-    --shadow-inner: inset 0 2px 4px 0 rgba(255, 153, 204, 0.15);
-    --shadow-glow: 0 0 20px rgba(255, 153, 204, 0.6);
+  /* Shadows - Bubblegum glow */
+  --shadow-sm: 0 1px 3px 0 rgba(255, 153, 204, 0.2);
+  --shadow-md: 0 4px 6px -1px rgba(255, 153, 204, 0.25);
+  --shadow-lg: 0 10px 15px -3px rgba(255, 153, 204, 0.3);
+  --shadow-xl: 0 20px 25px -5px rgba(255, 153, 204, 0.35);
+  --shadow-2xl: 0 25px 50px -12px rgba(255, 153, 204, 0.4);
+  --shadow-inner: inset 0 2px 4px 0 rgba(255, 153, 204, 0.15);
+  --shadow-glow: 0 0 20px rgba(255, 153, 204, 0.6);
 
-    /* Scrollbar */
-    --scrollbar-track: #FFF0FA;
-    --scrollbar-thumb: #FF99CC;
-    --scrollbar-thumb-hover: #FF80C0;
+  /* Scrollbar */
+  --scrollbar-track: #fff0fa;
+  --scrollbar-thumb: #ff99cc;
+  --scrollbar-thumb-hover: #ff80c0;
 
-    /* Code */
-    --code-bg: #FFF7FC;
-    --code-text: #7B4B6B;
-    --code-comment: #88CC88;
-    --code-string: #FF8080;
-    --code-keyword: #9999FF;
+  /* Code */
+  --code-bg: #fff7fc;
+  --code-text: #7b4b6b;
+  --code-comment: #88cc88;
+  --code-string: #ff8080;
+  --code-keyword: #9999ff;
 
-    /* Gradients - Pop candy */
-    --gradient-primary: linear-gradient(135deg, #FF99CC 0%, #CC99FF 100%);
-    --gradient-success: linear-gradient(135deg, #99FF99 0%, #B3FFB3 100%);
-    --gradient-danger: linear-gradient(135deg, #FF9999 0%, #FFB3B3 100%);
-    --gradient-warning: linear-gradient(135deg, #FFCC99 0%, #FFD9B3 100%);
-    --gradient-light: linear-gradient(135deg, #FFFFFF 0%, #FFF7FC 100%);
+  /* Gradients - Pop candy */
+  --gradient-primary: linear-gradient(135deg, #ff99cc 0%, #cc99ff 100%);
+  --gradient-success: linear-gradient(135deg, #99ff99 0%, #b3ffb3 100%);
+  --gradient-danger: linear-gradient(135deg, #ff9999 0%, #ffb3b3 100%);
+  --gradient-warning: linear-gradient(135deg, #ffcc99 0%, #ffd9b3 100%);
+  --gradient-light: linear-gradient(135deg, #ffffff 0%, #fff7fc 100%);
 
-    /* Opacity values */
-    --opacity-hover: 0.95;
-    --opacity-disabled: 0.6;
-    --opacity-overlay: 0.5;
+  /* Opacity values */
+  --opacity-hover: 0.95;
+  --opacity-disabled: 0.6;
+  --opacity-overlay: 0.5;
 }

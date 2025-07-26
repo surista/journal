@@ -68,13 +68,13 @@ export class PlanGeneratorService {
 
         // Genre-specific exercises
         this.genreExercises = {
-            'Rock': ['Power Chord Riffs', 'Rock Rhythm Patterns', 'Classic Rock Solos'],
-            'Metal': ['Palm Muting', 'Galloping Rhythms', 'Metal Riffs', 'Downpicking Endurance'],
-            'Blues': ['12-Bar Blues', 'Blues Bends', 'Shuffle Rhythm', 'Blues Turnarounds'],
-            'Jazz': ['ii-V-I Progressions', 'Jazz Standards', 'Chord Melody', 'Walking Bass Lines'],
-            'Classical': ['Fingerstyle Technique', 'Classical Pieces', 'Sight Reading'],
-            'Folk': ['Fingerpicking Patterns', 'Open Tunings', 'Folk Strumming'],
-            'Funk': ['Funk Rhythms', 'Muted Strumming', 'Syncopation', 'Funk Chords']
+            Rock: ['Power Chord Riffs', 'Rock Rhythm Patterns', 'Classic Rock Solos'],
+            Metal: ['Palm Muting', 'Galloping Rhythms', 'Metal Riffs', 'Downpicking Endurance'],
+            Blues: ['12-Bar Blues', 'Blues Bends', 'Shuffle Rhythm', 'Blues Turnarounds'],
+            Jazz: ['ii-V-I Progressions', 'Jazz Standards', 'Chord Melody', 'Walking Bass Lines'],
+            Classical: ['Fingerstyle Technique', 'Classical Pieces', 'Sight Reading'],
+            Folk: ['Fingerpicking Patterns', 'Open Tunings', 'Folk Strumming'],
+            Funk: ['Funk Rhythms', 'Muted Strumming', 'Syncopation', 'Funk Chords']
         };
     }
 
@@ -82,16 +82,16 @@ export class PlanGeneratorService {
         const level = this.determineLevel(userProfile);
         const planStructure = this.createPlanStructure(userProfile, level);
         const detailedPlan = this.populatePlanDetails(planStructure, userProfile, level);
-        
+
         return detailedPlan;
     }
 
     determineLevel(profile) {
         let score = 0;
-        
+
         // Playing duration scoring
         const durationScores = {
-            'beginner': 0,
+            beginner: 0,
             '6months': 1,
             '1year': 2,
             '2years': 3,
@@ -136,34 +136,37 @@ export class PlanGeneratorService {
 
     generatePlanTitle(profile, level) {
         const goalMap = {
-            'lead': 'Lead Guitar Mastery',
-            'rhythm': 'Rhythm Guitar Excellence',
-            'fingerstyle': 'Fingerstyle Journey',
-            'theory': 'Music Theory Foundation',
-            'technique': 'Technical Proficiency',
-            'songs': 'Song Repertoire Building'
+            lead: 'Lead Guitar Mastery',
+            rhythm: 'Rhythm Guitar Excellence',
+            fingerstyle: 'Fingerstyle Journey',
+            theory: 'Music Theory Foundation',
+            technique: 'Technical Proficiency',
+            songs: 'Song Repertoire Building'
         };
 
         const primaryGoal = profile.goals[0] || 'lead';
         const levelPrefix = level.charAt(0).toUpperCase() + level.slice(1);
-        
+
         return `${levelPrefix} ${goalMap[primaryGoal]} Plan`;
     }
 
     generatePlanDescription(profile, level) {
         const genres = profile.interests.slice(0, 2).join(' and ') || 'various';
-        const artists = profile.favoriteArtists.slice(0, 2).join(' and ') || 'your favorite artists';
-        
-        return `A personalized ${level} plan focusing on ${genres} styles, ` +
-               `inspired by artists like ${artists}. This plan will progressively ` +
-               `build your skills over 4 weeks with structured practice sessions.`;
+        const artists =
+            profile.favoriteArtists.slice(0, 2).join(' and ') || 'your favorite artists';
+
+        return (
+            `A personalized ${level} plan focusing on ${genres} styles, ` +
+            `inspired by artists like ${artists}. This plan will progressively ` +
+            `build your skills over 4 weeks with structured practice sessions.`
+        );
     }
 
     mapLevelToDifficulty(level) {
         const map = {
-            'beginner': 'Foundational',
-            'intermediate': 'Progressive',
-            'advanced': 'Challenging'
+            beginner: 'Foundational',
+            intermediate: 'Progressive',
+            advanced: 'Challenging'
         };
         return map[level];
     }
@@ -226,8 +229,10 @@ export class PlanGeneratorService {
 
         const primaryGoal = profile.goals[0] || 'lead';
         const templates = goalTemplates[primaryGoal]?.[level] || goalTemplates.lead.beginner;
-        
-        return templates[weekIndex] || ['Continue practice', 'Refine techniques', 'Build confidence'];
+
+        return (
+            templates[weekIndex] || ['Continue practice', 'Refine techniques', 'Build confidence']
+        );
     }
 
     populatePlanDetails(structure, profile, level) {
@@ -247,7 +252,7 @@ export class PlanGeneratorService {
 
     generateWeeklySessions(profile, level, weekIndex, sessionsPerWeek, sessionDuration) {
         const sessions = [];
-        
+
         for (let i = 0; i < sessionsPerWeek; i++) {
             const session = {
                 id: `week${weekIndex + 1}-session${i + 1}`,
@@ -275,7 +280,7 @@ export class PlanGeneratorService {
             description: 'Start slowly and gradually increase speed'
         });
         remainingTime -= 5;
-        
+
         // Add progressive speed exercise
         const speedExercise = this.getWeeklySpeedExercise(weekIndex, level);
         exercises.push(speedExercise);
@@ -283,18 +288,20 @@ export class PlanGeneratorService {
 
         // Add main exercises based on goals
         const primaryGoal = profile.goals[0] || 'lead';
-        const goalExercises = this.practiceElements[primaryGoal]?.[level] || 
-                             this.practiceElements.lead.beginner;
+        const goalExercises =
+            this.practiceElements[primaryGoal]?.[level] || this.practiceElements.lead.beginner;
 
         // Progressive difficulty through weeks
-        const difficultyMultiplier = 1 + (weekIndex * 0.1);
+        const difficultyMultiplier = 1 + weekIndex * 0.1;
 
         // Add goal-specific exercises
         for (const exercise of goalExercises) {
             if (remainingTime >= exercise.duration) {
                 exercises.push({
                     ...exercise,
-                    tempo: Math.floor((profile.assessmentResults.chromaticTempo || 80) * difficultyMultiplier),
+                    tempo: Math.floor(
+                        (profile.assessmentResults.chromaticTempo || 80) * difficultyMultiplier
+                    ),
                     week: weekIndex + 1
                 });
                 remainingTime -= exercise.duration;
@@ -336,21 +343,24 @@ export class PlanGeneratorService {
     selectGenreExercise(profile, level) {
         const primaryGenre = profile.interests[0];
         const exercises = this.genreExercises[primaryGenre] || [];
-        
+
         if (exercises.length === 0) return null;
-        
+
         // Select exercise based on level
-        const index = level === 'beginner' ? 0 : 
-                     level === 'intermediate' ? Math.floor(exercises.length / 2) :
-                     exercises.length - 1;
-                     
+        const index =
+            level === 'beginner'
+                ? 0
+                : level === 'intermediate'
+                  ? Math.floor(exercises.length / 2)
+                  : exercises.length - 1;
+
         return exercises[Math.min(index, exercises.length - 1)];
     }
 
     // Generate practice schedule for calendar integration
     generateCalendarEvents(plan, startDate = new Date()) {
         const events = [];
-        let currentDate = new Date(startDate);
+        const currentDate = new Date(startDate);
 
         plan.weeks.forEach((week, weekIndex) => {
             week.sessions.forEach((session, sessionIndex) => {
@@ -482,7 +492,7 @@ export class PlanGeneratorService {
                 }
             ]
         };
-        
+
         return speedExercises[level][Math.min(weekIndex, 3)];
     }
 }

@@ -63,7 +63,7 @@ export class PracticeTab {
                 // Set callback for when sessions are saved
                 this.unifiedPractice.setOnSaveCallback(async (sessionData) => {
                     await this.loadPracticeData();
-                    
+
                     // Refresh daily suggestion
                     if (this.dailySuggestion) {
                         await this.dailySuggestion.refresh();
@@ -123,8 +123,8 @@ export class PracticeTab {
         try {
             const entries = await this.storageService.getPracticeEntries();
             const today = new Date().toDateString();
-            const todaySessions = entries.filter(entry =>
-                new Date(entry.date).toDateString() === today
+            const todaySessions = entries.filter(
+                (entry) => new Date(entry.date).toDateString() === today
             );
             const totalSeconds = todaySessions.reduce((sum, s) => sum + (s.duration || 0), 0);
             return Math.round(totalSeconds / 60);
@@ -143,7 +143,7 @@ export class PracticeTab {
         if (this.unifiedPractice && typeof this.unifiedPractice.destroy === 'function') {
             this.unifiedPractice.destroy();
         }
-        
+
         if (this.recommendations && typeof this.recommendations.destroy === 'function') {
             this.recommendations.destroy();
         }

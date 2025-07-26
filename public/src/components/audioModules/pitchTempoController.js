@@ -5,17 +5,17 @@ export class PitchTempoController {
         this.playbackRate = 1.0; // 1.0 = 100% speed
         this.pitchShift = 0; // in semitones
         this.preservePitch = true; // Whether to preserve pitch when changing tempo
-        
+
         // Limits
         this.minSpeed = 0.25; // 25%
         this.maxSpeed = 4.0; // 400%
         this.minPitch = -24; // -2 octaves
         this.maxPitch = 24; // +2 octaves
-        
+
         // Presets
         this.speedPresets = [0.5, 0.75, 1.0, 1.25, 1.5];
         this.pitchPresets = [-12, -7, -5, -3, -2, -1, 0, 1, 2, 3, 5, 7, 12];
-        
+
         // Callbacks
         this.onSpeedChange = null;
         this.onPitchChange = null;
@@ -122,7 +122,7 @@ export class PitchTempoController {
     getNearestSpeedPreset() {
         let nearest = 0;
         let minDiff = Math.abs(this.playbackRate - this.speedPresets[0]);
-        
+
         for (let i = 1; i < this.speedPresets.length; i++) {
             const diff = Math.abs(this.playbackRate - this.speedPresets[i]);
             if (diff < minDiff) {
@@ -130,14 +130,14 @@ export class PitchTempoController {
                 nearest = i;
             }
         }
-        
+
         return nearest;
     }
 
     getNearestPitchPreset() {
         let nearest = 0;
         let minDiff = Math.abs(this.pitchShift - this.pitchPresets[0]);
-        
+
         for (let i = 1; i < this.pitchPresets.length; i++) {
             const diff = Math.abs(this.pitchShift - this.pitchPresets[i]);
             if (diff < minDiff) {
@@ -145,7 +145,7 @@ export class PitchTempoController {
                 nearest = i;
             }
         }
-        
+
         return nearest;
     }
 
@@ -189,21 +189,21 @@ export class PitchTempoController {
         const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
         const octaveShift = Math.floor(Math.abs(this.pitchShift) / 12);
         const noteShift = Math.abs(this.pitchShift) % 12;
-        
+
         if (this.pitchShift === 0) return '';
-        
+
         const direction = this.pitchShift > 0 ? '↑' : '↓';
         let notation = direction;
-        
+
         if (octaveShift > 0) {
             notation += ` ${octaveShift} oct`;
         }
-        
+
         if (noteShift > 0) {
             if (octaveShift > 0) notation += ' + ';
             notation += `${noteShift} st`;
         }
-        
+
         return notation;
     }
 
@@ -212,12 +212,12 @@ export class PitchTempoController {
         if (this.preservePitch) {
             return this.pitchShift;
         }
-        
+
         // When pitch is not preserved, tempo change affects pitch
         // This is a simplified calculation - actual relationship is complex
         const tempoRatio = this.playbackRate;
         const tempoPitchShift = 12 * Math.log2(tempoRatio);
-        
+
         return this.pitchShift + tempoPitchShift;
     }
 

@@ -1,5 +1,5 @@
 // Audio Player Component - Fixed Complete Version with High-Quality Tempo Control
-import {WaveformVisualizer} from './waveform.js';
+import { WaveformVisualizer } from './waveform.js';
 import { SessionManager } from './audio/sessionManager.js';
 import { youtubeAudioProcessor } from '../services/youtubeAudioProcessor.js';
 import { StorageService } from '../services/storageService.js';
@@ -89,20 +89,16 @@ export class AudioPlayer {
         return true;
     }
 
-
     async init() {
         if (this.isInitialized) {
             return;
         }
-
 
         // Ensure storage service is available
         if (!this.storageService) {
             console.warn('Storage service not set during init, attempting to find it...');
             this.ensureStorageService();
         }
-
-
 
         try {
             this.render();
@@ -120,7 +116,6 @@ export class AudioPlayer {
                     window.app.currentPage.components.audioPlayer = this;
                 }
             }
-
         } catch (error) {
             console.error('Error in audio player init:', error);
             throw error;
@@ -133,34 +128,37 @@ export class AudioPlayer {
             if (!this.toneRetryCount) {
                 this.toneRetryCount = 0;
             }
-            
+
             // Check if Tone is available
             if (typeof Tone === 'undefined' || window.TONE_LOAD_FAILED) {
                 this.toneRetryCount++;
-                
+
                 // Limit retries to prevent infinite loop
                 if (this.toneRetryCount > 10 || window.TONE_LOAD_FAILED) {
                     console.error('Tone.js failed to load');
-                    this.showNotification('Audio engine failed to load. Speed and pitch controls will not be available.', 'error');
+                    this.showNotification(
+                        'Audio engine failed to load. Speed and pitch controls will not be available.',
+                        'error'
+                    );
                     this.toneLoadFailed = true;
                     return;
                 }
-                
+
                 console.warn(`Tone.js not loaded yet, retry ${this.toneRetryCount}/10`);
                 // Try again after a short delay
                 setTimeout(() => this.initializeTone(), 1000);
                 return;
             }
-            
+
             // Reset retry count on success
             this.toneRetryCount = 0;
-            
+
             // Check if Tone context is already running
             if (Tone.context.state !== 'running') {
                 // Start Tone.js
                 await Tone.start();
             }
-            
+
             // Note: latencyHint can only be set before context starts
             // lookAhead can be adjusted after start
             if (Tone.context.lookAhead !== undefined) {
@@ -189,7 +187,6 @@ export class AudioPlayer {
                     this.audioService = window.app.audioService;
                 }
             }
-
         } catch (error) {
             console.error('Failed to initialize Tone.js:', error);
         }
@@ -198,23 +195,25 @@ export class AudioPlayer {
     createLoopControlsSection() {
         const section = document.createElement('div');
         section.className = 'loop-controls-section';
-        section.style.cssText = 'background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); padding: 16px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.1); width: 100%; box-sizing: border-box; position: relative; z-index: 10000 !important;';
-        
+        section.style.cssText =
+            'background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); padding: 16px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.1); width: 100%; box-sizing: border-box; position: relative; z-index: 10000 !important;';
+
         const h4 = document.createElement('h4');
         h4.style.marginBottom = '12px';
         h4.textContent = 'Loop Controls';
         section.appendChild(h4);
-        
+
         // Main Controls Row
         const mainControlsRow = document.createElement('div');
-        mainControlsRow.style.cssText = 'display: flex; gap: 8px; align-items: center; margin-bottom: 12px; flex-wrap: wrap;';
-        
+        mainControlsRow.style.cssText =
+            'display: flex; gap: 8px; align-items: center; margin-bottom: 12px; flex-wrap: wrap;';
+
         const buttons = [
             { id: 'setLoopStartBtn', text: 'Start' },
             { id: 'setLoopEndBtn', text: 'End' },
             { id: 'clearLoopBtn', text: 'Clear' }
         ];
-        
+
         buttons.forEach(({ id, text }) => {
             const btn = document.createElement('button');
             btn.type = 'button';
@@ -224,24 +223,24 @@ export class AudioPlayer {
             btn.textContent = text;
             mainControlsRow.appendChild(btn);
         });
-        
+
         const loopInfo = document.createElement('div');
         loopInfo.className = 'loop-info';
         loopInfo.style.cssText = 'font-family: monospace; font-size: 13px; text-align: center;';
-        
+
         const loopStart = document.createElement('span');
         loopStart.id = 'loopStart';
         loopStart.textContent = '--:--';
-        
+
         const loopEnd = document.createElement('span');
         loopEnd.id = 'loopEnd';
         loopEnd.textContent = '--:--';
-        
+
         loopInfo.appendChild(loopStart);
         loopInfo.appendChild(document.createTextNode(' - '));
         loopInfo.appendChild(loopEnd);
         mainControlsRow.appendChild(loopInfo);
-        
+
         const saveBtn = document.createElement('button');
         saveBtn.type = 'button';
         saveBtn.id = 'saveSessionBtn';
@@ -249,56 +248,57 @@ export class AudioPlayer {
         saveBtn.style.cssText = 'padding: 6px 16px; font-size: 12px;';
         saveBtn.textContent = '💾 Save Loop';
         mainControlsRow.appendChild(saveBtn);
-        
+
         section.appendChild(mainControlsRow);
-        
+
         // Toggle Controls Row
         const toggleRow = document.createElement('div');
         toggleRow.style.cssText = 'display: flex; align-items: center; gap: 16px;';
-        
+
         const toggles = [
             { id: 'loopEnabled', text: 'Loop?' },
             { id: 'progressionEnabled', text: 'Auto?' }
         ];
-        
+
         toggles.forEach(({ id, text }) => {
             const label = document.createElement('label');
             label.className = 'loop-toggle';
             label.style.cssText = 'display: inline-flex; align-items: center; white-space: nowrap;';
-            
+
             const input = document.createElement('input');
             input.type = 'checkbox';
             input.id = id;
-            
+
             const toggleSwitch = document.createElement('span');
             toggleSwitch.className = 'toggle-switch';
-            
+
             const span = document.createElement('span');
             span.textContent = text;
-            
+
             label.appendChild(input);
             label.appendChild(toggleSwitch);
             label.appendChild(span);
             toggleRow.appendChild(label);
         });
-        
+
         const spacer = document.createElement('div');
         spacer.style.flex = '1';
         toggleRow.appendChild(spacer);
-        
+
         const savedLoopsLabel = document.createElement('span');
         savedLoopsLabel.style.cssText = 'color: var(--text-secondary); font-size: 13px;';
         savedLoopsLabel.textContent = 'Saved Loops:';
         toggleRow.appendChild(savedLoopsLabel);
-        
+
         section.appendChild(toggleRow);
-        
+
         // Tempo Progression Controls
         const progressionControls = document.createElement('div');
         progressionControls.className = 'progression-controls-inline';
         progressionControls.id = 'progressionControls';
-        progressionControls.style.cssText = 'display: none; align-items: center; gap: 6px; font-size: 12px; margin-top: 12px;';
-        
+        progressionControls.style.cssText =
+            'display: none; align-items: center; gap: 6px; font-size: 12px; margin-top: 12px;';
+
         const incrementValue = document.createElement('input');
         incrementValue.type = 'number';
         incrementValue.id = 'incrementValue';
@@ -306,101 +306,109 @@ export class AudioPlayer {
         incrementValue.min = '0.1';
         incrementValue.max = '10';
         incrementValue.step = '0.1';
-        incrementValue.style.cssText = 'width: 45px; padding: 3px 6px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 4px; font-size: 12px;';
-        
+        incrementValue.style.cssText =
+            'width: 45px; padding: 3px 6px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 4px; font-size: 12px;';
+
         const incrementType = document.createElement('select');
         incrementType.id = 'incrementType';
-        incrementType.style.cssText = 'padding: 3px 6px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 4px; font-size: 12px;';
-        
+        incrementType.style.cssText =
+            'padding: 3px 6px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 4px; font-size: 12px;';
+
         const percentOption = document.createElement('option');
         percentOption.value = 'percentage';
         percentOption.textContent = '%';
-        
+
         const bpmOption = document.createElement('option');
         bpmOption.value = 'bpm';
         bpmOption.textContent = 'BPM';
-        
+
         incrementType.appendChild(percentOption);
         incrementType.appendChild(bpmOption);
-        
+
         const everyText = document.createElement('span');
         everyText.textContent = 'every';
-        
+
         const loopInterval = document.createElement('input');
         loopInterval.type = 'number';
         loopInterval.id = 'loopInterval';
         loopInterval.value = '1';
         loopInterval.min = '1';
         loopInterval.max = '10';
-        loopInterval.style.cssText = 'width: 35px; padding: 3px 6px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 4px; font-size: 12px;';
-        
+        loopInterval.style.cssText =
+            'width: 35px; padding: 3px 6px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 4px; font-size: 12px;';
+
         const loopsText = document.createElement('span');
         loopsText.textContent = 'loops';
-        
+
         progressionControls.appendChild(incrementValue);
         progressionControls.appendChild(incrementType);
         progressionControls.appendChild(everyText);
         progressionControls.appendChild(loopInterval);
         progressionControls.appendChild(loopsText);
-        
+
         section.appendChild(progressionControls);
-        
+
         return section;
     }
 
     createSavedLoopsSection() {
         const section = document.createElement('div');
         section.className = 'saved-loops-section';
-        section.style.cssText = 'background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); padding: 16px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.1);';
-        
+        section.style.cssText =
+            'background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); padding: 16px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.1);';
+
         const h4 = document.createElement('h4');
         h4.style.cssText = 'margin-bottom: 12px; font-size: 14px; color: var(--text-secondary);';
         h4.textContent = 'Saved Loops';
         section.appendChild(h4);
-        
+
         const savedSessionsList = document.createElement('div');
         savedSessionsList.id = 'savedSessionsList';
         savedSessionsList.className = 'saved-sessions-list';
         savedSessionsList.style.cssText = 'max-height: 150px; overflow-y: auto;';
-        
+
         const emptyState = document.createElement('p');
         emptyState.className = 'empty-state';
-        emptyState.style.cssText = 'color: var(--text-secondary); text-align: center; font-size: 12px; margin: 0; padding: 16px;';
+        emptyState.style.cssText =
+            'color: var(--text-secondary); text-align: center; font-size: 12px; margin: 0; padding: 16px;';
         emptyState.textContent = 'No saved loops for this file';
-        
+
         savedSessionsList.appendChild(emptyState);
         section.appendChild(savedSessionsList);
-        
+
         return section;
     }
 
     createAudioControlsCompact() {
         const section = document.createElement('div');
         section.className = 'audio-controls-compact';
-        section.style.cssText = 'background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.1);';
-        
+        section.style.cssText =
+            'background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid rgba(255, 255, 255, 0.1);';
+
         const h4 = document.createElement('h4');
         h4.style.cssText = 'margin-bottom: 16px; text-align: center;';
         h4.textContent = 'Audio Controls';
         section.appendChild(h4);
-        
+
         const grid = document.createElement('div');
-        grid.style.cssText = 'display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 16px;';
-        
+        grid.style.cssText =
+            'display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 16px;';
+
         // Speed Control
         const speedControl = document.createElement('div');
         speedControl.className = 'speed-control-compact';
-        
+
         const speedLabel = document.createElement('label');
-        speedLabel.style.cssText = 'display: block; margin-bottom: 8px; font-size: 14px; color: var(--text-secondary);';
+        speedLabel.style.cssText =
+            'display: block; margin-bottom: 8px; font-size: 14px; color: var(--text-secondary);';
         speedLabel.textContent = 'Speed: ';
-        
+
         const speedValue = document.createElement('span');
         speedValue.id = 'speedValue';
         speedValue.style.cssText = 'color: var(--primary); font-weight: 600;';
         speedValue.textContent = '100%';
         speedLabel.appendChild(speedValue);
-        
+
         const speedSlider = document.createElement('input');
         speedSlider.type = 'range';
         speedSlider.id = 'speedSlider';
@@ -409,11 +417,13 @@ export class AudioPlayer {
         speedSlider.value = '100';
         speedSlider.step = '1';
         speedSlider.className = 'slider';
-        speedSlider.style.cssText = 'width: 100%; height: 8px; background: linear-gradient(to right, #374151 0%, #6366f1 50%, #374151 100%); border-radius: 4px; outline: none; -webkit-appearance: none; -moz-appearance: none; appearance: none;';
-        
+        speedSlider.style.cssText =
+            'width: 100%; height: 8px; background: linear-gradient(to right, #374151 0%, #6366f1 50%, #374151 100%); border-radius: 4px; outline: none; -webkit-appearance: none; -moz-appearance: none; appearance: none;';
+
         const speedMarks = document.createElement('div');
-        speedMarks.style.cssText = 'display: flex; justify-content: space-between; margin-top: 4px; font-size: 11px; color: var(--text-muted);';
-        
+        speedMarks.style.cssText =
+            'display: flex; justify-content: space-between; margin-top: 4px; font-size: 11px; color: var(--text-muted);';
+
         const mark50 = document.createElement('span');
         mark50.textContent = '50%';
         const mark100 = document.createElement('span');
@@ -421,79 +431,82 @@ export class AudioPlayer {
         mark100.textContent = '100%';
         const mark150 = document.createElement('span');
         mark150.textContent = '150%';
-        
+
         speedMarks.appendChild(mark50);
         speedMarks.appendChild(mark100);
         speedMarks.appendChild(mark150);
-        
+
         speedControl.appendChild(speedLabel);
         speedControl.appendChild(speedSlider);
         speedControl.appendChild(speedMarks);
-        
+
         // Pitch Control
         const pitchControl = document.createElement('div');
         pitchControl.className = 'pitch-control-compact';
-        
+
         const pitchLabel = document.createElement('label');
-        pitchLabel.style.cssText = 'display: block; margin-bottom: 8px; font-size: 14px; color: var(--text-secondary);';
+        pitchLabel.style.cssText =
+            'display: block; margin-bottom: 8px; font-size: 14px; color: var(--text-secondary);';
         pitchLabel.textContent = 'Pitch: ';
-        
+
         const pitchValue = document.createElement('span');
         pitchValue.id = 'pitchValue';
         pitchValue.style.cssText = 'color: var(--primary); font-weight: 600;';
         pitchValue.textContent = '0';
         pitchLabel.appendChild(pitchValue);
-        
+
         const pitchButtons = document.createElement('div');
         pitchButtons.className = 'pitch-buttons';
         pitchButtons.style.cssText = 'display: flex; gap: 6px; justify-content: center;';
-        
+
         const pitchBtnData = [
             { pitch: '-1', text: '-1' },
             { pitch: '-0.5', text: '-½' },
             { pitch: '+0.5', text: '+½' },
             { pitch: '+1', text: '+1' }
         ];
-        
+
         pitchBtnData.forEach(({ pitch, text }) => {
             const btn = document.createElement('button');
             btn.className = 'pitch-btn';
             btn.dataset.pitch = pitch;
-            btn.style.cssText = 'flex: 1; padding: 8px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 14px;';
+            btn.style.cssText =
+                'flex: 1; padding: 8px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 14px;';
             btn.textContent = text;
             pitchButtons.appendChild(btn);
         });
-        
+
         pitchControl.appendChild(pitchLabel);
         pitchControl.appendChild(pitchButtons);
-        
+
         grid.appendChild(speedControl);
         grid.appendChild(pitchControl);
         section.appendChild(grid);
-        
+
         // Volume Control
         const volumeControl = document.createElement('div');
         volumeControl.className = 'volume-control-compact';
-        
+
         const volumeLabel = document.createElement('label');
-        volumeLabel.style.cssText = 'display: block; margin-bottom: 8px; font-size: 14px; color: var(--text-secondary);';
+        volumeLabel.style.cssText =
+            'display: block; margin-bottom: 8px; font-size: 14px; color: var(--text-secondary);';
         volumeLabel.textContent = 'Volume: ';
-        
+
         const volumeValue = document.createElement('span');
         volumeValue.id = 'volumeValue';
         volumeValue.style.cssText = 'color: var(--primary); font-weight: 600;';
         volumeValue.textContent = '100%';
         volumeLabel.appendChild(volumeValue);
-        
+
         const volumeSliderContainer = document.createElement('div');
         volumeSliderContainer.className = 'volume-slider-container';
         volumeSliderContainer.style.cssText = 'display: flex; align-items: center; gap: 12px;';
-        
+
         const volumeIcon = document.createElement('i');
         volumeIcon.className = 'icon';
         volumeIcon.style.fontSize = '18px';
         volumeIcon.textContent = '🔊';
-        
+
         const volumeSlider = document.createElement('input');
         volumeSlider.type = 'range';
         volumeSlider.id = 'volumeSlider';
@@ -501,19 +514,20 @@ export class AudioPlayer {
         volumeSlider.max = '100';
         volumeSlider.value = '100';
         volumeSlider.className = 'slider';
-        volumeSlider.style.cssText = 'flex: 1; height: 8px; background: linear-gradient(to right, #374151 0%, #6366f1 100%); border-radius: 4px; outline: none; -webkit-appearance: none; -moz-appearance: none; appearance: none;';
-        
+        volumeSlider.style.cssText =
+            'flex: 1; height: 8px; background: linear-gradient(to right, #374151 0%, #6366f1 100%); border-radius: 4px; outline: none; -webkit-appearance: none; -moz-appearance: none; appearance: none;';
+
         volumeSliderContainer.appendChild(volumeIcon);
         volumeSliderContainer.appendChild(volumeSlider);
-        
+
         volumeControl.appendChild(volumeLabel);
         volumeControl.appendChild(volumeSliderContainer);
         section.appendChild(volumeControl);
-        
+
         // Reset buttons
         const resetButtonsDiv = document.createElement('div');
         resetButtonsDiv.style.cssText = 'display: flex; gap: 10px; margin-top: 16px;';
-        
+
         const resetSpeedBtn = document.createElement('button');
         resetSpeedBtn.id = 'resetSpeedBtn';
         resetSpeedBtn.className = 'btn btn-sm btn-secondary';
@@ -523,7 +537,7 @@ export class AudioPlayer {
         resetSpeedIcon.textContent = '↻';
         resetSpeedBtn.appendChild(resetSpeedIcon);
         resetSpeedBtn.appendChild(document.createTextNode(' Reset Speed'));
-        
+
         const resetPitchBtn = document.createElement('button');
         resetPitchBtn.id = 'resetPitchBtn';
         resetPitchBtn.className = 'btn btn-sm btn-secondary';
@@ -533,11 +547,11 @@ export class AudioPlayer {
         resetPitchIcon.textContent = '↻';
         resetPitchBtn.appendChild(resetPitchIcon);
         resetPitchBtn.appendChild(document.createTextNode(' Reset Pitch'));
-        
+
         resetButtonsDiv.appendChild(resetSpeedBtn);
         resetButtonsDiv.appendChild(resetPitchBtn);
         section.appendChild(resetButtonsDiv);
-        
+
         return section;
     }
 
@@ -547,23 +561,22 @@ export class AudioPlayer {
             return;
         }
 
-
         // Use DOM-based rendering
         renderAudioPlayerDOM(this.container);
-        
+
         // Attach event listeners after rendering
         this.attachEventListeners();
-        
+
         // Add styles if not already added
         this.addStyles();
     }
-    
+
     addStyles() {
         // Check if style already exists before adding
         if (document.getElementById('audioPlayerStyles')) {
             return;
         }
-        
+
         const style = document.createElement('style');
         style.id = 'audioPlayerStyles';
         style.textContent = `
@@ -634,16 +647,15 @@ export class AudioPlayer {
                 to { transform: rotate(360deg); }
             }
         `;
-        
+
         document.head.appendChild(style);
     }
-    
+
     attachEventListeners() {
         // Prevent duplicate event listeners
         if (this.eventListenersAttached) {
             return;
         }
-
 
         // File input
         const fileInput = document.getElementById('audioFileInput');
@@ -654,10 +666,10 @@ export class AudioPlayer {
         }
 
         // Source tab switching
-        document.querySelectorAll('.source-tab').forEach(tab => {
+        document.querySelectorAll('.source-tab').forEach((tab) => {
             tab.addEventListener('click', (e) => {
                 // Update active tab
-                document.querySelectorAll('.source-tab').forEach(t => {
+                document.querySelectorAll('.source-tab').forEach((t) => {
                     t.classList.remove('active');
                     t.style.background = 'var(--bg-input)';
                     t.style.color = 'var(--text-primary)';
@@ -694,7 +706,7 @@ export class AudioPlayer {
                     if (youtubeContainer) {
                         youtubeContainer.style.display = 'none';
                     }
-                    
+
                     // Re-enable controls
                     const playBtn = document.getElementById('audioPlayPauseBtn');
                     if (playBtn) {
@@ -710,18 +722,18 @@ export class AudioPlayer {
                         playBtn.appendChild(icon);
                         playBtn.appendChild(document.createTextNode(' Play'));
                     }
-                    
+
                     // Show all hidden controls
                     const elementsToShow = [
                         'speedControl',
-                        'pitchControl', 
+                        'pitchControl',
                         'loopControls',
                         'progressSection',
                         'waveformContainer',
                         'tempoProgressionSection'
                     ];
-                    
-                    elementsToShow.forEach(id => {
+
+                    elementsToShow.forEach((id) => {
                         const element = document.getElementById(id);
                         if (element) element.style.display = '';
                     });
@@ -821,8 +833,12 @@ export class AudioPlayer {
         }
 
         // Loop controls
-        document.getElementById('setLoopStartBtn')?.addEventListener('click', () => this.setLoopStart());
-        document.getElementById('setLoopEndBtn')?.addEventListener('click', () => this.setLoopEnd());
+        document
+            .getElementById('setLoopStartBtn')
+            ?.addEventListener('click', () => this.setLoopStart());
+        document
+            .getElementById('setLoopEndBtn')
+            ?.addEventListener('click', () => this.setLoopEnd());
         document.getElementById('clearLoopBtn')?.addEventListener('click', () => this.clearLoop());
         document.getElementById('loopEnabled')?.addEventListener('change', (e) => {
             this.isLooping = e.target.checked;
@@ -850,12 +866,12 @@ export class AudioPlayer {
             });
         }
 
-
         // Tempo progression controls
         document.getElementById('progressionEnabled')?.addEventListener('change', (e) => {
             this.tempoProgression.enabled = e.target.checked;
-            document.getElementById('progressionControls').style.display =
-                e.target.checked ? 'block' : 'none';
+            document.getElementById('progressionControls').style.display = e.target.checked
+                ? 'block'
+                : 'none';
             this.updateProgressionStatus();
         });
 
@@ -875,7 +891,7 @@ export class AudioPlayer {
         });
 
         // Speed controls
-        document.querySelectorAll('.speed-btn').forEach(btn => {
+        document.querySelectorAll('.speed-btn').forEach((btn) => {
             btn.addEventListener('click', (e) => {
                 const change = parseInt(e.target.dataset.speed);
                 this.adjustSpeed(change);
@@ -897,7 +913,7 @@ export class AudioPlayer {
         });
 
         // Pitch controls
-        document.querySelectorAll('.pitch-btn').forEach(btn => {
+        document.querySelectorAll('.pitch-btn').forEach((btn) => {
             btn.addEventListener('click', (e) => {
                 const change = parseFloat(e.target.dataset.pitch);
                 this.adjustPitch(change);
@@ -957,7 +973,6 @@ export class AudioPlayer {
                     this.setPitch(0);
                     const pitchSlider = document.getElementById('pitchSlider');
                     if (pitchSlider) pitchSlider.value = 0;
-
                 } else {
                     // Enable pitch shifting
                     try {
@@ -983,10 +998,12 @@ export class AudioPlayer {
 
                         // Update pitch button states
                         this.updatePitchButtonStates();
-
                     } catch (error) {
                         console.error('Failed to enable pitch shifting:', error);
-                        this.showNotification(error.message || 'Failed to enable pitch shifting', 'error');
+                        this.showNotification(
+                            error.message || 'Failed to enable pitch shifting',
+                            'error'
+                        );
                         enablePitchBtn.textContent = 'Enable Pitch Shifting';
                         enablePitchBtn.disabled = false;
 
@@ -999,13 +1016,11 @@ export class AudioPlayer {
 
         this.sessionManager.attachEventListeners();
         this.eventListenersAttached = true;
-
     }
 
     async handleFileSelect(event) {
         const file = event.target.files[0];
         if (!file) return;
-
 
         try {
             // Stop any current playback
@@ -1044,27 +1059,30 @@ export class AudioPlayer {
             // Check if Tone is available
             if (typeof Tone === 'undefined' || this.toneLoadFailed) {
                 console.warn('Tone.js not available, using basic HTML5 audio');
-                
+
                 // Fall back to basic HTML5 audio
                 this.useBasicAudio = true;
                 this.basicAudio = new Audio();
                 this.basicAudio.src = audioUrl;
-                
+
                 // Show warning about limited features
-                this.showNotification('Using basic audio player. Speed and pitch controls are not available.', 'warning');
-                
+                this.showNotification(
+                    'Using basic audio player. Speed and pitch controls are not available.',
+                    'warning'
+                );
+
                 // Set up basic audio loaded handler
                 this.basicAudio.addEventListener('loadedmetadata', () => {
                     this.duration = this.basicAudio.duration;
                     this.audioLoaded = true;
                     this.updateWaveform();
                 });
-                
+
                 this.basicAudio.addEventListener('error', (e) => {
                     console.error('Basic audio load error:', e);
                     this.showNotification('Failed to load audio file', 'error');
                 });
-                
+
                 // Time update for basic audio
                 this.basicAudio.addEventListener('timeupdate', () => {
                     this.currentTime = this.basicAudio.currentTime;
@@ -1073,30 +1091,35 @@ export class AudioPlayer {
                         this.waveformVisualizer.updateProgress(this.currentTime);
                     }
                 });
-                
+
                 // Handle ended event
                 this.basicAudio.addEventListener('ended', () => {
                     this.isPlaying = false;
                     this.updatePlayPauseButton();
                     this.syncTimerStop();
                 });
-                
+
                 return;
             }
-            
+
             // Create GrainPlayer with settings optimized for performance
             // Adjust grain settings based on quality mode
-            const grainSettings = this.qualityMode === 'high' ? {
-                grainSize: 0.05,    // 50ms grains for higher quality
-                overlap: 0.25       // 25% overlap for smoother sound
-            } : this.qualityMode === 'low' ? {
-                grainSize: 0.2,     // 200ms grains for better performance
-                overlap: 0.1        // 10% overlap for less CPU usage
-            } : {
-                grainSize: 0.1,     // 100ms grains - balanced
-                overlap: 0.2        // 20% overlap - balanced
-            };
-            
+            const grainSettings =
+                this.qualityMode === 'high'
+                    ? {
+                          grainSize: 0.05, // 50ms grains for higher quality
+                          overlap: 0.25 // 25% overlap for smoother sound
+                      }
+                    : this.qualityMode === 'low'
+                      ? {
+                            grainSize: 0.2, // 200ms grains for better performance
+                            overlap: 0.1 // 10% overlap for less CPU usage
+                        }
+                      : {
+                            grainSize: 0.1, // 100ms grains - balanced
+                            overlap: 0.2 // 20% overlap - balanced
+                        };
+
             this.grainPlayer = new Tone.GrainPlayer({
                 url: audioUrl,
                 loop: false,
@@ -1104,7 +1127,7 @@ export class AudioPlayer {
                 grainSize: grainSettings.grainSize,
                 overlap: grainSettings.overlap,
                 reverse: false,
-                volume: -12,        // Start at reasonable level
+                volume: -12, // Start at reasonable level
                 fadeIn: 0,
                 fadeOut: 0,
                 onload: () => {
@@ -1121,10 +1144,12 @@ export class AudioPlayer {
                         if (this.masterGain) {
                             this.grainPlayer.connect(this.masterGain);
                         } else {
-                            console.error('Master gain not initialized, connecting directly to destination');
+                            console.error(
+                                'Master gain not initialized, connecting directly to destination'
+                            );
                             this.grainPlayer.toDestination();
                         }
-                        
+
                         // Set master gain to current volume slider value
                         const volumeSlider = document.getElementById('volumeSlider');
                         if (volumeSlider && this.masterGain) {
@@ -1133,7 +1158,6 @@ export class AudioPlayer {
                             this.masterGain.gain.cancelScheduledValues(Tone.now());
                             this.masterGain.gain.setValueAtTime(gainValue, Tone.now());
                         }
-
 
                         // Show controls with loading state
                         const controlsSection = document.getElementById('audioControlsSection');
@@ -1162,11 +1186,11 @@ export class AudioPlayer {
                         this.sessionManager.loadSavedSessions();
 
                         // Dispatch event for practice form
-                        window.dispatchEvent(new CustomEvent('audioFileLoaded', {
-                            detail: {fileName: file.name}
-                        }));
-
-
+                        window.dispatchEvent(
+                            new CustomEvent('audioFileLoaded', {
+                                detail: { fileName: file.name }
+                            })
+                        );
                     } catch (error) {
                         console.error('Error in onload callback:', error);
                         // Continue anyway - the audio might still be playable
@@ -1178,7 +1202,6 @@ export class AudioPlayer {
                     this.showNotification('Failed to load audio file', 'error');
                 }
             });
-
         } catch (error) {
             console.error('Error loading audio file:', error);
             this.showNotification('Failed to load audio file: ' + error.message, 'error');
@@ -1203,22 +1226,21 @@ export class AudioPlayer {
             width: '100%',
             videoId: '',
             playerVars: {
-                'controls': 1,
-                'rel': 0,
-                'modestbranding': 1,
-                'enablejsapi': 1,
-                'autoplay': 0,  // Prevent autoplay
-                'origin': window.location.origin
+                controls: 1,
+                rel: 0,
+                modestbranding: 1,
+                enablejsapi: 1,
+                autoplay: 0, // Prevent autoplay
+                origin: window.location.origin
             },
             events: {
-                'onReady': this.onYouTubePlayerReady.bind(this),
-                'onStateChange': this.onYouTubeStateChange.bind(this)
+                onReady: this.onYouTubePlayerReady.bind(this),
+                onStateChange: this.onYouTubeStateChange.bind(this)
             }
         });
     }
 
     onYouTubePlayerReady(event) {
-
         // Enable controls
         const controlsSection = document.getElementById('audioControlsSection');
         if (controlsSection) {
@@ -1247,7 +1269,12 @@ export class AudioPlayer {
             this.syncTimerStop();
 
             // Handle loop if enabled
-            if (event.data === YT.PlayerState.ENDED && this.isLooping && this.loopStart !== null && this.loopEnd !== null) {
+            if (
+                event.data === YT.PlayerState.ENDED &&
+                this.isLooping &&
+                this.loopStart !== null &&
+                this.loopEnd !== null
+            ) {
                 this.youtubePlayer.seekTo(this.loopStart);
                 this.youtubePlayer.playVideo();
                 this.handleLoopComplete();
@@ -1264,7 +1291,6 @@ export class AudioPlayer {
             this.showNotification('Invalid YouTube URL', 'error');
             return;
         }
-
 
         // SET YOUTUBE STATE IMMEDIATELY
         this.youtubeVideoId = videoId;
@@ -1321,13 +1347,15 @@ export class AudioPlayer {
         }, 500);
 
         // Dispatch event for practice form
-        window.dispatchEvent(new CustomEvent('youtubeVideoLoaded', {
-            detail: {
-                videoId: videoId,
-                url: url,
-                mode: 'youtube'
-            }
-        }));
+        window.dispatchEvent(
+            new CustomEvent('youtubeVideoLoaded', {
+                detail: {
+                    videoId: videoId,
+                    url: url,
+                    mode: 'youtube'
+                }
+            })
+        );
 
         // Replace waveform with YouTube progress bar
         this.setupYouTubeProgressBar();
@@ -1377,7 +1405,6 @@ export class AudioPlayer {
             if (videoData && videoData.title) {
                 this.youtubeVideoTitle = videoData.title;
 
-
                 // Update display
                 // Filename display is now managed by the parent component
                 // const fileNameEl = document.getElementById('currentFileName');
@@ -1386,14 +1413,16 @@ export class AudioPlayer {
                 // }
 
                 // Update practice form
-                window.dispatchEvent(new CustomEvent('youtubeVideoLoaded', {
-                    detail: {
-                        videoId: this.youtubeVideoId,
-                        title: this.youtubeVideoTitle,
-                        url: this.youtubeVideoUrl,
-                        mode: 'youtube'
-                    }
-                }));
+                window.dispatchEvent(
+                    new CustomEvent('youtubeVideoLoaded', {
+                        detail: {
+                            videoId: this.youtubeVideoId,
+                            title: this.youtubeVideoTitle,
+                            url: this.youtubeVideoUrl,
+                            mode: 'youtube'
+                        }
+                    })
+                );
 
                 // IMPORTANT: Reload saved sessions with the new title
                 this.sessionManager.loadSavedSessions();
@@ -1416,7 +1445,6 @@ export class AudioPlayer {
 
         return null;
     }
-
 
     startYouTubeTimeUpdates() {
         this.stopYouTubeTimeUpdates();
@@ -1469,7 +1497,11 @@ export class AudioPlayer {
                     this.updateYouTubeLoopMarkers();
 
                     // Handle looping
-                    if (this.isLooping && this.loopEnd !== null && this.currentTime >= this.loopEnd) {
+                    if (
+                        this.isLooping &&
+                        this.loopEnd !== null &&
+                        this.currentTime >= this.loopEnd
+                    ) {
                         this.youtubePlayer.seekTo(this.loopStart || 0);
                         this.handleLoopComplete();
                     }
@@ -1492,7 +1524,9 @@ export class AudioPlayer {
         if (!container || !this.isYouTubeMode) return;
 
         // Remove existing markers
-        container.querySelectorAll('.youtube-loop-start, .youtube-loop-end').forEach(marker => marker.remove());
+        container
+            .querySelectorAll('.youtube-loop-start, .youtube-loop-end')
+            .forEach((marker) => marker.remove());
 
         // Get duration
         let duration = this.duration;
@@ -1545,7 +1579,7 @@ export class AudioPlayer {
             const endPercent = Math.max(0, Math.min(100, (this.loopEnd / duration) * 100));
 
             loopRegion.style.left = startPercent + '%';
-            loopRegion.style.width = (endPercent - startPercent) + '%';
+            loopRegion.style.width = endPercent - startPercent + '%';
             loopRegion.style.display = 'block';
         } else if (loopRegion) {
             loopRegion.style.display = 'none';
@@ -1754,7 +1788,6 @@ export class AudioPlayer {
                 progressBar.title = `Seek to ${(percentage * 100).toFixed(1)}%`;
             });
         }
-
     }
 
     setupTimeUpdate() {
@@ -1765,7 +1798,7 @@ export class AudioPlayer {
                 const realElapsed = Tone.now() - this.startTime;
 
                 // Apply playback rate to get scaled time + starting offset
-                this.currentTime = (realElapsed * this.playbackRate) + (this.startOffset || 0);
+                this.currentTime = realElapsed * this.playbackRate + (this.startOffset || 0);
 
                 // Handle looping
                 if (this.isLooping && this.loopEnd !== null && this.currentTime >= this.loopEnd) {
@@ -1816,7 +1849,6 @@ export class AudioPlayer {
         }
 
         try {
-
             // Load file into audioService for visualization
             await this.audioService.loadAudioFile(file);
 
@@ -1875,7 +1907,6 @@ export class AudioPlayer {
             };
 
             // Removed duplicate draw call - resizeCanvas is already called above
-
         } catch (error) {
             console.error('Error initializing waveform:', error);
         }
@@ -1891,9 +1922,11 @@ export class AudioPlayer {
                     if (this.isLooping && this.loopStart !== null) {
                         const currentTime = this.youtubePlayer.getCurrentTime();
                         // If we're outside the loop region or at the very beginning, start from loop start
-                        if (currentTime < this.loopStart ||
+                        if (
+                            currentTime < this.loopStart ||
                             (this.loopEnd !== null && currentTime > this.loopEnd) ||
-                            currentTime === 0) {
+                            currentTime === 0
+                        ) {
                             this.youtubePlayer.seekTo(this.loopStart);
                         }
                     }
@@ -1902,7 +1935,7 @@ export class AudioPlayer {
             }
             return;
         }
-        
+
         // Handle basic HTML5 audio
         if (this.useBasicAudio && this.basicAudio) {
             if (this.isPlaying) {
@@ -1966,8 +1999,10 @@ export class AudioPlayer {
             // Handle loop boundaries
             let startPosition = this.currentTime;
             if (this.isLooping && this.loopStart !== null) {
-                if (startPosition < this.loopStart ||
-                    (this.loopEnd !== null && startPosition > this.loopEnd)) {
+                if (
+                    startPosition < this.loopStart ||
+                    (this.loopEnd !== null && startPosition > this.loopEnd)
+                ) {
                     startPosition = this.loopStart;
                 }
             }
@@ -1979,7 +2014,7 @@ export class AudioPlayer {
             if (Tone.context.state !== 'running') {
                 await Tone.start();
             }
-            
+
             // Start playback at the correct volume (already set in GrainPlayer constructor)
             this.grainPlayer.start(undefined, startPosition);
 
@@ -2004,7 +2039,6 @@ export class AudioPlayer {
 
     syncTimerStart() {
         try {
-
             // Check if sync is enabled by reading the checkbox directly
             const syncCheckbox = document.getElementById('syncMetronome');
 
@@ -2029,7 +2063,6 @@ export class AudioPlayer {
             }
 
             if (timer) {
-
                 if (!timer.isRunning) {
                     // For YouTube, we want to continue from where we left off
                     if (this.isYouTubeMode && timer.elapsedTime > 0) {
@@ -2052,7 +2085,6 @@ export class AudioPlayer {
 
     syncTimerStop() {
         try {
-
             // Check if sync is enabled by reading the checkbox directly
             const syncCheckbox = document.getElementById('syncMetronome');
             if (!syncCheckbox || !syncCheckbox.checked) {
@@ -2074,7 +2106,6 @@ export class AudioPlayer {
             }
 
             if (timer) {
-
                 if (timer.isRunning) {
                     timer.pause();
                 } else {
@@ -2088,7 +2119,6 @@ export class AudioPlayer {
     }
 
     stop() {
-
         if (this.isYouTubeMode && this.youtubePlayer) {
             this.youtubePlayer.stopVideo();
             this.stopYouTubeTimeUpdates();
@@ -2162,15 +2192,15 @@ export class AudioPlayer {
             while (btn.firstChild) {
                 btn.removeChild(btn.firstChild);
             }
-            
+
             // Create icon element
             const icon = document.createElement('i');
             icon.className = 'icon';
             icon.textContent = this.isPlaying ? '⏸️' : '▶️';
-            
+
             // Create text node
             const text = document.createTextNode(this.isPlaying ? ' Pause' : ' Play');
-            
+
             // Append elements
             btn.appendChild(icon);
             btn.appendChild(text);
@@ -2222,7 +2252,6 @@ export class AudioPlayer {
 
         this.showNotification('Loop start set', 'success');
     }
-
 
     setLoopEnd() {
         let newEndTime;
@@ -2320,7 +2349,7 @@ export class AudioPlayer {
             return;
         }
 
-        let duration = this.duration;
+        const duration = this.duration;
         if (!duration || duration === 0) {
             loopRegion.style.display = 'none';
             return;
@@ -2331,7 +2360,7 @@ export class AudioPlayer {
             const endPercent = (this.loopEnd / duration) * 100;
 
             loopRegion.style.left = startPercent + '%';
-            loopRegion.style.width = (endPercent - startPercent) + '%';
+            loopRegion.style.width = endPercent - startPercent + '%';
             loopRegion.style.display = 'block';
         } else {
             loopRegion.style.display = 'none';
@@ -2359,9 +2388,9 @@ export class AudioPlayer {
         } else if (this.grainPlayer) {
             // Use fixed grain parameters for consistency
             // The key to good quality is NOT changing grain size with tempo
-            this.grainPlayer.grainSize = 0.1;  // Keep constant
-            this.grainPlayer.overlap = 0.2;    // Keep constant
-            
+            this.grainPlayer.grainSize = 0.1; // Keep constant
+            this.grainPlayer.overlap = 0.2; // Keep constant
+
             // Set playback rate directly - GrainPlayer handles this smoothly internally
             this.grainPlayer.playbackRate = this.playbackRate;
 
@@ -2396,7 +2425,10 @@ export class AudioPlayer {
         // Apply pitch shift based on mode
         if (this.isYouTubeMode) {
             // For YouTube, only update if audio processor is active
-            if (window.youtubeAudioProcessor && window.youtubeAudioProcessor.isCurrentlyProcessing()) {
+            if (
+                window.youtubeAudioProcessor &&
+                window.youtubeAudioProcessor.isCurrentlyProcessing()
+            ) {
                 window.youtubeAudioProcessor.setPitch(pitch);
             }
             // Don't show notification every time - buttons are already visually disabled
@@ -2430,10 +2462,10 @@ export class AudioPlayer {
             // Create high-quality pitch shifter with proper settings
             this.pitchShift = new Tone.PitchShift({
                 pitch: roundedSemitones,
-                windowSize: 0.1,     // Balanced window for quality vs latency
-                delayTime: 0.05,     // Reduced delay for less artifacts
-                feedback: 0.0,       // No feedback to avoid artifacts
-                wet: 1.0            // 100% processed signal
+                windowSize: 0.1, // Balanced window for quality vs latency
+                delayTime: 0.05, // Reduced delay for less artifacts
+                feedback: 0.0, // No feedback to avoid artifacts
+                wet: 1.0 // 100% processed signal
             });
 
             // Connect the chain
@@ -2446,16 +2478,16 @@ export class AudioPlayer {
     setQualityMode(mode = 'high') {
         const qualitySettings = {
             low: {
-                grainSize: 0.25,     // Larger grains for lower CPU
-                overlap: 0.25        // Less overlap
+                grainSize: 0.25, // Larger grains for lower CPU
+                overlap: 0.25 // Less overlap
             },
             medium: {
-                grainSize: 0.15,     // Medium grain size for balanced quality
-                overlap: 0.4         // Moderate overlap
+                grainSize: 0.15, // Medium grain size for balanced quality
+                overlap: 0.4 // Moderate overlap
             },
             high: {
-                grainSize: 0.1,      // Smaller grains for better quality
-                overlap: 0.5         // Good overlap for smooth sound
+                grainSize: 0.1, // Smaller grains for better quality
+                overlap: 0.5 // Good overlap for smooth sound
             }
         };
 
@@ -2467,16 +2499,15 @@ export class AudioPlayer {
             this.grainPlayer.grainSize = settings.grainSize;
             this.grainPlayer.overlap = settings.overlap;
         }
-
     }
 
     updatePitchButtonStates() {
         const buttons = document.querySelectorAll('.pitch-btn');
-        const isActive = this.isYouTubeMode ?
-            (window.youtubeAudioProcessor && window.youtubeAudioProcessor.isCurrentlyProcessing()) :
-            true;
+        const isActive = this.isYouTubeMode
+            ? window.youtubeAudioProcessor && window.youtubeAudioProcessor.isCurrentlyProcessing()
+            : true;
 
-        buttons.forEach(btn => {
+        buttons.forEach((btn) => {
             if (this.isYouTubeMode && !isActive) {
                 btn.style.opacity = '0.5';
                 btn.style.cursor = 'not-allowed';
@@ -2527,11 +2558,13 @@ export class AudioPlayer {
 
         if (this.tempoProgression.enabled) {
             const currentSpeed = Math.round(this.playbackRate * 100);
-            const increment = this.tempoProgression.incrementType === 'percentage'
-                ? `${this.tempoProgression.incrementValue}%`
-                : `${this.tempoProgression.incrementValue} BPM`;
+            const increment =
+                this.tempoProgression.incrementType === 'percentage'
+                    ? `${this.tempoProgression.incrementValue}%`
+                    : `${this.tempoProgression.incrementValue} BPM`;
 
-            const loopsUntilNext = this.tempoProgression.loopInterval -
+            const loopsUntilNext =
+                this.tempoProgression.loopInterval -
                 (this.tempoProgression.currentLoopCount % this.tempoProgression.loopInterval);
 
             status.textContent = `Current: ${currentSpeed}% | Loops: ${this.tempoProgression.currentLoopCount} | Next increase: +${increment} after ${loopsUntilNext} loop(s)`;
@@ -2560,9 +2593,7 @@ export class AudioPlayer {
         }
     }
 
-
     destroy() {
-
         // Stop any playback first
         this.stop();
 
@@ -2582,7 +2613,6 @@ export class AudioPlayer {
             }
             this.grainPlayer = null;
         }
-
 
         // Removed compressor and reverb disposal - no longer used
 
@@ -2620,6 +2650,5 @@ export class AudioPlayer {
         this.currentTime = 0;
         this.duration = 0;
         this.isInitialized = false;
-
     }
 }

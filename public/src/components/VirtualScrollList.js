@@ -112,7 +112,6 @@ export class VirtualScrollList {
         this.container.scrollTop = scrollTop;
     }
 
-
     destroy() {
         this.container.removeEventListener('scroll', this.handleScroll);
         this.resizeObserver.disconnect();
@@ -145,12 +144,16 @@ export class VirtualSessionsList extends VirtualScrollList {
                     <span class="detail-label">Practice Area</span>
                     <span class="detail-value">${session.practiceArea}</span>
                 </div>
-                ${session.bpm ? `
+                ${
+                    session.bpm
+                        ? `
                     <div class="session-detail">
                         <span class="detail-label">BPM</span>
                         <span class="detail-value">${session.bpm}</span>
                     </div>
-                ` : ''}
+                `
+                        : ''
+                }
             </div>
             ${session.notes ? `<div class="session-notes">${session.notes}</div>` : ''}
         `;

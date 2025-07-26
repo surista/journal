@@ -1,6 +1,6 @@
 // Goals List Component - Fixed to handle async storage properly
-import {debounce, TimeUtils} from '../utils/helpers.js';
-import {notificationManager} from '../services/notificationManager.js';
+import { debounce, TimeUtils } from '../utils/helpers.js';
+import { notificationManager } from '../services/notificationManager.js';
 import { sanitizeInput, escapeHtml } from '../utils/sanitizer.js';
 
 export class GoalsList {
@@ -113,14 +113,16 @@ export class GoalsList {
             const goalTarget = sanitizeInput(document.getElementById('goalTarget')?.value || '');
             const goalType = sanitizeInput(document.getElementById('goalType')?.value || '');
             const goalCurrent = sanitizeInput(document.getElementById('goalCurrent')?.value || '');
-            const goalTargetDate = sanitizeInput(document.getElementById('goalTargetDate')?.value || '');
+            const goalTargetDate = sanitizeInput(
+                document.getElementById('goalTargetDate')?.value || ''
+            );
 
             if (!goalText) {
                 // Use console.error instead of notificationManager if it's not available
                 notificationManager.error('Please enter a goal!');
                 return;
             }
-            
+
             // Validate goal text length
             if (goalText.length > 100) {
                 notificationManager.error('Goal must be less than 100 characters!');
@@ -192,7 +194,7 @@ export class GoalsList {
 
         // Boost priority for time-sensitive keywords
         const urgentKeywords = ['today', 'this week', 'urgent', 'important', 'asap'];
-        if (urgentKeywords.some(keyword => goalText.toLowerCase().includes(keyword))) {
+        if (urgentKeywords.some((keyword) => goalText.toLowerCase().includes(keyword))) {
             priority += 2;
         }
 
@@ -201,7 +203,6 @@ export class GoalsList {
 
     async loadGoals() {
         try {
-
             // Get goals from storage (this is async)
             this.goals = await this.storageService.getGoals();
 
@@ -209,7 +210,6 @@ export class GoalsList {
             if (!Array.isArray(this.goals)) {
                 this.goals = [];
             }
-
 
             this.filteredGoals = [...this.goals];
             this.updateStats();
@@ -236,7 +236,7 @@ export class GoalsList {
     updateStats() {
         try {
             const total = this.goals.length;
-            const completed = this.goals.filter(g => g.completed).length;
+            const completed = this.goals.filter((g) => g.completed).length;
             const rate = total > 0 ? Math.round((completed / total) * 100) : 0;
 
             const totalElement = document.getElementById('totalGoals');
@@ -258,10 +258,11 @@ export class GoalsList {
                 this.filteredGoals = [...this.goals];
             } else {
                 const term = searchTerm.toLowerCase();
-                this.filteredGoals = this.goals.filter(goal =>
-                    goal.text.toLowerCase().includes(term) ||
-                    (goal.type && goal.type.includes(term)) ||
-                    goal.category.includes(term)
+                this.filteredGoals = this.goals.filter(
+                    (goal) =>
+                        goal.text.toLowerCase().includes(term) ||
+                        (goal.type && goal.type.includes(term)) ||
+                        goal.category.includes(term)
                 );
             }
             this.renderGoalsList();
@@ -276,9 +277,10 @@ export class GoalsList {
             if (!goalsList) return;
 
             if (this.filteredGoals.length === 0) {
-                const message = this.goals.length === 0
-                    ? 'No goals yet. Set your first practice goal!'
-                    : 'No goals match your search.';
+                const message =
+                    this.goals.length === 0
+                        ? 'No goals yet. Set your first practice goal!'
+                        : 'No goals match your search.';
                 goalsList.innerHTML = `<p style="text-align: center; color: var(--text-secondary);">${escapeHtml(message)}</p>`;
                 return;
             }
@@ -293,7 +295,7 @@ export class GoalsList {
                 return new Date(b.createdAt) - new Date(a.createdAt);
             });
 
-            goalsList.innerHTML = sortedGoals.map(goal => this.renderGoalItem(goal)).join('');
+            goalsList.innerHTML = sortedGoals.map((goal) => this.renderGoalItem(goal)).join('');
 
             // Attach event listeners to goal items
             this.attachGoalItemListeners();
@@ -312,12 +314,24 @@ export class GoalsList {
 
     renderGoalItem(goal) {
         try {
-            
             // Format target date as dd-mmm-yy
             let targetDateFormatted = '';
             if (goal.targetDate) {
                 const date = new Date(goal.targetDate);
-                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                const months = [
+                    'Jan',
+                    'Feb',
+                    'Mar',
+                    'Apr',
+                    'May',
+                    'Jun',
+                    'Jul',
+                    'Aug',
+                    'Sep',
+                    'Oct',
+                    'Nov',
+                    'Dec'
+                ];
                 const day = date.getDate().toString().padStart(2, '0');
                 const month = months[date.getMonth()];
                 const year = date.getFullYear().toString().slice(-2);
@@ -328,11 +342,12 @@ export class GoalsList {
             const typeSymbol = goal.type ? this.getTypeSymbol(goal.type) : '';
 
             // Category (area) - default to category or 'General'
-            const area = goal.category ? goal.category.charAt(0).toUpperCase() + goal.category.slice(1) : 'General';
-            
+            const area = goal.category
+                ? goal.category.charAt(0).toUpperCase() + goal.category.slice(1)
+                : 'General';
 
             // Progress bar for measurable goals - we'll put this inline
-            let progressHtml = '';
+            const progressHtml = '';
             if (goal.type && goal.target) {
                 const progress = Math.min(100, Math.round((goal.current / goal.target) * 100));
                 // For now, let's skip the progress bar to debug the layout
@@ -358,7 +373,7 @@ export class GoalsList {
                     </div>
                 </div>
             `;
-            
+
             return goalHtml;
         } catch (error) {
             console.error('Error rendering goal item:', error);
@@ -413,15 +428,15 @@ export class GoalsList {
         try {
             // Action button listeners - use data-action attribute
             const actionBtns = this.container.querySelectorAll('.goal-actions button');
-            actionBtns.forEach(btn => {
+            actionBtns.forEach((btn) => {
                 btn.addEventListener('click', (e) => {
                     const button = e.target.closest('button');
                     if (!button) return;
-                    
+
                     const goalId = parseInt(button.dataset.goalId);
                     const action = button.dataset.action;
-                    
-                    switch(action) {
+
+                    switch (action) {
                         case 'update':
                             this.updateGoalProgress(goalId);
                             break;
@@ -440,7 +455,7 @@ export class GoalsList {
 
             // Legacy delete button listeners (for backward compatibility)
             const deleteBtns = this.container.querySelectorAll('.btn-danger');
-            deleteBtns.forEach(btn => {
+            deleteBtns.forEach((btn) => {
                 btn.addEventListener('click', (e) => {
                     const goalId = parseInt(e.target.dataset.goalId);
                     this.deleteGoal(goalId);
@@ -453,7 +468,7 @@ export class GoalsList {
 
     async toggleGoal(goalId) {
         try {
-            const goal = this.goals.find(g => g.id === goalId);
+            const goal = this.goals.find((g) => g.id === goalId);
             if (goal) {
                 goal.completed = !goal.completed;
 
@@ -483,7 +498,7 @@ export class GoalsList {
 
     async updateGoalProgress(goalId) {
         try {
-            const goal = this.goals.find(g => g.id === goalId);
+            const goal = this.goals.find((g) => g.id === goalId);
             if (goal) {
                 const unit = this.getUnitLabel(goal.type);
                 const newValue = prompt(`Update current progress (${unit}):`, goal.current || 0);
@@ -499,7 +514,7 @@ export class GoalsList {
                         this.celebrateCompletion();
                     }
 
-                    await this.storageService.updateGoal(goalId, {current, completed});
+                    await this.storageService.updateGoal(goalId, { current, completed });
                     await this.loadGoals();
                     notificationManager.info('Progress updated! Keep going! 💪');
                 }
@@ -512,7 +527,7 @@ export class GoalsList {
 
     async deleteGoal(goalId) {
         try {
-            const goal = this.goals.find(g => g.id === goalId);
+            const goal = this.goals.find((g) => g.id === goalId);
             if (goal && confirm(`Delete goal "${goal.text}"?`)) {
                 await this.storageService.deleteGoal(goalId);
                 await this.loadGoals();
@@ -526,17 +541,19 @@ export class GoalsList {
 
     async markGoalComplete(goalId) {
         try {
-            const goal = this.goals.find(g => g.id === goalId);
+            const goal = this.goals.find((g) => g.id === goalId);
             if (!goal) return;
-            
+
             // Toggle completion status
             goal.completed = !goal.completed;
             goal.completedAt = goal.completed ? new Date().toISOString() : null;
-            
+
             await this.storageService.updateGoal(goal);
             await this.loadGoals();
-            
-            notificationManager.success(goal.completed ? 'Goal marked as complete!' : 'Goal marked as incomplete');
+
+            notificationManager.success(
+                goal.completed ? 'Goal marked as complete!' : 'Goal marked as incomplete'
+            );
         } catch (error) {
             console.error('Error marking goal complete:', error);
             notificationManager.error('Failed to update goal status');
@@ -545,19 +562,19 @@ export class GoalsList {
 
     async editGoal(goalId) {
         try {
-            const goal = this.goals.find(g => g.id === goalId);
+            const goal = this.goals.find((g) => g.id === goalId);
             if (!goal) return;
-            
+
             // For now, just allow editing the goal text
             const newText = prompt('Edit goal:', goal.text);
             if (newText && newText.trim() && newText !== goal.text) {
                 goal.text = newText.trim();
                 goal.category = this.categorizeGoal(newText);
                 goal.priority = this.calculatePriority(newText, goal.type);
-                
+
                 await this.storageService.updateGoal(goal);
                 await this.loadGoals();
-                
+
                 notificationManager.success('Goal updated successfully');
             }
         } catch (error) {
@@ -577,7 +594,10 @@ export class GoalsList {
                     const bpm = parseInt(practiceEntry.bpm);
 
                     // Check if this practice session relates to the goal
-                    if (practiceEntry.notes && practiceEntry.notes.toLowerCase().includes(goal.text.toLowerCase())) {
+                    if (
+                        practiceEntry.notes &&
+                        practiceEntry.notes.toLowerCase().includes(goal.text.toLowerCase())
+                    ) {
                         if (bpm > goal.current) {
                             goal.current = bpm;
 

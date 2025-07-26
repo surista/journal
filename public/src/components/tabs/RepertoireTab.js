@@ -180,7 +180,6 @@ export class RepertoireTab {
 
     // Fix for RepertoireTab.js - attachEventListeners method
     attachEventListeners() {
-
         if (this.container) {
             // Remove previous event listener if it exists
             if (this.addSongClickHandler) {
@@ -196,7 +195,10 @@ export class RepertoireTab {
             this.escKeyHandler = (e) => {
                 if (e.key === 'Escape') {
                     const modal = document.getElementById('songModal');
-                    if (modal && (modal.style.display === 'flex' || modal.style.visibility === 'visible')) {
+                    if (
+                        modal &&
+                        (modal.style.display === 'flex' || modal.style.visibility === 'visible')
+                    ) {
                         this.hideSongModal();
                     }
                 }
@@ -205,14 +207,18 @@ export class RepertoireTab {
 
             // Event delegation with extensive debugging
             this.container.addEventListener('click', async (e) => {
-
                 const target = e.target;
 
                 // Handle YouTube link click
-                if (target.classList.contains('load-youtube-link') || target.closest('.load-youtube-link')) {
+                if (
+                    target.classList.contains('load-youtube-link') ||
+                    target.closest('.load-youtube-link')
+                ) {
                     e.preventDefault();
                     e.stopPropagation();
-                    const link = target.classList.contains('load-youtube-link') ? target : target.closest('.load-youtube-link');
+                    const link = target.classList.contains('load-youtube-link')
+                        ? target
+                        : target.closest('.load-youtube-link');
                     const url = link.dataset.url;
                     if (url) {
                         this.loadYouTubeInPracticeTab(url);
@@ -221,32 +227,47 @@ export class RepertoireTab {
                 }
 
                 // Handle quick edit button
-                if (target.classList.contains('edit-song-quick') || target.closest('.edit-song-quick')) {
+                if (
+                    target.classList.contains('edit-song-quick') ||
+                    target.closest('.edit-song-quick')
+                ) {
                     e.stopPropagation();
-                    const btn = target.classList.contains('edit-song-quick') ? target : target.closest('.edit-song-quick');
+                    const btn = target.classList.contains('edit-song-quick')
+                        ? target
+                        : target.closest('.edit-song-quick');
                     const songId = btn.dataset.id;
                     this.editSong(songId);
                     return;
                 }
 
                 // Handle quick delete button
-                if (target.classList.contains('delete-song-quick') || target.closest('.delete-song-quick')) {
+                if (
+                    target.classList.contains('delete-song-quick') ||
+                    target.closest('.delete-song-quick')
+                ) {
                     e.stopPropagation();
-                    const btn = target.classList.contains('delete-song-quick') ? target : target.closest('.delete-song-quick');
+                    const btn = target.classList.contains('delete-song-quick')
+                        ? target
+                        : target.closest('.delete-song-quick');
                     const songId = btn.dataset.id;
                     await this.deleteSong(songId);
                     return;
                 }
 
                 // Handle collapsible song cards
-                const songHeaderContent = target.closest('.song-header-content[data-toggle="collapse"]');
+                const songHeaderContent = target.closest(
+                    '.song-header-content[data-toggle="collapse"]'
+                );
                 if (songHeaderContent) {
                     const targetId = songHeaderContent.getAttribute('data-target');
                     const targetElement = document.getElementById(targetId);
                     const songHeader = songHeaderContent.closest('.song-header');
 
                     if (targetElement) {
-                        if (targetElement.style.display === 'none' || !targetElement.style.display) {
+                        if (
+                            targetElement.style.display === 'none' ||
+                            !targetElement.style.display
+                        ) {
                             targetElement.style.display = 'block';
                             songHeader.classList.add('expanded');
                         } else {
@@ -259,8 +280,11 @@ export class RepertoireTab {
                 }
 
                 // Add Song button
-                if (target.id === 'addSongBtn' || target.closest('#addSongBtn') || 
-                    target.id === 'addFirstSongBtn') {
+                if (
+                    target.id === 'addSongBtn' ||
+                    target.closest('#addSongBtn') ||
+                    target.id === 'addFirstSongBtn'
+                ) {
                     e.preventDefault();
                     this.showSongModal();
                     return;
@@ -274,32 +298,49 @@ export class RepertoireTab {
                 }
 
                 // Close modal buttons - check for close button or its parent
-                if (target.id === 'closeSongModal' ||
+                if (
+                    target.id === 'closeSongModal' ||
                     target.id === 'cancelSongBtn' ||
                     target.classList.contains('close-btn') ||
-                    target.classList.contains('close-modal')) {
+                    target.classList.contains('close-modal')
+                ) {
                     e.preventDefault();
                     this.hideSongModal();
                     return;
                 }
 
                 // Song actions
-                if (target.classList.contains('edit-song-btn') || target.closest('.edit-song-btn')) {
-                    const btn = target.classList.contains('edit-song-btn') ? target : target.closest('.edit-song-btn');
+                if (
+                    target.classList.contains('edit-song-btn') ||
+                    target.closest('.edit-song-btn')
+                ) {
+                    const btn = target.classList.contains('edit-song-btn')
+                        ? target
+                        : target.closest('.edit-song-btn');
                     const songId = btn.dataset.id;
                     this.editSong(songId);
                     return;
                 }
 
-                if (target.classList.contains('delete-song-btn') || target.closest('.delete-song-btn')) {
-                    const btn = target.classList.contains('delete-song-btn') ? target : target.closest('.delete-song-btn');
+                if (
+                    target.classList.contains('delete-song-btn') ||
+                    target.closest('.delete-song-btn')
+                ) {
+                    const btn = target.classList.contains('delete-song-btn')
+                        ? target
+                        : target.closest('.delete-song-btn');
                     const songId = btn.dataset.id;
                     await this.deleteSong(songId);
                     return;
                 }
 
-                if (target.classList.contains('practice-song-btn') || target.closest('.practice-song-btn')) {
-                    const btn = target.classList.contains('practice-song-btn') ? target : target.closest('.practice-song-btn');
+                if (
+                    target.classList.contains('practice-song-btn') ||
+                    target.closest('.practice-song-btn')
+                ) {
+                    const btn = target.classList.contains('practice-song-btn')
+                        ? target
+                        : target.closest('.practice-song-btn');
                     const songId = btn.dataset.id;
                     this.logPractice(songId);
                     return;
@@ -310,14 +351,14 @@ export class RepertoireTab {
             if (this.submitHandler) {
                 this.container.removeEventListener('submit', this.submitHandler);
             }
-            
+
             this.submitHandler = async (e) => {
                 if (e.target.id === 'songForm') {
                     e.preventDefault();
                     await this.saveSong();
                 }
             };
-            
+
             this.container.addEventListener('submit', this.submitHandler);
 
             // Filter and search changes
@@ -353,7 +394,7 @@ export class RepertoireTab {
     }
 
     applyFilters() {
-        this.filteredRepertoire = this.repertoire.filter(song => {
+        this.filteredRepertoire = this.repertoire.filter((song) => {
             // Search filter
             if (this.currentFilter.search) {
                 const searchTerm = this.currentFilter.search.toLowerCase();
@@ -366,7 +407,10 @@ export class RepertoireTab {
             }
 
             // Difficulty filter
-            if (this.currentFilter.difficulty && song.difficulty !== this.currentFilter.difficulty) {
+            if (
+                this.currentFilter.difficulty &&
+                song.difficulty !== this.currentFilter.difficulty
+            ) {
                 return false;
             }
 
@@ -398,7 +442,9 @@ export class RepertoireTab {
             return;
         }
 
-        grid.innerHTML = this.filteredRepertoire.map(song => `
+        grid.innerHTML = this.filteredRepertoire
+            .map(
+                (song) => `
             <div class="song-card" data-id="${escapeHtml(song.id)}" style="padding: 10px 20px; border-bottom: 1px solid var(--border);">
                 <div class="song-row" style="display: flex; align-items: center; gap: 16px;">
                     <span class="song-title" style="font-weight: 600; color: var(--text-primary); white-space: nowrap;">
@@ -407,11 +453,15 @@ export class RepertoireTab {
                     <span class="song-artist" style="color: var(--text-secondary); white-space: nowrap; opacity: 0.8;">
                         ${song.artist ? escapeHtml(song.artist) : ''}
                     </span>
-                    ${song.videoLink ? `
+                    ${
+                        song.videoLink
+                            ? `
                         <a href="#" class="youtube-link load-youtube-link" data-url="${sanitizeUrl(song.videoLink) || ''}" style="color: var(--primary); text-decoration: none; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; display: inline-block; opacity: 0.9;" title="${escapeHtml(song.videoLink)}">
                             🔗 ${escapeHtml(this.extractYouTubeDomain(song.videoLink))}
                         </a>
-                    ` : ''}
+                    `
+                            : ''
+                    }
                     <span class="song-status status-${song.status}" style="padding: 3px 8px; font-size: 11px; font-weight: 600; text-transform: uppercase; border-radius: 4px; white-space: nowrap;">
                         ${this.formatStatus(song.status)}
                     </span>
@@ -424,7 +474,9 @@ export class RepertoireTab {
                     </button>
                 </div>
             </div>
-        `).join('');
+        `
+            )
+            .join('');
 
         // Make this tab accessible globally for onclick handlers
         window.repertoireTab = this;
@@ -432,8 +484,10 @@ export class RepertoireTab {
 
     updateStats() {
         const totalSongs = this.repertoire.length;
-        const performanceReady = this.repertoire.filter(s => s.status === 'performance-ready').length;
-        const learning = this.repertoire.filter(s => s.status === 'learning').length;
+        const performanceReady = this.repertoire.filter(
+            (s) => s.status === 'performance-ready'
+        ).length;
+        const learning = this.repertoire.filter((s) => s.status === 'learning').length;
 
         document.getElementById('totalSongsCount').textContent = totalSongs;
         document.getElementById('performanceReadyCount').textContent = performanceReady;
@@ -441,7 +495,6 @@ export class RepertoireTab {
     }
 
     showSongModal(songId = null) {
-
         const modal = document.getElementById('songModal');
         if (!modal) {
             console.error('🎸 Modal not found!');
@@ -466,7 +519,7 @@ export class RepertoireTab {
 
         if (songId) {
             modalTitle.textContent = 'Edit Song';
-            const song = this.repertoire.find(s => s.id === songId);
+            const song = this.repertoire.find((s) => s.id === songId);
             if (song) {
                 document.getElementById('songTitle').value = song.title || '';
                 document.getElementById('songArtist').value = song.artist || '';
@@ -505,9 +558,9 @@ export class RepertoireTab {
         if (this.isSaving) {
             return;
         }
-        
+
         this.isSaving = true;
-        
+
         try {
             const form = document.getElementById('songForm');
             const songId = form.dataset.songId;
@@ -518,20 +571,22 @@ export class RepertoireTab {
                 difficulty: document.getElementById('songDifficulty').value,
                 status: document.getElementById('songStatus').value,
                 key: document.getElementById('songKey').value,
-                tempo: document.getElementById('songTempo').value ? parseInt(document.getElementById('songTempo').value) : null,
+                tempo: document.getElementById('songTempo').value
+                    ? parseInt(document.getElementById('songTempo').value)
+                    : null,
                 notes: document.getElementById('songNotes').value.trim(),
                 videoLink: document.getElementById('songVideoLink').value.trim(),
                 sheetLink: document.getElementById('songSheetLink').value.trim(),
                 updatedAt: new Date().toISOString()
             };
-            
+
             // Validate required fields
             if (!songData.title) {
                 this.showNotification('Song title is required', 'error');
                 this.isSaving = false;
                 return;
             }
-            
+
             if (songId) {
                 // Update existing song
                 await this.storageService.updateRepertoireSong(songId, songData);
@@ -578,7 +633,7 @@ export class RepertoireTab {
     }
 
     async logPractice(songId) {
-        const song = this.repertoire.find(s => s.id === songId);
+        const song = this.repertoire.find((s) => s.id === songId);
         if (!song) return;
 
         // Switch to practice tab with pre-filled song info
@@ -607,24 +662,23 @@ export class RepertoireTab {
     }
 
     loadYouTubeInPracticeTab(url) {
-        
         // Switch to practice tab
         if (window.app && window.app.currentPage) {
             window.app.currentPage.switchTab('practice');
-            
+
             // Wait for tab to load, then switch to YouTube mode and load the video
             setTimeout(() => {
                 // Find and click the YouTube mode tab
                 const youtubeTab = document.querySelector('.mode-tab[data-mode="youtube"]');
                 if (youtubeTab) {
                     youtubeTab.click();
-                    
+
                     // Wait for YouTube panel to be visible and input to be ready
                     setTimeout(() => {
                         // Set the URL in the input field
                         const youtubeInput = document.getElementById('youtubeUrl');
                         const loadBtn = document.getElementById('loadYoutubeBtn');
-                        
+
                         if (youtubeInput && loadBtn) {
                             youtubeInput.value = url;
                             // Focus the input to ensure it's ready
@@ -632,7 +686,10 @@ export class RepertoireTab {
                             // Small delay before clicking to ensure value is set
                             setTimeout(() => {
                                 loadBtn.click();
-                                this.showNotification('Loading YouTube video in practice tab...', 'info');
+                                this.showNotification(
+                                    'Loading YouTube video in practice tab...',
+                                    'info'
+                                );
                             }, 100);
                         } else {
                             console.error('YouTube input elements not found');
@@ -674,10 +731,10 @@ export class RepertoireTab {
 
     formatStatus(status) {
         const statusMap = {
-            'learning': 'Learning',
-            'polishing': 'Polishing',
+            learning: 'Learning',
+            polishing: 'Polishing',
             'performance-ready': 'Performance',
-            'inactive': 'Inactive'
+            inactive: 'Inactive'
         };
         return statusMap[status] || status;
     }

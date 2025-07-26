@@ -1,0 +1,93 @@
+/* Cosmic Purple Theme - Deep space purples with cosmic accents */
+[data-theme="cosmic-purple"] {
+    /* Primary Colors */
+    --primary: #b794f4;
+    --primary-dark: #9f7aea;
+    --primary-light: #d6bcfa;
+    --primary-rgb: 183, 148, 244;
+
+    /* Background Colors */
+    --bg-dark: #0f0818;
+    --bg-primary: #1a0f3a;
+    --bg-secondary: #251854;
+    --bg-tertiary: #312168;
+    --bg-card: #2d1b5f;
+    --bg-input: #382470;
+    --bg-hover: #432d7a;
+
+    /* Text Colors */
+    --text-primary: #f3e8ff;
+    --text-secondary: #d6bcfa;
+    --text-tertiary: #c8a8f0;
+    --text-muted: #9f7aea;
+    --text-inverse: #0f0818;
+
+    /* Border Colors */
+    --border: #432d7a;
+    --border-light: #553c8b;
+    --border-hover: #b794f4;
+
+    /* Status Colors */
+    --success: #68d391;
+    --success-dark: #48bb78;
+    --success-light: #9ae6b4;
+
+    --warning: #fbb034;
+    --warning-dark: #f49e0b;
+    --warning-light: #fcd34d;
+
+    --danger: #fc8181;
+    --danger-dark: #f56565;
+    --danger-light: #feb2b2;
+
+    --info: #63b3ed;
+    --info-dark: #4299e1;
+    --info-light: #90cdf4;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.6);
+    --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.7);
+
+    /* Special Effects */
+    --glow-primary: 0 0 30px rgba(183, 148, 244, 0.7);
+    --glow-success: 0 0 20px rgba(104, 211, 145, 0.5);
+    --glow-danger: 0 0 20px rgba(252, 129, 129, 0.5);
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, #9f7aea 0%, #d6bcfa 100%);
+    --gradient-dark: linear-gradient(135deg, #1a0f3a 0%, #0f0818 100%);
+    --gradient-card: linear-gradient(135deg, #2d1b5f 0%, #251854 100%);
+}
+
+/* Cosmic Purple specific enhancements */
+[data-theme="cosmic-purple"] .sidebar {
+    background: linear-gradient(180deg, #1a0f3a 0%, #0f0818 100%);
+}
+
+[data-theme="cosmic-purple"] .btn-primary {
+    background: var(--gradient-primary);
+    box-shadow: 0 4px 14px 0 rgba(183, 148, 244, 0.5);
+}
+
+[data-theme="cosmic-purple"] .nav-item.active {
+    background: linear-gradient(90deg, rgba(183, 148, 244, 0.2) 0%, rgba(183, 148, 244, 0.05) 100%);
+    border-left-color: #b794f4;
+}
+
+[data-theme="cosmic-purple"] .header {
+    background: rgba(26, 15, 58, 0.95);
+}
+
+[data-theme="cosmic-purple"] .timer-display {
+    background: linear-gradient(135deg, #382470 0%, #2d1b5f 100%);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5), 0 0 20px rgba(183, 148, 244, 0.3);
+}
+
+/* Header contrast fix */
+[data-theme="cosmic-purple"] .header #pageTitle,
+[data-theme="cosmic-purple"] .header .theme-info,
+[data-theme="cosmic-purple"] .header .sync-status {
+    color: #f3e8ff !important;
+}

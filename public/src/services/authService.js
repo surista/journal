@@ -14,9 +14,10 @@ export class AuthService {
             // Wait for Firebase to be ready
             await this.cloudStorage.waitForInitialization();
             // Check if Firebase is actually available
-            this.isCloudEnabled = this.cloudStorage.isInitialized || 
-                                 (typeof firebase !== 'undefined' && firebase.auth);
-            
+            this.isCloudEnabled =
+                this.cloudStorage.isInitialized ||
+                (typeof firebase !== 'undefined' && firebase.auth);
+
             if (!this.isCloudEnabled) {
                 console.warn('⚠️ AuthService: Cloud sync disabled - Firebase not initialized');
             } else {
@@ -34,7 +35,7 @@ export class AuthService {
 
     async login(email, password) {
         console.log('🔑 AuthService.login called for:', email);
-        
+
         // Add timeout wrapper
         const loginWithTimeout = async () => {
             await this.ensureInitialized();
@@ -66,14 +67,14 @@ export class AuthService {
                     };
 
                     localStorage.setItem('currentUser', JSON.stringify(user));
-                    window.dispatchEvent(new CustomEvent('userLoggedIn', {detail: user}));
-                    
+                    window.dispatchEvent(new CustomEvent('userLoggedIn', { detail: user }));
+
                     // Clear rate limit on successful login
                     rateLimitService.recordAttempt(email, 'login', true);
-                    
-                    return {success: true, user};
+
+                    return { success: true, user };
                 }
-                
+
                 // Record failed attempt
                 rateLimitService.recordAttempt(email, 'login', false);
                 return result;
@@ -84,35 +85,35 @@ export class AuthService {
             if (!this.isCloudEnabled || email === 'demo@example.com') {
                 return this.localLogin(email, password);
             }
-            
+
             // For non-demo accounts when cloud didn't authenticate them
             return {
                 success: false,
                 error: 'Invalid email or password'
             };
         };
-        
+
         try {
             // Wrap the login with a timeout
-            const timeoutPromise = new Promise((_, reject) => 
+            const timeoutPromise = new Promise((_, reject) =>
                 setTimeout(() => reject(new Error('Login timeout - please try again')), 15000)
             );
-            
-            const result = await Promise.race([
-                loginWithTimeout(),
-                timeoutPromise
-            ]);
-            
+
+            const result = await Promise.race([loginWithTimeout(), timeoutPromise]);
+
             return result;
         } catch (error) {
             console.error('💥 AuthService: Login error:', error);
-            
+
             // Record failed attempt unless it's a rate limit error
-            if (!error.message.includes('Too many attempts') && !error.message.includes('timeout')) {
+            if (
+                !error.message.includes('Too many attempts') &&
+                !error.message.includes('timeout')
+            ) {
                 rateLimitService.recordAttempt(email, 'login', false);
             }
-            
-            return {success: false, error: error.message};
+
+            return { success: false, error: error.message };
         }
     }
 
@@ -145,11 +146,11 @@ export class AuthService {
                 };
 
                 localStorage.setItem('currentUser', JSON.stringify(user));
-                
+
                 // Clear rate limit on successful signup
                 rateLimitService.recordAttempt(email, 'signup', true);
-                
-                return {success: true, user};
+
+                return { success: true, user };
             }
 
             // Record failed attempt
@@ -176,10 +177,10 @@ export class AuthService {
 
             localStorage.setItem('currentUser', JSON.stringify(user));
             localStorage.setItem('authToken', 'demo_token_' + Date.now());
-            return {success: true, user};
+            return { success: true, user };
         }
 
-        return {success: false, error: 'Invalid credentials. Use demo@example.com / demo123'};
+        return { success: false, error: 'Invalid credentials. Use demo@example.com / demo123' };
     }
 
     async logout() {
@@ -190,9 +191,9 @@ export class AuthService {
 
             localStorage.removeItem('currentUser');
             localStorage.removeItem('authToken');
-            return {success: true};
+            return { success: true };
         } catch (error) {
-            return {success: false, error: error.message};
+            return { success: false, error: error.message };
         }
     }
 
@@ -207,11 +208,11 @@ export class AuthService {
 
     async waitForAuthState() {
         await this.ensureInitialized();
-        
+
         // Wait for Firebase auth state to be determined with timeout
         return new Promise((resolve) => {
             let authStateResolved = false;
-            
+
             // Set a timeout to prevent indefinite waiting
             const timeout = setTimeout(() => {
                 if (!authStateResolved) {
@@ -220,15 +221,15 @@ export class AuthService {
                     resolve(this.getCurrentUser());
                 }
             }, 5000); // 5 second timeout
-            
+
             if (typeof firebase !== 'undefined' && firebase.auth) {
                 const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
                     if (authStateResolved) return; // Already resolved by timeout
-                    
+
                     authStateResolved = true;
                     clearTimeout(timeout);
                     unsubscribe(); // Unsubscribe after first call
-                    
+
                     if (user) {
                         // Update local storage with Firebase user
                         const userData = {
@@ -261,7 +262,7 @@ export class AuthService {
         await this.ensureInitialized();
 
         if (!this.isCloudEnabled) {
-            return {success: false, error: 'Password reset requires cloud sync'};
+            return { success: false, error: 'Password reset requires cloud sync' };
         }
 
         return await this.cloudStorage.resetPassword(email);

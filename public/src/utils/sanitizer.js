@@ -7,7 +7,7 @@
  */
 export function escapeHtml(str) {
     if (typeof str !== 'string') return '';
-    
+
     const div = document.createElement('div');
     div.textContent = str;
     return div.innerHTML;
@@ -20,17 +20,17 @@ export function escapeHtml(str) {
  */
 export function sanitizeInput(input) {
     if (typeof input !== 'string') return '';
-    
+
     // Remove any script tags and their content
     let sanitized = input.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
-    
+
     // Remove any on* event handlers
     sanitized = sanitized.replace(/\s*on\w+\s*=\s*["'][^"']*["']/gi, '');
     sanitized = sanitized.replace(/\s*on\w+\s*=\s*[^\s>]*/gi, '');
-    
+
     // Remove javascript: protocol
     sanitized = sanitized.replace(/javascript:/gi, '');
-    
+
     // Escape remaining HTML
     return escapeHtml(sanitized);
 }
@@ -65,11 +65,11 @@ export function setTextContent(element, text) {
  */
 export function createElement(tagName, textContent = '', attributes = {}) {
     const element = document.createElement(tagName);
-    
+
     if (textContent) {
         element.textContent = textContent;
     }
-    
+
     // Safely set attributes
     for (const [key, value] of Object.entries(attributes)) {
         if (key === 'className') {
@@ -81,7 +81,7 @@ export function createElement(tagName, textContent = '', attributes = {}) {
             element.setAttribute(key, value);
         }
     }
-    
+
     return element;
 }
 
@@ -93,55 +93,73 @@ export function createElement(tagName, textContent = '', attributes = {}) {
  */
 export function sanitizeHtml(html) {
     if (typeof html !== 'string') return '';
-    
+
     // Create a temporary container
     const temp = document.createElement('div');
     temp.innerHTML = html;
-    
+
     // Define allowed tags and attributes
-    const allowedTags = ['p', 'br', 'strong', 'em', 'u', 'span', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'a'];
+    const allowedTags = [
+        'p',
+        'br',
+        'strong',
+        'em',
+        'u',
+        'span',
+        'div',
+        'h1',
+        'h2',
+        'h3',
+        'h4',
+        'h5',
+        'h6',
+        'ul',
+        'ol',
+        'li',
+        'a'
+    ];
     const allowedAttributes = {
-        'a': ['href', 'title'],
-        'span': ['class'],
-        'div': ['class']
+        a: ['href', 'title'],
+        span: ['class'],
+        div: ['class']
     };
-    
+
     // Recursively clean the DOM tree
     function cleanNode(node) {
         if (node.nodeType === Node.TEXT_NODE) {
             return node;
         }
-        
+
         if (node.nodeType !== Node.ELEMENT_NODE) {
             return null;
         }
-        
+
         const tagName = node.tagName.toLowerCase();
-        
+
         if (!allowedTags.includes(tagName)) {
             return null;
         }
-        
+
         // Create a clean copy of the node
         const cleanElement = document.createElement(tagName);
-        
+
         // Copy allowed attributes
         const allowed = allowedAttributes[tagName] || [];
         for (const attr of allowed) {
             if (node.hasAttribute(attr)) {
-                let value = node.getAttribute(attr);
-                
+                const value = node.getAttribute(attr);
+
                 // Special handling for href to prevent javascript:
                 if (attr === 'href') {
                     if (value.startsWith('javascript:') || value.startsWith('data:')) {
                         continue;
                     }
                 }
-                
+
                 cleanElement.setAttribute(attr, value);
             }
         }
-        
+
         // Recursively clean children
         for (const child of node.childNodes) {
             const cleanChild = cleanNode(child);
@@ -149,10 +167,10 @@ export function sanitizeHtml(html) {
                 cleanElement.appendChild(cleanChild);
             }
         }
-        
+
         return cleanElement;
     }
-    
+
     // Clean all children
     const cleaned = document.createElement('div');
     for (const child of temp.childNodes) {
@@ -161,7 +179,7 @@ export function sanitizeHtml(html) {
             cleaned.appendChild(cleanChild);
         }
     }
-    
+
     return cleaned.innerHTML;
 }
 
@@ -172,16 +190,16 @@ export function sanitizeHtml(html) {
  */
 export function sanitizeUrl(url) {
     if (typeof url !== 'string') return null;
-    
+
     try {
         const parsed = new URL(url);
-        
+
         // Only allow http, https, and mailto protocols
         const allowedProtocols = ['http:', 'https:', 'mailto:'];
         if (!allowedProtocols.includes(parsed.protocol)) {
             return null;
         }
-        
+
         return parsed.href;
     } catch (e) {
         // Try to parse as relative URL

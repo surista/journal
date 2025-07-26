@@ -4,75 +4,126 @@ export class WhatsNewPage {
         return `
             <div class="whats-new-page">
                 <div class="page-header">
-                    <h1>What's New in v10.92</h1>
+                    <h1>What's New in v10.98</h1>
                     <p class="subtitle">Latest updates and improvements to Guitar Practice Journal</p>
                 </div>
 
                 <div class="release-section">
-                    <div class="version-badge">v10.92</div>
+                    <div class="version-badge">v10.98</div>
                     <h2>Latest Release - January 2025</h2>
                     
                     <div class="release-highlights">
                         <div class="highlight-card new">
-                            <div class="highlight-icon">🎬</div>
-                            <h3>YouTube Integration</h3>
-                            <p>Practice along with YouTube videos! Load any YouTube URL, set loop points, and use all audio tools including speed control and pitch shifting.</p>
+                            <div class="highlight-icon">🧪</div>
+                            <h3>Testing Framework</h3>
+                            <p>Added Jest testing framework with comprehensive test setup for improved code quality and reliability.</p>
+                        </div>
+                        
+                        <div class="highlight-card new">
+                            <div class="highlight-icon">🔒</div>
+                            <h3>Enhanced Security</h3>
+                            <p>Improved Content Security Policy and added Subresource Integrity (SRI) to all external scripts.</p>
                         </div>
                         
                         <div class="highlight-card improved">
-                            <div class="highlight-icon">🎵</div>
-                            <h3>Compact Audio Controls</h3>
-                            <p>Redesigned audio interface puts speed, pitch, and volume controls in one convenient section. Less scrolling, more practicing!</p>
-                        </div>
-                        
-                        <div class="highlight-card new">
                             <div class="highlight-icon">🔄</div>
-                            <h3>Enhanced Loop Markers</h3>
-                            <p>Visual loop markers now work perfectly with YouTube videos. Set start and end points with clear green/red indicators.</p>
+                            <h3>Version Management</h3>
+                            <p>Automatic version updates across all files with improved build scripts and consistency checks.</p>
                         </div>
                         
                         <div class="highlight-card new">
-                            <div class="highlight-icon">📍</div>
-                            <h3>Smart Loop Point Validation</h3>
-                            <p>Setting a start point after the end point? The app now handles this intelligently by clearing and resetting your loop.</p>
+                            <div class="highlight-icon">📋</div>
+                            <h3>Code Quality</h3>
+                            <p>ESLint and Prettier configuration for consistent code style across the entire project.</p>
                         </div>
                     </div>
+                </div>
 
+                <div class="release-section">
+                    <div class="version-badge">v10.94</div>
+                    <h2>January 2025</h2>
+                    
                     <div class="detailed-changes">
-                        <h3>🚀 New Features</h3>
+                        <h3>🎵 Loop Validation</h3>
                         <ul>
-                            <li><strong>YouTube Video Support</strong> - Load and practice with any YouTube video URL</li>
-                            <li><strong>YouTube Progress Bar</strong> - Visual progress tracking for YouTube videos with seek functionality</li>
-                            <li><strong>Unified Audio Controls</strong> - All controls in one compact, accessible section</li>
-                            <li><strong>Footer Navigation</strong> - New footer with quick access to all app sections</li>
-                            <li><strong>Loop Point Intelligence</strong> - Automatic validation when setting invalid loop ranges</li>
+                            <li><strong>Smart Loop Points</strong> - Prevents invalid start/end points with automatic validation</li>
+                            <li><strong>Visual Feedback</strong> - Clear indicators when setting loop boundaries</li>
+                            <li><strong>Error Prevention</strong> - Automatically clears invalid loop configurations</li>
                         </ul>
+                    </div>
+                </div>
 
-                        <h3>💪 Improvements</h3>
+                <div class="release-section">
+                    <div class="version-badge">v10.93</div>
+                    <h2>January 2025</h2>
+                    
+                    <div class="detailed-changes">
+                        <h3>🎨 Theme Updates</h3>
                         <ul>
-                            <li>Simplified speed control to just a slider for cleaner interface</li>
-                            <li>Pitch control now shows just the semitone value (not "semitones")</li>
-                            <li>Better visual feedback for loop markers in YouTube mode</li>
-                            <li>Fixed duplicate loop markers issue</li>
-                            <li>YouTube progress bar resets properly when stopping</li>
-                            <li>Clear button now works correctly for YouTube loops</li>
-                            <li>Removed redundant logout button from header</li>
+                            <li><strong>Theme Improvements</strong> - Enhanced color consistency across all 23+ themes</li>
+                            <li><strong>Favorites Feature</strong> - Mark and quickly access your favorite practice sessions</li>
+                            <li><strong>UI Polish</strong> - Refined spacing and visual hierarchy throughout the app</li>
                         </ul>
+                    </div>
+                </div>
 
+                <div class="release-section">
+                    <div class="version-badge">v10.92</div>
+                    <h2>January 2025</h2>
+                    
+                    <div class="release-highlights">
+                        <div class="highlight-card new">
+                            <div class="highlight-icon">📁</div>
+                            <h3>Audio File Tracking</h3>
+                            <p>Audio file names are now saved with your practice sessions and included in CSV exports for better organization.</p>
+                        </div>
+                        
+                        <div class="highlight-card new">
+                            <div class="highlight-icon">⚡</div>
+                            <h3>YouTube Speed Progression</h3>
+                            <p>Gradually increase playback speed with percentage-based increments - perfect for building up to full tempo!</p>
+                        </div>
+                        
+                        <div class="highlight-card improved">
+                            <div class="highlight-icon">🎯</div>
+                            <h3>Enhanced Metronome</h3>
+                            <p>Visual feedback shows current BPM, measure progress, and tempo changes with smooth animations.</p>
+                        </div>
+                        
+                        <div class="highlight-card fixed">
+                            <div class="highlight-icon">🔧</div>
+                            <h3>Timer Sync Fixes</h3>
+                            <p>Fixed timer synchronization with audio/YouTube playback and metronome tempo changes.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="release-section">
+                    <div class="version-badge">v10.89</div>
+                    <h2>January 2025</h2>
+                    
+                    <div class="detailed-changes">
+                        <h3>🌟 Major Features</h3>
+                        <ul>
+                            <li><strong>YouTube Loop Saving</strong> - Save and restore loop points for YouTube videos</li>
+                            <li><strong>Keyboard Shortcuts</strong> - Press 'L' to toggle loop in YouTube mode</li>
+                            <li><strong>Better Error Handling</strong> - Graceful handling of non-critical errors without blocking the app</li>
+                            <li><strong>Achievement Improvements</strong> - Cleaner badge display with descriptions on hover</li>
+                        </ul>
+                        
                         <h3>🐛 Bug Fixes</h3>
                         <ul>
-                            <li>Fixed timer sync checkbox initialization</li>
-                            <li>Resolved YouTube loop marker positioning issues</li>
-                            <li>Fixed clear loop function for YouTube videos</li>
-                            <li>Corrected pitch value display format</li>
-                            <li>Fixed YouTube progress not resetting on stop</li>
+                            <li>Fixed YouTube play/pause button sync issues</li>
+                            <li>Resolved duplicate loop controls in YouTube interface</li>
+                            <li>Fixed promise rejection errors during app initialization</li>
+                            <li>Improved Firebase App Check error handling</li>
                         </ul>
                     </div>
                 </div>
 
                 <div class="release-section">
                     <div class="version-badge">v8.6</div>
-                    <h2>Previous Release - December 2024</h2>
+                    <h2>December 2024</h2>
                     
                     <div class="detailed-changes">
                         <h3>Major Features</h3>

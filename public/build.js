@@ -13,6 +13,14 @@ function getVersion() {
 
     // Otherwise read from package.json
     try {
+        // Try parent directory first
+        const parentPackagePath = path.resolve('..', 'package.json');
+        if (fs.existsSync(parentPackagePath)) {
+            const pkg = JSON.parse(fs.readFileSync(parentPackagePath, 'utf8'));
+            return pkg.version;
+        }
+        
+        // Then try current directory
         const packagePath = path.resolve('package.json');
         if (fs.existsSync(packagePath)) {
             const pkg = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
@@ -165,6 +173,15 @@ files.forEach(({ path: filePath, update }) => {
     }
 });
 
+// Bundle CSS files
+console.log('\n🎨 Bundling CSS files...');
+try {
+    const { execSync } = require('child_process');
+    execSync('node build-css.js', { stdio: 'inherit' });
+} catch (error) {
+    console.error('❌ CSS bundling failed:', error.message);
+}
+
 // Generate build info
 const buildInfo = {
     version: VERSION,
@@ -177,7 +194,9 @@ const buildInfo = {
 fs.writeFileSync('build-info.json', JSON.stringify(buildInfo, null, 2));
 console.log('📄 Generated build-info.json');
 
-console.log(`🎉 Build complete! Updated ${updateCount} files for Guitar Practice Journal v${VERSION}`);
+console.log(
+    `🎉 Build complete! Updated ${updateCount} files for Guitar Practice Journal v${VERSION}`
+);
 
 // Show what to do next
 console.log('\n📝 Next steps:');

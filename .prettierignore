@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+public/build-info.json
+public/styles/bundled.css
+
+# Firebase
+.firebase/
+firebase-debug.log
+
+# Third-party libraries
+public/lib/
+public/vendor/
+
+# Minified files
+**/*.min.js
+**/*.min.css
+
+# Service worker (auto-generated)
+public/service-worker.js
+
+# Large data files
+**/*.json
+
+# IDE
+.idea/
+.vscode/
+
+# Backup files
+*.backup
+*.bak

@@ -19,7 +19,7 @@ export class UIController {
         this.elements.stopBtn = document.getElementById('stopBtn');
         this.elements.saveSessionBtn = document.getElementById('saveSessionBtn');
         this.elements.syncCheckbox = document.getElementById('syncMetronome');
-        
+
         // Mode tabs
         this.elements.modeTabs = document.querySelectorAll('.mode-tab');
         this.elements.modePanels = {
@@ -27,7 +27,7 @@ export class UIController {
             audio: document.getElementById('audioPanel'),
             youtube: document.getElementById('youtubePanel')
         };
-        
+
         // Metronome elements
         this.elements.bpmValue = document.getElementById('bpmValue');
         this.elements.bpmSlider = document.getElementById('bpmSlider');
@@ -36,21 +36,21 @@ export class UIController {
         this.elements.timeSignature = document.getElementById('timeSignature');
         this.elements.soundSelect = document.getElementById('soundSelect');
         this.elements.tapTempo = document.getElementById('tapTempo');
-        
+
         // Image elements
         this.elements.imageUpload = document.getElementById('imageUpload');
         this.elements.uploadImageBtn = document.getElementById('uploadImageBtn');
         this.elements.removeImageBtn = document.getElementById('removeImageBtn');
         this.elements.imagePreview = document.getElementById('imagePreview');
         this.elements.previewImg = document.getElementById('previewImg');
-        
+
         // Audio elements
         this.elements.audioFileInput = document.getElementById('audioFileInput');
         this.elements.browseAudioBtn = document.getElementById('browseAudioBtn');
         this.elements.audioPlayerContainer = document.getElementById('audioPlayerContainer');
         this.elements.currentFileName = document.getElementById('currentFileName');
         this.elements.currentFileNameWrapper = document.getElementById('currentFileNameWrapper');
-        
+
         // YouTube elements
         this.elements.youtubeUrl = document.getElementById('youtubeUrl');
         this.elements.loadYoutubeBtn = document.getElementById('loadYoutubeBtn');
@@ -59,7 +59,7 @@ export class UIController {
     }
 
     attachModeListeners() {
-        this.elements.modeTabs.forEach(tab => {
+        this.elements.modeTabs.forEach((tab) => {
             tab.addEventListener('click', (e) => {
                 const mode = e.currentTarget.dataset.mode;
                 this.switchMode(mode);
@@ -69,27 +69,27 @@ export class UIController {
 
     switchMode(mode) {
         if (this.currentMode === mode) return;
-        
+
         // Prevent mode switching if modal is open
         if (this.isModalOpen) {
             console.log('Cannot switch modes while save session popup is open');
             return;
         }
-        
+
         // Update current mode
         this.currentMode = mode;
-        
+
         // Update tab active states
-        this.elements.modeTabs.forEach(tab => {
+        this.elements.modeTabs.forEach((tab) => {
             if (tab.dataset.mode === mode) {
                 tab.classList.add('active');
             } else {
                 tab.classList.remove('active');
             }
         });
-        
+
         // Update panel visibility
-        Object.keys(this.elements.modePanels).forEach(panelMode => {
+        Object.keys(this.elements.modePanels).forEach((panelMode) => {
             const panel = this.elements.modePanels[panelMode];
             if (panel) {
                 if (panelMode === mode) {
@@ -101,7 +101,7 @@ export class UIController {
                 }
             }
         });
-        
+
         // Special handling for YouTube mode
         if (mode === 'youtube') {
             const youtubeInput = document.querySelector('.youtube-input-minimal');
@@ -109,9 +109,9 @@ export class UIController {
                 youtubeInput.style.display = 'block';
             }
         }
-        
+
         // Notify callbacks
-        this.modeChangeCallbacks.forEach(callback => {
+        this.modeChangeCallbacks.forEach((callback) => {
             callback(mode, this.currentMode);
         });
     }
@@ -264,7 +264,7 @@ export class UIController {
             notification.className = `notification notification-${type}`;
             notification.textContent = message;
             document.body.appendChild(notification);
-            
+
             setTimeout(() => {
                 notification.classList.add('fade-out');
                 setTimeout(() => notification.remove(), 300);
@@ -276,7 +276,7 @@ export class UIController {
     showModal(content, options = {}) {
         // Set modal open state
         this.isModalOpen = true;
-        
+
         const modal = document.createElement('div');
         modal.className = 'modal-overlay modal-overlay-active';
         modal.innerHTML = `
@@ -296,10 +296,10 @@ export class UIController {
         }
 
         document.body.appendChild(modal);
-        
+
         console.log('Modal appended to body:', modal);
         console.log('Body contains modal:', document.body.contains(modal));
-        
+
         return modal;
     }
 

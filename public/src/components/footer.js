@@ -8,10 +8,9 @@ export class Footer {
         const currentYear = new Date().getFullYear();
 
         // Get version info at render time (when globals should be available)
-        const version = window.APP_VERSION || '8.6';
+        const version = window.APP_VERSION || '10.98';
         const buildNumber = window.BUILD_NUMBER || 'unknown';
         const buildDate = window.BUILD_DATE || new Date().toISOString();
-
 
         return `
                 <div class="footer-container">
@@ -40,7 +39,7 @@ export class Footer {
                             <div class="footer-dropdown-content">
                                 <a href="#" class="footer-link" data-action="about">About Guitar Journal</a>
                                 <a href="#" class="footer-link" data-action="features">Features</a>
-                                <a href="#" class="footer-link" data-action="whatsnew">What's New in v10.92</a>
+                                <a href="#" class="footer-link" data-action="whatsnew">What's New in v${version}</a>
                                 <a href="#" class="footer-link" data-action="roadmap">Roadmap</a>
                             </div>
                         </div>
@@ -95,29 +94,29 @@ export class Footer {
 
         // Footer links with data-action attributes
         const footerLinks = document.querySelectorAll('.footer-link[data-action]');
-        footerLinks.forEach(link => {
+        footerLinks.forEach((link) => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
                 const action = e.currentTarget.getAttribute('data-action');
                 this.handleFooterAction(action);
             });
         });
-        
+
         // Add subtle pulse animation to coffee link
         this.startCoffeePulse();
     }
-    
+
     startCoffeePulse() {
         const coffeeLink = document.getElementById('footerCoffeeLink');
         if (!coffeeLink) return;
-        
+
         // Define the pulse animation
         const pulseKeyframes = [
             { opacity: 1, transform: 'scale(1)' },
             { opacity: 0.8, transform: 'scale(1.05)' },
             { opacity: 1, transform: 'scale(1)' }
         ];
-        
+
         // Run pulse every 60 seconds
         const runPulse = () => {
             coffeeLink.animate(pulseKeyframes, {
@@ -125,7 +124,7 @@ export class Footer {
                 easing: 'ease-in-out'
             });
         };
-        
+
         // Initial pulse after 60 seconds
         this.pulseTimeout = setTimeout(() => {
             runPulse();
@@ -181,28 +180,28 @@ export class Footer {
     }
 
     showAboutModal() {
-        import('../pages/about.js').then(module => {
+        import('../pages/about.js').then((module) => {
             const aboutPage = new module.AboutPage();
             this.showPageModal('About Guitar Journal', aboutPage.render());
         });
     }
 
     showFeaturesModal() {
-        import('../pages/features.js').then(module => {
+        import('../pages/features.js').then((module) => {
             const featuresPage = new module.FeaturesPage();
             this.showPageModal('Features', featuresPage.render());
         });
     }
 
     showWhatsNewModal() {
-        import('../pages/whatsnew.js').then(module => {
+        import('../pages/whatsnew.js?v=' + Date.now()).then((module) => {
             const whatsNewPage = new module.WhatsNewPage();
-            this.showPageModal("What's New", whatsNewPage.render());
+            this.showPageModal('What\'s New', whatsNewPage.render());
         });
     }
 
     showRoadmapModal() {
-        import('../pages/roadmap.js').then(module => {
+        import('../pages/roadmap.js').then((module) => {
             const roadmapPage = new module.RoadmapPage();
             this.showPageModal('Roadmap', roadmapPage.render());
         });
@@ -364,7 +363,10 @@ export class Footer {
     }
 
     showCookiePolicy() {
-        this.showPageModal('Cookie Policy', '<p>This app uses local storage only. No tracking cookies are used.</p>');
+        this.showPageModal(
+            'Cookie Policy',
+            '<p>This app uses local storage only. No tracking cookies are used.</p>'
+        );
     }
 
     showLicenses() {
@@ -374,7 +376,7 @@ export class Footer {
     showNewsletterModal() {
         this.showPageModal('Newsletter', '<p>Newsletter signup coming soon...</p>');
     }
-    
+
     destroy() {
         // Clean up pulse animation timers
         if (this.pulseTimeout) {

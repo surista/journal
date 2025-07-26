@@ -14,16 +14,19 @@ export class LazyImage {
 
     init() {
         // Create Intersection Observer
-        this.observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    this.loadImage(entry.target);
-                }
-            });
-        }, {
-            rootMargin: this.rootMargin,
-            threshold: this.threshold
-        });
+        this.observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        this.loadImage(entry.target);
+                    }
+                });
+            },
+            {
+                rootMargin: this.rootMargin,
+                threshold: this.threshold
+            }
+        );
     }
 
     /**

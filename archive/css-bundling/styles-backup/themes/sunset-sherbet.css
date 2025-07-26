@@ -1,0 +1,86 @@
+/* Sunset Sherbet Theme - Warm orange, peach, and coral pastels */
+
+[data-theme="sunset-sherbet"] {
+    /* Primary Colors - Peach and coral */
+    --primary: #FFB399;
+    --primary-dark: #FF9980;
+    --primary-light: #FFCCB3;
+    --secondary: #FFB3B3;
+    --secondary-dark: #FF9999;
+    --secondary-light: #FFCCCC;
+
+    /* Status Colors - Sherbet bright */
+    --success: #B3E5CC;
+    --success-dark: #99DDBB;
+    --success-light: #CCEEDC;
+    --danger: #FFB3B3;
+    --danger-dark: #FF9999;
+    --danger-light: #FFCCCC;
+    --warning: #FFD199;
+    --warning-dark: #FFC480;
+    --warning-light: #FFDDB3;
+    --info: #B3CCFF;
+    --info-dark: #99BBFF;
+    --info-light: #CCDDFF;
+
+    /* Light Backgrounds - Peachy orange */
+    --bg-dark: #FFF0E6;
+    --bg-darker: #FFE8D9;
+    --bg-primary: #FFFBF7;
+    --bg-secondary: #FFF5ED;
+    --bg-tertiary: #FFF0E6;
+    --bg-card: #FFFAF5;
+    --bg-card-hover: #FFF5ED;
+    --bg-input: #FFE0CC;
+    --bg-input-hover: #FFD6BD;
+    --bg-modal: rgba(255, 179, 153, 0.95);
+    --bg-sidebar: #FFEBDD;
+    --bg-overlay: rgba(255, 179, 153, 0.4);
+
+    /* Text Colors */
+    --text-primary: #4C2D1E;
+    --text-secondary: #7C5B4E;
+    --text-tertiary: #9C7B6E;
+    --text-muted: #CCAD9E;
+    --text-disabled: #DCC5B8;
+
+    /* Borders - Peach tints */
+    --border: #FFE0CC;
+    --border-light: #FFF0E5;
+    --border-focus: #FF9980;
+    --border-error: #FFB3B3;
+    --border-success: #B3E5CC;
+
+    /* Shadows - Sunset glow */
+    --shadow-sm: 0 1px 3px 0 rgba(255, 179, 153, 0.15);
+    --shadow-md: 0 4px 6px -1px rgba(255, 179, 153, 0.2);
+    --shadow-lg: 0 10px 15px -3px rgba(255, 179, 153, 0.25);
+    --shadow-xl: 0 20px 25px -5px rgba(255, 179, 153, 0.3);
+    --shadow-2xl: 0 25px 50px -12px rgba(255, 179, 153, 0.35);
+    --shadow-inner: inset 0 2px 4px 0 rgba(255, 179, 153, 0.1);
+    --shadow-glow: 0 0 20px rgba(255, 179, 153, 0.5);
+
+    /* Scrollbar */
+    --scrollbar-track: #FFF0E5;
+    --scrollbar-thumb: #FFB399;
+    --scrollbar-thumb-hover: #FF9980;
+
+    /* Code */
+    --code-bg: #FFF7F0;
+    --code-text: #7B5B4B;
+    --code-comment: #99CC99;
+    --code-string: #FF9999;
+    --code-keyword: #99AAFF;
+
+    /* Gradients - Sherbet swirls */
+    --gradient-primary: linear-gradient(135deg, #FFB399 0%, #FFD199 100%);
+    --gradient-success: linear-gradient(135deg, #B3E5CC 0%, #CCEEDC 100%);
+    --gradient-danger: linear-gradient(135deg, #FFB3B3 0%, #FFCCCC 100%);
+    --gradient-warning: linear-gradient(135deg, #FFD199 0%, #FFDDB3 100%);
+    --gradient-light: linear-gradient(135deg, #FFFFFF 0%, #FFF7F0 100%);
+
+    /* Opacity values */
+    --opacity-hover: 0.95;
+    --opacity-disabled: 0.6;
+    --opacity-overlay: 0.5;
+}

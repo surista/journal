@@ -30,29 +30,28 @@ export class PushNotificationService {
 
     async analyzePracticePatterns() {
         try {
-        // Add a check to ensure storageService is ready
-        if (!this.storageService) {
-            console.warn('Storage service not ready for practice pattern analysis');
-            return;
-        }
+            // Add a check to ensure storageService is ready
+            if (!this.storageService) {
+                console.warn('Storage service not ready for practice pattern analysis');
+                return;
+            }
 
-        const entries = await this.storageService.getPracticeEntries();
+            const entries = await this.storageService.getPracticeEntries();
 
-        // Check if entries is an array
-        if (!Array.isArray(entries)) {
-            console.warn('getPracticeEntries did not return an array:', entries);
-            return;
-        }
+            // Check if entries is an array
+            if (!Array.isArray(entries)) {
+                console.warn('getPracticeEntries did not return an array:', entries);
+                return;
+            }
 
-        // Only analyze if we have entries
-        if (entries.length === 0) {
-            return;
-        }
-
+            // Only analyze if we have entries
+            if (entries.length === 0) {
+                return;
+            }
 
             const patterns = {};
 
-            entries.forEach(entry => {
+            entries.forEach((entry) => {
                 if (entry && entry.date) {
                     const date = new Date(entry.date);
                     const hour = date.getHours();
@@ -75,8 +74,6 @@ export class PushNotificationService {
             if (sortedHours.length > 0) {
                 this.commonPracticeHours = sortedHours;
             }
-
-
         } catch (error) {
             console.error('Error analyzing practice patterns:', error);
             // Keep default hours on error
@@ -89,7 +86,7 @@ export class PushNotificationService {
             const notifications = [];
 
             // Practice reminders based on patterns
-            this.commonPracticeHours.forEach(hour => {
+            this.commonPracticeHours.forEach((hour) => {
                 const reminderHour = hour - 0.25; // 15 minutes before
                 notifications.push({
                     type: 'practice-reminder',
@@ -106,7 +103,7 @@ export class PushNotificationService {
                 { hour: 19, minute: 0 }
             ];
 
-            suggestionTimes.forEach(time => {
+            suggestionTimes.forEach((time) => {
                 notifications.push({
                     type: 'exercise-suggestion',
                     hour: time.hour,
@@ -116,7 +113,6 @@ export class PushNotificationService {
             });
 
             localStorage.setItem('guitarJournalNotifications', JSON.stringify(notifications));
-
         } catch (error) {
             console.error('Error scheduling notifications:', error);
         }
@@ -130,16 +126,19 @@ export class PushNotificationService {
             const currentHour = now.getHours();
             const currentMinute = now.getMinutes();
 
-            const notifications = JSON.parse(localStorage.getItem('guitarJournalNotifications') || '[]');
+            const notifications = JSON.parse(
+                localStorage.getItem('guitarJournalNotifications') || '[]'
+            );
             const sentToday = JSON.parse(localStorage.getItem('guitarJournalSentToday') || '[]');
 
-            notifications.forEach(notif => {
+            notifications.forEach((notif) => {
                 const notifId = `${notif.type}-${notif.hour}-${notif.minute}`;
 
-                if (notif.hour === currentHour &&
+                if (
+                    notif.hour === currentHour &&
                     Math.abs(notif.minute - currentMinute) < 2 &&
-                    !sentToday.includes(notifId)) {
-
+                    !sentToday.includes(notifId)
+                ) {
                     this.sendNotification(notif.message);
                     sentToday.push(notifId);
                     localStorage.setItem('guitarJournalSentToday', JSON.stringify(sentToday));
@@ -173,33 +172,33 @@ export class PushNotificationService {
 
     getPracticeReminderMessage() {
         const messages = [
-            "Time to practice! Your guitar is waiting 🎸",
-            "Ready for your practice session? Let's make progress today!",
-            "Your usual practice time is coming up. Keep the streak going!",
-            "15 minutes until practice time. Warm up those fingers!",
-            "Daily practice builds mastery. See you in 15 minutes!"
+            'Time to practice! Your guitar is waiting 🎸',
+            'Ready for your practice session? Let\'s make progress today!',
+            'Your usual practice time is coming up. Keep the streak going!',
+            '15 minutes until practice time. Warm up those fingers!',
+            'Daily practice builds mastery. See you in 15 minutes!'
         ];
         return messages[Math.floor(Math.random() * messages.length)];
     }
 
     getExerciseSuggestion() {
         const exercises = [
-            "Try the Spider Walk exercise for finger independence today!",
-            "Practice the A minor pentatonic scale in different positions",
-            "Work on your barre chords - try F major for 5 minutes",
-            "Challenge: Play a C major scale at 120 BPM cleanly",
-            "Focus on alternate picking with a simple 1-2-3-4 pattern",
-            "Practice transitioning between G, C, and D chords smoothly",
-            "Try fingerpicking pattern: thumb-1-2-3-2-1 on an E minor chord",
-            "Work on your vibrato technique with sustained notes",
-            "Practice the chromatic scale ascending and descending",
-            "Try playing a song you know in a different key",
-            "Focus on rhythm: practice strumming patterns with a metronome",
-            "Work on hammer-ons and pull-offs in the pentatonic scale",
-            "Practice power chords moving up the neck",
-            "Try the classical tremolo technique on a single string",
-            "Work on your blues bends - aim for perfect pitch"
+            'Try the Spider Walk exercise for finger independence today!',
+            'Practice the A minor pentatonic scale in different positions',
+            'Work on your barre chords - try F major for 5 minutes',
+            'Challenge: Play a C major scale at 120 BPM cleanly',
+            'Focus on alternate picking with a simple 1-2-3-4 pattern',
+            'Practice transitioning between G, C, and D chords smoothly',
+            'Try fingerpicking pattern: thumb-1-2-3-2-1 on an E minor chord',
+            'Work on your vibrato technique with sustained notes',
+            'Practice the chromatic scale ascending and descending',
+            'Try playing a song you know in a different key',
+            'Focus on rhythm: practice strumming patterns with a metronome',
+            'Work on hammer-ons and pull-offs in the pentatonic scale',
+            'Practice power chords moving up the neck',
+            'Try the classical tremolo technique on a single string',
+            'Work on your blues bends - aim for perfect pitch'
         ];
-        return "Exercise suggestion: " + exercises[Math.floor(Math.random() * exercises.length)];
+        return 'Exercise suggestion: ' + exercises[Math.floor(Math.random() * exercises.length)];
     }
 }

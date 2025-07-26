@@ -7,16 +7,14 @@ export const youtubeAudioProcessor = {
         return false;
     },
 
-    stopProcessing() {
-    },
+    stopProcessing() {},
 
     async startTabAudioCapture() {
         console.warn('YouTube audio capture requires browser extension');
         return false;
     },
 
-    setPitch(pitchAmount) {
-    },
+    setPitch(pitchAmount) {},
 
     // Additional methods that might be needed
     isAvailable() {

@@ -7,32 +7,34 @@
  */
 export const detectEnvironment = () => {
     const hostname = window.location.hostname;
-    
+
     // Production domains
-    if (hostname === 'www.guitar-practice-journal.com' || 
+    if (
+        hostname === 'www.guitar-practice-journal.com' ||
         hostname === 'guitar-practice-journal.com' ||
         hostname === 'guitar-practice-journal-9f064.web.app' ||
-        hostname === 'guitar-practice-journal-9f064.firebaseapp.com') {
+        hostname === 'guitar-practice-journal-9f064.firebaseapp.com'
+    ) {
         return 'production';
     }
-    
+
     // Staging domain (if you have one)
     if (hostname.includes('staging') || hostname.includes('test')) {
         return 'staging';
     }
-    
+
     // Local development
     if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '') {
         return 'development';
     }
-    
+
     // Default to production for safety
     return 'production';
 };
 
 /**
  * Environment-specific configurations
- * 
+ *
  * IMPORTANT: To set up your development environment:
  * 1. Create a new Firebase project for development (e.g., guitar-practice-journal-dev)
  * 2. Replace the development firebaseConfig below with your dev project's config
@@ -43,17 +45,17 @@ const environments = {
         firebaseConfig: {
             // TODO: Replace with your development Firebase project config
             // You can get this from Firebase Console > Project Settings > Your apps
-            apiKey: "AIzaSyBiSOuGubepEGG8HvtIqJtse7bQV0zHuz4",
-            authDomain: "journal-dev-b6257.firebaseapp.com",
-            projectId: "journal-dev-b6257",
-            storageBucket: "journal-dev-b6257.firebasestorage.app",
-            messagingSenderId: "1065114454297",
-            appId: "1:1065114454297:web:ab8fdc716da6fcf40fdd88",
-            measurementId: "G-JR43EPFK26"
+            apiKey: 'AIzaSyBiSOuGubepEGG8HvtIqJtse7bQV0zHuz4',
+            authDomain: 'journal-dev-b6257.firebaseapp.com',
+            projectId: 'journal-dev-b6257',
+            storageBucket: 'journal-dev-b6257.firebasestorage.app',
+            messagingSenderId: '1065114454297',
+            appId: '1:1065114454297:web:ab8fdc716da6fcf40fdd88',
+            measurementId: 'G-JR43EPFK26'
         },
         // Development-specific settings
-        environmentName: "Development",
-        environmentColor: "#10b981", // Green
+        environmentName: 'Development',
+        environmentColor: '#10b981', // Green
         enableDebugLogging: true,
         enableAppCheck: false, // Disable App Check in development for easier testing
         authRateLimit: {
@@ -69,16 +71,16 @@ const environments = {
     staging: {
         // Staging environment (optional - can use dev project with different settings)
         firebaseConfig: {
-            apiKey: "YOUR_DEV_API_KEY",
-            authDomain: "YOUR_DEV_PROJECT.firebaseapp.com",
-            projectId: "YOUR_DEV_PROJECT",
-            storageBucket: "YOUR_DEV_PROJECT.appspot.com",
-            messagingSenderId: "YOUR_DEV_SENDER_ID",
-            appId: "YOUR_DEV_APP_ID",
-            measurementId: "YOUR_DEV_MEASUREMENT_ID"
+            apiKey: 'YOUR_DEV_API_KEY',
+            authDomain: 'YOUR_DEV_PROJECT.firebaseapp.com',
+            projectId: 'YOUR_DEV_PROJECT',
+            storageBucket: 'YOUR_DEV_PROJECT.appspot.com',
+            messagingSenderId: 'YOUR_DEV_SENDER_ID',
+            appId: 'YOUR_DEV_APP_ID',
+            measurementId: 'YOUR_DEV_MEASUREMENT_ID'
         },
-        environmentName: "Staging",
-        environmentColor: "#f59e0b", // Amber
+        environmentName: 'Staging',
+        environmentColor: '#f59e0b', // Amber
         enableDebugLogging: false,
         enableAppCheck: true,
         authRateLimit: {
@@ -94,16 +96,16 @@ const environments = {
     production: {
         firebaseConfig: {
             // Production Firebase project config (current live environment)
-            apiKey: "AIzaSyACB5lnRzzgIKR1toEXVKGkBfadk6KB_g0",
-            authDomain: "guitar-practice-journal-9f064.firebaseapp.com",
-            projectId: "guitar-practice-journal-9f064",
-            storageBucket: "guitar-practice-journal-9f064.appspot.com",
-            messagingSenderId: "192212928966",
-            appId: "1:192212928966:web:7f3b6bf36d2db950fa3767",
-            measurementId: "G-9HCN5FFKK0"
+            apiKey: 'AIzaSyACB5lnRzzgIKR1toEXVKGkBfadk6KB_g0',
+            authDomain: 'guitar-practice-journal-9f064.firebaseapp.com',
+            projectId: 'guitar-practice-journal-9f064',
+            storageBucket: 'guitar-practice-journal-9f064.appspot.com',
+            messagingSenderId: '192212928966',
+            appId: '1:192212928966:web:7f3b6bf36d2db950fa3767',
+            measurementId: 'G-9HCN5FFKK0'
         },
-        environmentName: "Production",
-        environmentColor: "#ef4444", // Red
+        environmentName: 'Production',
+        environmentColor: '#ef4444', // Red
         enableDebugLogging: false,
         enableAppCheck: true,
         authRateLimit: {
@@ -125,7 +127,7 @@ const environments = {
 export const getEnvironmentConfig = () => {
     const env = detectEnvironment();
     const config = environments[env];
-    
+
     // Allow override from global config if available (for CI/CD)
     if (window.__ENV_CONFIG__) {
         return {
@@ -133,7 +135,7 @@ export const getEnvironmentConfig = () => {
             ...window.__ENV_CONFIG__
         };
     }
-    
+
     return config;
 };
 

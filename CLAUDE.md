@@ -47,6 +47,8 @@ Guitar Practice Journal is a Progressive Web App (PWA) for tracking guitar pract
 3. **Audio Limits**: Maximum file size is 20MB for audio uploads
 4. **Cross-Tab Sync**: Timer and settings are synchronized across browser tabs
 5. **Version Updates**: Use the build.js script to ensure version consistency across all files
+6. **Error Handling**: Non-critical errors (Firebase App Check, AudioContext) are handled gracefully without blocking app startup
+7. **YouTube State Management**: Use numeric constants instead of YT.PlayerState for compatibility
 
 ### Development Workflow
 
@@ -59,19 +61,23 @@ Guitar Practice Journal is a Progressive Web App (PWA) for tracking guitar pract
 ### Current Features
 
 - Practice session tracking with timer
-- Audio file processing (pitch/tempo adjustment, A-B loops)
+- Audio file processing (pitch/tempo adjustment, A-B loops with save/load)
 - Digital metronome with timer sync
-- Goal setting and achievement badges
+- Goal setting and achievement badges (hover for descriptions)
 - Statistics and GitHub-style practice streak heatmap
 - Calendar view for practice history
 - 23+ themes including dark/light modes, pastel themes
 - Repertoire management system (as of v9.4)
 - YouTube integration for practice along with videos
+  - Loop sections with save/load functionality
+  - Speed control
+  - Synchronized play/pause button states
 - PWA capabilities (offline support, installable)
 - Cloud sync with Firebase (beta - v9.89+)
   - Automatic data backup to cloud
   - Cross-device synchronization
   - Offline support with automatic sync when online
+- Keyboard shortcuts for efficient workflow
 
 ### Known Limitations
 

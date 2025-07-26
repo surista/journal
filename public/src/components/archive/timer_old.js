@@ -1,5 +1,5 @@
 // Timer Component - Fixed with proper DOM handling and error recovery
-import {notificationManager} from '../services/notificationManager.js';
+import { notificationManager } from '../services/notificationManager.js';
 
 export class Timer {
     constructor(container) {
@@ -15,7 +15,6 @@ export class Timer {
         // Load saved sync preference with fallback to true (checked by default)
         const savedSyncPref = localStorage.getItem('timerSyncWithAudio');
         this.syncWithAudio = savedSyncPref !== 'false'; // Default to true unless explicitly set to false
-
 
         // Bind methods to ensure correct context
         this.start = this.start.bind(this);
@@ -126,11 +125,16 @@ export class Timer {
             // Set initial state
             syncCheckbox.checked = this.syncWithAudio;
         } else {
-            console.error('Timer sync checkbox not found! ID:', `timerSyncCheckbox_${this.displayId}`);
+            console.error(
+                'Timer sync checkbox not found! ID:',
+                `timerSyncCheckbox_${this.displayId}`
+            );
 
             // Retry after a short delay
             setTimeout(() => {
-                const retryCheckbox = document.getElementById(`timerSyncCheckbox_${this.displayId}`);
+                const retryCheckbox = document.getElementById(
+                    `timerSyncCheckbox_${this.displayId}`
+                );
                 if (retryCheckbox && !this.isDestroyed) {
                     retryCheckbox.addEventListener('change', (e) => {
                         this.syncWithAudio = e.target.checked;
@@ -159,9 +163,11 @@ export class Timer {
             if (this.isDestroyed) return;
 
             // Check if we're in an input field
-            if (e.target.tagName === 'INPUT' ||
+            if (
+                e.target.tagName === 'INPUT' ||
                 e.target.tagName === 'TEXTAREA' ||
-                e.target.isContentEditable) {
+                e.target.isContentEditable
+            ) {
                 return;
             }
 
@@ -193,7 +199,6 @@ export class Timer {
             return;
         }
 
-
         this.isRunning = true;
         this.startTime = Date.now() - this.elapsedTime;
 
@@ -214,11 +219,12 @@ export class Timer {
 
         // Dispatch custom event for sync
         if (this.syncWithAudio) {
-            window.dispatchEvent(new CustomEvent('timerStarted', {
-                detail: {source: 'timer', timestamp: Date.now()}
-            }));
+            window.dispatchEvent(
+                new CustomEvent('timerStarted', {
+                    detail: { source: 'timer', timestamp: Date.now() }
+                })
+            );
         }
-
     }
 
     pause() {
@@ -236,9 +242,11 @@ export class Timer {
 
         // Dispatch custom event for sync
         if (this.syncWithAudio) {
-            window.dispatchEvent(new CustomEvent('timerPaused', {
-                detail: {source: 'timer', timestamp: Date.now()}
-            }));
+            window.dispatchEvent(
+                new CustomEvent('timerPaused', {
+                    detail: { source: 'timer', timestamp: Date.now() }
+                })
+            );
         }
     }
 
@@ -260,9 +268,11 @@ export class Timer {
         if (saveSection) saveSection.style.display = 'none';
 
         // Dispatch custom event for sync
-        window.dispatchEvent(new CustomEvent('timerReset', {
-            detail: {source: 'timer', timestamp: Date.now()}
-        }));
+        window.dispatchEvent(
+            new CustomEvent('timerReset', {
+                detail: { source: 'timer', timestamp: Date.now() }
+            })
+        );
     }
 
     updateDisplay() {
@@ -317,7 +327,7 @@ export class Timer {
         const currentTab = window.location.hash.slice(1) || 'practice';
         const duration = this.elapsedTime;
 
-        let contextData = {
+        const contextData = {
             duration: duration,
             tab: currentTab,
             audioFile: '',
@@ -338,16 +348,17 @@ export class Timer {
             audioPlayer = window.app.currentPage.tabs.audio.audioPlayer;
         }
 
-
         if (audioPlayer) {
             // Always capture current file info, whether playing or not
             if (audioPlayer.isYouTubeMode) {
-                contextData.youtubeInfo = audioPlayer.youtubeVideoTitle || audioPlayer.youtubeVideoUrl || '';
+                contextData.youtubeInfo =
+                    audioPlayer.youtubeVideoTitle || audioPlayer.youtubeVideoUrl || '';
                 contextData.youtubeUrl = audioPlayer.youtubeVideoUrl || '';
                 if (audioPlayer.playbackRate) {
                     contextData.tempo = Math.round(audioPlayer.playbackRate * 100);
                 }
-            } else if (audioPlayer.currentFileName) {  // Add this entire else if block
+            } else if (audioPlayer.currentFileName) {
+                // Add this entire else if block
                 contextData.audioFile = audioPlayer.currentFileName;
                 if (audioPlayer.playbackRate) {
                     contextData.tempo = Math.round(audioPlayer.playbackRate * 100);
@@ -385,7 +396,6 @@ export class Timer {
             }
         }
 
-
         // Create and show modal
         this.createPracticeLogModal(contextData);
     }
@@ -417,26 +427,38 @@ export class Timer {
                 <input type="text" value="${contextData.youtubeInfo}" readonly>
             </div>
             
-            ${contextData.youtubeUrl ? `
+            ${
+                contextData.youtubeUrl
+                    ? `
                 <div class="form-group">
                     <label>YouTube URL</label>
                     <input type="text" value="${contextData.youtubeUrl}" readonly>
                 </div>
-            ` : ''}
+            `
+                    : ''
+            }
             
-            ${contextData.tempo ? `
+            ${
+                contextData.tempo
+                    ? `
                 <div class="form-group">
                     <label>Tempo</label>
                     <input type="text" value="${contextData.tempo}%" readonly>
                 </div>
-            ` : ''}
+            `
+                    : ''
+            }
             
-            ${contextData.bpm ? `
+            ${
+                contextData.bpm
+                    ? `
                 <div class="form-group">
-                    <label>${(contextData.audioFile || contextData.youtubeInfo) ? 'Tempo' : 'BPM'}</label>
-                    <input type="text" value="${(contextData.audioFile || contextData.youtubeInfo) ? contextData.tempo + '%' : contextData.bpm}" readonly>
+                    <label>${contextData.audioFile || contextData.youtubeInfo ? 'Tempo' : 'BPM'}</label>
+                    <input type="text" value="${contextData.audioFile || contextData.youtubeInfo ? contextData.tempo + '%' : contextData.bpm}" readonly>
                 </div>
-            ` : ''}
+            `
+                    : ''
+            }
             
             <div class="form-group">
                 <label>Practice Area *</label>
@@ -516,7 +538,7 @@ export class Timer {
                     justify-content: center;
                     z-index: 10001;
                 `;
-                
+
                 confirmDialog.innerHTML = `
                     <div class="confirm-dialog" style="
                         background: var(--bg-card);
@@ -536,27 +558,27 @@ export class Timer {
                         </div>
                     </div>
                 `;
-                
+
                 // Handle Save Session button
                 confirmDialog.querySelector('#saveSessionBtn').addEventListener('click', () => {
                     confirmDialog.remove();
                     // Submit the form to save
                     modal.querySelector('#practiceLogForm').dispatchEvent(new Event('submit'));
                 });
-                
+
                 // Handle Don't Save button
                 confirmDialog.querySelector('#dontSaveBtn').addEventListener('click', () => {
                     confirmDialog.remove();
                     modal.remove();
                 });
-                
+
                 // Close on background click
                 confirmDialog.addEventListener('click', (e) => {
                     if (e.target === confirmDialog) {
                         confirmDialog.remove();
                     }
                 });
-                
+
                 document.body.appendChild(confirmDialog);
             } else {
                 // No elapsed time, just close
@@ -592,11 +614,11 @@ export class Timer {
             key: formData.get('key') || null,
             notes: formData.get('notes') || null,
             // Add context-specific data
-            ...(contextData.audioFile && {audioFile: contextData.audioFile}),
-            ...(contextData.youtubeInfo && {youtubeTitle: contextData.youtubeInfo}),
-            ...(contextData.youtubeUrl && {youtubeUrl: contextData.youtubeUrl}), // Add this line
-            ...(contextData.tempo && {tempoPercentage: contextData.tempo}),
-            ...(contextData.bpm && {bpm: contextData.bpm})
+            ...(contextData.audioFile && { audioFile: contextData.audioFile }),
+            ...(contextData.youtubeInfo && { youtubeTitle: contextData.youtubeInfo }),
+            ...(contextData.youtubeUrl && { youtubeUrl: contextData.youtubeUrl }), // Add this line
+            ...(contextData.tempo && { tempoPercentage: contextData.tempo }),
+            ...(contextData.bpm && { bpm: contextData.bpm })
         };
 
         try {
@@ -632,16 +654,21 @@ export class Timer {
                 }
 
                 // Dispatch event for other components to update
-                window.dispatchEvent(new CustomEvent('practiceSessionSaved', {
-                    detail: practiceEntry
-                }));
+                window.dispatchEvent(
+                    new CustomEvent('practiceSessionSaved', {
+                        detail: practiceEntry
+                    })
+                );
             } else {
                 throw new Error('Storage service not available');
             }
         } catch (error) {
             console.error('Error saving practice session:', error);
             if (window.app?.currentPage?.showNotification) {
-                window.app.currentPage.showNotification('Failed to save practice session. Please try again.', 'error');
+                window.app.currentPage.showNotification(
+                    'Failed to save practice session. Please try again.',
+                    'error'
+                );
             } else {
                 notificationManager.error('Failed to save practice session. Please try again.');
             }
@@ -694,6 +721,5 @@ export class Timer {
         if (window.currentTimer === this) {
             window.currentTimer = null;
         }
-
     }
 }

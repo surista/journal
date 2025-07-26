@@ -1,86 +1,86 @@
 /* Spring Meadow Theme - Fresh greens and flower pastels */
 
-[data-theme="spring-meadow"] {
-    /* Primary Colors - Fresh green and flower pink */
-    --primary: #B3E5B3;
-    --primary-dark: #99DD99;
-    --primary-light: #CCEECC;
-    --secondary: #FFB3CC;
-    --secondary-dark: #FF99BB;
-    --secondary-light: #FFCCDD;
+[data-theme='spring-meadow'] {
+  /* Primary Colors - Fresh green and flower pink */
+  --primary: #b3e5b3;
+  --primary-dark: #99dd99;
+  --primary-light: #cceecc;
+  --secondary: #ffb3cc;
+  --secondary-dark: #ff99bb;
+  --secondary-light: #ffccdd;
 
-    /* Status Colors - Garden bright */
-    --success: #A3E5A3;
-    --success-dark: #88DD88;
-    --success-light: #BBFFBB;
-    --danger: #FFB3A3;
-    --danger-dark: #FF9988;
-    --danger-light: #FFCCBB;
-    --warning: #FFE5A3;
-    --warning-dark: #FFDD88;
-    --warning-light: #FFF0BB;
-    --info: #A3D9FF;
-    --info-dark: #88CCFF;
-    --info-light: #BBE6FF;
+  /* Status Colors - Garden bright */
+  --success: #a3e5a3;
+  --success-dark: #88dd88;
+  --success-light: #bbffbb;
+  --danger: #ffb3a3;
+  --danger-dark: #ff9988;
+  --danger-light: #ffccbb;
+  --warning: #ffe5a3;
+  --warning-dark: #ffdd88;
+  --warning-light: #fff0bb;
+  --info: #a3d9ff;
+  --info-dark: #88ccff;
+  --info-light: #bbe6ff;
 
-    /* Light Backgrounds - Fresh mint green */
-    --bg-dark: #F0FFF0;
-    --bg-darker: #E8FFE8;
-    --bg-primary: #FBFFFB;
-    --bg-secondary: #F5FFF5;
-    --bg-tertiary: #F0FFF0;
-    --bg-card: #FAFFFA;
-    --bg-card-hover: #F5FFF5;
-    --bg-input: #E0FFE0;
-    --bg-input-hover: #D6FFD6;
-    --bg-modal: rgba(179, 229, 179, 0.95);
-    --bg-sidebar: #EBFFEB;
-    --bg-overlay: rgba(179, 229, 179, 0.4);
+  /* Light Backgrounds - Fresh mint green */
+  --bg-dark: #f0fff0;
+  --bg-darker: #e8ffe8;
+  --bg-primary: #fbfffb;
+  --bg-secondary: #f5fff5;
+  --bg-tertiary: #f0fff0;
+  --bg-card: #fafffa;
+  --bg-card-hover: #f5fff5;
+  --bg-input: #e0ffe0;
+  --bg-input-hover: #d6ffd6;
+  --bg-modal: rgba(179, 229, 179, 0.95);
+  --bg-sidebar: #ebffeb;
+  --bg-overlay: rgba(179, 229, 179, 0.4);
 
-    /* Text Colors */
-    --text-primary: #2D4C2D;
-    --text-secondary: #5B7C5B;
-    --text-tertiary: #7B9C7B;
-    --text-muted: #ADCCAD;
-    --text-disabled: #C5DCC5;
+  /* Text Colors */
+  --text-primary: #2d4c2d;
+  --text-secondary: #5b7c5b;
+  --text-tertiary: #7b9c7b;
+  --text-muted: #adccad;
+  --text-disabled: #c5dcc5;
 
-    /* Borders - Leaf greens */
-    --border: #DFF2DF;
-    --border-light: #F0FFF0;
-    --border-focus: #99DD99;
-    --border-error: #FFB3A3;
-    --border-success: #A3E5A3;
+  /* Borders - Leaf greens */
+  --border: #dff2df;
+  --border-light: #f0fff0;
+  --border-focus: #99dd99;
+  --border-error: #ffb3a3;
+  --border-success: #a3e5a3;
 
-    /* Shadows - Garden morning */
-    --shadow-sm: 0 1px 3px 0 rgba(179, 229, 179, 0.15);
-    --shadow-md: 0 4px 6px -1px rgba(179, 229, 179, 0.2);
-    --shadow-lg: 0 10px 15px -3px rgba(179, 229, 179, 0.25);
-    --shadow-xl: 0 20px 25px -5px rgba(179, 229, 179, 0.3);
-    --shadow-2xl: 0 25px 50px -12px rgba(179, 229, 179, 0.35);
-    --shadow-inner: inset 0 2px 4px 0 rgba(179, 229, 179, 0.1);
-    --shadow-glow: 0 0 20px rgba(179, 229, 179, 0.5);
+  /* Shadows - Garden morning */
+  --shadow-sm: 0 1px 3px 0 rgba(179, 229, 179, 0.15);
+  --shadow-md: 0 4px 6px -1px rgba(179, 229, 179, 0.2);
+  --shadow-lg: 0 10px 15px -3px rgba(179, 229, 179, 0.25);
+  --shadow-xl: 0 20px 25px -5px rgba(179, 229, 179, 0.3);
+  --shadow-2xl: 0 25px 50px -12px rgba(179, 229, 179, 0.35);
+  --shadow-inner: inset 0 2px 4px 0 rgba(179, 229, 179, 0.1);
+  --shadow-glow: 0 0 20px rgba(179, 229, 179, 0.5);
 
-    /* Scrollbar */
-    --scrollbar-track: #F0FFF0;
-    --scrollbar-thumb: #B3E5B3;
-    --scrollbar-thumb-hover: #99DD99;
+  /* Scrollbar */
+  --scrollbar-track: #f0fff0;
+  --scrollbar-thumb: #b3e5b3;
+  --scrollbar-thumb-hover: #99dd99;
 
-    /* Code */
-    --code-bg: #F7FFF7;
-    --code-text: #5B7B5B;
-    --code-comment: #88CC88;
-    --code-string: #FF99BB;
-    --code-keyword: #88AAFF;
+  /* Code */
+  --code-bg: #f7fff7;
+  --code-text: #5b7b5b;
+  --code-comment: #88cc88;
+  --code-string: #ff99bb;
+  --code-keyword: #88aaff;
 
-    /* Gradients - Spring bloom */
-    --gradient-primary: linear-gradient(135deg, #B3E5B3 0%, #FFB3CC 100%);
-    --gradient-success: linear-gradient(135deg, #A3E5A3 0%, #BBFFBB 100%);
-    --gradient-danger: linear-gradient(135deg, #FFB3A3 0%, #FFCCBB 100%);
-    --gradient-warning: linear-gradient(135deg, #FFE5A3 0%, #FFF0BB 100%);
-    --gradient-light: linear-gradient(135deg, #FFFFFF 0%, #F7FFF7 100%);
+  /* Gradients - Spring bloom */
+  --gradient-primary: linear-gradient(135deg, #b3e5b3 0%, #ffb3cc 100%);
+  --gradient-success: linear-gradient(135deg, #a3e5a3 0%, #bbffbb 100%);
+  --gradient-danger: linear-gradient(135deg, #ffb3a3 0%, #ffccbb 100%);
+  --gradient-warning: linear-gradient(135deg, #ffe5a3 0%, #fff0bb 100%);
+  --gradient-light: linear-gradient(135deg, #ffffff 0%, #f7fff7 100%);
 
-    /* Opacity values */
-    --opacity-hover: 0.95;
-    --opacity-disabled: 0.6;
-    --opacity-overlay: 0.5;
+  /* Opacity values */
+  --opacity-hover: 0.95;
+  --opacity-disabled: 0.6;
+  --opacity-overlay: 0.5;
 }

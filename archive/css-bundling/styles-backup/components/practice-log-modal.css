@@ -1,0 +1,200 @@
+/* Practice Log Modal Styles */
+
+/* Modal overlay */
+.practice-log-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9); /* Increased from 0.85 to 0.9 */
+    backdrop-filter: blur(10px); /* Increased from 8px */
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+/* Modal visible state */
+.practice-log-modal.show {
+    display: flex; /* Show when .show class is added */
+}
+
+/* Modal content container */
+.practice-log-content {
+    background: #2a2a3e; /* Lighter than main background */
+    border: 3px solid rgba(255, 255, 255, 0.2); /* Increased from 2px */
+    border-radius: 16px;
+    padding: 32px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.5), /* Enhanced shadow */
+                0 0 0 1px rgba(255, 255, 255, 0.1),
+                0 0 40px rgba(99, 102, 241, 0.2); /* Added glow */
+    position: relative;
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
+}
+
+/* Modal content visible state */
+.practice-log-modal.show .practice-log-content {
+    transform: scale(1);
+}
+
+/* Modal header */
+.practice-log-content h2 {
+    color: var(--text-primary);
+    margin-bottom: 24px;
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* Form groups in modal - enhanced contrast */
+.practice-log-content .form-group {
+    background: rgba(255, 255, 255, 0.05); /* Increased from 0.03 */
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08); /* Increased from 0.05 */
+}
+
+.practice-log-content .form-group label {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: block;
+}
+
+/* Form inputs in modal */
+.practice-log-content input,
+.practice-log-content select,
+.practice-log-content textarea {
+    background: var(--bg-input);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+}
+
+.practice-log-content input:focus,
+.practice-log-content select:focus,
+.practice-log-content textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    outline: none;
+}
+
+/* Readonly fields */
+.practice-log-content input[readonly],
+.practice-log-content textarea[readonly] {
+    background: rgba(255, 255, 255, 0.02);
+    color: var(--text-secondary);
+    cursor: not-allowed;
+}
+
+/* Modal actions */
+.practice-log-content .modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.practice-log-content .modal-actions .btn {
+    flex: 1;
+    padding: 12px 24px;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+/* Cancel button styling */
+.practice-log-content .btn-secondary {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.practice-log-content .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Scrollbar styling for modal */
+.practice-log-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.practice-log-content::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+}
+
+.practice-log-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+.practice-log-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Info text in modal */
+.practice-log-content .info-text {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-style: italic;
+    margin-top: 8px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .practice-log-content {
+        padding: 24px;
+        width: 95%;
+        max-height: 90vh;
+    }
+
+    .practice-log-content h2 {
+        font-size: 1.25rem;
+    }
+
+    .practice-log-content .form-group {
+        padding: 12px;
+    }
+
+    .practice-log-content .modal-actions {
+        flex-direction: column;
+    }
+
+    .practice-log-content .modal-actions .btn {
+        width: 100%;
+    }
+}
+
+/* Animation for modal appearance */
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .practice-log-modal,
+    .practice-log-content {
+        transition: none;
+    }
+}

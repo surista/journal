@@ -44,7 +44,6 @@ export class TransposeExtensionAPI {
 
             // Wait for API to be available
             return await this.waitForAPI();
-
         } catch (error) {
             console.log('Transpose extension not detected');
             return false;
@@ -53,19 +52,24 @@ export class TransposeExtensionAPI {
 
     requestAPIInjection() {
         // Dispatch event that extension might listen for
-        document.dispatchEvent(new CustomEvent('guitar-journal-request-transpose', {
-            detail: {
-                action: 'inject-api',
-                source: 'guitar-practice-journal'
-            }
-        }));
+        document.dispatchEvent(
+            new CustomEvent('guitar-journal-request-transpose', {
+                detail: {
+                    action: 'inject-api',
+                    source: 'guitar-practice-journal'
+                }
+            })
+        );
 
         // Also try postMessage
-        window.postMessage({
-            type: 'GUITAR_JOURNAL_REQUEST',
-            target: 'transpose',
-            action: 'inject-api'
-        }, '*');
+        window.postMessage(
+            {
+                type: 'GUITAR_JOURNAL_REQUEST',
+                target: 'transpose',
+                action: 'inject-api'
+            },
+            '*'
+        );
     }
 
     async waitForAPI(timeout = 3000) {
@@ -146,10 +150,12 @@ export class TransposeExtensionAPI {
             videoElement.setAttribute('data-transpose-pitch', semitones);
             videoElement.focus();
             // Dispatch custom event on video element
-            videoElement.dispatchEvent(new CustomEvent('transpose-pitch-change', {
-                detail: { pitch: semitones },
-                bubbles: true
-            }));
+            videoElement.dispatchEvent(
+                new CustomEvent('transpose-pitch-change', {
+                    detail: { pitch: semitones },
+                    bubbles: true
+                })
+            );
         }
 
         // Method 7: Message passing with different formats
@@ -157,17 +163,22 @@ export class TransposeExtensionAPI {
 
         // Method 8: Try localStorage communication
         try {
-            localStorage.setItem('transpose-pitch-request', JSON.stringify({
-                pitch: semitones,
-                timestamp: Date.now(),
-                source: 'guitar-practice-journal'
-            }));
+            localStorage.setItem(
+                'transpose-pitch-request',
+                JSON.stringify({
+                    pitch: semitones,
+                    timestamp: Date.now(),
+                    source: 'guitar-practice-journal'
+                })
+            );
             // Dispatch storage event
-            window.dispatchEvent(new StorageEvent('storage', {
-                key: 'transpose-pitch-request',
-                newValue: localStorage.getItem('transpose-pitch-request'),
-                url: window.location.href
-            }));
+            window.dispatchEvent(
+                new StorageEvent('storage', {
+                    key: 'transpose-pitch-request',
+                    newValue: localStorage.getItem('transpose-pitch-request'),
+                    url: window.location.href
+                })
+            );
         } catch (e) {
             console.log('localStorage communication failed:', e);
         }
@@ -185,11 +196,7 @@ export class TransposeExtensionAPI {
         });
 
         // Try different event targets
-        const targets = [
-            document.activeElement,
-            document.querySelector('video'),
-            document.body
-        ];
+        const targets = [document.activeElement, document.querySelector('video'), document.body];
 
         for (const target of targets) {
             if (target) {
@@ -200,21 +207,26 @@ export class TransposeExtensionAPI {
 
     sendMessage(action, value) {
         // Custom event
-        document.dispatchEvent(new CustomEvent('guitar-journal-transpose-control', {
-            detail: { action, value }
-        }));
+        document.dispatchEvent(
+            new CustomEvent('guitar-journal-transpose-control', {
+                detail: { action, value }
+            })
+        );
 
         // PostMessage
-        window.postMessage({
-            type: 'TRANSPOSE_CONTROL',
-            source: 'guitar-practice-journal',
-            action,
-            value
-        }, '*');
+        window.postMessage(
+            {
+                type: 'TRANSPOSE_CONTROL',
+                source: 'guitar-practice-journal',
+                action,
+                value
+            },
+            '*'
+        );
     }
 
     delay(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
+        return new Promise((resolve) => setTimeout(resolve, ms));
     }
 
     // Get current state

@@ -37,12 +37,15 @@ export class SessionManager {
         }
 
         if (sessions.length === 0) {
-            container.innerHTML = '<p class="empty-state" style="color: var(--text-secondary); text-align: center; font-size: 11px; margin: 0; padding: 8px;">No saved loops</p>';
+            container.innerHTML =
+                '<p class="empty-state" style="color: var(--text-secondary); text-align: center; font-size: 11px; margin: 0; padding: 8px;">No saved loops</p>';
             return;
         }
 
         // Create compact session display
-        container.innerHTML = sessions.map((session, index) => `
+        container.innerHTML = sessions
+            .map(
+                (session, index) => `
         <div class="saved-session-item" style="
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -73,17 +76,19 @@ export class SessionManager {
                 </button>
             </div>
         </div>
-    `).join('');
+    `
+            )
+            .join('');
 
         // Attach event listeners to the dynamically created buttons
-        container.querySelectorAll('.load-session-btn').forEach(btn => {
+        container.querySelectorAll('.load-session-btn').forEach((btn) => {
             btn.addEventListener('click', (e) => {
                 const index = parseInt(e.target.dataset.index);
                 this.loadSession(index);
             });
         });
 
-        container.querySelectorAll('.delete-session-btn').forEach(btn => {
+        container.querySelectorAll('.delete-session-btn').forEach((btn) => {
             btn.addEventListener('click', (e) => {
                 const index = parseInt(e.target.dataset.index);
                 this.deleteSession(index);
@@ -92,15 +97,18 @@ export class SessionManager {
     }
 
     loadSession(index) {
-        if (!this.player.storageService || (!this.player.currentFileName && !this.player.isYouTubeMode)) {
+        if (
+            !this.player.storageService ||
+            (!this.player.currentFileName && !this.player.isYouTubeMode)
+        ) {
             this.player.showNotification('Storage service not available', 'error');
             return;
         }
 
         // Handle both YouTube and file mode
-        const fileName = this.player.isYouTubeMode ?
-            (this.player.youtubeVideoTitle || this.player.youtubeVideoId || 'youtube_video') :
-            this.player.currentFileName;
+        const fileName = this.player.isYouTubeMode
+            ? this.player.youtubeVideoTitle || this.player.youtubeVideoId || 'youtube_video'
+            : this.player.currentFileName;
 
         const sessions = this.player.storageService.getAudioSessions?.(fileName) || [];
         const session = sessions[index];
@@ -109,7 +117,6 @@ export class SessionManager {
             this.player.showNotification('Session not found', 'error');
             return;
         }
-
 
         // Stop current playback
         this.player.stop();
@@ -137,10 +144,16 @@ export class SessionManager {
         const loopEnabledEl = document.getElementById('loopEnabled');
 
         if (loopStartEl) {
-            loopStartEl.textContent = this.player.loopStart !== null ? this.player.formatTime(this.player.loopStart) : '--:--';
+            loopStartEl.textContent =
+                this.player.loopStart !== null
+                    ? this.player.formatTime(this.player.loopStart)
+                    : '--:--';
         }
         if (loopEndEl) {
-            loopEndEl.textContent = this.player.loopEnd !== null ? this.player.formatTime(this.player.loopEnd) : '--:--';
+            loopEndEl.textContent =
+                this.player.loopEnd !== null
+                    ? this.player.formatTime(this.player.loopEnd)
+                    : '--:--';
         }
         if (loopEnabledEl) {
             loopEnabledEl.checked = this.player.isLooping;
@@ -160,7 +173,8 @@ export class SessionManager {
             }
             if (incrementValueEl && session.tempoProgression.incrementValue !== undefined) {
                 incrementValueEl.value = session.tempoProgression.incrementValue;
-                this.player.tempoProgression.incrementValue = session.tempoProgression.incrementValue;
+                this.player.tempoProgression.incrementValue =
+                    session.tempoProgression.incrementValue;
             }
             if (incrementTypeEl && session.tempoProgression.incrementType) {
                 incrementTypeEl.value = session.tempoProgression.incrementType;
@@ -171,7 +185,9 @@ export class SessionManager {
                 this.player.tempoProgression.loopInterval = session.tempoProgression.loopInterval;
             }
             if (progressionControlsEl) {
-                progressionControlsEl.style.display = this.player.tempoProgression.enabled ? 'grid' : 'none';
+                progressionControlsEl.style.display = this.player.tempoProgression.enabled
+                    ? 'grid'
+                    : 'none';
             }
         }
 
@@ -179,7 +195,10 @@ export class SessionManager {
         this.player.updateLoopRegion();
 
         if (this.player.waveformVisualizer && !this.player.isYouTubeMode) {
-            this.player.waveformVisualizer.updateLoopMarkers(this.player.loopStart, this.player.loopEnd);
+            this.player.waveformVisualizer.updateLoopMarkers(
+                this.player.loopStart,
+                this.player.loopEnd
+            );
         }
 
         if (this.player.isYouTubeMode) {
@@ -189,11 +208,13 @@ export class SessionManager {
         // Update progression status
         this.player.updateProgressionStatus();
 
-        this.player.showNotification(`Session "${session.name || 'Unnamed'}" loaded successfully! 🎵`, 'success');
+        this.player.showNotification(
+            `Session "${session.name || 'Unnamed'}" loaded successfully! 🎵`,
+            'success'
+        );
     }
 
     saveCurrentSession() {
-
         // Check if we have any audio source loaded
         const hasAudioSource = this.player.currentFileName || this.player.isYouTubeMode;
 
@@ -209,7 +230,10 @@ export class SessionManager {
         }
 
         if (!this.player.ensureStorageService()) {
-            this.player.showNotification('Storage service not available. Please refresh the page.', 'error');
+            this.player.showNotification(
+                'Storage service not available. Please refresh the page.',
+                'error'
+            );
             return;
         }
 
@@ -220,9 +244,13 @@ export class SessionManager {
     showSaveLoopModal() {
         // Get current source information (works for both audio files and YouTube)
         const isYouTubeMode = this.player.isYouTubeMode;
-        const sourceName = escapeHtml(isYouTubeMode
-            ? (this.player.youtubeVideoTitle || `YouTube: ${this.player.youtubeVideoId}` || 'YouTube Video')
-            : (this.player.currentFileName || 'Unknown'));
+        const sourceName = escapeHtml(
+            isYouTubeMode
+                ? this.player.youtubeVideoTitle ||
+                      `YouTube: ${this.player.youtubeVideoId}` ||
+                      'YouTube Video'
+                : this.player.currentFileName || 'Unknown'
+        );
 
         const sourceType = isYouTubeMode ? 'YouTube Video' : 'Audio File';
         const sourceIcon = isYouTubeMode ? '🎬' : '🎵';
@@ -263,12 +291,16 @@ export class SessionManager {
                         <span class="save-loop-info-label">${sourceType}:</span>
                         <span class="save-loop-info-value" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 300px;" title="${sourceName}">${sourceIcon} ${sourceName}</span>
                     </div>
-                    ${isYouTubeMode ? `
+                    ${
+                        isYouTubeMode
+                            ? `
                     <div class="save-loop-info-row">
                         <span class="save-loop-info-label">URL:</span>
                         <span class="save-loop-info-value" style="font-size: 9px; word-break: break-all;">${escapeHtml(this.player.youtubeVideoUrl || 'Unknown')}</span>
                     </div>
-                    ` : ''}
+                    `
+                            : ''
+                    }
                     <div class="save-loop-info-row">
                         <span class="save-loop-info-label">Loop Start:</span>
                         <span class="save-loop-info-value">${loopStart !== null ? escapeHtml(this.player.formatTime(loopStart)) : 'Not set'}</span>
@@ -316,10 +348,10 @@ export class SessionManager {
             if (existingModal) {
                 existingModal.remove();
             }
-            
+
             // Add modal to page
             document.body.insertAdjacentHTML('beforeend', modalHTML);
-            
+
             // Verify modal was added
             const newModal = document.getElementById('saveLoopModal');
 
@@ -374,7 +406,7 @@ export class SessionManager {
         confirmBtn.addEventListener('click', () => {
             this.confirmSaveLoop();
         });
-        
+
         // Cancel button
         const cancelBtn = document.getElementById('cancelSaveLoop');
         if (cancelBtn) {
@@ -412,7 +444,10 @@ export class SessionManager {
         if (this.player.isYouTubeMode) {
             // YouTube video
             fileName = this.player.youtubeVideoId || 'youtube_unknown';
-            displayName = this.player.youtubeVideoTitle || `YouTube: ${this.player.youtubeVideoId}` || 'YouTube Video';
+            displayName =
+                this.player.youtubeVideoTitle ||
+                `YouTube: ${this.player.youtubeVideoId}` ||
+                'YouTube Video';
         } else {
             // Audio file
             fileName = this.player.currentFileName;
@@ -443,18 +478,24 @@ export class SessionManager {
         };
 
         if (!fileName || fileName === 'youtube_unknown') {
-            this.player.showNotification('Unable to save - source information not available', 'error');
+            this.player.showNotification(
+                'Unable to save - source information not available',
+                'error'
+            );
             return;
         }
 
         try {
             if (this.player.storageService && this.player.storageService.saveAudioSession) {
                 const result = this.player.storageService.saveAudioSession(fileName, session);
-                
+
                 this.loadSavedSessions();
 
                 const sourceType = this.player.isYouTubeMode ? 'YouTube loop' : 'Audio loop';
-                this.player.showNotification(`${sourceType} "${sessionName}" saved successfully! 💾`, 'success');
+                this.player.showNotification(
+                    `${sourceType} "${sessionName}" saved successfully! 💾`,
+                    'success'
+                );
                 modal.remove();
             } else {
                 throw new Error('Storage service not available');
@@ -484,14 +525,14 @@ export class SessionManager {
         }
     }
 
-
     deleteSession(index) {
         if (!confirm('Are you sure you want to delete this session?')) return;
 
         // Determine current file name
         let fileName;
         if (this.player.isYouTubeMode) {
-            fileName = this.player.youtubeVideoTitle || this.player.youtubeVideoId || 'youtube_video';
+            fileName =
+                this.player.youtubeVideoTitle || this.player.youtubeVideoId || 'youtube_video';
         } else if (this.player.currentFileName) {
             fileName = this.player.currentFileName;
         } else {
@@ -523,7 +564,7 @@ export class SessionManager {
             'youtube_video'
         ];
 
-        possibleKeys.forEach(key => {
+        possibleKeys.forEach((key) => {
             if (key) {
                 const sessions = this.player.storageService.getAudioSessions?.(key) || [];
             }
@@ -534,10 +575,10 @@ export class SessionManager {
         // Remove event listeners from dynamically created buttons
         const container = document.getElementById('savedSessionsList');
         if (container) {
-            container.querySelectorAll('.load-session-btn').forEach(btn => {
+            container.querySelectorAll('.load-session-btn').forEach((btn) => {
                 btn.removeEventListener('click', () => {});
             });
-            container.querySelectorAll('.delete-session-btn').forEach(btn => {
+            container.querySelectorAll('.delete-session-btn').forEach((btn) => {
                 btn.removeEventListener('click', () => {});
             });
         }

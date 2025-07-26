@@ -34,14 +34,17 @@ export class Header {
 
     render() {
         const currentTheme = this.themeService.getTheme();
-        const isDark = currentTheme.includes('dark') || currentTheme === 'midnight' || currentTheme === 'dracula';
-        
+        const isDark =
+            currentTheme.includes('dark') ||
+            currentTheme === 'midnight' ||
+            currentTheme === 'dracula';
+
         // Check if user is demo or real
         const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
         const isDemoUser = currentUser.email === 'demo@example.com';
-        const syncStatus = isDemoUser ? 
-            '<span class="sync-status demo-mode" title="Demo mode - No cloud sync">🔒 Local Only</span>' : 
-            '<span class="sync-status cloud-mode" title="Cloud sync enabled">☁️ Synced</span>';
+        const syncStatus = isDemoUser
+            ? '<span class="sync-status demo-mode" title="Demo mode - No cloud sync">🔒 Local Only</span>'
+            : '<span class="sync-status cloud-mode" title="Cloud sync enabled">☁️ Synced</span>';
 
         return `
             <header class="app-header">

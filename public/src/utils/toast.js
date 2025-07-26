@@ -29,17 +29,16 @@ export function showToast(message, type = 'info') {
     // Create inner elements safely
     const toastContent = document.createElement('div');
     toastContent.style.cssText = 'display: flex; align-items: center; gap: 0.75rem;';
-    
+
     const iconSpan = document.createElement('span');
     iconSpan.style.fontSize = '1.25rem';
-    iconSpan.textContent = type === 'success' ? '✅' :
-                          type === 'error' ? '❌' :
-                          type === 'warning' ? '⚠️' : 'ℹ️';
-    
+    iconSpan.textContent =
+        type === 'success' ? '✅' : type === 'error' ? '❌' : type === 'warning' ? '⚠️' : 'ℹ️';
+
     const messageSpan = document.createElement('span');
     messageSpan.style.color = 'var(--text-primary)';
     messageSpan.textContent = message;
-    
+
     toastContent.appendChild(iconSpan);
     toastContent.appendChild(messageSpan);
     toast.appendChild(toastContent);

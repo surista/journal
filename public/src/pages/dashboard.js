@@ -174,7 +174,7 @@ export class DashboardPage {
         this.topNav.setActiveTab(tab);
 
         // Show/hide tab panes
-        document.querySelectorAll('.tab-pane').forEach(pane => {
+        document.querySelectorAll('.tab-pane').forEach((pane) => {
             pane.classList.toggle('active', pane.dataset.tab === tab);
         });
 
@@ -229,7 +229,11 @@ export class DashboardPage {
                     break;
                 case 'settings':
                     const { SettingsTab } = await import('../components/tabs/SettingsTab.js');
-                    this.tabs[tab] = new SettingsTab(this.storageService, this.authService, this.cloudSyncHandler?.cloudSyncService);
+                    this.tabs[tab] = new SettingsTab(
+                        this.storageService,
+                        this.authService,
+                        this.cloudSyncHandler?.cloudSyncService
+                    );
                     break;
                 case 'courses':
                     const CoursesPage = (await import('../courses/pages/courses.js')).default;
@@ -245,26 +249,26 @@ export class DashboardPage {
             console.error(`Failed to load ${tab} tab:`, error);
             // Clear container safely
             tabContainer.innerHTML = '';
-            
+
             // Create error state using DOM methods
             const errorDiv = document.createElement('div');
             errorDiv.className = 'error-state';
-            
+
             const errorMsg = document.createElement('p');
             errorMsg.textContent = `Failed to load ${tab} content`;
             errorDiv.appendChild(errorMsg);
-            
+
             const errorDetails = document.createElement('p');
             errorDetails.className = 'error-details';
             errorDetails.textContent = error.message || 'Unknown error';
             errorDiv.appendChild(errorDetails);
-            
+
             const retryBtn = document.createElement('button');
             retryBtn.className = 'retry-btn';
             retryBtn.textContent = 'Retry';
             retryBtn.onclick = () => location.reload();
             errorDiv.appendChild(retryBtn);
-            
+
             tabContainer.appendChild(errorDiv);
         }
     }
@@ -296,7 +300,18 @@ export class DashboardPage {
 
     handleHashChange() {
         const hash = window.location.hash.slice(1);
-        if (hash && ['practice', 'repertoire', 'goals', 'stats', 'history', 'calendar', 'settings'].includes(hash)) {
+        if (
+            hash &&
+            [
+                'practice',
+                'repertoire',
+                'goals',
+                'stats',
+                'history',
+                'calendar',
+                'settings'
+            ].includes(hash)
+        ) {
             this.switchTab(hash);
         }
     }
@@ -342,7 +357,7 @@ export class DashboardPage {
         }
 
         // Clean up components
-        Object.values(this.tabs).forEach(tab => {
+        Object.values(this.tabs).forEach((tab) => {
             if (tab.destroy) tab.destroy();
         });
 

@@ -1,0 +1,219 @@
+/* Mobile-Optimized Timer Component */
+
+@media (max-width: 768px) {
+    /* Timer display optimization */
+    .timer-container,
+    .timer-widget,
+    .timer-display-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+
+    .timer-container {
+        background: var(--bg-secondary);
+        border-radius: 16px;
+        /*padding: 20px 20px;*/
+        margin: 12px auto;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        max-width: 400px;
+    }
+
+    .timer-display {
+        font-size: 36px;
+        font-weight: 500;
+        text-align: center;
+        vertical-align: center;
+        letter-spacing: 0.5px;
+        margin: 16px auto;
+        font-variant-numeric: tabular-nums;
+        line-height: 1;
+        width: 100%;
+        display: block;
+    }
+
+    /* Timer controls */
+    .timer-controls,
+    .timer-controls-row {
+        display: flex;
+        justify-content: center;
+        vertical-align: center;
+        gap: 12px;
+        /*margin-top: 16px;*/
+        width: 100%;
+    }
+
+    .timer-controls .button,
+    .timer-control-btn {
+        flex: 1;
+        max-width: 130px;
+        height: 44px;
+        font-size: 15px;
+        font-weight: 500;
+        border-radius: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        transition: all 0.2s ease;
+        padding: 0 20px;
+    }
+
+    .timer-controls .button:active {
+        transform: scale(0.95);
+    }
+
+    /* Primary timer button */
+    .timer-controls .button-primary {
+        background: var(--color-primary);
+        color: white;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+
+    .timer-controls .button-primary:active {
+        box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+    }
+
+    /* Session info display */
+    .session-info {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+    .session-info-item {
+        background: var(--bg-tertiary);
+        padding: 12px;
+        border-radius: 12px;
+        text-align: center;
+    }
+
+    .session-info-label {
+        font-size: 12px;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+    }
+
+    .session-info-value {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    /* Quick actions */
+    .timer-quick-actions {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .quick-action {
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        padding: 8px;
+        min-width: 60px;
+        transition: color 0.2s ease;
+    }
+
+    .quick-action:active {
+        color: var(--color-primary);
+    }
+
+    .quick-action-icon {
+        width: 24px;
+        height: 24px;
+    }
+
+    .quick-action-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+}
+
+    /* Timer sync row */
+    .timer-sync-row {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 12px;
+        width: 100%;
+    }
+
+    .sync-checkbox {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        color: var(--text-muted);
+    }
+
+    .sync-checkbox input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+    }
+
+    /* Timer control buttons for unified practice */
+    .timer-control-btn {
+        min-width: 120px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+}
+
+/* Small phones */
+@media (max-width: 375px) {
+    .timer-display {
+        font-size: 36px;
+    }
+
+    .timer-controls {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .timer-controls .button {
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .session-info {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Landscape mode adjustments */
+@media (max-width: 768px) and (orientation: landscape) {
+    .timer-container {
+        padding: 16px;
+    }
+
+    .timer-display {
+        font-size: 32px;
+        margin: 8px 0;
+        vertical-align: center;
+
+    }
+
+    .timer-controls {
+        margin-top: 16px;
+    }
+
+    .session-info {
+        display: none; /* Hide on landscape to save space */
+    }
+}

@@ -1,0 +1,58 @@
+/* Cyberpunk Theme - Neon colors with dark background */
+[data-theme="cyberpunk"] {
+    /* Primary Colors */
+    --primary: #00ffff;
+    --primary-dark: #00cccc;
+    --primary-light: #66ffff;
+    --primary-rgb: 0, 255, 255;
+
+    /* Background Colors */
+    --bg-dark: #0a0a0a;
+    --bg-primary: #111111;
+    --bg-secondary: #1a1a1a;
+    --bg-tertiary: #242424;
+    --bg-card: #1a1a1a;
+    --bg-input: #242424;
+    --bg-hover: #2e2e2e;
+
+    /* Text Colors */
+    --text-primary: #ffffff;
+    --text-secondary: #00ffff;
+    --text-tertiary: #00cccc;
+    --text-muted: #888888;
+    --text-inverse: #000000;
+
+    /* Border Colors */
+    --border: #00ffff;
+    --border-light: #00ffff;
+    --border-hover: #ff00ff;
+
+    /* Status Colors */
+    --success: #00ff00;
+    --warning: #ffff00;
+    --danger: #ff0066;
+    --info: #00ffff;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 3px rgba(0, 255, 255, 0.3);
+    --shadow-md: 0 4px 6px rgba(0, 255, 255, 0.4);
+    --shadow-lg: 0 10px 15px rgba(0, 255, 255, 0.5);
+
+    /* Special Effects */
+    --glow-primary: 0 0 40px rgba(0, 255, 255, 0.8);
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, #00ffff 0%, #ff00ff 100%);
+    --gradient-dark: linear-gradient(135deg, #111111 0%, #0a0a0a 100%);
+}
+
+[data-theme="cyberpunk"] .header {
+    background: rgba(17, 17, 17, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--primary);
+}
+
+[data-theme="cyberpunk"] .nav-item.active {
+    border-left: 3px solid #ff00ff;
+    text-shadow: 0 0 10px currentColor;
+}

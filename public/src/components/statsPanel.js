@@ -142,7 +142,8 @@ export class StatsPanel {
             streakCard.classList.add('achievement');
         }
 
-        if (this.stats.totalTime >= 36000) { // 10+ hours
+        if (this.stats.totalTime >= 36000) {
+            // 10+ hours
             const timeCard = this.container.querySelector('.stat-card:nth-child(1)');
             timeCard.classList.add('achievement');
         }
@@ -204,7 +205,7 @@ export class StatsPanel {
 
         // Practice time by area
         const timeByArea = {};
-        entries.forEach(entry => {
+        entries.forEach((entry) => {
             if (entry && entry.practiceArea && entry.duration) {
                 const area = entry.practiceArea;
                 const duration = entry.duration || 0;
@@ -245,7 +246,9 @@ export class StatsPanel {
         
         <h4>Top Practice Areas</h4>
         <div class="area-breakdown">
-            ${sortedAreas.map(([area, time]) => `
+            ${sortedAreas
+                .map(
+                    ([area, time]) => `
                 <div class="area-item">
                     <span class="area-name">${area}</span>
                     <div class="area-bar">
@@ -253,7 +256,9 @@ export class StatsPanel {
                     </div>
                     <span class="area-time">${this.formatDuration(time)}</span>
                 </div>
-            `).join('')}
+            `
+                )
+                .join('')}
         </div>
     `;
     }
@@ -268,22 +273,31 @@ export class StatsPanel {
 
         const sessionsByDay = {};
 
-        entries.forEach(entry => {
+        entries.forEach((entry) => {
             const date = new Date(entry.date);
-            const dayName = date.toLocaleDateString('en-US', {weekday: 'long'});
+            const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
             sessionsByDay[dayName] = (sessionsByDay[dayName] || 0) + 1;
         });
 
-        const dayOrder = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const dayOrder = [
+            'Sunday',
+            'Monday',
+            'Tuesday',
+            'Wednesday',
+            'Thursday',
+            'Friday',
+            'Saturday'
+        ];
         const maxSessions = Math.max(...Object.values(sessionsByDay), 1);
 
         return `
             <h4>Sessions by Day of Week</h4>
             <div class="weekday-chart">
-                ${dayOrder.map(day => {
-            const count = sessionsByDay[day] || 0;
-            const height = (count / maxSessions) * 100;
-            return `
+                ${dayOrder
+                    .map((day) => {
+                        const count = sessionsByDay[day] || 0;
+                        const height = (count / maxSessions) * 100;
+                        return `
                         <div class="weekday-bar">
                             <div class="bar-fill" style="height: ${height}%">
                                 <span class="bar-value">${count}</span>
@@ -291,7 +305,8 @@ export class StatsPanel {
                             <span class="bar-label">${day.substr(0, 3)}</span>
                         </div>
                     `;
-        }).join('')}
+                    })
+                    .join('')}
             </div>
             
             <h4>Session Duration Distribution</h4>
@@ -373,13 +388,11 @@ export class StatsPanel {
         const cutoffDate = new Date();
         cutoffDate.setDate(cutoffDate.getDate() - days);
 
-        const recentEntries = entries.filter(entry =>
-            new Date(entry.date) >= cutoffDate
-        );
+        const recentEntries = entries.filter((entry) => new Date(entry.date) >= cutoffDate);
 
         const totalTime = recentEntries.reduce((sum, entry) => sum + (entry.duration || 0), 0);
-        const averageSession = recentEntries.length > 0 ?
-            Math.floor(totalTime / recentEntries.length) : 0;
+        const averageSession =
+            recentEntries.length > 0 ? Math.floor(totalTime / recentEntries.length) : 0;
 
         return {
             totalTime,
@@ -397,7 +410,7 @@ export class StatsPanel {
             '60+ min': 0
         };
 
-        entries.forEach(entry => {
+        entries.forEach((entry) => {
             const minutes = Math.floor((entry.duration || 0) / 60);
             if (minutes < 15) ranges['0-15 min']++;
             else if (minutes < 30) ranges['15-30 min']++;
@@ -410,7 +423,9 @@ export class StatsPanel {
 
         return `
             <div class="duration-chart">
-                ${Object.entries(ranges).map(([range, count]) => `
+                ${Object.entries(ranges)
+                    .map(
+                        ([range, count]) => `
                     <div class="duration-bar">
                         <span class="duration-label">${range}</span>
                         <div class="bar-container">
@@ -419,7 +434,9 @@ export class StatsPanel {
                             </div>
                         </div>
                     </div>
-                `).join('')}
+                `
+                    )
+                    .join('')}
             </div>
         `;
     }
@@ -439,7 +456,7 @@ export class StatsPanel {
 
         // Get unique practice days
         const practiceDays = new Set();
-        entries.forEach(entry => {
+        entries.forEach((entry) => {
             if (entry && entry.date) {
                 const date = new Date(entry.date);
                 const dateStr = date.toISOString().split('T')[0];
@@ -448,7 +465,9 @@ export class StatsPanel {
         });
 
         // Calculate consistency score
-        const sortedEntries = entries.filter(e => e && e.date).sort((a, b) => new Date(a.date) - new Date(b.date));
+        const sortedEntries = entries
+            .filter((e) => e && e.date)
+            .sort((a, b) => new Date(a.date) - new Date(b.date));
         if (sortedEntries.length === 0) {
             return {
                 totalPracticeDays: 0,
@@ -459,7 +478,8 @@ export class StatsPanel {
         const firstEntry = new Date(sortedEntries[0].date);
         const today = new Date();
         const totalDays = Math.floor((today - firstEntry) / (1000 * 60 * 60 * 24)) + 1;
-        const consistencyScore = totalDays > 0 ? Math.round((practiceDays.size / totalDays) * 100) : 0;
+        const consistencyScore =
+            totalDays > 0 ? Math.round((practiceDays.size / totalDays) * 100) : 0;
 
         return {
             totalPracticeDays: practiceDays.size,
@@ -468,24 +488,24 @@ export class StatsPanel {
     }
 
     getConsistencyMessage(score) {
-        if (score >= 90) return "Outstanding consistency! You're a practice champion! 🏆";
-        if (score >= 70) return "Great consistency! Keep up the excellent work! 🌟";
-        if (score >= 50) return "Good progress! Try to practice more regularly. 💪";
-        if (score >= 30) return "Room for improvement. Set a daily reminder! 📅";
-        return "Just getting started? Build the habit one day at a time! 🎸";
+        if (score >= 90) return 'Outstanding consistency! You\'re a practice champion! 🏆';
+        if (score >= 70) return 'Great consistency! Keep up the excellent work! 🌟';
+        if (score >= 50) return 'Good progress! Try to practice more regularly. 💪';
+        if (score >= 30) return 'Room for improvement. Set a daily reminder! 📅';
+        return 'Just getting started? Build the habit one day at a time! 🎸';
     }
 
     getSessionRecommendation() {
         const avg = Math.floor((this.stats.averageSession || 0) / 60);
 
         if (avg < 15) {
-            return "Your sessions are quite short. Try to aim for at least 20-30 minutes to see better progress. Quality over quantity!";
+            return 'Your sessions are quite short. Try to aim for at least 20-30 minutes to see better progress. Quality over quantity!';
         } else if (avg < 30) {
-            return "Good session length! This is ideal for focused practice. Consider adding 5-10 minutes for warm-up.";
+            return 'Good session length! This is ideal for focused practice. Consider adding 5-10 minutes for warm-up.';
         } else if (avg < 60) {
-            return "Excellent session length! You're in the sweet spot for productive practice. Keep it up!";
+            return 'Excellent session length! You\'re in the sweet spot for productive practice. Keep it up!';
         } else {
-            return "Long practice sessions! Make sure to take breaks every 25-30 minutes to avoid fatigue and maintain focus.";
+            return 'Long practice sessions! Make sure to take breaks every 25-30 minutes to avoid fatigue and maintain focus.';
         }
     }
 
@@ -507,39 +527,52 @@ export class StatsPanel {
     getSoloEquivalents(totalSeconds) {
         // Famous guitar solos with their durations in seconds
         const solos = [
-            { name: "Stairway to Heaven", artist: "Led Zeppelin", duration: 120, emoji: "🏔️" },
-            { name: "Hotel California", artist: "Eagles", duration: 125, emoji: "🏨" },
-            { name: "Bohemian Rhapsody", artist: "Queen", duration: 75, emoji: "👑" },
-            { name: "Comfortably Numb", artist: "Pink Floyd", duration: 240, emoji: "🌙" },
-            { name: "Sweet Child O' Mine", artist: "Guns N' Roses", duration: 55, emoji: "🌹" },
-            { name: "Eruption", artist: "Van Halen", duration: 102, emoji: "🌋" },
-            { name: "Free Bird", artist: "Lynyrd Skynyrd", duration: 300, emoji: "🦅" },
-            { name: "Fade to Black", artist: "Metallica", duration: 114, emoji: "🌑" },
-            { name: "While My Guitar Gently Weeps", artist: "The Beatles", duration: 106, emoji: "😢" },
-            { name: "Layla", artist: "Derek and the Dominos", duration: 180, emoji: "💔" },
-            { name: "All Along the Watchtower", artist: "Jimi Hendrix", duration: 90, emoji: "🏰" },
-            { name: "Sultans of Swing", artist: "Dire Straits", duration: 140, emoji: "👳" }
+            { name: 'Stairway to Heaven', artist: 'Led Zeppelin', duration: 120, emoji: '🏔️' },
+            { name: 'Hotel California', artist: 'Eagles', duration: 125, emoji: '🏨' },
+            { name: 'Bohemian Rhapsody', artist: 'Queen', duration: 75, emoji: '👑' },
+            { name: 'Comfortably Numb', artist: 'Pink Floyd', duration: 240, emoji: '🌙' },
+            { name: 'Sweet Child O\' Mine', artist: 'Guns N\' Roses', duration: 55, emoji: '🌹' },
+            { name: 'Eruption', artist: 'Van Halen', duration: 102, emoji: '🌋' },
+            { name: 'Free Bird', artist: 'Lynyrd Skynyrd', duration: 300, emoji: '🦅' },
+            { name: 'Fade to Black', artist: 'Metallica', duration: 114, emoji: '🌑' },
+            {
+                name: 'While My Guitar Gently Weeps',
+                artist: 'The Beatles',
+                duration: 106,
+                emoji: '😢'
+            },
+            { name: 'Layla', artist: 'Derek and the Dominos', duration: 180, emoji: '💔' },
+            { name: 'All Along the Watchtower', artist: 'Jimi Hendrix', duration: 90, emoji: '🏰' },
+            { name: 'Sultans of Swing', artist: 'Dire Straits', duration: 140, emoji: '👳' }
         ];
 
         // Sort by duration for better display
         solos.sort((a, b) => b.duration - a.duration);
 
         // Calculate how many times each solo could be played
-        const equivalents = solos.map(solo => {
+        const equivalents = solos.map((solo) => {
             const count = Math.floor(totalSeconds / solo.duration);
             return { ...solo, count };
         });
 
         // Find the best fitting solos (ones that divide evenly or have interesting counts)
-        const interestingEquivalents = equivalents.filter(eq => 
-            eq.count > 0 && (eq.count === 1 || eq.count === 10 || eq.count === 25 || 
-            eq.count === 50 || eq.count === 100 || eq.count === 365 || eq.count === 1000)
+        const interestingEquivalents = equivalents.filter(
+            (eq) =>
+                eq.count > 0 &&
+                (eq.count === 1 ||
+                    eq.count === 10 ||
+                    eq.count === 25 ||
+                    eq.count === 50 ||
+                    eq.count === 100 ||
+                    eq.count === 365 ||
+                    eq.count === 1000)
         );
 
         // If no interesting equivalents, show the top 3 with highest counts
-        const displayEquivalents = interestingEquivalents.length > 0 
-            ? interestingEquivalents.slice(0, 3)
-            : equivalents.filter(eq => eq.count > 0).slice(0, 3);
+        const displayEquivalents =
+            interestingEquivalents.length > 0
+                ? interestingEquivalents.slice(0, 3)
+                : equivalents.filter((eq) => eq.count > 0).slice(0, 3);
 
         if (displayEquivalents.length === 0) {
             return `<p class="solo-message">Keep practicing! You're building up to your first solo equivalent! 🎸</p>`;
@@ -547,7 +580,9 @@ export class StatsPanel {
 
         return `
             <div class="solo-list">
-                ${displayEquivalents.map(solo => `
+                ${displayEquivalents
+                    .map(
+                        (solo) => `
                     <div class="solo-item">
                         <span class="solo-emoji">${solo.emoji}</span>
                         <div class="solo-info">
@@ -556,7 +591,9 @@ export class StatsPanel {
                             <span class="solo-artist">by ${solo.artist}</span>
                         </div>
                     </div>
-                `).join('')}
+                `
+                    )
+                    .join('')}
             </div>
             <p class="solo-message">
                 ${this.getFunMessage(totalSeconds, equivalents)}
@@ -566,12 +603,12 @@ export class StatsPanel {
 
     getFunMessage(totalSeconds, equivalents) {
         const totalHours = Math.floor(totalSeconds / 3600);
-        
+
         // Find the most impressive stat
-        const freebird = equivalents.find(s => s.name === "Free Bird");
-        const eruption = equivalents.find(s => s.name === "Eruption");
-        const stairway = equivalents.find(s => s.name === "Stairway to Heaven");
-        
+        const freebird = equivalents.find((s) => s.name === 'Free Bird');
+        const eruption = equivalents.find((s) => s.name === 'Eruption');
+        const stairway = equivalents.find((s) => s.name === 'Stairway to Heaven');
+
         if (freebird && freebird.count >= 100) {
             return `🎸 Epic! You could've played Free Bird ${freebird.count} times. Even Skynyrd would be impressed!`;
         } else if (stairway && stairway.count >= 50) {

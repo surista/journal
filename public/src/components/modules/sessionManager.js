@@ -41,13 +41,13 @@ export class SessionManager {
                     state.data.image = components.imageManager.getState();
                 }
                 break;
-                
+
             case 'audio':
                 if (components.audioPlayer) {
                     state.data.audio = components.audioPlayer.getState();
                 }
                 break;
-                
+
             case 'youtube':
                 if (components.youtubePlayer) {
                     state.data.youtube = components.youtubePlayer.getState();
@@ -72,7 +72,7 @@ export class SessionManager {
             if (components.currentMode === 'metronome' && components.metronome) {
                 session.bpm = components.metronome.state.bpm;
                 session.timeSignature = components.metronome.state.timeSignature;
-                
+
                 // Include image if present
                 if (components.imageManager && components.imageManager.currentImage) {
                     session.image = components.imageManager.currentImage;
@@ -101,8 +101,8 @@ export class SessionManager {
     async restoreSession(sessionId, components) {
         try {
             const sessions = await this.storageService.getSessions();
-            const session = sessions.find(s => s.id === sessionId);
-            
+            const session = sessions.find((s) => s.id === sessionId);
+
             if (!session || !session.state) {
                 throw new Error('Session not found or invalid');
             }
@@ -132,13 +132,13 @@ export class SessionManager {
                         components.imageManager.setState(state.data.image);
                     }
                     break;
-                    
+
                 case 'audio':
                     if (state.data.audio && components.audioPlayer) {
                         components.audioPlayer.setState(state.data.audio);
                     }
                     break;
-                    
+
                 case 'youtube':
                     if (state.data.youtube && components.youtubePlayer) {
                         components.youtubePlayer.setState(state.data.youtube);
@@ -160,7 +160,7 @@ export class SessionManager {
             console.warn('SessionStateService not available');
             return;
         }
-        
+
         const state = this.getCurrentSessionState(components);
         this.sessionStateService.saveState(state);
     }
@@ -170,16 +170,16 @@ export class SessionManager {
             console.warn('SessionStateService not available');
             return;
         }
-        
+
         const savedState = this.sessionStateService.getState();
-        
+
         if (savedState && savedState.duration > 0) {
             const timeSinceSession = Date.now() - savedState.timestamp;
             const fiveMinutes = 5 * 60 * 1000;
-            
+
             if (timeSinceSession < fiveMinutes) {
                 const shouldRestore = await this.showRestorePrompt(savedState.duration);
-                
+
                 if (shouldRestore) {
                     this.restorePersistedState(savedState, components);
                 } else {
@@ -213,13 +213,13 @@ export class SessionManager {
                     components.imageManager.setState(state.data.image);
                 }
                 break;
-                
+
             case 'audio':
                 if (state.data.audio && components.audioPlayer) {
                     components.audioPlayer.setState(state.data.audio);
                 }
                 break;
-                
+
             case 'youtube':
                 if (state.data.youtube && components.youtubePlayer) {
                     components.youtubePlayer.setState(state.data.youtube);
@@ -246,7 +246,7 @@ export class SessionManager {
                     </div>
                 </div>
             `;
-            
+
             // Add inline styles for the modal
             const style = document.createElement('style');
             style.textContent = `
@@ -351,33 +351,33 @@ export class SessionManager {
                 }
             `;
             document.head.appendChild(style);
-            
+
             document.body.appendChild(modal);
-            
+
             // Event listeners
             const closeModal = () => {
                 modal.remove();
                 style.remove();
                 resolve(false);
             };
-            
+
             document.getElementById('restoreYes').addEventListener('click', () => {
                 modal.remove();
                 style.remove();
                 resolve(true);
             });
-            
+
             document.getElementById('restoreNo').addEventListener('click', closeModal);
-            
+
             modal.querySelector('.modal-close').addEventListener('click', closeModal);
-            
+
             // Close on background click
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) {
                     closeModal();
                 }
             });
-            
+
             // Close on escape key
             const handleEscape = (e) => {
                 if (e.key === 'Escape') {
@@ -411,9 +411,9 @@ export class SessionManager {
 
     generateSessionName() {
         const date = new Date();
-        const timeStr = date.toLocaleTimeString('en-US', { 
-            hour: '2-digit', 
-            minute: '2-digit' 
+        const timeStr = date.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit'
         });
         return `Practice ${timeStr}`;
     }

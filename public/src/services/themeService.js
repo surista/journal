@@ -2,7 +2,8 @@
 // Manages theme switching and persistence for the Guitar Practice Journal
 
 export class ThemeService {
-    constructor() {
+    constructor(storageService = null) {
+        this.storageService = storageService;
         this.themes = {
             dark: {
                 name: 'Dark',
@@ -49,7 +50,7 @@ export class ThemeService {
                 icon: '🌸',
                 description: 'Soft pinks and whites for a gentle aesthetic'
             },
-            'cyberpunk': {
+            cyberpunk: {
                 name: 'Cyberpunk',
                 icon: '🔮',
                 description: 'Neon cyan and magenta with dark backgrounds'
@@ -132,18 +133,30 @@ export class ThemeService {
             }
         };
 
-        this.currentTheme = this.loadTheme();
-        this.applyTheme(this.currentTheme);
+        // Initialize theme asynchronously
+        this.currentTheme = 'dark'; // Default until loaded
+        this.initializeTheme();
         this.setupThemeListener();
     }
 
-    loadTheme() {
-        // Check for saved theme preference
-        const savedTheme = localStorage.getItem('selectedTheme') || localStorage.getItem('theme');
-
-        // Validate saved theme exists
-        if (savedTheme && this.themes[savedTheme]) {
-            return savedTheme;
+    async loadTheme() {
+        try {
+            // Use StorageService if available
+            if (this.storageService) {
+                const theme = await this.storageService.getTheme();
+                if (theme && this.themes[theme]) {
+                    return theme;
+                }
+            } else {
+                // Fallback to direct localStorage
+                const savedTheme =
+                    localStorage.getItem('selectedTheme') || localStorage.getItem('theme');
+                if (savedTheme && this.themes[savedTheme]) {
+                    return savedTheme;
+                }
+            }
+        } catch (error) {
+            console.error('Error loading theme:', error);
         }
 
         // Check system preference
@@ -155,10 +168,26 @@ export class ThemeService {
         return 'dark';
     }
 
-    saveTheme(theme) {
-        localStorage.setItem('selectedTheme', theme);
-        // Also save to legacy key for compatibility
-        localStorage.setItem('theme', theme);
+    async saveTheme(theme) {
+        try {
+            if (this.storageService) {
+                await this.storageService.saveTheme(theme);
+            } else {
+                // Fallback to direct localStorage
+                localStorage.setItem('selectedTheme', theme);
+                localStorage.setItem('theme', theme);
+            }
+        } catch (error) {
+            console.error('Error saving theme:', error);
+            // Fallback to localStorage on error
+            localStorage.setItem('selectedTheme', theme);
+            localStorage.setItem('theme', theme);
+        }
+    }
+
+    async initializeTheme() {
+        this.currentTheme = await this.loadTheme();
+        this.applyTheme(this.currentTheme);
     }
 
     applyTheme(theme) {
@@ -170,14 +199,14 @@ export class ThemeService {
         // Apply theme to document
         document.documentElement.setAttribute('data-theme', theme);
         this.currentTheme = theme;
-        this.saveTheme(theme);
+        this.saveTheme(theme); // Fire and forget
 
         // Update meta theme-color for mobile browsers
         const metaThemeColor = document.querySelector('meta[name="theme-color"]');
         if (metaThemeColor) {
             const colors = {
-                'dark': '#0a0a0a',
-                'light': '#ffffff',
+                dark: '#0a0a0a',
+                light: '#ffffff',
                 'midnight-blue': '#1a1f2e',
                 'forest-green': '#1a2f23',
                 'sunset-orange': '#2d1810',
@@ -185,7 +214,7 @@ export class ThemeService {
                 'ocean-teal': '#0f2942',
                 'nordic-ice': '#1e293b',
                 'cherry-blossom': '#3b1e29',
-                'cyberpunk': '#111111',
+                cyberpunk: '#111111',
                 'earth-tone': '#2b2218',
                 'coffee-brown': '#2a1f17',
                 'neon-cyber': '#11111a',
@@ -215,14 +244,15 @@ export class ThemeService {
         }
 
         // Dispatch theme change event
-        window.dispatchEvent(new CustomEvent('themeChanged', {
-            detail: {
-                theme,
-                themeData: this.themes[theme],
-                isDark: this.isDarkTheme()
-            }
-        }));
-
+        window.dispatchEvent(
+            new CustomEvent('themeChanged', {
+                detail: {
+                    theme,
+                    themeData: this.themes[theme],
+                    isDark: this.isDarkTheme()
+                }
+            })
+        );
     }
 
     updateThemeDisplay() {
@@ -322,7 +352,7 @@ export class ThemeService {
             'emerald-green',
             'crimson-red',
             'golden-amber',
-            'slate-gray',
+            'slate-gray'
         ];
         return darkThemes.includes(this.currentTheme);
     }
@@ -337,13 +367,22 @@ export class ThemeService {
     getThemeColors() {
         const colors = {};
         const colorVars = [
-            'primary', 'primary-dark', 'primary-light',
-            'bg-primary', 'bg-secondary', 'bg-tertiary',
-            'text-primary', 'text-secondary', 'text-muted',
-            'success', 'warning', 'danger', 'info'
+            'primary',
+            'primary-dark',
+            'primary-light',
+            'bg-primary',
+            'bg-secondary',
+            'bg-tertiary',
+            'text-primary',
+            'text-secondary',
+            'text-muted',
+            'success',
+            'warning',
+            'danger',
+            'info'
         ];
 
-        colorVars.forEach(varName => {
+        colorVars.forEach((varName) => {
             colors[varName] = this.getThemeColor(varName);
         });
 
@@ -358,10 +397,7 @@ export class ThemeService {
             // Listen for system theme changes
             mediaQuery.addEventListener('change', (e) => {
                 // Only auto-switch if user hasn't manually selected a theme
-                const hasManualSelection = localStorage.getItem('selectedTheme') !== null;
-                if (!hasManualSelection) {
-                    this.setTheme(e.matches ? 'dark' : 'light');
-                }
+                this.checkAutoThemeSwitch(e.matches);
             });
         }
     }
@@ -410,10 +446,30 @@ export class ThemeService {
         // Simple contrast calculation (you might want to use a more sophisticated algorithm)
         const rgb = primaryColor.match(/\d+/g);
         if (rgb) {
-            const brightness = (parseInt(rgb[0]) * 299 + parseInt(rgb[1]) * 587 + parseInt(rgb[2]) * 114) / 1000;
+            const brightness =
+                (parseInt(rgb[0]) * 299 + parseInt(rgb[1]) * 587 + parseInt(rgb[2]) * 114) / 1000;
             return brightness > 128 ? '#000000' : '#ffffff';
         }
 
         return this.isDarkTheme() ? '#ffffff' : '#000000';
+    }
+
+    async checkAutoThemeSwitch(prefersDark) {
+        try {
+            let hasManualSelection = false;
+
+            if (this.storageService) {
+                const settings = await this.storageService.getUserSettings();
+                hasManualSelection = settings?.theme != null;
+            } else {
+                hasManualSelection = localStorage.getItem('selectedTheme') !== null;
+            }
+
+            if (!hasManualSelection) {
+                this.setTheme(prefersDark ? 'dark' : 'light');
+            }
+        } catch (error) {
+            console.error('Error checking auto theme switch:', error);
+        }
     }
 }

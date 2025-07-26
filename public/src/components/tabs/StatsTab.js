@@ -33,7 +33,8 @@ export class StatsTab {
                 this.statsPanel.render();
             } catch (error) {
                 console.error('Error initializing Stats Panel:', error);
-                statsContainer.innerHTML = '<div class="error-state">Failed to load statistics</div>';
+                statsContainer.innerHTML =
+                    '<div class="error-state">Failed to load statistics</div>';
             }
         }
 
@@ -42,11 +43,15 @@ export class StatsTab {
             try {
                 // Lazy load the AchievementBadges component
                 const { AchievementBadges } = await import('../achievementBadges.js');
-                this.achievementBadges = new AchievementBadges(achievementsContainer, this.storageService);
+                this.achievementBadges = new AchievementBadges(
+                    achievementsContainer,
+                    this.storageService
+                );
                 await this.achievementBadges.render();
             } catch (error) {
                 console.error('Error initializing Achievement Badges:', error);
-                achievementsContainer.innerHTML = '<div class="error-state">Failed to load achievements</div>';
+                achievementsContainer.innerHTML =
+                    '<div class="error-state">Failed to load achievements</div>';
             }
         }
     }

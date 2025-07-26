@@ -21,7 +21,7 @@ export function detectBasePath() {
 
     // Simplified base path detection
     const currentPath = window.location.pathname;
-    const pathParts = currentPath.split('/').filter(p => p.length > 0);
+    const pathParts = currentPath.split('/').filter((p) => p.length > 0);
 
     // Remove filename if present
     if (pathParts.length > 0 && pathParts[pathParts.length - 1].includes('.')) {

@@ -8,9 +8,7 @@ export class PracticeTab {
         container.innerHTML = '<h2>Practice Tab Loaded!</h2>';
     }
 
-    onActivate() {
-    }
+    onActivate() {}
 
-    destroy() {
-    }
+    destroy() {}
 }

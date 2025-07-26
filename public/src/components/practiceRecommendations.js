@@ -27,7 +27,7 @@ export class PracticeRecommendations {
     render() {
         if (!this.container) return;
 
-        const hasRecommendations = 
+        const hasRecommendations =
             this.recommendations.repertoire.length > 0 ||
             this.recommendations.goals.length > 0 ||
             this.recommendations.general.length > 0;
@@ -59,17 +59,23 @@ export class PracticeRecommendations {
             <div class="recommendation-section">
                 <h4 class="section-title">📚 Repertoire Focus</h4>
                 <div class="recommendation-cards">
-                    ${this.recommendations.repertoire.map(rec => `
+                    ${this.recommendations.repertoire
+                        .map(
+                            (rec) => `
                         <div class="recommendation-card repertoire-card">
                             <h5>${rec.title}</h5>
                             <p class="recommendation-desc">${rec.description}</p>
                             <div class="exercise-list">
-                                ${rec.exercises.map(ex => `
+                                ${rec.exercises
+                                    .map(
+                                        (ex) => `
                                     <div class="exercise-item">
                                         <span class="exercise-name">${ex.name}</span>
                                         <span class="exercise-duration">${ex.duration}min</span>
                                     </div>
-                                `).join('')}
+                                `
+                                    )
+                                    .join('')}
                             </div>
                             <button class="btn btn-sm btn-primary start-practice-btn" 
                                     data-type="repertoire" 
@@ -77,7 +83,9 @@ export class PracticeRecommendations {
                                 Start Practice
                             </button>
                         </div>
-                    `).join('')}
+                    `
+                        )
+                        .join('')}
                 </div>
             </div>
         `;
@@ -90,17 +98,23 @@ export class PracticeRecommendations {
             <div class="recommendation-section">
                 <h4 class="section-title">🎯 Goal Exercises</h4>
                 <div class="recommendation-cards">
-                    ${this.recommendations.goals.map(rec => `
+                    ${this.recommendations.goals
+                        .map(
+                            (rec) => `
                         <div class="recommendation-card goal-card">
                             <h5>${rec.title}</h5>
                             <p class="recommendation-desc">${rec.description}</p>
                             <div class="exercise-list">
-                                ${rec.exercises.map(ex => `
+                                ${rec.exercises
+                                    .map(
+                                        (ex) => `
                                     <div class="exercise-item">
                                         <span class="exercise-name">${ex.name}</span>
                                         <span class="exercise-duration">${ex.duration}min</span>
                                     </div>
-                                `).join('')}
+                                `
+                                    )
+                                    .join('')}
                             </div>
                             <div class="recommendation-footer">
                                 <span class="total-duration">Total: ${rec.estimatedDuration}min</span>
@@ -111,7 +125,9 @@ export class PracticeRecommendations {
                                 </button>
                             </div>
                         </div>
-                    `).join('')}
+                    `
+                        )
+                        .join('')}
                 </div>
             </div>
         `;
@@ -124,7 +140,9 @@ export class PracticeRecommendations {
             <div class="recommendation-section">
                 <h4 class="section-title">🎸 General Practice</h4>
                 <div class="recommendation-cards">
-                    ${this.recommendations.general.map(rec => `
+                    ${this.recommendations.general
+                        .map(
+                            (rec) => `
                         <div class="recommendation-card ${rec.type}-card">
                             <div class="card-header">
                                 <h5>${rec.title}</h5>
@@ -132,7 +150,9 @@ export class PracticeRecommendations {
                             </div>
                             <p class="recommendation-desc">${rec.description}</p>
                             <div class="exercise-list">
-                                ${rec.exercises.map(ex => `
+                                ${rec.exercises
+                                    .map(
+                                        (ex) => `
                                     <div class="exercise-item">
                                         <span class="exercise-name">${ex.name}</span>
                                         <span class="exercise-meta">
@@ -140,10 +160,14 @@ export class PracticeRecommendations {
                                             <span class="exercise-duration">${ex.duration}min</span>
                                         </span>
                                     </div>
-                                `).join('')}
+                                `
+                                    )
+                                    .join('')}
                             </div>
                         </div>
-                    `).join('')}
+                    `
+                        )
+                        .join('')}
                 </div>
             </div>
         `;
@@ -151,18 +175,20 @@ export class PracticeRecommendations {
 
     attachEventListeners() {
         // Handle start practice buttons
-        this.container.querySelectorAll('.start-practice-btn').forEach(btn => {
+        this.container.querySelectorAll('.start-practice-btn').forEach((btn) => {
             btn.addEventListener('click', (e) => {
                 const type = e.target.dataset.type;
-                
+
                 if (type === 'repertoire') {
                     // Navigate to repertoire tab with item selected
                     const itemId = e.target.dataset.item;
                     window.location.hash = '#repertoire';
                     // Dispatch event to select the item
-                    window.dispatchEvent(new CustomEvent('selectRepertoireItem', {
-                        detail: { itemId }
-                    }));
+                    window.dispatchEvent(
+                        new CustomEvent('selectRepertoireItem', {
+                            detail: { itemId }
+                        })
+                    );
                 } else if (type === 'goal') {
                     // Start practice session with these exercises
                     const exercises = JSON.parse(e.target.dataset.exercises);
@@ -174,10 +200,12 @@ export class PracticeRecommendations {
 
     startExerciseRoutine(exercises) {
         // Create a practice session focused on these exercises
-        window.dispatchEvent(new CustomEvent('startExerciseRoutine', {
-            detail: { exercises }
-        }));
-        
+        window.dispatchEvent(
+            new CustomEvent('startExerciseRoutine', {
+                detail: { exercises }
+            })
+        );
+
         // Show notification
         this.showNotification('Exercise routine started! Check the timer.', 'success');
     }

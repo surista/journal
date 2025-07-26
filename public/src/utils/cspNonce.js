@@ -36,20 +36,20 @@ export function getNonce() {
 export function createNoncedScript(src, attributes = {}) {
     const script = document.createElement('script');
     const nonce = getNonce();
-    
+
     if (nonce) {
         script.nonce = nonce;
     }
-    
+
     if (src) {
         script.src = src;
     }
-    
+
     // Add any additional attributes
     Object.entries(attributes).forEach(([key, value]) => {
         script.setAttribute(key, value);
     });
-    
+
     return script;
 }
 
@@ -61,11 +61,11 @@ export function createNoncedScript(src, attributes = {}) {
 export function createNoncedStyle(cssText) {
     const style = document.createElement('style');
     const nonce = getNonce();
-    
+
     if (nonce) {
         style.nonce = nonce;
     }
-    
+
     style.textContent = cssText;
     return style;
 }
@@ -77,16 +77,16 @@ export function createNoncedStyle(cssText) {
 export function applyNoncesToInlineElements() {
     const nonce = getNonce();
     if (!nonce) return;
-    
+
     // Apply nonce to existing inline scripts
-    document.querySelectorAll('script:not([src])').forEach(script => {
+    document.querySelectorAll('script:not([src])').forEach((script) => {
         if (!script.nonce) {
             script.nonce = nonce;
         }
     });
-    
+
     // Apply nonce to existing inline styles
-    document.querySelectorAll('style').forEach(style => {
+    document.querySelectorAll('style').forEach((style) => {
         if (!style.nonce) {
             style.nonce = nonce;
         }

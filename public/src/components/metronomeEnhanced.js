@@ -4,7 +4,7 @@ import { Metronome } from './metronome.js';
 export class MetronomeEnhanced extends Metronome {
     constructor(container, audioService) {
         super(container, audioService);
-        
+
         // Additional properties for enhanced features
         this.tempoProgression = {
             enabled: false,
@@ -14,13 +14,13 @@ export class MetronomeEnhanced extends Metronome {
             measuresPerStep: 4,
             currentMeasure: 0
         };
-        
+
         this.beatDropout = {
             enabled: false,
             pattern: [], // Which beats to drop out
             dropoutProbability: 0.3
         };
-        
+
         // More sound options
         this.soundLibrary = {
             click: { normal: 800, accent: 1000 },
@@ -36,7 +36,7 @@ export class MetronomeEnhanced extends Metronome {
             triangle: { normal: 4500, accent: 5500 },
             shaker: { normal: 6000, accent: 7500 }
         };
-        
+
         // Subdivision support
         this.subdivision = {
             enabled: false,
@@ -60,9 +60,13 @@ export class MetronomeEnhanced extends Metronome {
                 <!-- Beat indicator -->
                 <div class="beat-indicator">
                     <div class="beat-lights">
-                        ${Array(this.beatsPerMeasure).fill(0).map((_, i) =>
-                            `<div class="beat-light ${this.accentPattern[i] ? 'accent' : ''}" data-beat="${i}"></div>`
-                        ).join('')}
+                        ${Array(this.beatsPerMeasure)
+                            .fill(0)
+                            .map(
+                                (_, i) =>
+                                    `<div class="beat-light ${this.accentPattern[i] ? 'accent' : ''}" data-beat="${i}"></div>`
+                            )
+                            .join('')}
                     </div>
                     <div class="beat-counter">
                         <span id="currentBeat">1</span> / <span id="totalBeats">${this.beatsPerMeasure}</span>
@@ -125,9 +129,13 @@ export class MetronomeEnhanced extends Metronome {
                     <div class="setting-group">
                         <label>Accent Pattern:</label>
                         <div class="accent-pattern" id="accentPattern">
-                            ${Array(this.beatsPerMeasure).fill(0).map((_, i) =>
-                                `<button class="accent-beat-btn ${this.accentPattern[i] ? 'accented' : ''}" data-beat="${i}">${i + 1}</button>`
-                            ).join('')}
+                            ${Array(this.beatsPerMeasure)
+                                .fill(0)
+                                .map(
+                                    (_, i) =>
+                                        `<button class="accent-beat-btn ${this.accentPattern[i] ? 'accented' : ''}" data-beat="${i}">${i + 1}</button>`
+                                )
+                                .join('')}
                         </div>
                     </div>
                 </div>
@@ -221,9 +229,13 @@ export class MetronomeEnhanced extends Metronome {
                             <div class="control-row" id="dropoutPatternRow">
                                 <label>Drop Beats:</label>
                                 <div class="dropout-pattern">
-                                    ${Array(this.beatsPerMeasure).fill(0).map((_, i) =>
-                                        `<button class="dropout-beat-btn" data-beat="${i}">${i + 1}</button>`
-                                    ).join('')}
+                                    ${Array(this.beatsPerMeasure)
+                                        .fill(0)
+                                        .map(
+                                            (_, i) =>
+                                                `<button class="dropout-beat-btn" data-beat="${i}">${i + 1}</button>`
+                                        )
+                                        .join('')}
                                 </div>
                             </div>
                             <div class="control-row" id="dropoutProbabilityRow" style="display:none">
@@ -244,71 +256,73 @@ export class MetronomeEnhanced extends Metronome {
     attachEnhancedEventListeners() {
         // Call parent event listeners
         super.attachEventListeners();
-        
+
         // Subdivision controls
         const subdivisionEnabled = document.getElementById('subdivisionEnabled');
         const subdivisionSelect = document.getElementById('subdivisionSelect');
-        
+
         subdivisionEnabled?.addEventListener('change', (e) => {
             this.subdivision.enabled = e.target.checked;
             subdivisionSelect.disabled = !e.target.checked;
         });
-        
+
         subdivisionSelect?.addEventListener('change', (e) => {
             this.subdivision.division = parseInt(e.target.value);
         });
-        
+
         // Tempo progression controls
         const tempoProgressionEnabled = document.getElementById('tempoProgressionEnabled');
         const tempoProgressionControls = document.getElementById('tempoProgressionControls');
-        
+
         tempoProgressionEnabled?.addEventListener('change', (e) => {
             this.tempoProgression.enabled = e.target.checked;
             tempoProgressionControls.style.display = e.target.checked ? 'block' : 'none';
-            
+
             if (e.target.checked && this.isPlaying) {
                 this.tempoProgression.currentMeasure = 0;
                 this.setBpm(this.tempoProgression.startBpm);
             }
         });
-        
+
         document.getElementById('progressionStartBpm')?.addEventListener('change', (e) => {
             this.tempoProgression.startBpm = parseInt(e.target.value);
         });
-        
+
         document.getElementById('progressionEndBpm')?.addEventListener('change', (e) => {
             this.tempoProgression.endBpm = parseInt(e.target.value);
         });
-        
+
         document.getElementById('progressionIncrement')?.addEventListener('change', (e) => {
             this.tempoProgression.increment = parseInt(e.target.value);
         });
-        
+
         document.getElementById('progressionMeasures')?.addEventListener('change', (e) => {
             this.tempoProgression.measuresPerStep = parseInt(e.target.value);
         });
-        
+
         // Beat dropout controls
         const beatDropoutEnabled = document.getElementById('beatDropoutEnabled');
         const beatDropoutControls = document.getElementById('beatDropoutControls');
-        
+
         beatDropoutEnabled?.addEventListener('change', (e) => {
             this.beatDropout.enabled = e.target.checked;
             beatDropoutControls.style.display = e.target.checked ? 'block' : 'none';
         });
-        
+
         const dropoutMode = document.getElementById('dropoutMode');
         dropoutMode?.addEventListener('change', (e) => {
             const mode = e.target.value;
-            document.getElementById('dropoutPatternRow').style.display = mode === 'pattern' ? 'block' : 'none';
-            document.getElementById('dropoutProbabilityRow').style.display = mode === 'random' ? 'block' : 'none';
+            document.getElementById('dropoutPatternRow').style.display =
+                mode === 'pattern' ? 'block' : 'none';
+            document.getElementById('dropoutProbabilityRow').style.display =
+                mode === 'random' ? 'block' : 'none';
         });
-        
-        document.querySelectorAll('.dropout-beat-btn').forEach(btn => {
+
+        document.querySelectorAll('.dropout-beat-btn').forEach((btn) => {
             btn.addEventListener('click', (e) => {
                 const beat = parseInt(e.target.dataset.beat);
                 const index = this.beatDropout.pattern.indexOf(beat);
-                
+
                 if (index > -1) {
                     this.beatDropout.pattern.splice(index, 1);
                     e.target.classList.remove('active');
@@ -318,7 +332,7 @@ export class MetronomeEnhanced extends Metronome {
                 }
             });
         });
-        
+
         const dropoutProbability = document.getElementById('dropoutProbability');
         dropoutProbability?.addEventListener('input', (e) => {
             this.beatDropout.dropoutProbability = parseInt(e.target.value) / 100;
@@ -341,7 +355,10 @@ export class MetronomeEnhanced extends Metronome {
                 shouldPlayBeat = Math.random() > this.beatDropout.dropoutProbability;
             } else if (dropoutMode === 'progressive') {
                 // Progressive dropout - increase probability over time
-                const progressiveProbability = Math.min(0.5, this.tempoProgression.currentMeasure * 0.05);
+                const progressiveProbability = Math.min(
+                    0.5,
+                    this.tempoProgression.currentMeasure * 0.05
+                );
                 shouldPlayBeat = Math.random() > progressiveProbability;
             }
         }
@@ -368,7 +385,7 @@ export class MetronomeEnhanced extends Metronome {
 
         // Play subdivisions if enabled
         if (this.subdivision.enabled && shouldPlayBeat) {
-            const subdivisionInterval = (60000 / this.bpm) / this.subdivision.division;
+            const subdivisionInterval = 60000 / this.bpm / this.subdivision.division;
             for (let i = 1; i < this.subdivision.division; i++) {
                 setTimeout(() => {
                     const subFrequency = this.soundLibrary.tick.normal;
@@ -379,23 +396,24 @@ export class MetronomeEnhanced extends Metronome {
 
         // Update beat counter
         this.currentBeat = (this.currentBeat + 1) % this.beatsPerMeasure;
-        
+
         // Handle tempo progression
         if (this.currentBeat === 0 && this.tempoProgression.enabled) {
             this.tempoProgression.currentMeasure++;
-            
+
             if (this.tempoProgression.currentMeasure >= this.tempoProgression.measuresPerStep) {
                 this.tempoProgression.currentMeasure = 0;
-                
+
                 const newBpm = Math.min(
                     this.bpm + this.tempoProgression.increment,
                     this.tempoProgression.endBpm
                 );
-                
+
                 if (newBpm !== this.bpm) {
                     this.setBpm(newBpm);
-                    document.getElementById('progressionStatus').textContent = `Current: ${this.bpm} BPM`;
-                    
+                    document.getElementById('progressionStatus').textContent =
+                        `Current: ${this.bpm} BPM`;
+
                     // Restart metronome with new tempo
                     if (this.isPlaying) {
                         this.pause();
@@ -404,7 +422,7 @@ export class MetronomeEnhanced extends Metronome {
                 }
             }
         }
-        
+
         this.updateBeatDisplay();
     }
 
@@ -415,20 +433,23 @@ export class MetronomeEnhanced extends Metronome {
 
     setTimeSignature(beats) {
         super.setTimeSignature(beats);
-        
+
         // Update dropout pattern buttons
         const dropoutContainer = document.querySelector('.dropout-pattern');
         if (dropoutContainer) {
-            dropoutContainer.innerHTML = Array(beats).fill(0).map((_, i) =>
-                `<button class="dropout-beat-btn" data-beat="${i}">${i + 1}</button>`
-            ).join('');
-            
+            dropoutContainer.innerHTML = Array(beats)
+                .fill(0)
+                .map(
+                    (_, i) => `<button class="dropout-beat-btn" data-beat="${i}">${i + 1}</button>`
+                )
+                .join('');
+
             // Re-attach dropout button listeners
-            dropoutContainer.querySelectorAll('.dropout-beat-btn').forEach(btn => {
+            dropoutContainer.querySelectorAll('.dropout-beat-btn').forEach((btn) => {
                 btn.addEventListener('click', (e) => {
                     const beat = parseInt(e.target.dataset.beat);
                     const index = this.beatDropout.pattern.indexOf(beat);
-                    
+
                     if (index > -1) {
                         this.beatDropout.pattern.splice(index, 1);
                         e.target.classList.remove('active');
@@ -447,13 +468,13 @@ export class MetronomeEnhanced extends Metronome {
             this.tempoProgression.currentMeasure = 0;
             this.setBpm(this.tempoProgression.startBpm);
         }
-        
+
         await super.start();
     }
 
     stop() {
         super.stop();
-        
+
         if (this.tempoProgression.enabled) {
             this.tempoProgression.currentMeasure = 0;
             this.setBpm(this.tempoProgression.startBpm);

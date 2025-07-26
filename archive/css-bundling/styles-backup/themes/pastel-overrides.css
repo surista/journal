@@ -1,0 +1,464 @@
+/* Pastel Theme Overrides - Additional styling for light pastel themes */
+
+/* Pastel Dream Theme */
+[data-theme="pastel-dream"] {
+    --bg-primary: #F3EBFF;
+    --bg-secondary: #F8F3FF;
+    --bg-tertiary: #EDE5FF;
+}
+
+[data-theme="pastel-dream"] body,
+[data-theme="pastel-dream"] .main-content,
+[data-theme="pastel-dream"] .content-wrapper {
+    background: linear-gradient(135deg, #F3EBFF 0%, #F8F3FF 100%) !important;
+    min-height: 100vh;
+}
+
+[data-theme="pastel-dream"] .modal-content {
+    background: linear-gradient(135deg, #FDFAFF 0%, #F8F3FF 100%);
+    border: 2px solid #E0B3FF;
+}
+
+[data-theme="pastel-dream"] .btn-primary {
+    background: linear-gradient(135deg, #E0B3FF 0%, #D19FFF 100%);
+    color: #3A2D4C;
+    box-shadow: 0 4px 15px rgba(224, 179, 255, 0.4);
+}
+
+[data-theme="pastel-dream"] .card {
+    background: rgba(253, 250, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border: 1px solid #EDE5FF;
+}
+
+/* Cotton Candy Theme */
+[data-theme="cotton-candy"] {
+    --bg-primary: #FFE8F3;
+    --bg-secondary: #E6F5FF;
+    --bg-tertiary: #FFD6E7;
+}
+
+[data-theme="cotton-candy"] body,
+[data-theme="cotton-candy"] .main-content,
+[data-theme="cotton-candy"] .content-wrapper {
+    background: linear-gradient(135deg, #FFE8F3 0%, #E6F5FF 100%) !important;
+    min-height: 100vh;
+}
+
+[data-theme="cotton-candy"] .modal-content {
+    background: linear-gradient(135deg, #FFFAFC 0%, #F5FCFF 100%);
+    border: 2px solid #FFB6D9;
+}
+
+[data-theme="cotton-candy"] .btn-primary {
+    background: linear-gradient(135deg, #FFB6D9 0%, #A6D8FF 100%);
+    color: #4C2D3F;
+    box-shadow: 0 4px 15px rgba(255, 182, 217, 0.4);
+}
+
+[data-theme="cotton-candy"] .card {
+    background: rgba(255, 250, 252, 0.9);
+    backdrop-filter: blur(10px);
+    border: 1px solid #FFE0EC;
+}
+
+/* Spring Meadow Theme */
+[data-theme="spring-meadow"] {
+    --bg-primary: #E8FFE8;
+    --bg-secondary: #FFF0F7;
+    --bg-tertiary: #D6FFD6;
+}
+
+[data-theme="spring-meadow"] body,
+[data-theme="spring-meadow"] .main-content,
+[data-theme="spring-meadow"] .content-wrapper {
+    background: linear-gradient(135deg, #E8FFE8 0%, #FFF0F7 100%) !important;
+    min-height: 100vh;
+}
+
+[data-theme="spring-meadow"] .modal-content {
+    background: linear-gradient(135deg, #FAFFFA 0%, #FFF5FA 100%);
+    border: 2px solid #B3E5B3;
+}
+
+[data-theme="spring-meadow"] .btn-primary {
+    background: linear-gradient(135deg, #B3E5B3 0%, #99DD99 100%);
+    color: #2D4C2D;
+    box-shadow: 0 4px 15px rgba(179, 229, 179, 0.4);
+}
+
+[data-theme="spring-meadow"] .card {
+    background: rgba(250, 255, 250, 0.9);
+    backdrop-filter: blur(10px);
+    border: 1px solid #DFF2DF;
+}
+
+/* Sunset Sherbet Theme */
+[data-theme="sunset-sherbet"] {
+    --bg-primary: #FFE8D9;
+    --bg-secondary: #FFF0E6;
+    --bg-tertiary: #FFD6BD;
+}
+
+[data-theme="sunset-sherbet"] body,
+[data-theme="sunset-sherbet"] .main-content,
+[data-theme="sunset-sherbet"] .content-wrapper {
+    background: linear-gradient(135deg, #FFE8D9 0%, #FFF0E6 100%) !important;
+    min-height: 100vh;
+}
+
+[data-theme="sunset-sherbet"] .modal-content {
+    background: linear-gradient(135deg, #FFFAF5 0%, #FFE8D9 100%);
+    border: 2px solid #FFB399;
+}
+
+[data-theme="sunset-sherbet"] .btn-primary {
+    background: linear-gradient(135deg, #FFB399 0%, #FFD199 100%);
+    color: #4C2D1E;
+    box-shadow: 0 4px 15px rgba(255, 179, 153, 0.4);
+}
+
+[data-theme="sunset-sherbet"] .card {
+    background: rgba(255, 250, 245, 0.9);
+    backdrop-filter: blur(10px);
+    border: 1px solid #FFE0CC;
+}
+
+/* Ocean Breeze Theme */
+[data-theme="ocean-breeze"] {
+    --bg-primary: #E6F5FF;
+    --bg-secondary: #F0FAFF;
+    --bg-tertiary: #CCE9FF;
+}
+
+[data-theme="ocean-breeze"] body,
+[data-theme="ocean-breeze"] .main-content,
+[data-theme="ocean-breeze"] .content-wrapper {
+    background: linear-gradient(135deg, #E6F5FF 0%, #F0FAFF 100%) !important;
+    min-height: 100vh;
+}
+
+[data-theme="ocean-breeze"] .modal-content {
+    background: linear-gradient(135deg, #FAFEFF 0%, #E6F5FF 100%);
+    border: 2px solid #99D9E5;
+}
+
+[data-theme="ocean-breeze"] .btn-primary {
+    background: linear-gradient(135deg, #99D9E5 0%, #99E5D9 100%);
+    color: #1E3A4C;
+    box-shadow: 0 4px 15px rgba(153, 217, 229, 0.4);
+}
+
+[data-theme="ocean-breeze"] .card {
+    background: rgba(250, 254, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border: 1px solid #CCE9F2;
+}
+
+/* Bubblegum Pop Theme */
+[data-theme="bubblegum-pop"] {
+    --bg-primary: #FFE0F0;
+    --bg-secondary: #F0E6FF;
+    --bg-tertiary: #FFCCE5;
+}
+
+[data-theme="bubblegum-pop"] body,
+[data-theme="bubblegum-pop"] .main-content,
+[data-theme="bubblegum-pop"] .content-wrapper {
+    background: linear-gradient(135deg, #FFE0F0 0%, #F0E6FF 100%) !important;
+    min-height: 100vh;
+}
+
+[data-theme="bubblegum-pop"] .modal-content {
+    background: linear-gradient(135deg, #FFFAFD 0%, #F8F0FF 100%);
+    border: 2px solid #FF99CC;
+}
+
+[data-theme="bubblegum-pop"] .btn-primary {
+    background: linear-gradient(135deg, #FF99CC 0%, #CC99FF 100%);
+    color: #4C1E3A;
+    box-shadow: 0 4px 15px rgba(255, 153, 204, 0.4);
+}
+
+[data-theme="bubblegum-pop"] .card {
+    background: rgba(255, 250, 253, 0.9);
+    backdrop-filter: blur(10px);
+    border: 1px solid #FFE0F0;
+}
+
+/* Common pastel theme overrides */
+[data-theme="pastel-dream"] .sidebar,
+[data-theme="cotton-candy"] .sidebar,
+[data-theme="spring-meadow"] .sidebar,
+[data-theme="sunset-sherbet"] .sidebar,
+[data-theme="ocean-breeze"] .sidebar,
+[data-theme="bubblegum-pop"] .sidebar {
+    backdrop-filter: blur(10px);
+    box-shadow: 2px 0 20px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="pastel-dream"] .nav-item.active,
+[data-theme="cotton-candy"] .nav-item.active,
+[data-theme="spring-meadow"] .nav-item.active,
+[data-theme="sunset-sherbet"] .nav-item.active,
+[data-theme="ocean-breeze"] .nav-item.active,
+[data-theme="bubblegum-pop"] .nav-item.active {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    color: white;
+    font-weight: 600;
+}
+
+[data-theme="pastel-dream"] .form-control:focus,
+[data-theme="cotton-candy"] .form-control:focus,
+[data-theme="spring-meadow"] .form-control:focus,
+[data-theme="sunset-sherbet"] .form-control:focus,
+[data-theme="ocean-breeze"] .form-control:focus,
+[data-theme="bubblegum-pop"] .form-control:focus {
+    background: white;
+    box-shadow: 0 0 0 4px var(--primary-light);
+}
+
+[data-theme="pastel-dream"] .achievement-badge.earned,
+[data-theme="cotton-candy"] .achievement-badge.earned,
+[data-theme="spring-meadow"] .achievement-badge.earned,
+[data-theme="sunset-sherbet"] .achievement-badge.earned,
+[data-theme="ocean-breeze"] .achievement-badge.earned,
+[data-theme="bubblegum-pop"] .achievement-badge.earned {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    border: 2px solid white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="pastel-dream"] .stat-card,
+[data-theme="cotton-candy"] .stat-card,
+[data-theme="spring-meadow"] .stat-card,
+[data-theme="sunset-sherbet"] .stat-card,
+[data-theme="ocean-breeze"] .stat-card,
+[data-theme="bubblegum-pop"] .stat-card {
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-card-hover) 100%);
+    border: 1px solid var(--border);
+}
+
+[data-theme="pastel-dream"] .timer-display,
+[data-theme="cotton-candy"] .timer-display,
+[data-theme="spring-meadow"] .timer-display,
+[data-theme="sunset-sherbet"] .timer-display,
+[data-theme="ocean-breeze"] .timer-display,
+[data-theme="bubblegum-pop"] .timer-display {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+}
+
+/* Button color overrides for all pastel themes */
+[data-theme="pastel-dream"] .btn-success,
+[data-theme="cotton-candy"] .btn-success,
+[data-theme="spring-meadow"] .btn-success,
+[data-theme="sunset-sherbet"] .btn-success,
+[data-theme="ocean-breeze"] .btn-success,
+[data-theme="bubblegum-pop"] .btn-success {
+    color: #1a4d1a;
+}
+
+[data-theme="pastel-dream"] .btn-danger,
+[data-theme="cotton-candy"] .btn-danger,
+[data-theme="spring-meadow"] .btn-danger,
+[data-theme="sunset-sherbet"] .btn-danger,
+[data-theme="ocean-breeze"] .btn-danger,
+[data-theme="bubblegum-pop"] .btn-danger {
+    color: #7f1d1d;
+}
+
+[data-theme="pastel-dream"] .fab,
+[data-theme="cotton-candy"] .fab,
+[data-theme="spring-meadow"] .fab,
+[data-theme="sunset-sherbet"] .fab,
+[data-theme="ocean-breeze"] .fab,
+[data-theme="bubblegum-pop"] .fab {
+    color: var(--text-primary);
+}
+
+/* Fix other UI elements with poor contrast */
+[data-theme="pastel-dream"] .nav-item.active,
+[data-theme="cotton-candy"] .nav-item.active,
+[data-theme="spring-meadow"] .nav-item.active,
+[data-theme="sunset-sherbet"] .nav-item.active,
+[data-theme="ocean-breeze"] .nav-item.active,
+[data-theme="bubblegum-pop"] .nav-item.active {
+    color: var(--text-primary) !important;
+}
+
+/* Light theme button fixes */
+[data-theme="light"] .btn-primary {
+    color: white;
+}
+
+[data-theme="light"] .btn-success {
+    color: white;
+}
+
+[data-theme="light"] .btn-danger {
+    color: white;
+}
+
+/* Fix text contrast for muted elements in pastel themes */
+[data-theme="pastel-dream"] .metronome-status,
+[data-theme="cotton-candy"] .metronome-status,
+[data-theme="spring-meadow"] .metronome-status,
+[data-theme="sunset-sherbet"] .metronome-status,
+[data-theme="ocean-breeze"] .metronome-status,
+[data-theme="bubblegum-pop"] .metronome-status,
+[data-theme="pastel-dream"] .accent-pattern-minimal label,
+[data-theme="cotton-candy"] .accent-pattern-minimal label,
+[data-theme="spring-meadow"] .accent-pattern-minimal label,
+[data-theme="sunset-sherbet"] .accent-pattern-minimal label,
+[data-theme="ocean-breeze"] .accent-pattern-minimal label,
+[data-theme="bubblegum-pop"] .accent-pattern-minimal label {
+    color: var(--text-secondary) !important;
+}
+
+/* Fix metronome button text visibility */
+[data-theme="pastel-dream"] .metronome-btn.start,
+[data-theme="cotton-candy"] .metronome-btn.start,
+[data-theme="spring-meadow"] .metronome-btn.start,
+[data-theme="sunset-sherbet"] .metronome-btn.start,
+[data-theme="ocean-breeze"] .metronome-btn.start,
+[data-theme="bubblegum-pop"] .metronome-btn.start {
+    color: white !important;
+}
+
+/* Ensure form labels are visible */
+[data-theme="pastel-dream"] label,
+[data-theme="cotton-candy"] label,
+[data-theme="spring-meadow"] label,
+[data-theme="sunset-sherbet"] label,
+[data-theme="ocean-breeze"] label,
+[data-theme="bubblegum-pop"] label,
+[data-theme="light"] label {
+    color: var(--text-secondary) !important;
+}
+
+/* Fix tempo display visibility */
+[data-theme="pastel-dream"] .tempo-display,
+[data-theme="cotton-candy"] .tempo-display,
+[data-theme="spring-meadow"] .tempo-display,
+[data-theme="sunset-sherbet"] .tempo-display,
+[data-theme="ocean-breeze"] .tempo-display,
+[data-theme="bubblegum-pop"] .tempo-display {
+    color: var(--text-primary) !important;
+    background: transparent !important;
+    -webkit-text-fill-color: var(--text-primary) !important;
+}
+
+/* Fix section titles visibility */
+[data-theme="pastel-dream"] .section-title,
+[data-theme="cotton-candy"] .section-title,
+[data-theme="spring-meadow"] .section-title,
+[data-theme="sunset-sherbet"] .section-title,
+[data-theme="ocean-breeze"] .section-title,
+[data-theme="bubblegum-pop"] .section-title,
+[data-theme="light"] .section-title {
+    color: var(--text-primary) !important;
+}
+
+/* Fix stats visibility in calendars and dashboard */
+[data-theme="pastel-dream"] .stat-label,
+[data-theme="cotton-candy"] .stat-label,
+[data-theme="spring-meadow"] .stat-label,
+[data-theme="sunset-sherbet"] .stat-label,
+[data-theme="ocean-breeze"] .stat-label,
+[data-theme="bubblegum-pop"] .stat-label,
+[data-theme="light"] .stat-label {
+    color: var(--text-secondary) !important;
+    opacity: 1 !important;
+}
+
+[data-theme="pastel-dream"] .stat-value,
+[data-theme="cotton-candy"] .stat-value,
+[data-theme="spring-meadow"] .stat-value,
+[data-theme="sunset-sherbet"] .stat-value,
+[data-theme="ocean-breeze"] .stat-value,
+[data-theme="bubblegum-pop"] .stat-value {
+    color: var(--primary) !important;
+    -webkit-text-fill-color: var(--primary) !important;
+}
+
+/* Fix streak display visibility */
+[data-theme="pastel-dream"] .streak-display h3,
+[data-theme="cotton-candy"] .streak-display h3,
+[data-theme="spring-meadow"] .streak-display h3,
+[data-theme="sunset-sherbet"] .streak-display h3,
+[data-theme="ocean-breeze"] .streak-display h3,
+[data-theme="bubblegum-pop"] .streak-display h3,
+[data-theme="light"] .streak-display h3 {
+    color: var(--text-primary) !important;
+}
+
+/* Fix calendar legend visibility */
+[data-theme="pastel-dream"] .calendar-legend,
+[data-theme="cotton-candy"] .calendar-legend,
+[data-theme="spring-meadow"] .calendar-legend,
+[data-theme="sunset-sherbet"] .calendar-legend,
+[data-theme="ocean-breeze"] .calendar-legend,
+[data-theme="bubblegum-pop"] .calendar-legend,
+[data-theme="light"] .calendar-legend {
+    color: var(--text-secondary) !important;
+}
+
+/* Fix all heading visibility */
+[data-theme="pastel-dream"] h1,
+[data-theme="pastel-dream"] h2,
+[data-theme="pastel-dream"] h3,
+[data-theme="pastel-dream"] h4,
+[data-theme="pastel-dream"] h5,
+[data-theme="pastel-dream"] h6,
+[data-theme="cotton-candy"] h1,
+[data-theme="cotton-candy"] h2,
+[data-theme="cotton-candy"] h3,
+[data-theme="cotton-candy"] h4,
+[data-theme="cotton-candy"] h5,
+[data-theme="cotton-candy"] h6,
+[data-theme="spring-meadow"] h1,
+[data-theme="spring-meadow"] h2,
+[data-theme="spring-meadow"] h3,
+[data-theme="spring-meadow"] h4,
+[data-theme="spring-meadow"] h5,
+[data-theme="spring-meadow"] h6,
+[data-theme="sunset-sherbet"] h1,
+[data-theme="sunset-sherbet"] h2,
+[data-theme="sunset-sherbet"] h3,
+[data-theme="sunset-sherbet"] h4,
+[data-theme="sunset-sherbet"] h5,
+[data-theme="sunset-sherbet"] h6,
+[data-theme="ocean-breeze"] h1,
+[data-theme="ocean-breeze"] h2,
+[data-theme="ocean-breeze"] h3,
+[data-theme="ocean-breeze"] h4,
+[data-theme="ocean-breeze"] h5,
+[data-theme="ocean-breeze"] h6,
+[data-theme="bubblegum-pop"] h1,
+[data-theme="bubblegum-pop"] h2,
+[data-theme="bubblegum-pop"] h3,
+[data-theme="bubblegum-pop"] h4,
+[data-theme="bubblegum-pop"] h5,
+[data-theme="bubblegum-pop"] h6,
+[data-theme="light"] h1,
+[data-theme="light"] h2,
+[data-theme="light"] h3,
+[data-theme="light"] h4,
+[data-theme="light"] h5,
+[data-theme="light"] h6 {
+    color: var(--text-primary) !important;
+}
+
+/* Fix any remaining text with poor contrast */
+[data-theme="pastel-dream"] .text-muted,
+[data-theme="cotton-candy"] .text-muted,
+[data-theme="spring-meadow"] .text-muted,
+[data-theme="sunset-sherbet"] .text-muted,
+[data-theme="ocean-breeze"] .text-muted,
+[data-theme="bubblegum-pop"] .text-muted,
+[data-theme="light"] .text-muted {
+    color: var(--text-secondary) !important;
+}

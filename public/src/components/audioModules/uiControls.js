@@ -4,7 +4,7 @@ export class UIControls {
         this.container = null;
         this.elements = {};
         this.callbacks = {};
-        
+
         // UI state
         this.isPlaying = false;
         this.currentTime = 0;
@@ -12,7 +12,7 @@ export class UIControls {
         this.loopStart = null;
         this.loopEnd = null;
         this.isLooping = false;
-        
+
         // Display formats
         this.timeFormat = 'mm:ss'; // or 'mm:ss.ms'
     }
@@ -33,7 +33,7 @@ export class UIControls {
 
     render() {
         if (!this.container) return;
-        
+
         this.container.innerHTML = this.getHTML();
         this.addStyles();
     }
@@ -142,7 +142,7 @@ export class UIControls {
 
     addStyles() {
         if (document.getElementById('audioPlayerUIStyles')) return;
-        
+
         const style = document.createElement('style');
         style.id = 'audioPlayerUIStyles';
         style.textContent = `
@@ -342,7 +342,7 @@ export class UIControls {
                 }
             }
         `;
-        
+
         document.head.appendChild(style);
     }
 
@@ -351,53 +351,53 @@ export class UIControls {
         const findElement = (id) => {
             return this.container?.querySelector(`#${id}`) || document.getElementById(id);
         };
-        
+
         // Main controls
         this.elements.playPauseBtn = findElement('playPauseBtn');
         this.elements.stopBtn = findElement('stopBtn');
-        
+
         // Debug: Check if elements exist
         if (!this.elements.playPauseBtn) {
             console.error('playPauseBtn not found!');
             console.log('Container:', this.container);
             console.log('Container HTML:', this.container?.innerHTML?.substring(0, 200));
         }
-        
+
         // Time display
         this.elements.currentTime = findElement('currentTime');
         this.elements.duration = findElement('duration');
-        
+
         // Loop controls
         this.elements.loopStartBtn = findElement('loopStartBtn');
         this.elements.loopEndBtn = findElement('loopEndBtn');
         this.elements.loopToggleBtn = findElement('loopToggleBtn');
         this.elements.loopClearBtn = findElement('loopClearBtn');
         this.elements.loopSaveBtn = findElement('loopSaveBtn');
-        
+
         // Speed controls
         this.elements.speedSlider = findElement('speedSlider');
         this.elements.speedValue = findElement('speedValue');
         this.elements.speedResetBtn = findElement('speedResetBtn');
-        
+
         // Pitch controls
         this.elements.pitchValue = findElement('pitchValue');
         this.elements.pitchUpBtn = findElement('pitchUpBtn');
         this.elements.pitchDownBtn = findElement('pitchDownBtn');
         this.elements.pitchResetBtn = findElement('pitchResetBtn');
-        
+
         // Track current pitch value internally
         this.currentPitchValue = 0;
-        
+
         // Loop info
         this.elements.loopInfo = findElement('loopInfo');
         this.elements.loopStartTime = findElement('loopStartTime');
         this.elements.loopEndTime = findElement('loopEndTime');
         this.elements.loopDuration = findElement('loopDuration');
-        
+
         // Progress info
         this.elements.progressInfo = findElement('progressInfo');
         this.elements.loopCount = document.getElementById('loopCount');
-        
+
         // Waveform
         this.elements.waveformCanvas = document.getElementById('waveformCanvas');
         this.elements.loadingOverlay = document.getElementById('loadingOverlay');
@@ -414,39 +414,39 @@ export class UIControls {
                 console.log('No onPlayPause callback set!');
             }
         });
-        
+
         // Stop
         this.elements.stopBtn?.addEventListener('click', () => {
             if (this.callbacks.onStop) {
                 this.callbacks.onStop();
             }
         });
-        
+
         // Loop controls
         this.elements.loopStartBtn?.addEventListener('click', () => {
             if (this.callbacks.onLoopStart) {
                 this.callbacks.onLoopStart();
             }
         });
-        
+
         this.elements.loopEndBtn?.addEventListener('click', () => {
             if (this.callbacks.onLoopEnd) {
                 this.callbacks.onLoopEnd();
             }
         });
-        
+
         this.elements.loopToggleBtn?.addEventListener('click', () => {
             if (this.callbacks.onLoopToggle) {
                 this.callbacks.onLoopToggle();
             }
         });
-        
+
         this.elements.loopClearBtn?.addEventListener('click', () => {
             if (this.callbacks.onLoopClear) {
                 this.callbacks.onLoopClear();
             }
         });
-        
+
         this.elements.loopSaveBtn?.addEventListener('click', () => {
             console.log('Loop save button clicked');
             if (this.callbacks.onLoopSave) {
@@ -456,7 +456,7 @@ export class UIControls {
                 console.log('No onLoopSave callback set');
             }
         });
-        
+
         // Speed controls
         this.elements.speedSlider?.addEventListener('input', (e) => {
             const value = parseInt(e.target.value);
@@ -465,7 +465,7 @@ export class UIControls {
                 this.callbacks.onSpeedChange(value / 100);
             }
         });
-        
+
         this.elements.speedResetBtn?.addEventListener('click', () => {
             this.elements.speedSlider.value = 100;
             this.updateSpeedDisplay(100);
@@ -473,7 +473,7 @@ export class UIControls {
                 this.callbacks.onSpeedChange(1.0);
             }
         });
-        
+
         // Pitch controls
         this.elements.pitchUpBtn?.addEventListener('click', () => {
             const newValue = Math.min(12, this.currentPitchValue + 1);
@@ -483,7 +483,7 @@ export class UIControls {
                 this.callbacks.onPitchChange(newValue);
             }
         });
-        
+
         this.elements.pitchDownBtn?.addEventListener('click', () => {
             const newValue = Math.max(-12, this.currentPitchValue - 1);
             this.currentPitchValue = newValue;
@@ -492,7 +492,7 @@ export class UIControls {
                 this.callbacks.onPitchChange(newValue);
             }
         });
-        
+
         this.elements.pitchResetBtn?.addEventListener('click', () => {
             this.currentPitchValue = 0;
             this.updatePitchDisplay(0);
@@ -500,13 +500,13 @@ export class UIControls {
                 this.callbacks.onPitchChange(0);
             }
         });
-        
+
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             // Only handle if audio player is focused
             if (!this.container.contains(document.activeElement)) return;
-            
-            switch(e.code) {
+
+            switch (e.code) {
                 case 'Space':
                     e.preventDefault();
                     if (this.callbacks.onPlayPause) {
@@ -541,7 +541,7 @@ export class UIControls {
         if (this.elements.playPauseBtn) {
             const playIcon = this.elements.playPauseBtn.querySelector('.icon-play');
             const pauseIcon = this.elements.playPauseBtn.querySelector('.icon-pause');
-            
+
             if (isPlaying) {
                 playIcon.style.display = 'none';
                 pauseIcon.style.display = 'block';
@@ -555,11 +555,11 @@ export class UIControls {
     updateTime(currentTime, duration) {
         this.currentTime = currentTime;
         this.duration = duration;
-        
+
         if (this.elements.currentTime) {
             this.elements.currentTime.textContent = this.formatTime(currentTime);
         }
-        
+
         if (this.elements.duration) {
             this.elements.duration.textContent = this.formatTime(duration);
         }
@@ -569,17 +569,17 @@ export class UIControls {
         this.loopStart = loopStart;
         this.loopEnd = loopEnd;
         this.isLooping = isLooping;
-        
+
         if (loopStart !== null && loopEnd !== null) {
             this.elements.loopInfo.style.display = 'block';
             this.elements.loopStartTime.textContent = this.formatTime(loopStart);
             this.elements.loopEndTime.textContent = this.formatTime(loopEnd);
             this.elements.loopDuration.textContent = `(${this.formatTime(loopEnd - loopStart)})`;
-            
+
             if (this.elements.loopToggleBtn) {
                 this.elements.loopToggleBtn.classList.toggle('active', isLooping);
             }
-            
+
             // Show save button when we have a valid loop
             if (this.elements.loopSaveBtn) {
                 this.elements.loopSaveBtn.style.display = 'inline-block';
@@ -589,7 +589,7 @@ export class UIControls {
             if (this.elements.loopToggleBtn) {
                 this.elements.loopToggleBtn.classList.remove('active');
             }
-            
+
             // Hide save button when no loop
             if (this.elements.loopSaveBtn) {
                 this.elements.loopSaveBtn.style.display = 'none';
@@ -605,7 +605,8 @@ export class UIControls {
 
     updatePitchDisplay(semitones) {
         if (this.elements.pitchValue) {
-            const display = semitones === 0 ? '0' : (semitones > 0 ? `+${semitones}` : `${semitones}`);
+            const display =
+                semitones === 0 ? '0' : semitones > 0 ? `+${semitones}` : `${semitones}`;
             this.elements.pitchValue.textContent = display;
         }
     }
@@ -627,15 +628,15 @@ export class UIControls {
 
     formatTime(seconds) {
         if (!seconds || seconds < 0) return '0:00';
-        
+
         const mins = Math.floor(seconds / 60);
         const secs = Math.floor(seconds % 60);
-        
+
         if (this.timeFormat === 'mm:ss.ms') {
             const ms = Math.floor((seconds % 1) * 100);
             return `${mins}:${secs.toString().padStart(2, '0')}.${ms.toString().padStart(2, '0')}`;
         }
-        
+
         return `${mins}:${secs.toString().padStart(2, '0')}`;
     }
 
@@ -649,16 +650,16 @@ export class UIControls {
     }
 
     enable() {
-        Object.values(this.elements).forEach(el => {
-            if (el && el.tagName === 'BUTTON' || el.tagName === 'INPUT') {
+        Object.values(this.elements).forEach((el) => {
+            if ((el && el.tagName === 'BUTTON') || el.tagName === 'INPUT') {
                 el.disabled = false;
             }
         });
     }
 
     disable() {
-        Object.values(this.elements).forEach(el => {
-            if (el && el.tagName === 'BUTTON' || el.tagName === 'INPUT') {
+        Object.values(this.elements).forEach((el) => {
+            if ((el && el.tagName === 'BUTTON') || el.tagName === 'INPUT') {
                 el.disabled = true;
             }
         });
@@ -666,16 +667,16 @@ export class UIControls {
 
     destroy() {
         // Remove event listeners by cloning and replacing elements
-        Object.values(this.elements).forEach(el => {
+        Object.values(this.elements).forEach((el) => {
             if (el && el.parentNode) {
                 const clone = el.cloneNode(true);
                 el.parentNode.replaceChild(clone, el);
             }
         });
-        
+
         this.elements = {};
         this.callbacks = {};
-        
+
         if (this.container) {
             this.container.innerHTML = '';
         }

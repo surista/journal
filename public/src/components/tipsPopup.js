@@ -13,10 +13,10 @@ export class TipsPopup {
     init() {
         // Create popup element
         this.createPopupElement();
-        
+
         // Start the interval to show tips
         this.startTipsInterval();
-        
+
         // Show first tip after a short delay
         setTimeout(() => this.showTip(), 10000); // Show first tip after 10 seconds
     }
@@ -35,7 +35,7 @@ export class TipsPopup {
 
     showTip() {
         const now = Date.now();
-        
+
         // Don't show if we recently showed a tip
         if (now - this.lastShownTime < this.minInterval) {
             return;
@@ -43,19 +43,19 @@ export class TipsPopup {
 
         // Get a random tip
         const tip = this.tipsService.getRandomTip();
-        
+
         // Update the popup text
         const textElement = this.popupElement.querySelector('.tips-popup-text');
         textElement.textContent = tip;
-        
+
         // Show the popup with animation
         this.popupElement.classList.add('show');
-        
+
         // Hide after display duration
         this.popupTimeout = setTimeout(() => {
             this.popupElement.classList.remove('show');
         }, this.displayDuration);
-        
+
         this.lastShownTime = now;
     }
 
@@ -68,7 +68,7 @@ export class TipsPopup {
                 scheduleNext();
             }, randomDelay);
         };
-        
+
         scheduleNext();
     }
 
@@ -80,7 +80,7 @@ export class TipsPopup {
         if (this.intervalId) {
             clearTimeout(this.intervalId);
         }
-        
+
         // Remove popup element
         if (this.popupElement && this.popupElement.parentNode) {
             this.popupElement.parentNode.removeChild(this.popupElement);

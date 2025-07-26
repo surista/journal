@@ -1,5 +1,9 @@
 // Firebase configuration with environment support
-import { getFirebaseConfig as getEnvFirebaseConfig, currentEnvironment, isDebugEnabled } from './environment.js';
+import {
+    getFirebaseConfig as getEnvFirebaseConfig,
+    currentEnvironment,
+    isDebugEnabled
+} from './environment.js';
 
 // Security note: While Firebase API keys are designed to be public and are safe to expose
 // in client-side code, they should always be used in conjunction with:
@@ -20,13 +24,13 @@ if (isDebugEnabled()) {
 export const validateFirebaseConfig = () => {
     const config = firebaseConfig;
     const requiredFields = ['apiKey', 'authDomain', 'projectId'];
-    
+
     for (const field of requiredFields) {
         if (!config[field]) {
             console.error(`Firebase configuration missing required field: ${field}`);
             return false;
         }
     }
-    
+
     return true;
 };

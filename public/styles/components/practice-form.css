@@ -1,176 +1,176 @@
 /* Practice Form Component Styles */
 
 .practice-form {
-    /* Ensure proper padding and prevent cutoff */
-    padding-bottom: 20px;
+  /* Ensure proper padding and prevent cutoff */
+  padding-bottom: 20px;
 }
 
 /* Tempo Input Group */
 .tempo-input-group {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
 }
 
 .tempo-input-group input {
-    flex: 1;
-    padding-right: 60px;
+  flex: 1;
+  padding-right: 60px;
 }
 
 .tempo-suffix {
-    position: absolute;
-    right: 15px;
-    color: var(--text-secondary);
-    font-weight: 500;
-    pointer-events: none;
+  position: absolute;
+  right: 15px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  pointer-events: none;
 }
 
 /* Tempo Toggle Button */
 .tempo-toggle-btn {
-    background: none;
-    border: none;
-    color: var(--primary);
-    cursor: pointer;
-    padding: 4px 8px;
-    border-radius: 4px;
-    transition: all 0.2s ease;
-    margin-left: 10px;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
+  background: none;
+  border: none;
+  color: var(--primary);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  margin-left: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .tempo-toggle-btn:hover {
-    background: var(--bg-input);
-    transform: scale(1.05);
+  background: var(--bg-input);
+  transform: scale(1.05);
 }
 
 .toggle-icon {
-    font-size: 0.9em;
-    display: inline-block;
-    transition: transform 0.3s ease;
+  font-size: 0.9em;
+  display: inline-block;
+  transition: transform 0.3s ease;
 }
 
 .tempo-toggle-btn:hover .toggle-icon {
-    transform: rotate(180deg);
+  transform: rotate(180deg);
 }
 
 .tempo-hint {
-    font-size: 0.875rem;
-    color: var(--text-secondary);
-    margin-top: 4px;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
 }
 
 .tempo-input-group input:invalid {
-    border-color: var(--danger);
+  border-color: var(--danger);
 }
 
 /* Percentage Mode Styles */
 .percentage-mode .tempo-suffix {
-    color: var(--secondary);
+  color: var(--secondary);
 }
 
 .percentage-mode .tempo-input-group input {
-    border-color: var(--secondary);
+  border-color: var(--secondary);
 }
 
 .percentage-mode .tempo-toggle-btn {
-    color: var(--secondary);
+  color: var(--secondary);
 }
 
 /* Audio File Display Section */
 .audio-file-section {
-    background: var(--bg-input);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    padding: 12px 16px;
-    margin: 16px 0;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  margin: 16px 0;
 }
 
 .audio-file-info {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .audio-file-label {
-    color: var(--text-secondary);
-    font-size: 0.875rem;
-    font-weight: 500;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
 }
 
 .audio-file-name {
-    color: var(--primary);
-    font-size: 0.875rem;
-    font-weight: 600;
-    flex: 1;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  color: var(--primary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Fix for form cutoff in collapsed state */
 .log-practice-content {
-    overflow: visible !important;
+  overflow: visible !important;
 }
 
 /* Ensure submit button is always visible */
 .practice-form .btn-primary {
-    margin-top: 16px;
-    margin-bottom: 8px;
+  margin-top: 16px;
+  margin-bottom: 8px;
 }
 
 /* Pulse animation for timer highlight */
 @keyframes pulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7);
-        transform: scale(1);
-    }
-    50% {
-        box-shadow: 0 0 0 10px rgba(99, 102, 241, 0);
-        transform: scale(1.05);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
-        transform: scale(1);
-    }
+  0% {
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(99, 102, 241, 0);
+    transform: scale(1.05);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+    transform: scale(1);
+  }
 }
 
 /* Confetti Animation */
 @keyframes confettiFall {
-    0% {
-        transform: translateY(0) rotate(0deg);
-        opacity: 1;
-    }
-    100% {
-        transform: translateY(100vh) rotate(720deg);
-        opacity: 0;
-    }
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
 }
 
 /* Enhanced success notification */
 .notification.success {
-    animation: successPulse 0.5s ease-out;
+  animation: successPulse 0.5s ease-out;
 }
 
 @keyframes successPulse {
-    0% {
-        transform: scale(0.8);
-        opacity: 0;
-    }
-    50% {
-        transform: scale(1.05);
-    }
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 /* Disabled button state */
-button[type="submit"]:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    background: var(--bg-input) !important;
+button[type='submit']:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: var(--bg-input) !important;
 }

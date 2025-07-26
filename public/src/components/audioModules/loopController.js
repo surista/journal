@@ -1,15 +1,16 @@
 // Loop Controller Module - Handles A-B loop functionality
 export class LoopController {
-    constructor() {
+    constructor(storageService = null) {
+        this.storageService = storageService;
         this.loopStart = null;
         this.loopEnd = null;
         this.isLooping = false;
         this.loopCount = 0;
-        
+
         // Saved loops for current file
         this.savedLoops = [];
         this.currentFileName = null;
-        
+
         // Tempo progression for loops
         this.tempoProgression = {
             enabled: false,
@@ -20,7 +21,7 @@ export class LoopController {
             maxTempo: 200, // 200% max speed
             originalTempo: 100
         };
-        
+
         // Callbacks
         this.onLoopUpdate = null;
         this.onLoopComplete = null;
@@ -37,7 +38,7 @@ export class LoopController {
         if (this.loopEnd !== null && time > this.loopEnd) {
             this.loopEnd = null;
         }
-        
+
         this.loopStart = time;
         this.updateLoopState();
         return true;
@@ -55,7 +56,7 @@ export class LoopController {
         } else {
             this.loopEnd = time;
         }
-        
+
         this.updateLoopState();
         return true;
     }
@@ -73,13 +74,13 @@ export class LoopController {
         if (!this.hasValidLoop()) {
             return false;
         }
-        
+
         this.isLooping = !this.isLooping;
-        
+
         if (!this.isLooping) {
             this.resetTempoProgression();
         }
-        
+
         return this.isLooping;
     }
 
@@ -87,20 +88,18 @@ export class LoopController {
         if (enabled && !this.hasValidLoop()) {
             return false;
         }
-        
+
         this.isLooping = enabled;
-        
+
         if (!enabled) {
             this.resetTempoProgression();
         }
-        
+
         return true;
     }
 
     hasValidLoop() {
-        return this.loopStart !== null && 
-               this.loopEnd !== null && 
-               this.loopEnd > this.loopStart;
+        return this.loopStart !== null && this.loopEnd !== null && this.loopEnd > this.loopStart;
     }
 
     checkLoopBoundary(currentTime) {
@@ -132,7 +131,7 @@ export class LoopController {
         // Handle tempo progression
         if (this.tempoProgression.enabled) {
             this.tempoProgression.currentLoopCount++;
-            
+
             if (this.tempoProgression.currentLoopCount >= this.tempoProgression.loopInterval) {
                 this.tempoProgression.currentLoopCount = 0;
                 this.applyTempoProgression();
@@ -171,7 +170,7 @@ export class LoopController {
 
     setTempoProgression(settings) {
         Object.assign(this.tempoProgression, settings);
-        
+
         if (!settings.enabled) {
             this.resetTempoProgression();
         }
@@ -179,7 +178,7 @@ export class LoopController {
 
     resetTempoProgression() {
         this.tempoProgression.currentLoopCount = 0;
-        
+
         // Reset tempo to original if callback is available
         if (this.onTempoChange && this.getCurrentTempo() !== 1.0) {
             this.onTempoChange(1.0);
@@ -209,11 +208,11 @@ export class LoopController {
         if (!this.hasValidLoop() || currentTime < this.loopStart) {
             return 0;
         }
-        
+
         if (currentTime >= this.loopEnd) {
             return 1;
         }
-        
+
         return (currentTime - this.loopStart) / this.getLoopDuration();
     }
 
@@ -235,18 +234,18 @@ export class LoopController {
         if (state.tempoProgression) {
             Object.assign(this.tempoProgression, state.tempoProgression);
         }
-        
+
         this.updateLoopState();
     }
 
     // Format time for display
     formatTime(seconds) {
         if (seconds === null || seconds === undefined) return '--:--';
-        
+
         const mins = Math.floor(seconds / 60);
         const secs = Math.floor(seconds % 60);
         const ms = Math.floor((seconds % 1) * 100);
-        
+
         return `${mins}:${secs.toString().padStart(2, '0')}.${ms.toString().padStart(2, '0')}`;
     }
 
@@ -266,65 +265,82 @@ export class LoopController {
         this.loopCount = 0;
         this.resetTempoProgression();
     }
-    
+
     // Save/Load functionality
-    setCurrentFile(fileName) {
+    async setCurrentFile(fileName) {
         this.currentFileName = fileName;
-        this.loadSavedLoops();
+        await this.loadSavedLoops();
     }
-    
-    saveLoop(name) {
+
+    async saveLoop(name) {
         if (!this.currentFileName || this.loopStart === null || this.loopEnd === null) {
             return false;
         }
-        
+
         const loop = {
             name: name,
             start: this.loopStart,
             end: this.loopEnd,
             timestamp: Date.now()
         };
-        
-        // Save to storage
-        const storageKey = `audio_loops_${this.currentFileName}`;
-        let savedLoops = [];
-        try {
-            const stored = localStorage.getItem(storageKey);
-            savedLoops = stored ? JSON.parse(stored) : [];
-        } catch (e) {
-            console.error('Error loading saved loops:', e);
-        }
+
+        // Get existing loops
+        const savedLoops = await this.loadSavedLoops();
         savedLoops.push(loop);
-        localStorage.setItem(storageKey, JSON.stringify(savedLoops));
-        
-        this.savedLoops = savedLoops;
-        
-        if (this.onLoopsLoaded) {
-            this.onLoopsLoaded(this.savedLoops);
+
+        // Save using StorageService for cloud sync if available
+        if (this.storageService) {
+            const success = await this.storageService.saveAudioLoop(
+                this.currentFileName,
+                savedLoops
+            );
+            if (success) {
+                this.savedLoops = savedLoops;
+                if (this.onLoopsLoaded) {
+                    this.onLoopsLoaded(this.savedLoops);
+                }
+                return true;
+            }
+            return false;
+        } else {
+            // Fallback to localStorage
+            const storageKey = `audio_loops_${this.currentFileName}`;
+            localStorage.setItem(storageKey, JSON.stringify(savedLoops));
+            this.savedLoops = savedLoops;
+
+            if (this.onLoopsLoaded) {
+                this.onLoopsLoaded(this.savedLoops);
+            }
+
+            return true;
         }
-        
-        return true;
     }
-    
-    loadSavedLoops() {
-        if (!this.currentFileName) return;
-        
-        const storageKey = `audio_loops_${this.currentFileName}`;
+
+    async loadSavedLoops() {
+        if (!this.currentFileName) return [];
+
         try {
-            const stored = localStorage.getItem(storageKey);
-            this.savedLoops = stored ? JSON.parse(stored) : [];
+            // Use StorageService for cloud sync if available
+            if (this.storageService) {
+                this.savedLoops = await this.storageService.getAudioLoops(this.currentFileName);
+            } else {
+                // Fallback to localStorage
+                const storageKey = `audio_loops_${this.currentFileName}`;
+                const stored = localStorage.getItem(storageKey);
+                this.savedLoops = stored ? JSON.parse(stored) : [];
+            }
         } catch (e) {
             console.error('Error loading saved loops:', e);
             this.savedLoops = [];
         }
-        
+
         if (this.onLoopsLoaded) {
             this.onLoopsLoaded(this.savedLoops);
         }
-        
+
         return this.savedLoops;
     }
-    
+
     loadLoop(index) {
         if (index >= 0 && index < this.savedLoops.length) {
             const loop = this.savedLoops[index];
@@ -335,19 +351,24 @@ export class LoopController {
         }
         return null;
     }
-    
-    deleteLoop(index) {
+
+    async deleteLoop(index) {
         if (index >= 0 && index < this.savedLoops.length) {
             this.savedLoops.splice(index, 1);
-            
-            // Update storage
-            const storageKey = `audio_loops_${this.currentFileName}`;
-            localStorage.setItem(storageKey, JSON.stringify(this.savedLoops));
-            
+
+            // Update storage using StorageService if available
+            if (this.storageService) {
+                await this.storageService.saveAudioLoop(this.currentFileName, this.savedLoops);
+            } else {
+                // Fallback to localStorage
+                const storageKey = `audio_loops_${this.currentFileName}`;
+                localStorage.setItem(storageKey, JSON.stringify(this.savedLoops));
+            }
+
             if (this.onLoopsLoaded) {
                 this.onLoopsLoaded(this.savedLoops);
             }
-            
+
             return true;
         }
         return false;

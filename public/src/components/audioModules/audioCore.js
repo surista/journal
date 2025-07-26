@@ -15,13 +15,13 @@ let Tone = getTone();
 export class AudioCore {
     constructor(audioService) {
         this.audioService = audioService;
-        
+
         // Tone.js components
         this.grainPlayer = null;
         this.pitchShift = null;
         this.limiter = null;
         this.isInitialized = false;
-        
+
         // Audio state
         this.audioBuffer = null;
         this.audioLoaded = false;
@@ -30,12 +30,12 @@ export class AudioCore {
         this.startTime = 0;
         this.startOffset = 0;
         this.isPlaying = false;
-        
+
         // Playback parameters
         this.playbackRate = 1.0;
         this.pitchShiftAmount = 0;
         this.volume = 0; // in dB
-        
+
         // Quality settings
         this.qualityMode = 'medium'; // 'low', 'medium', 'high'
         this.grainSize = 0.05; // Default grain size for medium quality
@@ -48,18 +48,19 @@ export class AudioCore {
         try {
             // Wait for Tone.js to load
             let attempts = 0;
-            while (!window.Tone && attempts < 50) { // Wait up to 5 seconds
-                await new Promise(resolve => setTimeout(resolve, 100));
+            while (!window.Tone && attempts < 50) {
+                // Wait up to 5 seconds
+                await new Promise((resolve) => setTimeout(resolve, 100));
                 attempts++;
             }
-            
+
             Tone = window.Tone;
             if (!Tone) {
                 throw new Error('Tone.js failed to load after 5 seconds');
             }
-            
+
             console.log('Tone.js loaded successfully');
-            
+
             // Initialize audio context
             if (Tone.context.state !== 'running') {
                 await Tone.context.resume();
@@ -68,7 +69,7 @@ export class AudioCore {
 
             // Create audio processing chain
             this.createAudioChain();
-            
+
             this.isInitialized = true;
             return true;
         } catch (error) {
@@ -82,7 +83,7 @@ export class AudioCore {
             console.error('Tone.js not available in createAudioChain');
             return;
         }
-        
+
         // Create pitch shifter with optimized settings
         this.pitchShift = new Tone.PitchShift({
             pitch: 0,
@@ -102,9 +103,12 @@ export class AudioCore {
     getWindowSize() {
         // Window size affects quality and latency
         switch (this.qualityMode) {
-            case 'low': return 0.03;
-            case 'high': return 0.1;
-            default: return 0.05; // medium
+            case 'low':
+                return 0.03;
+            case 'high':
+                return 0.1;
+            default:
+                return 0.05; // medium
         }
     }
 
@@ -122,7 +126,7 @@ export class AudioCore {
     async loadAudioBuffer(buffer, fileName = 'audio.mp3') {
         try {
             console.log('AudioCore.loadAudioBuffer called, buffer:', buffer, 'fileName:', fileName);
-            
+
             if (!this.isInitialized) {
                 console.log('AudioCore not initialized, initializing...');
                 await this.initialize();
@@ -142,7 +146,7 @@ export class AudioCore {
             this.audioBuffer = buffer;
             this.duration = buffer.duration;
             this.currentFileName = fileName;
-            
+
             console.log('Buffer stored, duration:', this.duration);
 
             // Ensure Tone is available
@@ -150,9 +154,9 @@ export class AudioCore {
                 console.error('Tone.js not available in loadAudioBuffer');
                 return false;
             }
-            
+
             console.log('Tone.js available, creating GrainPlayer...');
-            
+
             // Create new grain player with the buffer
             const { grainSize, overlap } = this.getGrainSettings();
             this.grainPlayer = new Tone.GrainPlayer({
@@ -166,14 +170,14 @@ export class AudioCore {
                     console.log('GrainPlayer loaded successfully');
                 }
             });
-            
+
             console.log('GrainPlayer created, waiting for load...');
 
             // Connect audio chain
             this.grainPlayer.connect(this.pitchShift);
             this.pitchShift.connect(this.limiter);
             this.limiter.toDestination();
-            
+
             // Wait for the grainPlayer to load
             await this.grainPlayer.loaded;
             console.log('GrainPlayer fully loaded');
@@ -188,10 +192,20 @@ export class AudioCore {
     }
 
     async play(startTime = null) {
-        console.log('AudioCore play() called, audioLoaded:', this.audioLoaded, 'grainPlayer:', !!this.grainPlayer);
-        
+        console.log(
+            'AudioCore play() called, audioLoaded:',
+            this.audioLoaded,
+            'grainPlayer:',
+            !!this.grainPlayer
+        );
+
         if (!this.audioLoaded || !this.grainPlayer) {
-            console.warn('No audio loaded - audioLoaded:', this.audioLoaded, 'grainPlayer exists:', !!this.grainPlayer);
+            console.warn(
+                'No audio loaded - audioLoaded:',
+                this.audioLoaded,
+                'grainPlayer exists:',
+                !!this.grainPlayer
+            );
             return false;
         }
 
@@ -199,7 +213,7 @@ export class AudioCore {
             console.log('Starting Tone.js...');
             await Tone.start();
             console.log('Tone.js started, context state:', Tone.context.state);
-            
+
             // Check if grainPlayer is loaded
             if (this.grainPlayer.loaded) {
                 console.log('GrainPlayer is loaded and ready');
@@ -238,8 +252,8 @@ export class AudioCore {
         try {
             // Calculate current position before stopping
             const elapsed = Tone.now() - this.startTime;
-            this.currentTime = this.startOffset + (elapsed * this.playbackRate);
-            
+            this.currentTime = this.startOffset + elapsed * this.playbackRate;
+
             this.grainPlayer.stop();
             this.isPlaying = false;
         } catch (error) {
@@ -262,13 +276,13 @@ export class AudioCore {
 
     seek(time) {
         const wasPlaying = this.isPlaying;
-        
+
         if (wasPlaying) {
             this.pause();
         }
 
         this.currentTime = Math.max(0, Math.min(time, this.duration));
-        
+
         if (wasPlaying) {
             this.play();
         }
@@ -276,7 +290,7 @@ export class AudioCore {
 
     setPlaybackRate(rate) {
         this.playbackRate = Math.max(0.25, Math.min(4.0, rate));
-        
+
         if (this.grainPlayer) {
             this.grainPlayer.playbackRate = this.playbackRate;
         }
@@ -284,10 +298,10 @@ export class AudioCore {
 
     setPitchShift(semitones) {
         this.pitchShiftAmount = Math.max(-24, Math.min(24, semitones));
-        
+
         if (this.pitchShift) {
             this.pitchShift.pitch = this.pitchShiftAmount;
-            
+
             // If pitch is 0, bypass the pitch shifter to avoid quality degradation
             if (this.pitchShiftAmount === 0) {
                 this.pitchShift.wet.value = 0; // Dry signal only
@@ -299,7 +313,7 @@ export class AudioCore {
 
     setVolume(db) {
         this.volume = Math.max(-60, Math.min(12, db));
-        
+
         if (this.grainPlayer) {
             this.grainPlayer.volume.value = this.volume;
         }
@@ -307,19 +321,19 @@ export class AudioCore {
 
     setQuality(mode) {
         if (this.qualityMode === mode) return;
-        
+
         this.qualityMode = mode;
-        
+
         // Update window size for pitch shifter
         if (this.pitchShift) {
             this.pitchShift.windowSize = this.getWindowSize();
         }
-        
+
         // If audio is loaded, recreate grain player with new settings
         if (this.audioLoaded && this.audioBuffer) {
             const wasPlaying = this.isPlaying;
             const currentPos = this.currentTime;
-            
+
             this.loadAudioBuffer(this.audioBuffer, this.currentFileName).then(() => {
                 if (wasPlaying) {
                     this.play(currentPos);
@@ -332,9 +346,9 @@ export class AudioCore {
         if (!this.isPlaying) {
             return this.currentTime;
         }
-        
+
         const elapsed = Tone.now() - this.startTime;
-        return Math.min(this.startOffset + (elapsed * this.playbackRate), this.duration);
+        return Math.min(this.startOffset + elapsed * this.playbackRate, this.duration);
     }
 
     getDuration() {

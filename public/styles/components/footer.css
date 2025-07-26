@@ -1,215 +1,215 @@
 /* Footer Styles - Compact with Hover Dropdowns */
 .app-footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: var(--bg-secondary);
-    backdrop-filter: blur(12px);
-    border-top: 1px solid var(--border);
-    z-index: 1000;
-    height: 48px;
-    transition: all 0.3s ease;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-secondary);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border);
+  z-index: 1000;
+  height: 48px;
+  transition: all 0.3s ease;
 }
 
 .footer-container {
-    max-width: 900px;
-    margin: 0 auto;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 2rem;
-    overflow: visible;
+  max-width: 900px;
+  margin: 0 auto;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  overflow: visible;
 }
 
 /* Updated footer left section with branding */
 .footer-left {
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
-    min-width: auto;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  min-width: auto;
 }
 
 .footer-branding {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .footer-copyright {
-    color: var(--text-secondary);
-    font-size: 0.875rem;
-    font-weight: 500;
-    white-space: nowrap;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 .footer-version-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.25rem 0.75rem;
-    background: var(--bg-input);
-    color: var(--primary);
-    font-size: 0.75rem;
-    font-weight: 600;
-    border-radius: 12px;
-    border: 1px solid var(--border);
-    cursor: help;
-    transition: all 0.2s ease;
-    white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  background: var(--bg-input);
+  color: var(--primary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  cursor: help;
+  transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .footer-version-badge:hover {
-    background: var(--bg-hover);
-    border-color: var(--primary);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-sm);
+  background: var(--bg-hover);
+  border-color: var(--primary);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
 }
 
 /* Footer Navigation */
 .footer-nav {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    height: 100%;
-    flex-shrink: 1;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  height: 100%;
+  flex-shrink: 1;
 }
 
 /* Dropdown Styles */
 .footer-dropdown {
-    position: relative;
-    height: 100%;
-    display: flex;
-    align-items: center;
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
 }
 
 .footer-dropdown-trigger {
-    background: none;
-    border: none;
-    color: var(--text-tertiary);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 0 10px;
-    height: 100%;
-    cursor: pointer;
-    transition: color 0.2s ease;
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0 10px;
+  height: 100%;
+  cursor: pointer;
+  transition: color 0.2s ease;
 }
 
 .footer-dropdown:hover .footer-dropdown-trigger {
-    color: var(--primary);
+  color: var(--primary);
 }
 
 .footer-dropdown-content {
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 8px 0;
-    min-width: 180px;
-    box-shadow: var(--shadow-lg);
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.2s ease;
-    margin-bottom: 8px;
-    backdrop-filter: blur(12px);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 0;
+  min-width: 180px;
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  margin-bottom: 8px;
+  backdrop-filter: blur(12px);
 }
 
 .footer-dropdown:hover .footer-dropdown-content {
-    opacity: 1;
-    visibility: visible;
+  opacity: 1;
+  visibility: visible;
 }
 
 .footer-dropdown-content a {
-    display: block;
-    padding: 8px 16px;
-    color: var(--text-secondary);
-    text-decoration: none;
-    font-size: 13px;
-    transition: all 0.2s ease;
-    white-space: nowrap;
+  display: block;
+  padding: 8px 16px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 13px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .footer-dropdown-content a:hover {
-    background: var(--bg-hover);
-    color: var(--primary);
+  background: var(--bg-hover);
+  color: var(--primary);
 }
 
 .footer-dropdown-content a i {
-    margin-right: 6px;
+  margin-right: 6px;
 }
 
 /* Footer Right - removed logout button */
 .footer-right {
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 /* Add space at bottom of main content for fixed footer */
 .main-content {
-    padding-bottom: 60px;
+  padding-bottom: 60px;
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .app-footer {
-        left: 0; /* Full width on mobile when sidebar collapses */
-    }
+  .app-footer {
+    left: 0; /* Full width on mobile when sidebar collapses */
+  }
 
-    .footer-container {
-        padding: 0 10px;
-    }
+  .footer-container {
+    padding: 0 10px;
+  }
 
-    .footer-branding {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-    }
+  .footer-branding {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
 
-    .footer-copyright {
-        font-size: 0.8rem;
-    }
+  .footer-copyright {
+    font-size: 0.8rem;
+  }
 
-    .footer-version-badge {
-        font-size: 0.7rem;
-        padding: 0.2rem 0.6rem;
-    }
+  .footer-version-badge {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.6rem;
+  }
 
-    .footer-nav {
-        gap: 15px;
-    }
+  .footer-nav {
+    gap: 15px;
+  }
 
-    .footer-dropdown-trigger {
-        font-size: 10px;
-        padding: 0 6px;
-    }
+  .footer-dropdown-trigger {
+    font-size: 10px;
+    padding: 0 6px;
+  }
 
-    .footer-dropdown-content {
-        left: 0;
-        transform: none;
-        min-width: 150px;
-    }
-
+  .footer-dropdown-content {
+    left: 0;
+    transform: none;
+    min-width: 150px;
+  }
 }
 
 /* If you want the version to pulse occasionally to draw attention */
 @keyframes version-pulse {
-    0%, 100% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.05);
-    }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
 }
 
 .footer-version-badge.new-version {
-    animation: version-pulse 2s ease-in-out 3;
+  animation: version-pulse 2s ease-in-out 3;
 }
 
 /* Theme-specific footer adjustments if needed */
@@ -217,26 +217,26 @@
 
 /* Keyboard shortcuts modal styles */
 .shortcuts-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .shortcut-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.5rem;
-    background: var(--bg-input);
-    border-radius: var(--radius-sm);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  background: var(--bg-input);
+  border-radius: var(--radius-sm);
 }
 
 .shortcut-item kbd {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    font-family: monospace;
-    font-size: 0.875rem;
-    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.875rem;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
 }

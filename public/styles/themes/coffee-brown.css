@@ -1,85 +1,85 @@
 /* Coffee Brown Theme - Warm coffee tones */
-[data-theme="coffee-brown"] {
-    /* Primary Colors */
-    --primary: #8b6f47;
-    --primary-dark: #6b5537;
-    --primary-light: #ab8f67;
-    --primary-rgb: 139, 111, 71;
+[data-theme='coffee-brown'] {
+  /* Primary Colors */
+  --primary: #8b6f47;
+  --primary-dark: #6b5537;
+  --primary-light: #ab8f67;
+  --primary-rgb: 139, 111, 71;
 
-    /* Background Colors */
-    --bg-dark: #1a110a;
-    --bg-primary: #2a1f17;
-    --bg-secondary: #352a20;
-    --bg-tertiary: #403529;
-    --bg-card: #302419;
-    --bg-input: #3a2e23;
-    --bg-hover: #453a2e;
+  /* Background Colors */
+  --bg-dark: #1a110a;
+  --bg-primary: #2a1f17;
+  --bg-secondary: #352a20;
+  --bg-tertiary: #403529;
+  --bg-card: #302419;
+  --bg-input: #3a2e23;
+  --bg-hover: #453a2e;
 
-    /* Text Colors */
-    --text-primary: #f5e6d3;
-    --text-secondary: #c4a574;
-    --text-tertiary: #b39564;
-    --text-muted: #8b6f47;
-    --text-inverse: #1a110a;
+  /* Text Colors */
+  --text-primary: #f5e6d3;
+  --text-secondary: #c4a574;
+  --text-tertiary: #b39564;
+  --text-muted: #8b6f47;
+  --text-inverse: #1a110a;
 
-    /* Border Colors */
-    --border: #453a2e;
-    --border-light: #554a3e;
-    --border-hover: #8b6f47;
+  /* Border Colors */
+  --border: #453a2e;
+  --border-light: #554a3e;
+  --border-hover: #8b6f47;
 
-    /* Status Colors */
-    --success: #7cb342;
-    --success-dark: #689f38;
-    --success-light: #9ccc65;
+  /* Status Colors */
+  --success: #7cb342;
+  --success-dark: #689f38;
+  --success-light: #9ccc65;
 
-    --warning: #ffa726;
-    --warning-dark: #fb8c00;
-    --warning-light: #ffb74d;
+  --warning: #ffa726;
+  --warning-dark: #fb8c00;
+  --warning-light: #ffb74d;
 
-    --danger: #e57373;
-    --danger-dark: #ef5350;
-    --danger-light: #ef9a9a;
+  --danger: #e57373;
+  --danger-dark: #ef5350;
+  --danger-light: #ef9a9a;
 
-    --info: #64b5f6;
-    --info-dark: #42a5f5;
-    --info-light: #90caf9;
+  --info: #64b5f6;
+  --info-dark: #42a5f5;
+  --info-light: #90caf9;
 
-    /* Shadows */
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.6);
-    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.7);
-    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.8);
-    --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.9);
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.6);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.7);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.8);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.9);
 
-    /* Special Effects */
-    --glow-primary: 0 0 20px rgba(139, 111, 71, 0.5);
-    --glow-success: 0 0 20px rgba(124, 179, 66, 0.5);
-    --glow-danger: 0 0 20px rgba(229, 115, 115, 0.5);
+  /* Special Effects */
+  --glow-primary: 0 0 20px rgba(139, 111, 71, 0.5);
+  --glow-success: 0 0 20px rgba(124, 179, 66, 0.5);
+  --glow-danger: 0 0 20px rgba(229, 115, 115, 0.5);
 
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, #8b6f47 0%, #ab8f67 100%);
-    --gradient-dark: linear-gradient(135deg, #2a1f17 0%, #1a110a 100%);
-    --gradient-card: linear-gradient(135deg, #302419 0%, #352a20 100%);
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #8b6f47 0%, #ab8f67 100%);
+  --gradient-dark: linear-gradient(135deg, #2a1f17 0%, #1a110a 100%);
+  --gradient-card: linear-gradient(135deg, #302419 0%, #352a20 100%);
 }
 
 /* Coffee Brown specific enhancements */
-[data-theme="coffee-brown"] .sidebar {
-    background: linear-gradient(180deg, #2a1f17 0%, #1a110a 100%);
+[data-theme='coffee-brown'] .sidebar {
+  background: linear-gradient(180deg, #2a1f17 0%, #1a110a 100%);
 }
 
-[data-theme="coffee-brown"] .btn-primary {
-    background: var(--gradient-primary);
-    box-shadow: 0 4px 14px 0 rgba(139, 111, 71, 0.4);
+[data-theme='coffee-brown'] .btn-primary {
+  background: var(--gradient-primary);
+  box-shadow: 0 4px 14px 0 rgba(139, 111, 71, 0.4);
 }
 
-[data-theme="coffee-brown"] .nav-item.active {
-    background: linear-gradient(90deg, rgba(139, 111, 71, 0.2) 0%, rgba(139, 111, 71, 0.05) 100%);
-    border-left-color: #8b6f47;
+[data-theme='coffee-brown'] .nav-item.active {
+  background: linear-gradient(90deg, rgba(139, 111, 71, 0.2) 0%, rgba(139, 111, 71, 0.05) 100%);
+  border-left-color: #8b6f47;
 }
 
-[data-theme="coffee-brown"] .header {
-    background: rgba(42, 31, 23, 0.95);
+[data-theme='coffee-brown'] .header {
+  background: rgba(42, 31, 23, 0.95);
 }
 
-[data-theme="coffee-brown"] .practice-tip {
-    background: linear-gradient(135deg, rgba(139, 111, 71, 0.2) 0%, rgba(139, 111, 71, 0.1) 100%);
+[data-theme='coffee-brown'] .practice-tip {
+  background: linear-gradient(135deg, rgba(139, 111, 71, 0.2) 0%, rgba(139, 111, 71, 0.1) 100%);
 }

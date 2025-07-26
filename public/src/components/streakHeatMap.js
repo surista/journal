@@ -23,7 +23,7 @@ export class StreakHeatMap {
             const entries = await this.storageService.getPracticeEntries();
             this.practiceData = {};
 
-            entries.forEach(entry => {
+            entries.forEach((entry) => {
                 const date = new Date(entry.date).toDateString();
                 if (!this.practiceData[date]) {
                     this.practiceData[date] = { count: 0, duration: 0 };
@@ -46,13 +46,15 @@ export class StreakHeatMap {
             days.push(date);
         }
 
-        return days.map(date => {
-            const dateStr = date.toDateString();
-            const dayData = this.practiceData[dateStr];
-            const hasPractice = dayData && dayData.count > 0;
+        return days
+            .map((date) => {
+                const dateStr = date.toDateString();
+                const dayData = this.practiceData[dateStr];
+                const hasPractice = dayData && dayData.count > 0;
 
-            return `<div class="heatmap-day ${hasPractice ? 'has-practice' : ''}" title="${dateStr}${hasPractice ? ` - ${dayData.count} session(s)` : ' - No practice'}"></div>`;
-        }).join('');
+                return `<div class="heatmap-day ${hasPractice ? 'has-practice' : ''}" title="${dateStr}${hasPractice ? ` - ${dayData.count} session(s)` : ' - No practice'}"></div>`;
+            })
+            .join('');
     }
 
     destroy() {}

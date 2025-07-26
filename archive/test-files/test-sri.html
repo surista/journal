@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRI Test - Guitar Practice Journal</title>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://unpkg.com https://www.gstatic.com https://apis.google.com https://cdn.jsdelivr.net https://www.youtube.com https://s.ytimg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' blob: https://*.firebaseapp.com https://*.firebaseio.com https://*.googleapis.com https://*.firebasestorage.googleapis.com https://securetoken.googleapis.com wss://*.firebaseio.com;">
+</head>
+<body>
+    <h1>SRI Test Page</h1>
+    <div id="results"></div>
+
+    <script>
+        const results = document.getElementById('results');
+        const tests = [];
+        
+        function addResult(test, success, message) {
+            tests.push({ test, success, message });
+            updateDisplay();
+        }
+        
+        function updateDisplay() {
+            results.innerHTML = '<h2>Test Results:</h2>' + 
+                tests.map(t => `
+                    <div style="margin: 10px 0; padding: 10px; background: ${t.success ? '#d4edda' : '#f8d7da'}; border-radius: 5px;">
+                        <strong>${t.test}:</strong> ${t.success ? '✅' : '❌'} ${t.message}
+                    </div>
+                `).join('');
+        }
+        
+        // Test 1: Load Firebase with SRI
+        const firebaseScript = document.createElement('script');
+        firebaseScript.src = 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js';
+        firebaseScript.integrity = 'sha384-ViccRjS0k/lvYsrtaKXk+ES61/4PAZlFI/mPHmLC1YWzK0AIbXbI5ZXDzcm3F8gH';
+        firebaseScript.crossOrigin = 'anonymous';
+        firebaseScript.onload = () => addResult('Firebase App (with SRI)', true, 'Loaded successfully');
+        firebaseScript.onerror = () => addResult('Firebase App (with SRI)', false, 'Failed to load');
+        document.head.appendChild(firebaseScript);
+        
+        // Test 2: Load Tone.js with SRI
+        const toneScript = document.createElement('script');
+        toneScript.src = 'https://unpkg.com/tone@14.8.49/build/Tone.js';
+        toneScript.integrity = 'sha384-c6Uo4N9c3SOEigMVzP6IshUG1wQ5uMp3xeoQFiHWAQ86joWdgyajkvopySyKy/Z6';
+        toneScript.crossOrigin = 'anonymous';
+        toneScript.onload = () => addResult('Tone.js (with SRI)', true, 'Loaded successfully');
+        toneScript.onerror = () => addResult('Tone.js (with SRI)', false, 'Failed to load');
+        document.head.appendChild(toneScript);
+        
+        // Test 3: Load SoundTouch with SRI
+        const soundTouchScript = document.createElement('script');
+        soundTouchScript.src = 'https://cdn.jsdelivr.net/npm/soundtouchjs@0.1.30/dist/soundtouch.min.js';
+        soundTouchScript.integrity = 'sha384-Uvyu44z8kqtTKP6Rm71dWcU5UCOwGbN8N6LiDYTVq0da8XnMKU99g+O3QBXc7Ftl';
+        soundTouchScript.crossOrigin = 'anonymous';
+        soundTouchScript.onload = () => addResult('SoundTouch (with SRI)', true, 'Loaded successfully');
+        soundTouchScript.onerror = () => addResult('SoundTouch (with SRI)', false, 'Failed to load');
+        document.head.appendChild(soundTouchScript);
+        
+        // Test 4: Load CSS bundle
+        const cssLink = document.createElement('link');
+        cssLink.rel = 'stylesheet';
+        cssLink.href = 'styles/bundle.min.css';
+        cssLink.onload = () => addResult('Bundled CSS', true, 'Loaded successfully');
+        cssLink.onerror = () => addResult('Bundled CSS', false, 'Failed to load');
+        document.head.appendChild(cssLink);
+        
+        // Test 5: Verify CSS bundle size
+        fetch('styles/bundle.min.css')
+            .then(response => response.text())
+            .then(css => {
+                const sizeKB = (css.length / 1024).toFixed(2);
+                addResult('CSS Bundle Size', true, `${sizeKB} KB (minified)`);
+            })
+            .catch(error => addResult('CSS Bundle Size', false, error.message));
+            
+        // Test 6: Verify original CSS size for comparison
+        fetch('styles/main.css')
+            .then(response => response.text())
+            .then(css => {
+                const imports = css.match(/@import/g)?.length || 0;
+                addResult('Original CSS', true, `${imports} @import statements found`);
+            })
+            .catch(error => addResult('Original CSS', false, error.message));
+    </script>
+</body>
+</html>

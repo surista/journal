@@ -1,65 +1,65 @@
 /* Earth Tone Theme - Natural browns and greens */
-[data-theme="earth-tone"] {
-    /* Primary Colors */
-    --primary: #a78347;
-    --primary-dark: #8b6914;
-    --primary-light: #d4a574;
-    --primary-rgb: 167, 131, 71;
+[data-theme='earth-tone'] {
+  /* Primary Colors */
+  --primary: #a78347;
+  --primary-dark: #8b6914;
+  --primary-light: #d4a574;
+  --primary-rgb: 167, 131, 71;
 
-    /* Background Colors */
-    --bg-dark: #1a1410;
-    --bg-primary: #2b2218;
-    --bg-secondary: #3c2f22;
-    --bg-tertiary: #4d3c2c;
-    --bg-card: #3c2f22;
-    --bg-input: #4d3c2c;
-    --bg-hover: #5e4936;
+  /* Background Colors */
+  --bg-dark: #1a1410;
+  --bg-primary: #2b2218;
+  --bg-secondary: #3c2f22;
+  --bg-tertiary: #4d3c2c;
+  --bg-card: #3c2f22;
+  --bg-input: #4d3c2c;
+  --bg-hover: #5e4936;
 
-    /* Text Colors */
-    --text-primary: #f5e6d3;
-    --text-secondary: #d4a574;
-    --text-tertiary: #c49563;
-    --text-muted: #a78347;
-    --text-inverse: #1a1410;
+  /* Text Colors */
+  --text-primary: #f5e6d3;
+  --text-secondary: #d4a574;
+  --text-tertiary: #c49563;
+  --text-muted: #a78347;
+  --text-inverse: #1a1410;
 
-    /* Border Colors */
-    --border: #4d3c2c;
-    --border-light: #5e4936;
-    --border-hover: #a78347;
+  /* Border Colors */
+  --border: #4d3c2c;
+  --border-light: #5e4936;
+  --border-hover: #a78347;
 
-    /* Status Colors */
-    --success: #86a866;
-    --warning: #d4a574;
-    --danger: #c56a53;
-    --info: #7a9a9f;
+  /* Status Colors */
+  --success: #86a866;
+  --warning: #d4a574;
+  --danger: #c56a53;
+  --info: #7a9a9f;
 
-    /* Shadows */
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5);
-    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.6);
-    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.7);
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.7);
 
-    /* Special Effects */
-    --glow-primary: 0 0 20px rgba(167, 131, 71, 0.5);
+  /* Special Effects */
+  --glow-primary: 0 0 20px rgba(167, 131, 71, 0.5);
 
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, #8b6914 0%, #d4a574 100%);
-    --gradient-dark: linear-gradient(135deg, #2b2218 0%, #1a1410 100%);
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #8b6914 0%, #d4a574 100%);
+  --gradient-dark: linear-gradient(135deg, #2b2218 0%, #1a1410 100%);
 }
 
-[data-theme="earth-tone"] .header {
-    background: rgba(43, 34, 24, 0.95);
-    backdrop-filter: blur(10px);
+[data-theme='earth-tone'] .header {
+  background: rgba(43, 34, 24, 0.95);
+  backdrop-filter: blur(10px);
 }
 
 /* Update header to ensure proper text contrast */
 .header #pageTitle {
-    font-weight: 600;
-    letter-spacing: -0.02em;
+  font-weight: 600;
+  letter-spacing: -0.02em;
 }
 
 /* Mobile responsiveness for theme info */
 @media (max-width: 768px) {
-    .theme-info {
-        display: none;
-    }
+  .theme-info {
+    display: none;
+  }
 }

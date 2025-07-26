@@ -1,6 +1,6 @@
-import {Timer} from '../modules/timer.js';
-import {PracticeForm} from '../practiceForm.js';
-import {AudioPlayer} from '../audioPlayerRefactored.js';
+import { Timer } from '../modules/timer.js';
+import { PracticeForm } from '../practiceForm.js';
+import { AudioPlayer } from '../audioPlayerRefactored.js';
 
 export class AudioTab {
     constructor(storageService, audioService) {
@@ -108,7 +108,6 @@ export class AudioTab {
     }
 
     onActivate() {
-
         // Ensure components are accessible
         this.ensureComponentsReady();
 
@@ -135,16 +134,17 @@ export class AudioTab {
         }
 
         // Dispatch tab activated event
-        window.dispatchEvent(new CustomEvent('audioTabActivated', {
-            detail: {
-                audioPlayer: this.audioPlayer,
-                timer: this.timer
-            }
-        }));
+        window.dispatchEvent(
+            new CustomEvent('audioTabActivated', {
+                detail: {
+                    audioPlayer: this.audioPlayer,
+                    timer: this.timer
+                }
+            })
+        );
     }
 
     destroy() {
-
         // Cleanup timer
         if (this.timer) {
             this.timer.destroy?.();

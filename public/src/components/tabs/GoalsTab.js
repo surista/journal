@@ -165,7 +165,6 @@ export class GoalsTab {
 
     // Fix for GoalsTab.js - attachEventListeners method
     attachEventListeners() {
-
         // Remove any existing click handler to prevent duplicates
         if (this.clickHandler) {
             this.container.removeEventListener('click', this.clickHandler);
@@ -173,128 +172,148 @@ export class GoalsTab {
 
         // Create the click handler function
         this.clickHandler = async (e) => {
-                const target = e.target;
+            const target = e.target;
 
-                // Add goal button - check for exact ID and nested elements
-                if (target.id === 'addGoalBtn' || target.closest('#addGoalBtn')) {
+            // Add goal button - check for exact ID and nested elements
+            if (target.id === 'addGoalBtn' || target.closest('#addGoalBtn')) {
+                e.preventDefault();
+                e.stopPropagation();
 
-                    e.preventDefault();
-                    e.stopPropagation();
+                try {
+                    this.showGoalModal();
 
-                    try {
-                        this.showGoalModal();
-
-                        // Double-check modal is visible
-                        const modal = document.getElementById('goalModal');
-                        if (modal && window.getComputedStyle(modal).display === 'none') {
-                            console.error('🎯 Modal still hidden after showGoalModal!');
-                            console.error('🎯 Modal classes:', modal.className);
-                            console.error('🎯 Modal computed styles:', {
-                                display: window.getComputedStyle(modal).display,
-                                opacity: window.getComputedStyle(modal).opacity,
-                                visibility: window.getComputedStyle(modal).visibility,
-                                zIndex: window.getComputedStyle(modal).zIndex
-                            });
-                        }
-                    } catch (error) {
-                        console.error('🎯 Error in showGoalModal:', error);
+                    // Double-check modal is visible
+                    const modal = document.getElementById('goalModal');
+                    if (modal && window.getComputedStyle(modal).display === 'none') {
+                        console.error('🎯 Modal still hidden after showGoalModal!');
+                        console.error('🎯 Modal classes:', modal.className);
+                        console.error('🎯 Modal computed styles:', {
+                            display: window.getComputedStyle(modal).display,
+                            opacity: window.getComputedStyle(modal).opacity,
+                            visibility: window.getComputedStyle(modal).visibility,
+                            zIndex: window.getComputedStyle(modal).zIndex
+                        });
                     }
+                } catch (error) {
+                    console.error('🎯 Error in showGoalModal:', error);
                 }
-
-                // Filter buttons
-                else if (target.classList.contains('filter-btn')) {
-                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                    target.classList.add('active');
-                    this.filter = target.dataset.filter;
-                    this.renderGoals();
-                }
-
-                // Modal controls
-                else if (target.id === 'closeGoalModal' || target.id === 'cancelGoalBtn') {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    this.hideGoalModal();
-                } else if (target.id === 'closeProgressModal' || target.id === 'cancelProgressBtn') {
-                    e.preventDefault();
-                    this.hideProgressModal();
-                } else if (target.id === 'saveProgressBtn') {
-                    e.preventDefault();
-                    await this.saveProgress();
-                }
-
-                // Goal actions with proper delegation
-                else if (target.classList.contains('complete-goal-btn') || target.closest('.complete-goal-btn')) {
-                    const btn = target.classList.contains('complete-goal-btn') ? target : target.closest('.complete-goal-btn');
-                    const goalId = parseFloat(btn.dataset.id); // Use parseFloat to handle decimal IDs
-                    await this.toggleGoalComplete(goalId);
-                } else if (target.classList.contains('delete-goal-btn') || target.closest('.delete-goal-btn')) {
-                    const btn = target.classList.contains('delete-goal-btn') ? target : target.closest('.delete-goal-btn');
-                    const goalId = parseFloat(btn.dataset.id); // Use parseFloat to handle decimal IDs
-                    await this.deleteGoal(goalId);
-                } else if (target.classList.contains('edit-goal-btn') || target.closest('.edit-goal-btn')) {
-                    const btn = target.classList.contains('edit-goal-btn') ? target : target.closest('.edit-goal-btn');
-                    const goalId = parseFloat(btn.dataset.id); // Use parseFloat to handle decimal IDs
-                    this.editGoal(goalId);
-                } else if (target.classList.contains('update-progress-btn') || target.closest('.update-progress-btn')) {
-                    const btn = target.classList.contains('update-progress-btn') ? target : target.closest('.update-progress-btn');
-                    const goalId = parseFloat(btn.dataset.id); // Use parseFloat to handle decimal IDs
-                    this.showProgressModal(goalId);
-                }
-            };
-
-            // Form submission - remove old handler first
-            if (this.submitHandler) {
-                this.container.removeEventListener('submit', this.submitHandler);
             }
-            
-            this.submitHandler = async (e) => {
-                if (e.target.id === 'goalForm') {
-                    e.preventDefault();
-                    await this.saveGoal();
-                }
-            };
-            
-            this.container.addEventListener('submit', this.submitHandler);
 
-            // Goal type change for showing/hiding measurement fields
-            this.container.addEventListener('change', (e) => {
-                if (e.target.id === 'goalType') {
-                    const measurementFields = document.getElementById('measurementFields');
-                    if (e.target.value) {
-                        measurementFields.style.display = 'block';
-                        document.getElementById('goalCurrent').required = true;
-                        document.getElementById('goalTarget').required = true;
+            // Filter buttons
+            else if (target.classList.contains('filter-btn')) {
+                document
+                    .querySelectorAll('.filter-btn')
+                    .forEach((b) => b.classList.remove('active'));
+                target.classList.add('active');
+                this.filter = target.dataset.filter;
+                this.renderGoals();
+            }
 
-                        // Update placeholders based on type
-                        const currentInput = document.getElementById('goalCurrent');
-                        const targetInput = document.getElementById('goalTarget');
+            // Modal controls
+            else if (target.id === 'closeGoalModal' || target.id === 'cancelGoalBtn') {
+                e.preventDefault();
+                e.stopPropagation();
+                this.hideGoalModal();
+            } else if (target.id === 'closeProgressModal' || target.id === 'cancelProgressBtn') {
+                e.preventDefault();
+                this.hideProgressModal();
+            } else if (target.id === 'saveProgressBtn') {
+                e.preventDefault();
+                await this.saveProgress();
+            }
 
-                        switch (e.target.value) {
-                            case 'bpm':
-                                currentInput.placeholder = 'Current BPM (e.g., 80)';
-                                targetInput.placeholder = 'Target BPM (e.g., 120)';
-                                break;
-                            case 'tempo':
-                                currentInput.placeholder = 'Current tempo % (e.g., 75)';
-                                targetInput.placeholder = 'Target tempo % (e.g., 100)';
-                                break;
-                            case 'minutes':
-                                currentInput.placeholder = 'Minutes practiced so far';
-                                targetInput.placeholder = 'Target minutes';
-                                break;
-                            case 'sessions':
-                                currentInput.placeholder = 'Sessions completed';
-                                targetInput.placeholder = 'Target sessions';
-                                break;
-                        }
-                    } else {
-                        measurementFields.style.display = 'none';
-                        document.getElementById('goalCurrent').required = false;
-                        document.getElementById('goalTarget').required = false;
+            // Goal actions with proper delegation
+            else if (
+                target.classList.contains('complete-goal-btn') ||
+                target.closest('.complete-goal-btn')
+            ) {
+                const btn = target.classList.contains('complete-goal-btn')
+                    ? target
+                    : target.closest('.complete-goal-btn');
+                const goalId = parseFloat(btn.dataset.id); // Use parseFloat to handle decimal IDs
+                await this.toggleGoalComplete(goalId);
+            } else if (
+                target.classList.contains('delete-goal-btn') ||
+                target.closest('.delete-goal-btn')
+            ) {
+                const btn = target.classList.contains('delete-goal-btn')
+                    ? target
+                    : target.closest('.delete-goal-btn');
+                const goalId = parseFloat(btn.dataset.id); // Use parseFloat to handle decimal IDs
+                await this.deleteGoal(goalId);
+            } else if (
+                target.classList.contains('edit-goal-btn') ||
+                target.closest('.edit-goal-btn')
+            ) {
+                const btn = target.classList.contains('edit-goal-btn')
+                    ? target
+                    : target.closest('.edit-goal-btn');
+                const goalId = parseFloat(btn.dataset.id); // Use parseFloat to handle decimal IDs
+                this.editGoal(goalId);
+            } else if (
+                target.classList.contains('update-progress-btn') ||
+                target.closest('.update-progress-btn')
+            ) {
+                const btn = target.classList.contains('update-progress-btn')
+                    ? target
+                    : target.closest('.update-progress-btn');
+                const goalId = parseFloat(btn.dataset.id); // Use parseFloat to handle decimal IDs
+                this.showProgressModal(goalId);
+            }
+        };
+
+        // Form submission - remove old handler first
+        if (this.submitHandler) {
+            this.container.removeEventListener('submit', this.submitHandler);
+        }
+
+        this.submitHandler = async (e) => {
+            if (e.target.id === 'goalForm') {
+                e.preventDefault();
+                await this.saveGoal();
+            }
+        };
+
+        this.container.addEventListener('submit', this.submitHandler);
+
+        // Goal type change for showing/hiding measurement fields
+        this.container.addEventListener('change', (e) => {
+            if (e.target.id === 'goalType') {
+                const measurementFields = document.getElementById('measurementFields');
+                if (e.target.value) {
+                    measurementFields.style.display = 'block';
+                    document.getElementById('goalCurrent').required = true;
+                    document.getElementById('goalTarget').required = true;
+
+                    // Update placeholders based on type
+                    const currentInput = document.getElementById('goalCurrent');
+                    const targetInput = document.getElementById('goalTarget');
+
+                    switch (e.target.value) {
+                        case 'bpm':
+                            currentInput.placeholder = 'Current BPM (e.g., 80)';
+                            targetInput.placeholder = 'Target BPM (e.g., 120)';
+                            break;
+                        case 'tempo':
+                            currentInput.placeholder = 'Current tempo % (e.g., 75)';
+                            targetInput.placeholder = 'Target tempo % (e.g., 100)';
+                            break;
+                        case 'minutes':
+                            currentInput.placeholder = 'Minutes practiced so far';
+                            targetInput.placeholder = 'Target minutes';
+                            break;
+                        case 'sessions':
+                            currentInput.placeholder = 'Sessions completed';
+                            targetInput.placeholder = 'Target sessions';
+                            break;
                     }
+                } else {
+                    measurementFields.style.display = 'none';
+                    document.getElementById('goalCurrent').required = false;
+                    document.getElementById('goalTarget').required = false;
                 }
-            });
-
+            }
+        });
 
         // Add the click handler to the container
         if (this.container) {
@@ -336,7 +355,7 @@ export class GoalsTab {
             const allGoals = await this.storageService.getGoals();
 
             // Filter out daily/calendar goals (they have type: 'daily')
-            this.goals = allGoals.filter(g => g.type !== 'daily');
+            this.goals = allGoals.filter((g) => g.type !== 'daily');
 
             // Sort by creation date (newest first) and completion status
             this.goals.sort((a, b) => {
@@ -359,9 +378,9 @@ export class GoalsTab {
         // Filter goals based on current filter
         let filteredGoals = this.goals;
         if (this.filter === 'active') {
-            filteredGoals = this.goals.filter(g => !g.completed);
+            filteredGoals = this.goals.filter((g) => !g.completed);
         } else if (this.filter === 'completed') {
-            filteredGoals = this.goals.filter(g => g.completed);
+            filteredGoals = this.goals.filter((g) => g.completed);
         }
 
         if (filteredGoals.length === 0) {
@@ -369,25 +388,29 @@ export class GoalsTab {
                 <div class="empty-state">
                     <i class="icon" style="font-size: 3rem;">🎯</i>
                     <p>No ${this.filter} goals found</p>
-                    ${this.filter === 'active' ?
-                '<button class="btn btn-primary" onclick="document.getElementById(\'addGoalBtn\').click()">Create Your First Goal</button>' :
-                ''}
+                    ${
+                        this.filter === 'active'
+                            ? '<button class="btn btn-primary" onclick="document.getElementById(\'addGoalBtn\').click()">Create Your First Goal</button>'
+                            : ''
+                    }
                 </div>
             `;
             return;
         }
 
-        container.innerHTML = filteredGoals.map(goal => {
-            const isOverdue = goal.targetDate && new Date(goal.targetDate) < new Date() && !goal.completed;
+        container.innerHTML = filteredGoals
+            .map((goal) => {
+                const isOverdue =
+                    goal.targetDate && new Date(goal.targetDate) < new Date() && !goal.completed;
 
-            // Progress bar HTML
-            let progressHTML = '';
-            if (goal.type && goal.target) {
-                const current = goal.current || 0;
-                const progress = Math.min(100, Math.round((current / goal.target) * 100));
-                const unit = this.getUnitLabel(goal.type);
+                // Progress bar HTML
+                let progressHTML = '';
+                if (goal.type && goal.target) {
+                    const current = goal.current || 0;
+                    const progress = Math.min(100, Math.round((current / goal.target) * 100));
+                    const unit = this.getUnitLabel(goal.type);
 
-                progressHTML = `
+                    progressHTML = `
                     <div class="goal-progress" style="margin: 1rem 0;">
                         <div class="progress-bar-container" style="height: 8px;">
                             <div class="progress-bar" style="width: ${progress}%; background: ${progress >= 100 ? 'var(--success)' : 'var(--primary)'};"></div>
@@ -399,33 +422,45 @@ export class GoalsTab {
                         </div>
                     </div>
                 `;
-            }
+                }
 
-            return `
+                return `
                 <div class="goal-card ${goal.completed ? 'completed' : ''} ${isOverdue ? 'overdue' : ''}" data-id="${goal.id}" style="background: #1a2744; border-radius: var(--radius-md); padding: 0.75rem 1.5rem; margin-bottom: 0.5rem;">
                     <div class="goal-header" style="display: flex; align-items: center; width: 100%;">
                         <h4 class="goal-title" style="margin: 0; font-size: 1rem; font-weight: 500; color: #ffffff;">${this.escapeHtml(goal.title || goal.text || 'Untitled Goal')}</h4>
                         <span class="goal-category" style="margin-left: 1.5rem; color: #ffffff; font-size: 0.875rem;">
                             ${this.formatCategory(goal.category)}
                         </span>
-                        ${goal.type ? `
+                        ${
+                            goal.type
+                                ? `
                             <span class="goal-type" style="margin-left: 1.5rem; color: #ffffff; font-size: 0.875rem;">
                                 ${this.getUnitLabel(goal.type)}
                             </span>
-                        ` : ''}
-                        ${goal.targetDate ? `
+                        `
+                                : ''
+                        }
+                        ${
+                            goal.targetDate
+                                ? `
                             <span class="goal-date ${isOverdue ? 'overdue' : ''}" style="margin-left: 1.5rem; color: #ffffff; font-size: 0.875rem; display: flex; align-items: center; gap: 0.5rem;">
                                 <i class="icon">📅</i> ${this.formatDateShort(goal.targetDate)}
                             </span>
-                        ` : ''}
+                        `
+                                : ''
+                        }
                         <div style="flex: 1;"></div>
                         <div class="goal-actions" style="display: flex; gap: 0.5rem;">
-                            ${goal.type && !goal.completed ? `
+                            ${
+                                goal.type && !goal.completed
+                                    ? `
                                 <button class="btn-icon update-progress-btn" data-id="${goal.id}" 
                                         title="Update progress" style="background: transparent; border: none; color: #ffffff; cursor: pointer; padding: 0.25rem;">
                                     📊
                                 </button>
-                            ` : ''}
+                            `
+                                    : ''
+                            }
                             <button class="btn-icon complete-goal-btn" data-id="${goal.id}" 
                                     title="${goal.completed ? 'Mark as incomplete' : 'Mark as complete'}" style="background: transparent; border: none; color: #ffffff; cursor: pointer; padding: 0.25rem;">
                                 ${goal.completed ? '✅' : '⭕'}
@@ -441,32 +476,45 @@ export class GoalsTab {
                     
                     ${progressHTML}
                     
-                    ${goal.description ? `
+                    ${
+                        goal.description
+                            ? `
                         <div class="goal-description">
                             ${this.escapeHtml(goal.description)}
                         </div>
-                    ` : ''}
+                    `
+                            : ''
+                    }
                     
-                    ${goal.criteria ? `
+                    ${
+                        goal.criteria
+                            ? `
                         <div class="goal-criteria">
                             <strong>Success Criteria:</strong> ${this.escapeHtml(goal.criteria)}
                         </div>
-                    ` : ''}
+                    `
+                            : ''
+                    }
                     
-                    ${goal.completed && goal.completedAt ? `
+                    ${
+                        goal.completed && goal.completedAt
+                            ? `
                         <div class="goal-completed-info">
                             Completed on ${this.formatDate(goal.completedAt)}
                         </div>
-                    ` : ''}
+                    `
+                            : ''
+                    }
                 </div>
             `;
-        }).join('');
+            })
+            .join('');
     }
 
     updateStats() {
         const totalGoals = this.goals.length;
-        const activeGoals = this.goals.filter(g => !g.completed).length;
-        const completedGoals = this.goals.filter(g => g.completed).length;
+        const activeGoals = this.goals.filter((g) => !g.completed).length;
+        const completedGoals = this.goals.filter((g) => g.completed).length;
         const completionRate = totalGoals > 0 ? Math.round((completedGoals / totalGoals) * 100) : 0;
 
         const totalGoalsEl = document.getElementById('totalGoalsCount');
@@ -481,11 +529,9 @@ export class GoalsTab {
     }
 
     async showGoalModal(goalId = null) {
-
         const modal = document.getElementById('goalModal');
         const modalTitle = document.getElementById('goalModalTitle');
         const form = document.getElementById('goalForm');
-
 
         if (!modal || !modalTitle || !form) {
             console.error('Goal modal elements not found');
@@ -502,9 +548,14 @@ export class GoalsTab {
         // Reset and populate form
         if (goalId) {
             // Edit mode
-            const goal = this.goals.find(g => g.id == goalId); // Use loose equality to handle number type differences
+            const goal = this.goals.find((g) => g.id == goalId); // Use loose equality to handle number type differences
             if (!goal) {
-                console.error('Goal not found:', goalId, 'Available goals:', this.goals.map(g => ({ id: g.id, title: g.title })));
+                console.error(
+                    'Goal not found:',
+                    goalId,
+                    'Available goals:',
+                    this.goals.map((g) => ({ id: g.id, title: g.title }))
+                );
                 return;
             }
 
@@ -547,7 +598,9 @@ export class GoalsTab {
         modal.style.removeProperty('opacity');
 
         // Force modal to be visible using inline styles with !important
-        modal.setAttribute('style', `
+        modal.setAttribute(
+            'style',
+            `
             display: flex !important;
             visibility: visible !important;
             opacity: 1 !important;
@@ -560,7 +613,8 @@ export class GoalsTab {
             align-items: center !important;
             justify-content: center !important;
             z-index: 9999 !important;
-        `);
+        `
+        );
 
         // Add the show class as well
         modal.classList.add('show');
@@ -572,7 +626,6 @@ export class GoalsTab {
                 firstInput.focus();
             }
         }, 200);
-
     }
 
     hideGoalModal() {
@@ -580,10 +633,10 @@ export class GoalsTab {
         if (modal) {
             // Remove the show class
             modal.classList.remove('show');
-            
+
             // Remove all inline styles
             modal.removeAttribute('style');
-            
+
             // Ensure it's hidden
             modal.style.display = 'none';
         }
@@ -595,15 +648,19 @@ export class GoalsTab {
         if (this.isSaving) {
             return;
         }
-        
+
         this.isSaving = true;
-        
+
         try {
             const title = document.getElementById('goalTitle').value.trim();
             const category = document.getElementById('goalCategory').value;
             const type = document.getElementById('goalType').value;
-            const current = document.getElementById('goalCurrent').value ? parseInt(document.getElementById('goalCurrent').value) : null;
-            const target = document.getElementById('goalTarget').value ? parseInt(document.getElementById('goalTarget').value) : null;
+            const current = document.getElementById('goalCurrent').value
+                ? parseInt(document.getElementById('goalCurrent').value)
+                : null;
+            const target = document.getElementById('goalTarget').value
+                ? parseInt(document.getElementById('goalTarget').value)
+                : null;
             const targetDate = document.getElementById('goalTargetDate').value;
             const description = document.getElementById('goalDescription').value.trim();
             const criteria = document.getElementById('goalCriteria').value.trim();
@@ -614,7 +671,7 @@ export class GoalsTab {
                 return;
             }
 
-            if (type && (!current && current !== 0 || !target)) {
+            if (type && ((!current && current !== 0) || !target)) {
                 this.showError('Current and target values are required for measured goals');
                 this.isSaving = false;
                 return;
@@ -655,7 +712,7 @@ export class GoalsTab {
     }
 
     async deleteGoal(goalId) {
-        const goal = this.goals.find(g => g.id == goalId); // Use loose equality
+        const goal = this.goals.find((g) => g.id == goalId); // Use loose equality
         if (!goal) return;
 
         if (confirm(`Are you sure you want to delete "${goal.title || goal.text}"?`)) {
@@ -671,7 +728,7 @@ export class GoalsTab {
     }
 
     async toggleGoalComplete(goalId) {
-        const goal = this.goals.find(g => g.id == goalId); // Use loose equality
+        const goal = this.goals.find((g) => g.id == goalId); // Use loose equality
         if (!goal) return;
 
         try {
@@ -681,9 +738,11 @@ export class GoalsTab {
                 this.showNotification('Goal marked as active', 'success');
             } else {
                 // Marking as complete - ask for confirmation
-                const confirmed = confirm(`Are you sure you want to mark "${goal.title || goal.text}" as complete?`);
+                const confirmed = confirm(
+                    `Are you sure you want to mark "${goal.title || goal.text}" as complete?`
+                );
                 if (!confirmed) return;
-                
+
                 await this.storageService.markGoalComplete(goalId);
                 this.showNotification('🎉 Congratulations! Goal completed!', 'success');
             }
@@ -695,7 +754,7 @@ export class GoalsTab {
     }
 
     showProgressModal(goalId) {
-        const goal = this.goals.find(g => g.id == goalId); // Use loose equality
+        const goal = this.goals.find((g) => g.id == goalId); // Use loose equality
         if (!goal || !goal.type) return;
 
         const modal = document.getElementById('progressModal');
@@ -797,7 +856,20 @@ export class GoalsTab {
 
     formatDateShort(dateString) {
         const date = new Date(dateString);
-        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const months = [
+            'Jan',
+            'Feb',
+            'Mar',
+            'Apr',
+            'May',
+            'Jun',
+            'Jul',
+            'Aug',
+            'Sep',
+            'Oct',
+            'Nov',
+            'Dec'
+        ];
         const day = date.getDate().toString().padStart(2, '0');
         const month = months[date.getMonth()];
         const year = date.getFullYear().toString().slice(-2);
@@ -838,7 +910,7 @@ export class GoalsTab {
 
         select.innerHTML = `
             <option value="">Select category...</option>
-            ${sessionAreas.map(area => `<option value="${area.toLowerCase().replace(/\s+/g, '-')}">${area}</option>`).join('')}
+            ${sessionAreas.map((area) => `<option value="${area.toLowerCase().replace(/\s+/g, '-')}">${area}</option>`).join('')}
             <option value="other">Other</option>
         `;
     }
@@ -861,5 +933,4 @@ export class GoalsTab {
         this.container = null;
         this.editingGoalId = null;
     }
-
 }

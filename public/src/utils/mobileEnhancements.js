@@ -10,7 +10,15 @@ export class MobileEnhancements {
         this.pullDistance = 0;
         this.pullThreshold = 80;
         this.currentTab = null;
-        this.tabOrder = ['practice', 'repertoire', 'goals', 'stats', 'history', 'calendar', 'settings'];
+        this.tabOrder = [
+            'practice',
+            'repertoire',
+            'goals',
+            'stats',
+            'history',
+            'calendar',
+            'settings'
+        ];
         this.listeners = new Map();
     }
 
@@ -26,9 +34,11 @@ export class MobileEnhancements {
     }
 
     isTouchDevice() {
-        return ('ontouchstart' in window) || 
-               (navigator.maxTouchPoints > 0) || 
-               (navigator.msMaxTouchPoints > 0);
+        return (
+            'ontouchstart' in window ||
+            navigator.maxTouchPoints > 0 ||
+            navigator.msMaxTouchPoints > 0
+        );
     }
 
     setupSwipeGestures() {
@@ -72,7 +82,7 @@ export class MobileEnhancements {
 
             // Minimum swipe distance threshold
             const minSwipeDistance = 50;
-            
+
             // Check if horizontal swipe is more pronounced than vertical
             if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > minSwipeDistance) {
                 if (diffX > 0) {
@@ -104,7 +114,8 @@ export class MobileEnhancements {
         // Create pull to refresh indicator
         const refreshIndicator = document.createElement('div');
         refreshIndicator.className = 'pull-to-refresh';
-        refreshIndicator.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>';
+        refreshIndicator.innerHTML =
+            '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>';
         document.body.appendChild(refreshIndicator);
 
         let startY = 0;
@@ -168,13 +179,15 @@ export class MobileEnhancements {
 
     enhanceTouchTargets() {
         // Ensure all interactive elements have minimum touch target size
-        const interactiveElements = document.querySelectorAll('button, a, input, select, textarea, .clickable');
-        
-        interactiveElements.forEach(element => {
+        const interactiveElements = document.querySelectorAll(
+            'button, a, input, select, textarea, .clickable'
+        );
+
+        interactiveElements.forEach((element) => {
             const rect = element.getBoundingClientRect();
             if (rect.height < 44 || rect.width < 44) {
                 element.style.position = 'relative';
-                
+
                 // Create invisible touch target extender
                 const extender = document.createElement('div');
                 extender.style.position = 'absolute';
@@ -184,7 +197,7 @@ export class MobileEnhancements {
                 extender.style.minWidth = '44px';
                 extender.style.minHeight = '44px';
                 extender.style.pointerEvents = 'none';
-                
+
                 element.appendChild(extender);
             }
         });
@@ -193,14 +206,18 @@ export class MobileEnhancements {
     preventDoubleTapZoom() {
         // Prevent double-tap zoom on iOS
         let lastTouchEnd = 0;
-        
-        document.addEventListener('touchend', (e) => {
-            const now = Date.now();
-            if (now - lastTouchEnd <= 300) {
-                e.preventDefault();
-            }
-            lastTouchEnd = now;
-        }, false);
+
+        document.addEventListener(
+            'touchend',
+            (e) => {
+                const now = Date.now();
+                if (now - lastTouchEnd <= 300) {
+                    e.preventDefault();
+                }
+                lastTouchEnd = now;
+            },
+            false
+        );
     }
 
     setupOrientationHandling() {
@@ -208,16 +225,18 @@ export class MobileEnhancements {
             // Adjust layout based on orientation
             const isLandscape = window.innerWidth > window.innerHeight;
             document.body.classList.toggle('landscape', isLandscape);
-            
+
             // Dispatch custom event for components to handle
-            window.dispatchEvent(new CustomEvent('orientation-change', {
-                detail: { isLandscape }
-            }));
+            window.dispatchEvent(
+                new CustomEvent('orientation-change', {
+                    detail: { isLandscape }
+                })
+            );
         };
 
         window.addEventListener('orientationchange', handleOrientationChange);
         window.addEventListener('resize', handleOrientationChange);
-        
+
         // Initial check
         handleOrientationChange();
     }
@@ -240,9 +259,11 @@ export class MobileEnhancements {
 
     navigateToTab(tabName) {
         // Dispatch navigation event
-        window.dispatchEvent(new CustomEvent('mobile-tab-navigate', {
-            detail: { tab: tabName }
-        }));
+        window.dispatchEvent(
+            new CustomEvent('mobile-tab-navigate', {
+                detail: { tab: tabName }
+            })
+        );
     }
 
     setCurrentTab(tabName) {
@@ -260,7 +281,8 @@ export class MobileEnhancements {
         // Clean up all event listeners
         const swipeArea = document.querySelector('.main-content-new');
         if (swipeArea && this.listeners.has('swipe')) {
-            const { handleTouchStart, handleTouchMove, handleTouchEnd } = this.listeners.get('swipe');
+            const { handleTouchStart, handleTouchMove, handleTouchEnd } =
+                this.listeners.get('swipe');
             swipeArea.removeEventListener('touchstart', handleTouchStart);
             swipeArea.removeEventListener('touchmove', handleTouchMove);
             swipeArea.removeEventListener('touchend', handleTouchEnd);
@@ -268,7 +290,8 @@ export class MobileEnhancements {
 
         const mainContent = document.querySelector('.main-content-new');
         if (mainContent && this.listeners.has('pull-refresh')) {
-            const { handleTouchStart, handleTouchMove, handleTouchEnd } = this.listeners.get('pull-refresh');
+            const { handleTouchStart, handleTouchMove, handleTouchEnd } =
+                this.listeners.get('pull-refresh');
             mainContent.removeEventListener('touchstart', handleTouchStart);
             mainContent.removeEventListener('touchmove', handleTouchMove);
             mainContent.removeEventListener('touchend', handleTouchEnd);

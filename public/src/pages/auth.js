@@ -1,5 +1,5 @@
 // Enhanced auth page with Firebase and debug logging
-import {AuthService} from '../services/authService.js';
+import { AuthService } from '../services/authService.js';
 import firebaseSyncService from '../services/firebaseSyncService.js';
 import rateLimitService from '../services/rateLimitService.js';
 
@@ -74,7 +74,6 @@ class AuthPage {
         const email = document.getElementById('loginEmail').value;
         const password = document.getElementById('loginPassword').value;
 
-
         if (!email || !password) {
             this.showStatus('Please enter both email and password', 'error');
             return;
@@ -104,7 +103,7 @@ class AuthPage {
             } else {
                 console.error('❌ AuthPage: Login failed:', result.error);
                 this.showStatus(result.error || 'Login failed', 'error');
-                
+
                 // Show remaining attempts if rate limit is close
                 const updatedLimit = rateLimitService.checkRateLimit(email, 'login');
                 if (updatedLimit.remainingAttempts <= 2) {
@@ -121,7 +120,6 @@ class AuthPage {
         const email = document.getElementById('signupEmail').value;
         const password = document.getElementById('signupPassword').value;
         const confirmPassword = document.getElementById('signupPasswordConfirm').value;
-
 
         if (password !== confirmPassword) {
             this.showStatus('Passwords do not match', 'error');
@@ -151,7 +149,7 @@ class AuthPage {
                 setTimeout(() => this.redirectToDashboard(), 1000);
             } else {
                 this.showStatus(result.error || 'Signup failed', 'error');
-                
+
                 // Show remaining attempts if rate limit is close
                 const updatedLimit = rateLimitService.checkRateLimit(email, 'signup');
                 if (updatedLimit.remainingAttempts <= 2) {
@@ -165,7 +163,6 @@ class AuthPage {
     }
 
     async handleDemoLogin() {
-
         this.showStatus('Loading demo mode...', 'info');
 
         try {
@@ -234,9 +231,9 @@ class AuthPage {
             const timeUntilReset = rateLimitService.getTimeUntilReset(rateLimit.resetTime);
             rateLimitEl.textContent = `🔒 Account locked. Try again in ${timeUntilReset}`;
         }
-        
+
         rateLimitEl.style.display = 'block';
-        
+
         // Auto-hide after reset time
         if (rateLimit.resetTime) {
             const hideTimeout = rateLimit.resetTime - new Date();

@@ -1,1014 +1,1014 @@
 /* My Learning Page Styles */
 
 .learning-page {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-    color: var(--text-primary);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  color: var(--text-primary);
 }
 
 /* Force checkbox visibility in learning page - HIGH CONTRAST */
-.learning-page input[type="checkbox"] {
-    -webkit-appearance: none !important;
-    -moz-appearance: none !important;
-    appearance: none !important;
-    width: 20px !important;
-    height: 20px !important;
-    background: #FFFFFF !important;
-    border: 2px solid #FFFFFF !important;
-    border-radius: 4px !important;
-    cursor: pointer !important;
-    position: relative !important;
-    display: inline-block !important;
-    margin-right: 0.75rem !important;
-    transition: all 0.2s ease !important;
+.learning-page input[type='checkbox'] {
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  width: 20px !important;
+  height: 20px !important;
+  background: #ffffff !important;
+  border: 2px solid #ffffff !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+  position: relative !important;
+  display: inline-block !important;
+  margin-right: 0.75rem !important;
+  transition: all 0.2s ease !important;
 }
 
-.learning-page input[type="checkbox"]:hover {
-    border-color: #6366f1 !important;
-    background: #e0e7ff !important;
+.learning-page input[type='checkbox']:hover {
+  border-color: #6366f1 !important;
+  background: #e0e7ff !important;
 }
 
-.learning-page input[type="checkbox"]:checked {
-    background: #6366f1 !important;
-    border-color: #6366f1 !important;
+.learning-page input[type='checkbox']:checked {
+  background: #6366f1 !important;
+  border-color: #6366f1 !important;
 }
 
-.learning-page input[type="checkbox"]:checked::after {
-    content: '✓' !important;
-    position: absolute !important;
-    top: 50% !important;
-    left: 50% !important;
-    transform: translate(-50%, -50%) !important;
-    color: white !important;
-    font-size: 14px !important;
-    font-weight: bold !important;
+.learning-page input[type='checkbox']:checked::after {
+  content: '✓' !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  color: white !important;
+  font-size: 14px !important;
+  font-weight: bold !important;
 }
 
 /* Light themes need dark checkboxes */
-[data-theme*="light"] .learning-page input[type="checkbox"] {
-    background: #374151 !important;
-    border: 2px solid #374151 !important;
+[data-theme*='light'] .learning-page input[type='checkbox'] {
+  background: #374151 !important;
+  border: 2px solid #374151 !important;
 }
 
-[data-theme*="light"] .learning-page input[type="checkbox"]:hover {
-    background: #4b5563 !important;
-    border-color: #6366f1 !important;
+[data-theme*='light'] .learning-page input[type='checkbox']:hover {
+  background: #4b5563 !important;
+  border-color: #6366f1 !important;
 }
 
-[data-theme*="light"] .learning-page input[type="checkbox"]:checked::after {
-    color: white !important;
+[data-theme*='light'] .learning-page input[type='checkbox']:checked::after {
+  color: white !important;
 }
 
 .learning-header {
-    text-align: center;
-    margin-bottom: 3rem;
+  text-align: center;
+  margin-bottom: 3rem;
 }
 
 .learning-header h1 {
-    font-size: 2.5rem;
-    color: var(--text-primary);
-    margin-bottom: 0.5rem;
+  font-size: 2.5rem;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
 }
 
 .learning-header p {
-    font-size: 1.125rem;
-    color: var(--text-secondary);
+  font-size: 1.125rem;
+  color: var(--text-secondary);
 }
 
 /* Questionnaire Container */
 .questionnaire-container {
-    background: var(--bg-card);
-    border-radius: 16px;
-    padding: 2rem;
-    box-shadow: var(--shadow-lg);
-    max-width: 800px;
-    margin: 0 auto;
-    color: var(--text-primary);
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: var(--shadow-lg);
+  max-width: 800px;
+  margin: 0 auto;
+  color: var(--text-primary);
 }
 
 /* Ensure all questionnaire elements use theme colors */
 .questionnaire-container * {
-    color: inherit;
+  color: inherit;
 }
 
 /* Progress Bar */
 .progress-bar {
-    height: 8px;
-    background: var(--bg-secondary);
-    border-radius: 4px;
-    margin-bottom: 2rem;
-    overflow: hidden;
+  height: 8px;
+  background: var(--bg-secondary);
+  border-radius: 4px;
+  margin-bottom: 2rem;
+  overflow: hidden;
 }
 
 .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #6366f1, #a855f7);
-    border-radius: 4px;
-    transition: width 0.3s ease;
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1, #a855f7);
+  border-radius: 4px;
+  transition: width 0.3s ease;
 }
 
 /* Question Content */
 .question-content {
-    min-height: 400px;
-    margin-bottom: 2rem;
+  min-height: 400px;
+  margin-bottom: 2rem;
 }
 
 .step-content h2 {
-    font-size: 1.75rem;
-    margin-bottom: 0.5rem;
-    color: var(--text-primary);
+  font-size: 1.75rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
 }
 
 .step-content p {
-    color: var(--text-secondary);
-    margin-bottom: 2rem;
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
 }
 
 /* Goals Grid */
 .goals-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
 }
 
 .goal-card {
-    background: var(--bg-secondary);
-    border: 2px solid transparent;
-    border-radius: 12px;
-    padding: 1.5rem;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    color: var(--text-primary);
+  background: var(--bg-secondary);
+  border: 2px solid transparent;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--text-primary);
 }
 
 .goal-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .goal-card.selected {
-    border-color: var(--primary);
-    background: rgba(99, 102, 241, 0.1);
+  border-color: var(--primary);
+  background: rgba(99, 102, 241, 0.1);
 }
 
 .goal-icon {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
 }
 
 .goal-card h3 {
-    font-size: 1rem;
-    margin-bottom: 0.25rem;
-    color: var(--text-primary);
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+  color: var(--text-primary);
 }
 
 .goal-card p {
-    font-size: 0.875rem;
-    color: var(--text-secondary);
-    margin: 0;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0;
 }
 
 /* Interests Grid */
 .interests-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
 }
 
 .genre-tag {
-    padding: 0.5rem 1rem;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    font-size: 0.875rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    color: var(--text-primary);
+  padding: 0.5rem 1rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--text-primary);
 }
 
 .genre-tag:hover {
-    border-color: var(--primary);
-    transform: translateY(-1px);
+  border-color: var(--primary);
+  transform: translateY(-1px);
 }
 
 .genre-tag.selected {
-    background: var(--primary);
-    color: white;
-    border-color: var(--primary);
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
 }
 
 /* Artists Input */
 .artists-input {
-    space-y: 1rem;
+  space-y: 1rem;
 }
 
 .artist-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-    min-height: 40px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  min-height: 40px;
 }
 
 .artist-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.375rem 0.75rem;
-    background: var(--primary);
-    color: white;
-    border-radius: 16px;
-    font-size: 0.875rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  background: var(--primary);
+  color: white;
+  border-radius: 16px;
+  font-size: 0.875rem;
 }
 
 .remove-tag {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 1.25rem;
-    cursor: pointer;
-    padding: 0;
-    line-height: 1;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
 }
 
 .artist-suggestions {
-    margin-top: 2rem;
+  margin-top: 2rem;
 }
 
 .suggestion-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
 }
 
 .suggestion-tag {
-    padding: 0.375rem 0.75rem;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    font-size: 0.813rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    color: var(--text-primary);
+  padding: 0.375rem 0.75rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  font-size: 0.813rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--text-primary);
 }
 
 .suggestion-tag:hover {
-    background: var(--bg-tertiary);
-    border-color: var(--primary);
+  background: var(--bg-tertiary);
+  border-color: var(--primary);
 }
 
 /* Ability Form */
 .ability-form {
-    space-y: 1.5rem;
+  space-y: 1.5rem;
 }
 
 .form-group {
-    margin-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-    color: var(--text-primary);
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
 .form-select,
 .form-input,
 .form-textarea {
-    width: 100%;
-    padding: 0.75rem;
-    background: var(--bg-input);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text-primary);
-    font-size: 1rem;
+  width: 100%;
+  padding: 0.75rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 1rem;
 }
 
 .form-select:focus,
 .form-input:focus,
 .form-textarea:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
 .skill-checkboxes {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .checkbox-label {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    cursor: pointer;
-    padding: 0.75rem 1rem;
-    color: var(--text-primary);
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 0.75rem 1rem;
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  transition: all 0.2s ease;
 }
 
-.checkbox-label input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-    margin-right: 0.75rem;
-    cursor: pointer;
-    flex-shrink: 0;
-    -webkit-appearance: none;
-    appearance: none;
-    background: var(--bg-input);
-    border: 2px solid var(--border);
-    border-radius: 4px;
-    position: relative;
-    transition: all 0.2s ease;
+.checkbox-label input[type='checkbox'] {
+  width: 20px;
+  height: 20px;
+  margin-right: 0.75rem;
+  cursor: pointer;
+  flex-shrink: 0;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--bg-input);
+  border: 2px solid var(--border);
+  border-radius: 4px;
+  position: relative;
+  transition: all 0.2s ease;
 }
 
-.checkbox-label input[type="checkbox"]:checked {
-    background: var(--primary);
-    border-color: var(--primary);
+.checkbox-label input[type='checkbox']:checked {
+  background: var(--primary);
+  border-color: var(--primary);
 }
 
-.checkbox-label input[type="checkbox"]:checked::after {
-    content: '✓';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
-    font-size: 14px;
-    font-weight: bold;
+.checkbox-label input[type='checkbox']:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
 }
 
-.checkbox-label input[type="checkbox"]:hover {
-    border-color: var(--primary);
-    background: rgba(99, 102, 241, 0.1);
+.checkbox-label input[type='checkbox']:hover {
+  border-color: var(--primary);
+  background: rgba(99, 102, 241, 0.1);
 }
 
 /* Make checkboxes more visible on dark themes */
-[data-theme*="dark"] .checkbox-label input[type="checkbox"] {
-    -webkit-appearance: none;
-    appearance: none;
-    background: rgba(255, 255, 255, 0.1);
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-radius: 4px;
-    position: relative;
+[data-theme*='dark'] .checkbox-label input[type='checkbox'] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  position: relative;
 }
 
-[data-theme*="dark"] .checkbox-label input[type="checkbox"]:checked {
-    background: var(--primary);
-    border-color: var(--primary);
+[data-theme*='dark'] .checkbox-label input[type='checkbox']:checked {
+  background: var(--primary);
+  border-color: var(--primary);
 }
 
-[data-theme*="dark"] .checkbox-label input[type="checkbox"]:checked::after {
-    content: '✓';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
-    font-size: 14px;
-    font-weight: bold;
+[data-theme*='dark'] .checkbox-label input[type='checkbox']:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
 }
 
 .checkbox-label {
-    font-size: 1rem;
-    line-height: 1.5;
-    user-select: none;
+  font-size: 1rem;
+  line-height: 1.5;
+  user-select: none;
 }
 
 .checkbox-label:hover {
-    border-color: var(--primary);
-    background: var(--bg-hover);
-    transform: translateY(-1px);
+  border-color: var(--primary);
+  background: var(--bg-hover);
+  transform: translateY(-1px);
 }
 
 .checkbox-label:has(input:checked) {
-    background: rgba(99, 102, 241, 0.1);
-    border-color: var(--primary);
+  background: rgba(99, 102, 241, 0.1);
+  border-color: var(--primary);
 }
 
 /* Assessment Section */
 .assessment-section {
-    display: grid;
-    gap: 1.5rem;
+  display: grid;
+  gap: 1.5rem;
 }
 
 .drill-card {
-    background: var(--bg-secondary);
-    padding: 1.5rem;
-    border-radius: 12px;
-    border: 1px solid var(--border);
-    color: var(--text-primary);
+  background: var(--bg-secondary);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  color: var(--text-primary);
 }
 
 .drill-card h3 {
-    font-size: 1.125rem;
-    margin-bottom: 0.5rem;
-    color: var(--text-primary);
+  font-size: 1.125rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
 }
 
 .drill-card p {
-    color: var(--text-secondary);
-    margin-bottom: 1rem;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
 }
 
 /* Tempo Test */
 .tempo-test {
-    space-y: 0.5rem;
+  space-y: 0.5rem;
 }
 
 .tempo-input {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
-.tempo-input input[type="range"] {
-    flex: 1;
-    height: 6px;
-    background: var(--bg-tertiary);
-    border-radius: 3px;
-    outline: none;
+.tempo-input input[type='range'] {
+  flex: 1;
+  height: 6px;
+  background: var(--bg-tertiary);
+  border-radius: 3px;
+  outline: none;
 }
 
 .tempo-display {
-    min-width: 80px;
-    text-align: center;
-    font-weight: 600;
-    color: var(--primary);
+  min-width: 80px;
+  text-align: center;
+  font-weight: 600;
+  color: var(--primary);
 }
 
 /* Count Input */
 .count-input {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .count-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border);
-    font-size: 1.25rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .count-btn:hover {
-    background: var(--bg-hover);
+  background: var(--bg-hover);
 }
 
-.count-input input[type="number"] {
-    width: 80px;
-    text-align: center;
-    font-size: 1.25rem;
-    font-weight: 600;
+.count-input input[type='number'] {
+  width: 80px;
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 600;
 }
 
 /* Position Selector */
 .position-selector {
-    display: flex;
-    gap: 0.75rem;
+  display: flex;
+  gap: 0.75rem;
 }
 
 .position-checkbox {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
 }
 
-.position-checkbox input[type="checkbox"] {
-    width: 24px;
-    height: 24px;
+.position-checkbox input[type='checkbox'] {
+  width: 24px;
+  height: 24px;
 }
 
 .position-checkbox span {
-    font-size: 0.813rem;
-    color: var(--text-secondary);
+  font-size: 0.813rem;
+  color: var(--text-secondary);
 }
 
 /* Schedule Form */
 .schedule-form {
-    space-y: 1.5rem;
+  space-y: 1.5rem;
 }
 
 .frequency-selector,
 .duration-selector {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .frequency-btn,
 .duration-btn {
-    padding: 0.5rem 1rem;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    color: var(--text-primary);
+  padding: 0.5rem 1rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--text-primary);
 }
 
 .frequency-btn:hover,
 .duration-btn:hover {
-    border-color: var(--primary);
+  border-color: var(--primary);
 }
 
 .frequency-btn.selected,
 .duration-btn.selected {
-    background: var(--primary);
-    color: white;
-    border-color: var(--primary);
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
 }
 
 .time-preferences {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.5rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
 }
 
 /* Equipment Form */
 .equipment-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 1rem;
-    margin-bottom: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
 }
 
 .equipment-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    cursor: pointer;
-    color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--text-primary);
 }
 
 .equipment-item:hover {
-    border-color: var(--primary);
+  border-color: var(--primary);
 }
 
-.equipment-item input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
+.equipment-item input[type='checkbox'] {
+  width: 20px;
+  height: 20px;
 }
 
 .equipment-item span {
-    font-size: 1rem;
-    color: var(--text-primary);
+  font-size: 1rem;
+  color: var(--text-primary);
 }
 
 /* Navigation Buttons */
 .navigation-buttons {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-top: 2rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2rem;
 }
 
 /* Loading State */
 .loading-container {
-    text-align: center;
-    padding: 4rem 2rem;
+  text-align: center;
+  padding: 4rem 2rem;
 }
 
 .loading-spinner {
-    width: 48px;
-    height: 48px;
-    border: 3px solid var(--bg-secondary);
-    border-top-color: var(--primary);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 2rem;
+  width: 48px;
+  height: 48px;
+  border: 3px solid var(--bg-secondary);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 2rem;
 }
 
 /* Learning Dashboard */
 .learning-dashboard {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
 }
 
 .dashboard-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
 }
 
 /* Learning Plan */
 .learning-plan {
-    background: var(--bg-card);
-    border-radius: 16px;
-    padding: 2rem;
+  background: var(--bg-card);
+  border-radius: 16px;
+  padding: 2rem;
 }
 
 .plan-overview {
-    margin-bottom: 2rem;
-    padding-bottom: 2rem;
-    border-bottom: 1px solid var(--border);
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--border);
 }
 
 .plan-overview h2 {
-    font-size: 1.75rem;
-    margin-bottom: 0.5rem;
+  font-size: 1.75rem;
+  margin-bottom: 0.5rem;
 }
 
 .plan-stats {
-    display: flex;
-    gap: 2rem;
-    margin-top: 1.5rem;
+  display: flex;
+  gap: 2rem;
+  margin-top: 1.5rem;
 }
 
 .stat {
-    text-align: center;
+  text-align: center;
 }
 
 .stat-value {
-    display: block;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--primary);
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary);
 }
 
 .stat-label {
-    font-size: 0.875rem;
-    color: var(--text-secondary);
+  font-size: 0.875rem;
+  color: var(--text-secondary);
 }
 
 /* Weekly Schedule */
 .weekly-schedule {
-    display: grid;
-    gap: 1.5rem;
+  display: grid;
+  gap: 1.5rem;
 }
 
 .week-card {
-    background: var(--bg-secondary);
-    border-radius: 12px;
-    padding: 1.5rem;
-    border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid var(--border);
 }
 
 .week-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
 }
 
 .week-header h3 {
-    font-size: 1.25rem;
-    color: var(--text-primary);
+  font-size: 1.25rem;
+  color: var(--text-primary);
 }
 
 .week-progress {
-    font-size: 0.875rem;
-    color: var(--text-secondary);
+  font-size: 0.875rem;
+  color: var(--text-secondary);
 }
 
 .week-goals {
-    margin-bottom: 1rem;
+  margin-bottom: 1rem;
 }
 
 .week-goals h4 {
-    font-size: 0.875rem;
-    text-transform: uppercase;
-    color: var(--text-secondary);
-    margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
 }
 
 .week-goals ul {
-    list-style: none;
-    padding: 0;
+  list-style: none;
+  padding: 0;
 }
 
 .week-goals li {
-    position: relative;
-    padding-left: 1.5rem;
-    margin-bottom: 0.25rem;
-    color: var(--text-primary);
+  position: relative;
+  padding-left: 1.5rem;
+  margin-bottom: 0.25rem;
+  color: var(--text-primary);
 }
 
 .week-goals li::before {
-    content: '✓';
-    position: absolute;
-    left: 0;
-    color: var(--primary);
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--primary);
 }
 
 /* Week Sessions */
 .week-sessions {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
 }
 
 .session-card {
-    background: var(--bg-card);
-    padding: 1rem;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    text-align: center;
+  background: var(--bg-card);
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  text-align: center;
 }
 
 .session-card.completed {
-    opacity: 0.7;
-    border-color: var(--success);
+  opacity: 0.7;
+  border-color: var(--success);
 }
 
 .session-card h5 {
-    font-size: 1rem;
-    margin-bottom: 0.5rem;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .session-card p {
-    font-size: 0.875rem;
-    color: var(--text-secondary);
-    margin-bottom: 1rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
 }
 
 .btn-sm {
-    padding: 0.375rem 0.75rem;
-    font-size: 0.813rem;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.813rem;
 }
 
 /* No Plan State */
 .no-plan {
-    text-align: center;
-    padding: 4rem 2rem;
-    background: var(--bg-card);
-    border-radius: 16px;
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--bg-card);
+  border-radius: 16px;
 }
 
 .no-plan h2 {
-    margin-bottom: 1rem;
+  margin-bottom: 1rem;
 }
 
 .no-plan p {
-    color: var(--text-secondary);
-    margin-bottom: 2rem;
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
 }
 
 /* Metronome and Timer Styles */
 .metronome-controls {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
 }
 
 .metronome-indicator {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: var(--bg-secondary);
-    border: 2px solid var(--border);
-    transition: all 0.1s ease;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--bg-secondary);
+  border: 2px solid var(--border);
+  transition: all 0.1s ease;
 }
 
 .metronome-indicator.beat {
-    background: var(--primary);
-    border-color: var(--primary);
-    transform: scale(1.2);
-    box-shadow: 0 0 10px var(--primary);
+  background: var(--primary);
+  border-color: var(--primary);
+  transform: scale(1.2);
+  box-shadow: 0 0 10px var(--primary);
 }
 
 .timer-section {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
 }
 
 .timer-display {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--primary);
-    min-width: 80px;
-    text-align: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary);
+  min-width: 80px;
+  text-align: center;
 }
 
 /* Button styling for learning page */
 .learning-page .btn,
 .questionnaire-container .btn,
 .assessment-section .btn {
-    background: var(--primary);
-    color: white !important;
-    border: 1px solid var(--primary);
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
+  background: var(--primary);
+  color: white !important;
+  border: 1px solid var(--primary);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .learning-page .btn:hover,
 .questionnaire-container .btn:hover,
 .assessment-section .btn:hover {
-    background: var(--primary-hover);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 
 .learning-page .btn-secondary {
-    background: var(--bg-secondary);
-    color: var(--text-primary) !important;
-    border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border);
 }
 
 .learning-page .btn-secondary:hover {
-    background: var(--bg-hover);
-    border-color: var(--primary);
+  background: var(--bg-hover);
+  border-color: var(--primary);
 }
 
 /* Ensure button text is always visible */
 .learning-page button,
 .assessment-section button {
-    color: var(--text-primary) !important;
+  color: var(--text-primary) !important;
 }
 
 .learning-page .btn-sm {
-    font-size: 0.875rem;
-    padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  padding: 0.375rem 0.75rem;
 }
 
 /* Specific styling for metronome and timer buttons */
 #startMetronome,
 #startTimer {
-    background: #6366f1 !important;
-    color: white !important;
-    border: 2px solid #6366f1 !important;
-    font-weight: 600 !important;
+  background: #6366f1 !important;
+  color: white !important;
+  border: 2px solid #6366f1 !important;
+  font-weight: 600 !important;
 }
 
 #startMetronome:hover,
 #startTimer:hover {
-    background: #4f46e5 !important;
-    border-color: #4f46e5 !important;
+  background: #4f46e5 !important;
+  border-color: #4f46e5 !important;
 }
 
 /* Session hover details */
 .session-card {
-    position: relative;
+  position: relative;
 }
 
 .session-hover-details {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: var(--bg-card);
-    border: 2px solid var(--primary);
-    border-radius: 8px;
-    padding: 1rem;
-    margin-top: 0.5rem;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-10px);
-    transition: all 0.3s ease;
-    z-index: 10;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    min-width: 300px;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--bg-card);
+  border: 2px solid var(--primary);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 0.5rem;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+  z-index: 10;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  min-width: 300px;
 }
 
 .session-card:hover .session-hover-details {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
 }
 
 .exercises-preview h6 {
-    margin: 0 0 0.75rem 0;
-    color: var(--primary);
-    font-size: 0.875rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+  margin: 0 0 0.75rem 0;
+  color: var(--primary);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .exercise-item {
-    padding: 0.5rem 0;
-    border-bottom: 1px solid var(--border);
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
 }
 
 .exercise-item:last-child {
-    border-bottom: none;
+  border-bottom: none;
 }
 
 .exercise-name {
-    display: block;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 0.25rem;
+  display: block;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
 }
 
 .exercise-time {
-    display: inline-block;
-    padding: 0.125rem 0.5rem;
-    background: var(--bg-secondary);
-    border-radius: 12px;
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-    margin-right: 0.5rem;
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-right: 0.5rem;
 }
 
 .exercise-tempo {
-    display: inline-block;
-    padding: 0.125rem 0.5rem;
-    background: var(--primary);
-    color: white;
-    border-radius: 12px;
-    font-size: 0.75rem;
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  background: var(--primary);
+  color: white;
+  border-radius: 12px;
+  font-size: 0.75rem;
 }
 
 .exercise-desc {
-    margin: 0.25rem 0 0 0;
-    font-size: 0.813rem;
-    color: var(--text-secondary);
-    font-style: italic;
+  margin: 0.25rem 0 0 0;
+  font-size: 0.813rem;
+  color: var(--text-secondary);
+  font-style: italic;
 }
 
 /* Dark theme adjustments */
-[data-theme*="dark"] .session-hover-details {
-    background: rgba(31, 41, 55, 0.95);
-    border-color: rgba(99, 102, 241, 0.8);
+[data-theme*='dark'] .session-hover-details {
+  background: rgba(31, 41, 55, 0.95);
+  border-color: rgba(99, 102, 241, 0.8);
 }
 
 /* Mobile Responsive */
 @media (max-width: 768px) {
-    .learning-page {
-        padding: 1rem;
-    }
-    
-    .goals-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .questionnaire-container {
-        padding: 1.5rem;
-    }
-    
-    .equipment-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .week-sessions {
-        grid-template-columns: 1fr;
-    }
+  .learning-page {
+    padding: 1rem;
+  }
+
+  .goals-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .questionnaire-container {
+    padding: 1.5rem;
+  }
+
+  .equipment-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .week-sessions {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Dark theme specific adjustments */
-[data-theme*="dark"] .form-input,
-[data-theme*="dark"] .form-select,
-[data-theme*="dark"] .form-textarea {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.15);
+[data-theme*='dark'] .form-input,
+[data-theme*='dark'] .form-select,
+[data-theme*='dark'] .form-textarea {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
-[data-theme*="dark"] .form-input:focus,
-[data-theme*="dark"] .form-select:focus,
-[data-theme*="dark"] .form-textarea:focus {
-    background: rgba(255, 255, 255, 0.12);
-    border-color: var(--primary);
+[data-theme*='dark'] .form-input:focus,
+[data-theme*='dark'] .form-select:focus,
+[data-theme*='dark'] .form-textarea:focus {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--primary);
 }
 
-[data-theme*="dark"] .form-input::placeholder {
-    color: rgba(255, 255, 255, 0.5);
+[data-theme*='dark'] .form-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
 }
 
 /* Light theme specific adjustments */
-[data-theme*="light"] .form-input,
-[data-theme*="light"] .form-select,
-[data-theme*="light"] .form-textarea {
-    background: rgba(0, 0, 0, 0.05);
-    border-color: rgba(0, 0, 0, 0.15);
+[data-theme*='light'] .form-input,
+[data-theme*='light'] .form-select,
+[data-theme*='light'] .form-textarea {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.15);
 }
 
-[data-theme*="light"] .form-input::placeholder {
-    color: rgba(0, 0, 0, 0.5);
+[data-theme*='light'] .form-input::placeholder {
+  color: rgba(0, 0, 0, 0.5);
 }
 
 /* Better visibility for suggestion tags on dark themes */
-[data-theme*="dark"] .suggestion-tag {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.2);
+[data-theme*='dark'] .suggestion-tag {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
-[data-theme*="dark"] .suggestion-tag:hover {
-    background: rgba(255, 255, 255, 0.15);
-    border-color: var(--primary);
+[data-theme*='dark'] .suggestion-tag:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: var(--primary);
 }

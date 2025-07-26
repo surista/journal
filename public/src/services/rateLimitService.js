@@ -199,16 +199,16 @@ class RateLimitService {
     getTimeUntilReset(resetTime) {
         const now = new Date();
         const diff = resetTime - now;
-        
+
         if (diff <= 0) return 'now';
-        
+
         const minutes = Math.floor(diff / 60000);
         const seconds = Math.floor((diff % 60000) / 1000);
-        
+
         if (minutes > 0) {
             return `${minutes} minute${minutes > 1 ? 's' : ''} ${seconds} second${seconds > 1 ? 's' : ''}`;
         }
-        
+
         return `${seconds} second${seconds > 1 ? 's' : ''}`;
     }
 }

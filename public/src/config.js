@@ -12,7 +12,7 @@ function getBasePath() {
 
         // Fallback detection
         const path = window.location.pathname;
-        const segments = path.split('/').filter(s => s.length > 0);
+        const segments = path.split('/').filter((s) => s.length > 0);
 
         // Remove filename if present
         if (segments.length > 0 && segments[segments.length - 1].includes('.')) {
@@ -32,7 +32,8 @@ const appConfig = {
     version: APP_VERSION,
     basePath: getBasePath(),
     buildTimestamp: new Date().toISOString(),
-    isDevelopment: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1',
+    isDevelopment:
+        window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1',
 
     // Routes
     routes: {
