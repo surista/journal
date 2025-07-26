@@ -111,10 +111,14 @@ export class AdminPage {
                 
                 this.users.push({ 
                     id: doc.id, 
-                    ...userData,
+                    email: userData.email,
+                    displayName: userData.displayName,
+                    createdAt: userData.createdAt,
+                    lastLoginAt: userData.lastLoginAt,
                     sessionCount,
                     totalPracticeTime,
-                    lastActive: userData.lastLoginAt || userData.createdAt
+                    lastActive: userData.lastLoginAt || userData.createdAt,
+                    isAdmin: userData.isAdmin || false
                 });
             }
         } catch (error) {
@@ -172,7 +176,11 @@ export class AdminPage {
             <div class="users-section">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h3>Registered Users (${this.users.length})</h3>
-                    <button class="btn btn-primary" id="refreshUsersBtn">Refresh Users</button>
+                    <div style="display: flex; gap: 10px;">
+                        ${this.users.some(u => !u.createdAt || !u.lastLoginAt) ? 
+                            '<button class="btn btn-secondary" id="fixTimestampsBtn">Fix Missing Dates</button>' : ''}
+                        <button class="btn btn-primary" id="refreshUsersBtn">Refresh Users</button>
+                    </div>
                 </div>
                 ${this.users.length === 0 ? `
                     <div class="empty-state">
@@ -190,6 +198,7 @@ export class AdminPage {
                         <tr>
                             <th>Email</th>
                             <th>Name</th>
+                            <th>Admin</th>
                             <th>Joined</th>
                             <th>Last Active</th>
                             <th>Sessions</th>
@@ -197,19 +206,30 @@ export class AdminPage {
                         </tr>
                     </thead>
                     <tbody>
-                        ${this.users.map(user => `
+                        ${this.users.map(user => {
+                            const isCurrentUser = user.email === this.authService.getCurrentUser()?.email;
+                            return `
                             <tr>
                                 <td>${this.escapeHtml(user.email || 'N/A')}</td>
                                 <td>${this.escapeHtml(user.displayName || 'N/A')}</td>
+                                <td style="text-align: center;">
+                                    ${user.isAdmin ? '✓' : ''}
+                                </td>
                                 <td>${this.formatDate(user.createdAt)}</td>
                                 <td>${this.formatDate(user.lastActive)}</td>
-                                <td>${user.sessionCount || 0}</td>
-                                <td>
-                                    <button class="btn-small view-user-btn" data-user-id="${user.id}">View</button>
-                                    <button class="btn-small reset-password-btn" data-user-email="${user.email}">Reset Password</button>
+                                <td style="text-align: center;">${user.sessionCount || 0}</td>
+                                <td style="white-space: nowrap;">
+                                    <button class="btn-icon view-user-btn" data-user-id="${user.id}" title="View details">👁️</button>
+                                    <button class="btn-small reset-password-btn" data-user-email="${user.email}">Reset PW</button>
+                                    ${!isCurrentUser ? 
+                                        (user.isAdmin ? 
+                                            `<button class="btn-small btn-danger revoke-admin-btn" data-user-id="${user.id}">Remove Admin</button>` :
+                                            `<button class="btn-small btn-success grant-admin-btn" data-user-id="${user.id}">Make Admin</button>`)
+                                        : ''}
                                 </td>
                             </tr>
-                        `).join('')}
+                            `;
+                        }).join('')}
                     </tbody>
                 </table>
                 `}
@@ -297,20 +317,39 @@ export class AdminPage {
             this.render(this.container);
         });
 
+        // Fix timestamps button
+        this.container.querySelector('#fixTimestampsBtn')?.addEventListener('click', async () => {
+            const btn = this.container.querySelector('#fixTimestampsBtn');
+            btn.textContent = 'Fixing...';
+            btn.disabled = true;
+            
+            await this.updateMissingTimestamps();
+        });
+
         // Drill actions
         this.container.addEventListener('click', async (e) => {
-            if (e.target.classList.contains('edit-admin-drill-btn')) {
-                const drillId = e.target.dataset.drillId;
+            // Get the actual button element (in case emoji was clicked)
+            const target = e.target.closest('button');
+            if (!target) return;
+            
+            if (target.classList.contains('edit-admin-drill-btn')) {
+                const drillId = target.dataset.drillId;
                 await this.editDrill(drillId);
-            } else if (e.target.classList.contains('delete-drill-btn')) {
-                const drillId = e.target.dataset.drillId;
+            } else if (target.classList.contains('delete-drill-btn')) {
+                const drillId = target.dataset.drillId;
                 await this.deleteDrill(drillId);
-            } else if (e.target.classList.contains('view-user-btn')) {
-                const userId = e.target.dataset.userId;
+            } else if (target.classList.contains('view-user-btn')) {
+                const userId = target.dataset.userId;
                 await this.viewUserDetails(userId);
-            } else if (e.target.classList.contains('reset-password-btn')) {
-                const userEmail = e.target.dataset.userEmail;
+            } else if (target.classList.contains('reset-password-btn')) {
+                const userEmail = target.dataset.userEmail;
                 await this.resetUserPassword(userEmail);
+            } else if (target.classList.contains('grant-admin-btn')) {
+                const userId = target.dataset.userId;
+                await this.grantAdminPrivileges(userId);
+            } else if (target.classList.contains('revoke-admin-btn')) {
+                const userId = target.dataset.userId;
+                await this.revokeAdminPrivileges(userId);
             }
         });
     }
@@ -613,21 +652,75 @@ export class AdminPage {
         const modal = document.createElement('div');
         modal.className = 'modal user-details-modal';
         modal.innerHTML = `
-            <div class="modal-content">
+            <div class="modal-content" style="max-width: 600px;">
                 <div class="modal-header">
                     <h2>User Details</h2>
                     <button class="modal-close">&times;</button>
                 </div>
                 <div class="modal-body">
-                    <div class="user-info">
-                        <p><strong>Email:</strong> ${this.escapeHtml(user.email || 'N/A')}</p>
-                        <p><strong>Name:</strong> ${this.escapeHtml(user.displayName || 'N/A')}</p>
-                        <p><strong>User ID:</strong> ${user.id}</p>
-                        <p><strong>Joined:</strong> ${this.formatDate(user.createdAt)}</p>
-                        <p><strong>Last Active:</strong> ${this.formatDate(user.lastActive)}</p>
-                        <p><strong>Total Sessions:</strong> ${user.sessionCount || 0}</p>
-                        <p><strong>Total Practice Time:</strong> ${this.formatDuration(user.totalPracticeTime || 0)}</p>
+                    <div class="user-details-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="detail-section">
+                            <h3 style="margin-bottom: 1rem; color: var(--primary-color);">Account Information</h3>
+                            <div class="detail-row" style="margin-bottom: 0.75rem;">
+                                <strong style="color: var(--text-secondary);">Email:</strong>
+                                <span style="color: var(--text-primary);">${this.escapeHtml(user.email || 'N/A')}</span>
+                            </div>
+                            <div class="detail-row" style="margin-bottom: 0.75rem;">
+                                <strong style="color: var(--text-secondary);">Display Name:</strong>
+                                <span style="color: var(--text-primary);">${this.escapeHtml(user.displayName || 'N/A')}</span>
+                            </div>
+                            <div class="detail-row" style="margin-bottom: 0.75rem;">
+                                <strong style="color: var(--text-secondary);">User ID:</strong>
+                                <span style="color: var(--text-primary); font-family: monospace; font-size: 0.875rem;">${user.id}</span>
+                            </div>
+                            <div class="detail-row" style="margin-bottom: 0.75rem;">
+                                <strong style="color: var(--text-secondary);">Admin Status:</strong>
+                                <span style="color: ${user.isAdmin ? 'var(--success-color)' : 'var(--text-primary)'};">
+                                    ${user.isAdmin ? 'Yes ✓' : 'No'}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-section">
+                            <h3 style="margin-bottom: 1rem; color: var(--primary-color);">Activity Statistics</h3>
+                            <div class="detail-row" style="margin-bottom: 0.75rem;">
+                                <strong style="color: var(--text-secondary);">Account Created:</strong>
+                                <span style="color: var(--text-primary);">${this.formatDate(user.createdAt)}</span>
+                            </div>
+                            <div class="detail-row" style="margin-bottom: 0.75rem;">
+                                <strong style="color: var(--text-secondary);">Last Login:</strong>
+                                <span style="color: var(--text-primary);">${this.formatDate(user.lastActive)}</span>
+                            </div>
+                            <div class="detail-row" style="margin-bottom: 0.75rem;">
+                                <strong style="color: var(--text-secondary);">Total Sessions:</strong>
+                                <span style="color: var(--text-primary);">${user.sessionCount || 0}</span>
+                            </div>
+                            <div class="detail-row" style="margin-bottom: 0.75rem;">
+                                <strong style="color: var(--text-secondary);">Total Practice Time:</strong>
+                                <span style="color: var(--text-primary);">${this.formatDuration(user.totalPracticeTime || 0)}</span>
+                            </div>
+                        </div>
                     </div>
+                    
+                    ${user.sessionCount > 0 ? `
+                    <div class="practice-summary" style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
+                        <h3 style="margin-bottom: 1rem; color: var(--primary-color);">Practice Summary</h3>
+                        <div class="summary-stats" style="display: flex; gap: 2rem; justify-content: center;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 2rem; font-weight: bold; color: var(--primary-color);">
+                                    ${Math.round((user.totalPracticeTime || 0) / (user.sessionCount || 1) / 60)}
+                                </div>
+                                <div style="color: var(--text-secondary);">Avg Minutes/Session</div>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 2rem; font-weight: bold; color: var(--primary-color);">
+                                    ${Math.round((user.totalPracticeTime || 0) / 3600)}
+                                </div>
+                                <div style="color: var(--text-secondary);">Total Hours</div>
+                            </div>
+                        </div>
+                    </div>
+                    ` : ''}
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary close-btn">Close</button>
@@ -670,16 +763,36 @@ export class AdminPage {
         return 'Metronome';
     }
 
-    formatDate(dateString) {
-        if (!dateString) return 'N/A';
-        const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', { 
-            month: 'short', 
-            day: 'numeric', 
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
+    formatDate(dateValue) {
+        if (!dateValue) return 'N/A';
+        
+        let date;
+        
+        // Handle Firebase Timestamp objects
+        if (dateValue && typeof dateValue.toDate === 'function') {
+            date = dateValue.toDate();
+        }
+        // Handle Firebase Timestamp-like objects with seconds property
+        else if (dateValue && dateValue.seconds) {
+            date = new Date(dateValue.seconds * 1000);
+        }
+        // Handle regular date strings or Date objects
+        else if (dateValue) {
+            date = new Date(dateValue);
+        }
+        
+        // Check if date is valid
+        if (!date || isNaN(date.getTime())) {
+            return 'N/A';
+        }
+        
+        // Format as dd-mmm-yy
+        const day = date.getDate().toString().padStart(2, '0');
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const month = months[date.getMonth()];
+        const year = date.getFullYear().toString().slice(-2);
+        
+        return `${day}-${month}-${year}`;
     }
 
     formatDuration(seconds) {
@@ -719,6 +832,128 @@ export class AdminPage {
             console.error('Password reset error:', error);
             alert(`Error sending password reset: ${error.message}`);
         }
+    }
+
+    async updateMissingTimestamps() {
+        // Add timestamps to users who don't have them
+        try {
+            const batch = firebaseSyncService.db.batch();
+            let updateCount = 0;
+
+            for (const user of this.users) {
+                if (!user.createdAt || !user.lastLoginAt) {
+                    const userRef = firebaseSyncService.db.collection('users').doc(user.id);
+                    const updates = {};
+                    
+                    if (!user.createdAt) {
+                        // Use account creation date or current date as fallback
+                        updates.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                    }
+                    
+                    if (!user.lastLoginAt) {
+                        updates.lastLoginAt = firebase.firestore.FieldValue.serverTimestamp();
+                    }
+                    
+                    batch.update(userRef, updates);
+                    updateCount++;
+                }
+            }
+
+            if (updateCount > 0) {
+                await batch.commit();
+                console.log(`Updated timestamps for ${updateCount} users`);
+                // Reload users to show updated data
+                await this.loadUsers();
+                this.render(this.container);
+            }
+        } catch (error) {
+            console.error('Failed to update user timestamps:', error);
+        }
+    }
+
+    async grantAdminPrivileges(userId) {
+        const user = this.users.find(u => u.id === userId);
+        if (!user) return;
+
+        if (!confirm(`Grant admin privileges to ${user.email}?`)) {
+            return;
+        }
+
+        try {
+            // Update in Firestore
+            await firebaseSyncService.db
+                .collection('users')
+                .doc(userId)
+                .update({
+                    isAdmin: true
+                });
+
+            // Update local data
+            user.isAdmin = true;
+            
+            // Re-render
+            this.render(this.container);
+            
+            this.showNotification(`Admin privileges granted to ${user.email}`, 'success');
+        } catch (error) {
+            console.error('Failed to grant admin privileges:', error);
+            alert('Failed to grant admin privileges. Check console for details.');
+        }
+    }
+
+    async revokeAdminPrivileges(userId) {
+        const user = this.users.find(u => u.id === userId);
+        if (!user) return;
+
+        if (!confirm(`Remove admin privileges from ${user.email}?`)) {
+            return;
+        }
+
+        try {
+            // Update in Firestore
+            await firebaseSyncService.db
+                .collection('users')
+                .doc(userId)
+                .update({
+                    isAdmin: false
+                });
+
+            // Update local data
+            user.isAdmin = false;
+            
+            // Re-render
+            this.render(this.container);
+            
+            this.showNotification(`Admin privileges removed from ${user.email}`, 'success');
+        } catch (error) {
+            console.error('Failed to revoke admin privileges:', error);
+            alert('Failed to revoke admin privileges. Check console for details.');
+        }
+    }
+
+    showNotification(message, type = 'info') {
+        // Show a temporary notification
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.textContent = message;
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            background: ${type === 'success' ? 'var(--success-color)' : 'var(--error-color)'};
+            color: white;
+            border-radius: 8px;
+            z-index: 10000;
+            animation: slideIn 0.3s ease;
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.animation = 'slideOut 0.3s ease';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
     }
 
     destroy() {

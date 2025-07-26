@@ -18,6 +18,20 @@ export class HistoryTab {
                 <div class="history-header">
                     <h2>Practice History</h2>
                     <div class="history-filters">
+                        <div style="position: relative; display: inline-block; margin-right: 0.5rem;">
+                            <input 
+                                type="text" 
+                                id="historySearch" 
+                                class="search-input" 
+                                placeholder="Search sessions..."
+                                style="padding: 0.5rem 2rem 0.5rem 0.5rem; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-primary); width: 200px;">
+                            <button 
+                                id="clearSearchBtn"
+                                style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: var(--text-secondary); cursor: pointer; padding: 0.25rem; display: none;"
+                                title="Clear search">
+                                ✕
+                            </button>
+                        </div>
                         <select class="filter-select" id="historyFilter">
                             <option value="all">All Sessions</option>
                             <option value="favorites">⭐ Favorites</option>
@@ -77,6 +91,38 @@ export class HistoryTab {
     }
 
     attachEventListeners() {
+        // Search input
+        const searchInput = document.getElementById('historySearch');
+        const clearBtn = document.getElementById('clearSearchBtn');
+        
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                // Show/hide clear button based on input
+                if (clearBtn) {
+                    clearBtn.style.display = e.target.value ? 'block' : 'none';
+                }
+                this.filterHistory(this.currentFilter);
+            });
+            
+            // Clear search on ESC key
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    searchInput.value = '';
+                    if (clearBtn) clearBtn.style.display = 'none';
+                    this.filterHistory(this.currentFilter);
+                }
+            });
+        }
+        
+        // Clear button
+        if (clearBtn) {
+            clearBtn.addEventListener('click', () => {
+                searchInput.value = '';
+                clearBtn.style.display = 'none';
+                this.filterHistory(this.currentFilter);
+            });
+        }
+
         // History filter
         document.getElementById('historyFilter')?.addEventListener('change', (e) => {
             this.filterHistory(e.target.value);
@@ -364,10 +410,12 @@ export class HistoryTab {
                     };
 
                     // Update in storage
+                    console.log('Updating practice entry:', sessionId, updatedSession);
                     const success = await this.storageService.updatePracticeEntry(
                         sessionId,
                         updatedSession
                     );
+                    console.log('Update result:', success);
 
                     if (success) {
                         // Update local array
@@ -380,7 +428,11 @@ export class HistoryTab {
                         this.displayHistory(this.allSessions);
 
                         this.showNotification('Session updated successfully', 'success');
-                        modal.remove();
+                        
+                        // Close modal after showing notification
+                        setTimeout(() => {
+                            modal.remove();
+                        }, 100);
                     } else {
                         this.showNotification('Failed to update session', 'error');
                         submitBtn.textContent = originalText;
@@ -785,6 +837,7 @@ export class HistoryTab {
         const now = new Date();
         let filtered = this.allSessions;
 
+        // Apply time-based filters
         switch (filter) {
             case 'favorites':
                 filtered = this.allSessions.filter((s) => s.isFavorite === true);
@@ -801,6 +854,39 @@ export class HistoryTab {
                 const yearAgo = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
                 filtered = this.allSessions.filter((s) => new Date(s.date) >= yearAgo);
                 break;
+        }
+
+        // Apply search filter
+        const searchTerm = document.getElementById('historySearch')?.value.toLowerCase().trim();
+        if (searchTerm) {
+            filtered = filtered.filter(session => {
+                // Search in session name
+                if (session.name && session.name.toLowerCase().includes(searchTerm)) {
+                    return true;
+                }
+                
+                // Search in audio file name
+                if (session.audioFile && session.audioFile.toLowerCase().includes(searchTerm)) {
+                    return true;
+                }
+                
+                // Search in YouTube URL
+                if (session.youtubeUrl && session.youtubeUrl.toLowerCase().includes(searchTerm)) {
+                    return true;
+                }
+                
+                // Search in notes
+                if (session.notes && session.notes.toLowerCase().includes(searchTerm)) {
+                    return true;
+                }
+                
+                // Search in practice area
+                if (session.practiceArea && session.practiceArea.toLowerCase().includes(searchTerm)) {
+                    return true;
+                }
+                
+                return false;
+            });
         }
 
         // Apply key filter if selected

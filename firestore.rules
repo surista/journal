@@ -1,6 +1,14 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Helper function to check if user is admin
+    function isAdmin() {
+      return request.auth != null && 
+        (request.auth.token.email == 'admin@example.com' ||
+         request.auth.token.admin == true ||
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true);
+    }
+    
     // Helper functions for validation
     function isValidSession(data) {
       return data.keys().hasAll(['date', 'duration', 'userId']) &&
@@ -34,15 +42,17 @@ service cloud.firestore {
         (data.status == null || data.status in ['learning', 'practicing', 'mastered', 'on-hold']);
     }
     
-    // Users can only access their own profile
+    // Admin users collection access
     match /users/{userId} {
-      allow read: if request.auth != null && request.auth.uid == userId;
+      // Users can read their own profile, admins can read all profiles
+      allow read: if request.auth != null && (request.auth.uid == userId || isAdmin());
+      // Users can only write to their own profile
       allow write: if request.auth != null && request.auth.uid == userId &&
         (request.resource.data.email == null || request.resource.data.email == request.auth.token.email);
       
       // Practice sessions subcollection with validation
       match /practice_sessions/{sessionId} {
-        allow read: if request.auth != null && request.auth.uid == userId;
+        allow read: if request.auth != null && (request.auth.uid == userId || isAdmin());
         allow create: if request.auth != null && 
           request.auth.uid == userId &&
           request.resource.data.userId == userId &&
