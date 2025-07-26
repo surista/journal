@@ -39,71 +39,57 @@ export class DrillsPage {
         
         const content = `
             <div class="drills-page">
-                <div class="drills-header">
-                    <h2>Practice Drills</h2>
-                    <div class="header-subtitle">Structured exercises to improve your guitar skills</div>
+                <div class="drills-nav-header">
+                    <nav class="drills-nav-tabs">
+                        <a href="#drills" class="nav-tab active">Drills Library</a>
+                        <a href="#my-drills" class="nav-tab">Your Drills</a>
+                    </nav>
+                    <button class="add-drill-btn" id="addDrillBtn">Add New Drill</button>
                 </div>
 
-                <div class="drills-controls">
-                    <div class="search-section">
-                        <div class="search-wrapper">
+                <div class="drills-filters-section">
+                    <div class="filter-row">
+                        <div class="search-box">
                             <input 
                                 type="text" 
                                 id="drillSearch" 
                                 class="search-input" 
-                                placeholder="Search drills..."
+                                placeholder="Search"
                                 value="${this.currentFilters.query}"
                             >
-                            <svg class="search-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                <path d="M17.5 17.5L14.5 14.5M16.5 9.5C16.5 13.366 13.366 16.5 9.5 16.5C5.63401 16.5 2.5 13.366 2.5 9.5C2.5 5.63401 5.63401 2.5 9.5 2.5C13.366 2.5 16.5 5.63401 16.5 9.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <label class="filter-label">Category</label>
+                            <select id="categoryFilter" class="filter-select">
+                                <option value="">All</option>
+                                ${drillsService.getCategories().map(cat => 
+                                    `<option value="${cat}" ${this.currentFilters.category === cat ? 'selected' : ''}>${cat}</option>`
+                                ).join('')}
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label class="filter-label">Difficulty</label>
+                            <select id="difficultyFilter" class="filter-select">
+                                <option value="">All</option>
+                                ${drillsService.getDifficulties().map(diff => 
+                                    `<option value="${diff}" ${this.currentFilters.difficulty === diff ? 'selected' : ''}>${diff}</option>`
+                                ).join('')}
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label class="filter-label">Duration</label>
+                            <select id="durationFilter" class="filter-select">
+                                <option value="">All</option>
+                                <option value="10" ${this.currentFilters.maxDuration === 10 ? 'selected' : ''}>≤ 10 min</option>
+                                <option value="15" ${this.currentFilters.maxDuration === 15 ? 'selected' : ''}>≤ 15 min</option>
+                                <option value="20" ${this.currentFilters.maxDuration === 20 ? 'selected' : ''}>≤ 20 min</option>
+                                <option value="30" ${this.currentFilters.maxDuration === 30 ? 'selected' : ''}>≤ 30 min</option>
+                            </select>
                         </div>
                     </div>
-
-                    <div class="filters-section">
-                        <select id="categoryFilter" class="filter-select">
-                            <option value="">All Categories</option>
-                            ${drillsService.getCategories().map(cat => 
-                                `<option value="${cat}" ${this.currentFilters.category === cat ? 'selected' : ''}>${cat}</option>`
-                            ).join('')}
-                        </select>
-
-                        <select id="difficultyFilter" class="filter-select">
-                            <option value="">All Difficulties</option>
-                            ${drillsService.getDifficulties().map(diff => 
-                                `<option value="${diff}" ${this.currentFilters.difficulty === diff ? 'selected' : ''}>${diff}</option>`
-                            ).join('')}
-                        </select>
-
-                        <select id="durationFilter" class="filter-select">
-                            <option value="">Any Duration</option>
-                            <option value="10" ${this.currentFilters.maxDuration === 10 ? 'selected' : ''}>≤ 10 minutes</option>
-                            <option value="15" ${this.currentFilters.maxDuration === 15 ? 'selected' : ''}>≤ 15 minutes</option>
-                            <option value="20" ${this.currentFilters.maxDuration === 20 ? 'selected' : ''}>≤ 20 minutes</option>
-                            <option value="30" ${this.currentFilters.maxDuration === 30 ? 'selected' : ''}>≤ 30 minutes</option>
-                        </select>
-
-                        <select id="sortBy" class="filter-select">
-                            <option value="title" ${this.currentFilters.sortBy === 'title' ? 'selected' : ''}>Sort by Title</option>
-                            <option value="difficulty" ${this.currentFilters.sortBy === 'difficulty' ? 'selected' : ''}>Sort by Difficulty</option>
-                            <option value="duration" ${this.currentFilters.sortBy === 'duration' ? 'selected' : ''}>Sort by Duration</option>
-                            <option value="newest" ${this.currentFilters.sortBy === 'newest' ? 'selected' : ''}>Newest First</option>
-                            <option value="updated" ${this.currentFilters.sortBy === 'updated' ? 'selected' : ''}>Recently Updated</option>
-                        </select>
-
-                        <button id="favoritesToggle" class="favorites-toggle ${this.currentFilters.favoritesOnly ? 'active' : ''}">
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                <path d="M10 15.77L16.18 19L14.54 11.97L20 7.24L12.81 6.63L10 0L7.19 6.63L0 7.24L5.46 11.97L3.82 19L10 15.77Z" fill="currentColor"/>
-                            </svg>
-                            Favorites Only
-                        </button>
-
-                        <button id="clearFilters" class="clear-filters">Clear Filters</button>
-                    </div>
-                </div>
-
-                <div class="drills-stats">
-                    <span>${this.filteredDrills.length} drill${this.filteredDrills.length !== 1 ? 's' : ''} found</span>
                 </div>
 
                 <div class="drills-grid" id="drillsGrid">
@@ -129,57 +115,56 @@ export class DrillsPage {
             `;
         }
 
-        return this.filteredDrills.map(drill => `
-            <div class="drill-card" data-drill-id="${drill.id}">
-                <div class="drill-header">
-                    <h3>${this.escapeHtml(drill.title)}</h3>
-                    <button class="favorite-btn ${drill.isFavorite ? 'active' : ''}" data-drill-id="${drill.id}">
-                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                            <path d="M10 15.77L16.18 19L14.54 11.97L20 7.24L12.81 6.63L10 0L7.19 6.63L0 7.24L5.46 11.97L3.82 19L10 15.77Z" 
-                                fill="${drill.isFavorite ? 'currentColor' : 'none'}" 
-                                stroke="currentColor" 
-                                stroke-width="2"/>
-                        </svg>
-                    </button>
-                </div>
-                
-                <div class="drill-meta">
-                    <span class="category-badge ${drill.category.toLowerCase().replace(/\s+/g, '-')}">${drill.category}</span>
-                    <span class="difficulty-badge ${drill.difficulty.toLowerCase()}">${drill.difficulty}</span>
-                    <span class="duration-badge">${drill.duration} min</span>
-                </div>
+        return `
+            <table class="drills-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Drill Name</th>
+                        <th>BPM</th>
+                        <th>Link</th>
+                        <th>Category</th>
+                        <th>Difficulty</th>
+                        <th>Duration</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${this.filteredDrills.map(drill => `
+                        <tr data-drill-id="${drill.id}">
+                            <td>${this.formatDate(drill.createdAt)}</td>
+                            <td class="drill-name">
+                                ${drill.isFavorite ? '<span class="favorite-star">★</span>' : ''}
+                                ${this.escapeHtml(drill.title)}
+                            </td>
+                            <td>${drill.tempo ? drill.tempo.recommended : '-'}</td>
+                            <td>
+                                ${drill.videoUrl ? `<a href="${drill.videoUrl}" target="_blank">Video</a>` : '-'}
+                            </td>
+                            <td>${drill.category}</td>
+                            <td>
+                                <span class="difficulty-badge ${drill.difficulty.toLowerCase()}">${drill.difficulty}</span>
+                            </td>
+                            <td>${drill.duration} min</td>
+                            <td class="drill-actions-cell">
+                                <button class="action-btn start-drill-btn" data-drill-id="${drill.id}" title="Start Drill">
+                                    ▶
+                                </button>
+                                <button class="action-btn favorite-btn ${drill.isFavorite ? 'active' : ''}" data-drill-id="${drill.id}" title="Toggle Favorite">
+                                    ★
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+    }
 
-                <p class="drill-description">${this.escapeHtml(drill.description)}</p>
-
-                ${drill.tempo ? `
-                    <div class="tempo-info">
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                            <path d="M8 3V8L10.5 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                            <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/>
-                        </svg>
-                        <span>${drill.tempo.min}-${drill.tempo.max} BPM (recommended: ${drill.tempo.recommended})</span>
-                    </div>
-                ` : ''}
-
-                ${drill.tags && drill.tags.length > 0 ? `
-                    <div class="drill-tags">
-                        ${drill.tags.map(tag => `<span class="tag">${this.escapeHtml(tag)}</span>`).join('')}
-                    </div>
-                ` : ''}
-
-                <div class="drill-actions">
-                    <button class="start-drill-btn" data-drill-id="${drill.id}">
-                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                            <path d="M5 3L17 10L5 17V3Z" fill="currentColor"/>
-                        </svg>
-                        Start Drill
-                    </button>
-                    <button class="view-details-btn" data-drill-id="${drill.id}">
-                        View Details
-                    </button>
-                </div>
-            </div>
-        `).join('');
+    formatDate(dateString) {
+        if (!dateString) return '-';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     }
 
     attachEventListeners() {
@@ -223,21 +208,13 @@ export class DrillsPage {
             this.applyFilters();
         });
 
-        // Clear filters
-        document.getElementById('clearFilters')?.addEventListener('click', () => {
-            this.currentFilters = {
-                query: '',
-                category: '',
-                difficulty: '',
-                favoritesOnly: false,
-                maxDuration: null,
-                sortBy: 'title'
-            };
-            this.render();
-            this.attachEventListeners();
+        // Add drill button
+        document.getElementById('addDrillBtn')?.addEventListener('click', () => {
+            // TODO: Implement add drill functionality
+            console.log('Add drill clicked');
         });
 
-        // Drill card actions
+        // Drill table actions
         document.getElementById('drillsGrid')?.addEventListener('click', async (e) => {
             // Favorite button
             if (e.target.closest('.favorite-btn')) {
