@@ -41,6 +41,13 @@
                     return;
                 }
 
+                // Suppress "cancelled" promise rejections (common during Firebase initialization)
+                if (event.reason === 'cancelled' || (event.reason && event.reason.message === 'cancelled')) {
+                    console.warn('⚠️ Unhandled promise rejection: cancelled');
+                    event.preventDefault();
+                    return;
+                }
+
                 console.warn('⚠️ Unhandled promise rejection:', event.reason);
 
                 // Prevent for known non-critical errors
@@ -330,6 +337,13 @@
             window.addEventListener('unhandledrejection', (e) => {
                 // Ignore null rejections
                 if (e.reason === null || e.reason === undefined || e.reason === 'null') {
+                    e.preventDefault();
+                    return;
+                }
+
+                // Ignore "cancelled" promise rejections - common during Firebase init
+                if (e.reason === 'cancelled' || (e.reason && e.reason.message === 'cancelled')) {
+                    console.warn('⚠️ Ignoring cancelled promise rejection');
                     e.preventDefault();
                     return;
                 }
