@@ -1,0 +1,428 @@
+/* Drills Page Styles */
+
+.drills-page {
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.page-header {
+    margin-bottom: 30px;
+}
+
+.page-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+}
+
+.page-header .subtitle {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* Controls Section */
+.drills-controls {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Search Section */
+.search-section {
+    margin-bottom: 15px;
+}
+
+.search-wrapper {
+    position: relative;
+}
+
+.search-input {
+    width: 100%;
+    padding: 12px 20px 12px 45px;
+    font-size: 1rem;
+    background: var(--bg-primary);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.search-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-secondary);
+    pointer-events: none;
+}
+
+/* Filters Section */
+.filters-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+}
+
+.filter-select {
+    padding: 10px 15px;
+    font-size: 0.95rem;
+    background: var(--bg-primary);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 150px;
+}
+
+.filter-select:hover {
+    border-color: var(--primary-color);
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.favorites-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    font-size: 0.95rem;
+    background: var(--bg-primary);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.favorites-toggle:hover {
+    border-color: #f59e0b;
+}
+
+.favorites-toggle.active {
+    background: #f59e0b;
+    border-color: #f59e0b;
+    color: white;
+}
+
+.favorites-toggle svg {
+    width: 20px;
+    height: 20px;
+}
+
+.clear-filters {
+    padding: 10px 20px;
+    font-size: 0.95rem;
+    background: transparent;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.clear-filters:hover {
+    border-color: var(--error-color);
+    color: var(--error-color);
+}
+
+/* Stats */
+.drills-stats {
+    margin-bottom: 20px;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+}
+
+/* Drills Grid */
+.drills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+}
+
+/* Drill Card */
+.drill-card {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.drill-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.drill-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.drill-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: var(--text-primary);
+    flex: 1;
+}
+
+.favorite-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    color: var(--text-secondary);
+}
+
+.favorite-btn:hover {
+    background: var(--bg-primary);
+    color: #f59e0b;
+}
+
+.favorite-btn.active {
+    color: #f59e0b;
+}
+
+/* Drill Meta */
+.drill-meta {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.category-badge,
+.difficulty-badge,
+.duration-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+/* Category colors */
+.category-badge.scales { background: #3b82f6; color: white; }
+.category-badge.chords { background: #10b981; color: white; }
+.category-badge.arpeggios { background: #8b5cf6; color: white; }
+.category-badge.technique { background: #f59e0b; color: white; }
+.category-badge.rhythm { background: #ef4444; color: white; }
+.category-badge.theory { background: #6366f1; color: white; }
+.category-badge.ear-training { background: #ec4899; color: white; }
+.category-badge.sight-reading { background: #14b8a6; color: white; }
+.category-badge.improvisation { background: #f97316; color: white; }
+.category-badge.repertoire { background: #84cc16; color: white; }
+
+/* Difficulty colors */
+.difficulty-badge.beginner { background: #10b981; color: white; }
+.difficulty-badge.intermediate { background: #3b82f6; color: white; }
+.difficulty-badge.advanced { background: #f59e0b; color: white; }
+.difficulty-badge.expert { background: #ef4444; color: white; }
+
+.duration-badge {
+    background: var(--bg-primary);
+    color: var(--text-secondary);
+}
+
+/* Description */
+.drill-description {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Tempo Info */
+.tempo-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.tempo-info svg {
+    color: var(--primary-color);
+}
+
+/* Tags */
+.drill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.tag {
+    padding: 3px 10px;
+    background: var(--bg-primary);
+    border-radius: 15px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+/* Actions */
+.drill-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: auto;
+}
+
+.start-drill-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.start-drill-btn:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+.view-details-btn {
+    padding: 12px 20px;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.view-details-btn:hover {
+    border-color: var(--primary-color);
+}
+
+/* No Drills State */
+.no-drills {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-secondary);
+}
+
+.no-drills svg {
+    margin-bottom: 20px;
+    opacity: 0.3;
+}
+
+.no-drills h3 {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+}
+
+/* Drill Details Modal */
+.drill-details-modal .modal-content {
+    max-width: 600px;
+}
+
+.drill-meta-detailed {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.detail-section {
+    margin-bottom: 24px;
+}
+
+.detail-section h3 {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+}
+
+.detail-section p,
+.detail-section pre {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.detail-section pre {
+    white-space: pre-wrap;
+    font-family: inherit;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .drills-page {
+        padding: 15px;
+    }
+
+    .page-header h1 {
+        font-size: 2rem;
+    }
+
+    .drills-controls {
+        padding: 15px;
+    }
+
+    .filters-section {
+        gap: 10px;
+    }
+
+    .filter-select {
+        min-width: 120px;
+        font-size: 0.9rem;
+    }
+
+    .drills-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .drill-card {
+        padding: 15px;
+    }
+
+    .drill-actions {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    .filter-select {
+        min-width: 100%;
+    }
+
+    .favorites-toggle {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .clear-filters {
+        width: 100%;
+    }
+}

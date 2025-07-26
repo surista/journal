@@ -50,6 +50,7 @@ export class DashboardPage {
             stats: 'Statistics',
             history: 'History',
             calendar: 'Calendar',
+            drills: 'Practice Drills',
             learning: 'Learning',
             settings: 'Settings'
         };
@@ -90,6 +91,7 @@ export class DashboardPage {
                         <div class="tab-pane" id="statsTab" data-tab="stats"></div>
                         <div class="tab-pane" id="historyTab" data-tab="history"></div>
                         <div class="tab-pane" id="calendarTab" data-tab="calendar"></div>
+                        <div class="tab-pane" id="drillsTab" data-tab="drills"></div>
                         <div class="tab-pane" id="learningTab" data-tab="learning"></div>
                         <div class="tab-pane" id="coursesTab" data-tab="courses"></div>
                         <div class="tab-pane" id="settingsTab" data-tab="settings"></div>
@@ -165,6 +167,7 @@ export class DashboardPage {
             stats: 'Statistics',
             history: 'History',
             calendar: 'Calendar',
+            drills: 'Practice Drills',
             learning: 'Learning',
             settings: 'Settings'
         };
@@ -222,6 +225,10 @@ export class DashboardPage {
                 case 'calendar':
                     const { CalendarTab } = await import('../components/tabs/CalendarTab.js');
                     this.tabs[tab] = new CalendarTab(this.storageService);
+                    break;
+                case 'drills':
+                    const { DrillsPage } = await import('./drills.js');
+                    this.tabs[tab] = new DrillsPage();
                     break;
                 case 'learning':
                     const LearningPage = (await import('./learning.js')).default;

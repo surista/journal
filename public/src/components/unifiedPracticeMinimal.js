@@ -836,6 +836,11 @@ export class UnifiedPracticeMinimal {
         window.addEventListener('loadPracticeSession', (event) => {
             this.handleLoadPracticeSession(event.detail);
         });
+
+        // Handle drill sessions from Drills page
+        window.addEventListener('startDrillSession', (event) => {
+            this.handleStartDrillSession(event.detail);
+        });
     }
 
     setInitialStates() {
@@ -3111,6 +3116,50 @@ export class UnifiedPracticeMinimal {
             } catch (error) {
                 console.error('Error loading practice session:', error);
             }
+        }
+    }
+
+    handleStartDrillSession(drillData) {
+        // Clear any existing session
+        this.clearSession();
+
+        // Switch to metronome mode for drills
+        this.uiController.switchMode('metronome');
+
+        // Set practice area
+        const practiceAreaInput = document.getElementById('practiceArea');
+        if (practiceAreaInput) {
+            practiceAreaInput.value = drillData.practiceArea || 'Drills';
+        }
+
+        // Set notes with drill instructions
+        const notesInput = document.getElementById('notes');
+        if (notesInput) {
+            notesInput.value = drillData.notes || '';
+        }
+
+        // Set tempo if provided
+        if (drillData.tempo && drillData.tempo > 0) {
+            const tempoSlider = document.getElementById('bpmSlider');
+            const tempoDisplay = document.getElementById('bpmDisplay');
+            if (tempoSlider && tempoDisplay) {
+                tempoSlider.value = drillData.tempo;
+                tempoDisplay.textContent = drillData.tempo;
+                this.metronome.setBpm(drillData.tempo);
+            }
+        }
+
+        // Store drill ID for tracking
+        this.currentDrillId = drillData.drillId;
+        this.currentDrillData = drillData.drillData;
+
+        // Show notification
+        if (window.notificationManager) {
+            window.notificationManager.show({
+                message: `Starting drill: ${drillData.drillData?.title || 'Practice Drill'}`,
+                type: 'info',
+                duration: 3000
+            });
         }
     }
 
