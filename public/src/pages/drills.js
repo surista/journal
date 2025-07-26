@@ -19,7 +19,9 @@ export class DrillsPage {
     }
 
     async init() {
+        console.log('Initializing Drills Page...');
         await this.loadDrills();
+        console.log('Loaded drills:', this.drills.length);
         this.render();
         this.attachEventListeners();
     }
@@ -105,7 +107,11 @@ export class DrillsPage {
             </div>
         `;
 
-        document.getElementById('app').innerHTML = content;
+        // Check if we're in a tab container or standalone
+        const container = document.getElementById('drillsTab') || document.getElementById('app');
+        if (container) {
+            container.innerHTML = content;
+        }
     }
 
     renderDrills() {

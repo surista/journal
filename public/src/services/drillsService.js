@@ -26,12 +26,16 @@ class DrillsService {
     async init() {
         if (this.initialized) return;
         
+        console.log('DrillsService: Starting initialization...');
+        
         try {
             // Load drills from localStorage first
             await this.loadFromLocalStorage();
+            console.log('DrillsService: Loaded from localStorage:', this.drills.length);
             
             // If no drills exist, load default drills
             if (this.drills.length === 0) {
+                console.log('DrillsService: No drills in localStorage, loading defaults...');
                 await this.loadDefaultDrills();
             }
             
@@ -41,6 +45,7 @@ class DrillsService {
             }
             
             this.initialized = true;
+            console.log('DrillsService: Initialization complete. Total drills:', this.drills.length);
         } catch (error) {
             console.error('Failed to initialize DrillsService:', error);
             this.initialized = true; // Mark as initialized even on error
@@ -171,11 +176,14 @@ class DrillsService {
     async loadFromLocalStorage() {
         try {
             const stored = localStorage.getItem('guitarDrills');
+            console.log('DrillsService: localStorage guitarDrills:', stored ? 'Found' : 'Not found');
             if (stored) {
                 this.drills = JSON.parse(stored);
+                console.log('DrillsService: Parsed drills from localStorage:', this.drills.length);
             }
         } catch (error) {
             console.error('Failed to load drills from localStorage:', error);
+            this.drills = [];
         }
     }
 
@@ -346,6 +354,7 @@ class DrillsService {
     async searchDrills(query, filters = {}) {
         await this.initPromise;
         
+        console.log('Searching drills, total available:', this.drills.length);
         let results = [...this.drills];
         
         // Text search
