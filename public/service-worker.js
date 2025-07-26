@@ -1,5 +1,5 @@
 // service-worker.js - Updated with proper cache management and environment support
-const CACHE_VERSION = '10.98';
+const CACHE_VERSION = '10.99';
 
 // Detect environment based on URL
 const detectEnvironment = () => {
