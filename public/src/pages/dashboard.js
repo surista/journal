@@ -52,7 +52,8 @@ export class DashboardPage {
             calendar: 'Calendar',
             drills: 'Practice Drills',
             learning: 'Learning',
-            settings: 'Settings'
+            settings: 'Settings',
+            admin: 'Admin'
         };
 
         // Create components - header needs theme service
@@ -64,10 +65,35 @@ export class DashboardPage {
 
         this.header = new Header(this.themeService);
         this.topNav = new TopNavigation();
+        
+        // Check if user is admin
+        const currentUser = this.authService.getCurrentUser();
+        const adminFlag = localStorage.getItem('userIsAdmin') === 'true';
+        const isAdmin = currentUser && (currentUser.email === 'admin@example.com' || currentUser.isAdmin || adminFlag);
+        this.topNav.setIsAdmin(isAdmin);
 
         // Initial header setup
         this.header.setCurrentTab(tabTitles[this.currentTab]);
 
+        // Add admin banner outside the dashboard container if admin
+        if (isAdmin) {
+            // Ensure admin banner CSS is loaded
+            if (!document.querySelector('link[href*="admin-banner.css"]')) {
+                const link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = 'styles/admin-banner.css';
+                document.head.appendChild(link);
+            }
+            
+            const existingBanner = document.querySelector('.admin-banner');
+            if (!existingBanner) {
+                const banner = document.createElement('div');
+                banner.className = 'admin-banner';
+                banner.textContent = 'ADMIN';
+                document.body.appendChild(banner);
+            }
+        }
+        
         // Build the new layout
         document.getElementById('app').innerHTML = `
             <div class="dashboard-container">
@@ -95,6 +121,7 @@ export class DashboardPage {
                         <div class="tab-pane" id="learningTab" data-tab="learning"></div>
                         <div class="tab-pane" id="coursesTab" data-tab="courses"></div>
                         <div class="tab-pane" id="settingsTab" data-tab="settings"></div>
+                        <div class="tab-pane" id="adminTab" data-tab="admin"></div>
                     </div>
                 </main>
                 
@@ -143,6 +170,43 @@ export class DashboardPage {
         window.addEventListener('popstate', () => {
             this.handleHashChange();
         });
+
+        // Handle admin status changes
+        window.addEventListener('adminStatusChanged', (e) => {
+            const isAdmin = e.detail.isAdmin;
+            this.topNav.setIsAdmin(isAdmin);
+            
+            // Update admin banner
+            const existingBanner = document.querySelector('.admin-banner');
+            if (isAdmin && !existingBanner) {
+                // Ensure admin banner CSS is loaded
+                if (!document.querySelector('link[href*="admin-banner.css"]')) {
+                    const link = document.createElement('link');
+                    link.rel = 'stylesheet';
+                    link.href = 'styles/admin-banner.css';
+                    document.head.appendChild(link);
+                }
+                
+                // Add banner
+                const banner = document.createElement('div');
+                banner.className = 'admin-banner';
+                banner.textContent = 'ADMIN';
+                document.body.appendChild(banner);
+            } else if (!isAdmin && existingBanner) {
+                // Remove banner
+                existingBanner.remove();
+            }
+            
+            // Re-render the navigation
+            const navContainer = document.querySelector('.top-navigation').parentElement;
+            if (navContainer) {
+                navContainer.innerHTML = this.topNav.render();
+                this.topNav.attachEventListeners((tab) => {
+                    this.switchTab(tab);
+                });
+                this.topNav.setActiveTab(this.currentTab);
+            }
+        });
     }
 
     // Practice content is now handled by PracticeTabMinimal
@@ -169,7 +233,8 @@ export class DashboardPage {
             calendar: 'Calendar',
             drills: 'Practice Drills',
             learning: 'Learning',
-            settings: 'Settings'
+            settings: 'Settings',
+            admin: 'Admin'
         };
         this.header.setCurrentTab(tabTitles[tab]);
 
@@ -242,6 +307,10 @@ export class DashboardPage {
                         this.cloudSyncHandler?.cloudSyncService
                     );
                     break;
+                case 'admin':
+                    const { AdminPage } = await import('./admin.js');
+                    this.tabs[tab] = new AdminPage();
+                    break;
                 case 'courses':
                     const CoursesPage = (await import('../courses/pages/courses.js')).default;
                     this.tabs[tab] = new CoursesPage(this.storageService, this.authService);
@@ -249,8 +318,14 @@ export class DashboardPage {
             }
 
             if (this.tabs[tab]) {
-                // All tabs use render(container) pattern
-                await this.tabs[tab].render(tabContainer);
+                // Special handling for admin page which uses init() instead of render()
+                if (tab === 'admin' && this.tabs[tab].init) {
+                    this.tabs[tab].container = tabContainer;
+                    await this.tabs[tab].init();
+                } else {
+                    // All other tabs use render(container) pattern
+                    await this.tabs[tab].render(tabContainer);
+                }
             }
         } catch (error) {
             console.error(`Failed to load ${tab} tab:`, error);

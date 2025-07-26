@@ -5,9 +5,9 @@
   "author": "S. Urista",
   "license": "MIT",
   "scripts": {
-    "update-version": "cd public && node build.js",
-    "build-css": "cd public && node build-css.js",
-    "generate-sri": "cd public && node generate-sri.js",
+    "update-version": "node build.js",
+    "build-css": "node build-css.js",
+    "generate-sri": "node public/generate-sri.js",
     "bump-patch": "npm version patch --no-git-tag-version && npm run update-version",
     "bump-minor": "npm version minor --no-git-tag-version && npm run update-version",
     "bump-major": "npm version major --no-git-tag-version && npm run update-version",

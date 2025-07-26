@@ -8,9 +8,9 @@ console.log('🎨 Starting CSS bundling process...');
 
 // Read and process CSS imports from main.css
 function processCSS() {
-    const mainCssPath = path.resolve('styles/main.css');
-    const outputPath = path.resolve('styles/bundle.css');
-    const outputMinPath = path.resolve('styles/bundle.min.css');
+    const mainCssPath = path.resolve('public/styles/main.css');
+    const outputPath = path.resolve('public/styles/bundle.css');
+    const outputMinPath = path.resolve('public/styles/bundle.min.css');
 
     if (!fs.existsSync(mainCssPath)) {
         console.error('❌ Error: main.css not found at', mainCssPath);
@@ -27,7 +27,7 @@ function processCSS() {
             return path.resolve(path.dirname(basePath), importPath);
         }
         // Handle absolute paths from styles directory
-        return path.resolve('styles', importPath);
+        return path.resolve('public/styles', importPath);
     }
 
     function processFile(filePath, depth = 0) {

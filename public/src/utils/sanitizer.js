@@ -151,7 +151,7 @@ export function sanitizeHtml(html) {
 
                 // Special handling for href to prevent javascript:
                 if (attr === 'href') {
-                    if (value.startsWith('javascript:') || value.startsWith('data:')) {
+                    if (value.startsWith('javascript:')) {
                         continue;
                     }
                 }
@@ -194,10 +194,18 @@ export function sanitizeUrl(url) {
     try {
         const parsed = new URL(url);
 
-        // Only allow http, https, and mailto protocols
-        const allowedProtocols = ['http:', 'https:', 'mailto:'];
+        // Allow http, https, mailto, and data protocols
+        const allowedProtocols = ['http:', 'https:', 'mailto:', 'data:'];
         if (!allowedProtocols.includes(parsed.protocol)) {
             return null;
+        }
+        
+        // For data URLs, ensure they are images
+        if (parsed.protocol === 'data:') {
+            // Check if it's an image data URL
+            if (!url.startsWith('data:image/')) {
+                return null;
+            }
         }
 
         return parsed.href;

@@ -281,7 +281,7 @@ export class UIControls {
             }
 
             .btn-reset {
-                margin-left: 10px;
+                margin: 0 10px;
                 padding: 6px 12px;
                 border-radius: 6px;
                 border: 1px solid var(--border, #374151);
@@ -289,6 +289,9 @@ export class UIControls {
                 color: var(--text-primary, #e5e7eb);
                 cursor: pointer;
                 font-size: 12px;
+                text-align: center;
+                display: inline-block;
+                line-height: 1.2;
             }
 
             .value-display {

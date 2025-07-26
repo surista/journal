@@ -626,7 +626,10 @@ export class HistoryTab {
                                 session.sheetMusicImage
                                     ? `
                                 <div class="history-item-thumbnail">
-                                    <img src="${sanitizeUrl(session.sheetMusicThumbnail || session.sheetMusicImage) || ''}" alt="Sheet music" class="history-thumbnail" />
+                                    <img src="${sanitizeUrl(session.sheetMusicThumbnail || session.sheetMusicImage) || ''}" 
+                                         alt="Sheet music" 
+                                         class="history-thumbnail"
+                                         data-fallback="${sanitizeUrl(session.sheetMusicImage) || ''}" />
                                 </div>
                             `
                                     : ''
@@ -704,6 +707,18 @@ export class HistoryTab {
         `
             )
             .join('');
+            
+        // Add error handlers for thumbnails
+        setTimeout(() => {
+            container.querySelectorAll('.history-thumbnail').forEach(img => {
+                img.addEventListener('error', function() {
+                    const fallback = this.getAttribute('data-fallback');
+                    if (fallback && this.src !== fallback) {
+                        this.src = fallback;
+                    }
+                });
+            });
+        }, 0);
     }
 
     formatDuration(seconds) {

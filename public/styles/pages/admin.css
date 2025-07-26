@@ -1,0 +1,236 @@
+/* Admin Page Styles */
+
+.admin-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--space-lg);
+}
+
+.admin-header {
+    margin-bottom: var(--space-xl);
+}
+
+.admin-header h2 {
+    font-size: var(--text-2xl);
+    color: var(--text-primary);
+    margin: 0;
+}
+
+/* Admin Tabs */
+.admin-tabs {
+    display: flex;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-xl);
+    border-bottom: 1px solid var(--border);
+}
+
+.admin-tab {
+    background: none;
+    border: none;
+    padding: var(--space-md) var(--space-lg);
+    color: var(--text-secondary);
+    font-size: var(--text-base);
+    cursor: pointer;
+    position: relative;
+    transition: all var(--transition-base);
+}
+
+.admin-tab:hover {
+    color: var(--text-primary);
+}
+
+.admin-tab.active {
+    color: var(--primary);
+}
+
+.admin-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--primary);
+}
+
+/* Admin Panels */
+.admin-panel {
+    display: none;
+}
+
+.admin-panel.active {
+    display: block;
+}
+
+/* Admin Table */
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: var(--space-lg);
+}
+
+.admin-table th {
+    text-align: left;
+    padding: var(--space-md);
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    font-weight: var(--font-medium);
+    border-bottom: 1px solid var(--border);
+}
+
+.admin-table td {
+    padding: var(--space-md);
+    font-size: var(--text-sm);
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border);
+}
+
+.admin-table tr:hover {
+    background: var(--bg-secondary);
+}
+
+/* Small buttons for admin actions */
+.btn-small {
+    padding: var(--space-xs) var(--space-sm);
+    font-size: var(--text-xs);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    margin-right: var(--space-xs);
+}
+
+.btn-small:hover {
+    background: var(--bg-tertiary);
+    border-color: var(--primary);
+}
+
+/* Drills Admin Section */
+.drills-admin-section {
+    padding: var(--space-lg) 0;
+}
+
+.drills-admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-xl);
+}
+
+.drills-admin-header h3 {
+    margin: 0;
+    font-size: var(--text-xl);
+    color: var(--text-primary);
+}
+
+.drills-admin-stats {
+    display: flex;
+    gap: var(--space-xl);
+    margin-bottom: var(--space-xl);
+}
+
+.drills-admin-stats .stat {
+    text-align: center;
+}
+
+.drills-admin-stats .stat-value {
+    display: block;
+    font-size: var(--text-2xl);
+    font-weight: var(--font-bold);
+    color: var(--primary);
+    margin-bottom: var(--space-xs);
+}
+
+.drills-admin-stats .stat-label {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+/* Unauthorized State */
+.admin-page.unauthorized {
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.unauthorized-message {
+    text-align: center;
+    padding: var(--space-2xl);
+}
+
+.unauthorized-message h2 {
+    color: var(--danger);
+    margin-bottom: var(--space-lg);
+}
+
+.unauthorized-message p {
+    color: var(--text-secondary);
+    margin-bottom: var(--space-md);
+}
+
+/* User Details Modal */
+.user-details-modal .user-info p {
+    margin-bottom: var(--space-sm);
+    font-size: var(--text-base);
+}
+
+.user-details-modal .user-info strong {
+    color: var(--text-secondary);
+    margin-right: var(--space-sm);
+}
+
+/* Admin Drill Modal */
+.admin-drill-modal .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md);
+    margin-bottom: var(--space-md);
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: var(--space-2xl);
+    color: var(--text-secondary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .admin-page {
+        padding: var(--space-md);
+    }
+    
+    .admin-tabs {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .admin-table {
+        font-size: var(--text-xs);
+    }
+    
+    .admin-table th,
+    .admin-table td {
+        padding: var(--space-sm);
+    }
+    
+    /* Hide some columns on mobile */
+    .admin-table th:nth-child(3),
+    .admin-table td:nth-child(3),
+    .admin-table th:nth-child(4),
+    .admin-table td:nth-child(4) {
+        display: none;
+    }
+    
+    .drills-admin-stats {
+        flex-direction: column;
+        gap: var(--space-md);
+    }
+    
+    .admin-drill-modal .form-row {
+        grid-template-columns: 1fr;
+    }
+}

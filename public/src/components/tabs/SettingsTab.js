@@ -36,6 +36,32 @@ export class SettingsTab {
                         <!-- Cloud sync settings will be rendered here -->
                     </div>
                     
+                    <!-- Account Settings Section -->
+                    <div class="settings-section">
+                        <h3>👤 Account Settings</h3>
+                        <div class="settings-content">
+                            <div class="account-info">
+                                <p><strong>Email:</strong> <span id="accountEmail">Not logged in</span></p>
+                                <p><strong>Account Type:</strong> <span id="accountType">Standard</span></p>
+                                <p><strong>User ID:</strong> <span id="accountUserId">N/A</span></p>
+                            </div>
+                            <div class="admin-section" style="margin-top: 20px;">
+                                <h4>Admin Access</h4>
+                                <p class="settings-description">Enable admin access to manage users and drills.</p>
+                                <div class="admin-controls">
+                                    <button class="btn btn-primary" id="enableAdminBtn" style="display: none;">Enable Admin Access</button>
+                                    <div class="admin-status" id="adminStatus" style="display: none;">
+                                        <span class="badge badge-success">✓ Admin Access Enabled</span>
+                                        <button class="btn btn-secondary btn-sm" id="disableAdminBtn" style="margin-left: 10px;">Disable</button>
+                                    </div>
+                                </div>
+                                <p class="settings-note" style="margin-top: 10px; font-size: 0.875rem; color: var(--text-secondary);">
+                                    Note: Admin access allows you to view all users and manage drills.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <!-- Keyboard Shortcuts Section -->
                     <div class="settings-section">
                         <h3>⌨️ Keyboard Shortcuts</h3>
@@ -217,6 +243,9 @@ export class SettingsTab {
 
         // Calculate storage usage
         this.calculateStorageUsage();
+
+        // Load account info
+        this.loadAccountInfo();
     }
 
     attachEventListeners() {
@@ -288,6 +317,15 @@ export class SettingsTab {
         // Reset to defaults button
         document.getElementById('resetSessionAreasBtn')?.addEventListener('click', () => {
             this.resetSessionAreasToDefaults();
+        });
+
+        // Admin access buttons
+        document.getElementById('enableAdminBtn')?.addEventListener('click', () => {
+            this.enableAdminAccess();
+        });
+
+        document.getElementById('disableAdminBtn')?.addEventListener('click', () => {
+            this.disableAdminAccess();
         });
     }
 
@@ -425,8 +463,16 @@ export class SettingsTab {
     }
 
     showNotification(message, type = 'info') {
-        if (window.app?.currentPage?.showNotification) {
-            window.app.currentPage.showNotification(message, type);
+        try {
+            if (window.app?.currentPage?.showNotification) {
+                window.app.currentPage.showNotification(message, type);
+            } else {
+                // Fallback to console
+                console.log(`[${type.toUpperCase()}] ${message}`);
+            }
+        } catch (error) {
+            console.error('Failed to show notification:', error);
+            console.log(`[${type.toUpperCase()}] ${message}`);
         }
     }
 
@@ -566,5 +612,99 @@ export class SettingsTab {
     destroy() {
         // Clean up
         window.settingsTab = null;
+    }
+
+    // Account and Admin methods
+    loadAccountInfo() {
+        try {
+            const currentUser = this.authService.getCurrentUser();
+            
+            // Check if elements exist before trying to update them
+            const emailElement = document.getElementById('accountEmail');
+            const userIdElement = document.getElementById('accountUserId');
+            const typeElement = document.getElementById('accountType');
+            const enableBtn = document.getElementById('enableAdminBtn');
+            const adminStatus = document.getElementById('adminStatus');
+            
+            if (!emailElement || !userIdElement || !typeElement) {
+                console.log('Account info elements not found yet');
+                return;
+            }
+            
+            if (currentUser) {
+                emailElement.textContent = currentUser.email || 'N/A';
+                userIdElement.textContent = currentUser.id || 'N/A';
+                
+                // Check if user is admin - check both the user object and the separate flag
+                const adminFlag = localStorage.getItem('userIsAdmin') === 'true';
+                const isAdmin = currentUser.isAdmin === true || adminFlag;
+                typeElement.textContent = isAdmin ? 'Administrator' : 'Standard';
+                
+                // Show/hide admin controls
+                if (enableBtn && adminStatus) {
+                    if (isAdmin) {
+                        enableBtn.style.display = 'none';
+                        adminStatus.style.display = 'flex';
+                        adminStatus.style.alignItems = 'center';
+                    } else {
+                        enableBtn.style.display = 'inline-block';
+                        adminStatus.style.display = 'none';
+                    }
+                }
+            } else {
+                emailElement.textContent = 'Not logged in';
+                typeElement.textContent = 'N/A';
+                userIdElement.textContent = 'N/A';
+                if (enableBtn) enableBtn.style.display = 'none';
+                if (adminStatus) adminStatus.style.display = 'none';
+            }
+        } catch (error) {
+            console.error('Error loading account info:', error);
+        }
+    }
+
+    async enableAdminAccess() {
+        const currentUser = this.authService.getCurrentUser();
+        if (!currentUser) {
+            this.showNotification('You must be logged in to enable admin access', 'error');
+            return;
+        }
+
+        // Update user in localStorage
+        currentUser.isAdmin = true;
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        
+        // Also set a separate admin flag to ensure persistence
+        localStorage.setItem('userIsAdmin', 'true');
+
+        // Skip Firebase update for now - just use local storage
+        // Firebase integration can be added later when permissions are properly configured
+
+        // Show success message and reload page
+        this.showNotification('Admin access enabled successfully! Reloading...', 'success');
+        setTimeout(() => {
+            window.location.reload();
+        }, 500);
+    }
+
+    async disableAdminAccess() {
+        const currentUser = this.authService.getCurrentUser();
+        if (!currentUser) return;
+
+        // Update user in localStorage
+        currentUser.isAdmin = false;
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        
+        // Also remove the separate admin flag
+        localStorage.removeItem('userIsAdmin');
+
+        // Skip Firebase update for now - just use local storage
+        // Firebase integration can be added later when permissions are properly configured
+
+        // Show success message and reload page
+        this.showNotification('Admin access disabled. Reloading...', 'info');
+        setTimeout(() => {
+            window.location.reload();
+        }, 500);
     }
 }

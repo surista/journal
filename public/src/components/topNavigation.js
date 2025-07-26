@@ -2,6 +2,11 @@
 export class TopNavigation {
     constructor() {
         this.activeTab = 'practice';
+        this.isAdmin = false;
+    }
+    
+    setIsAdmin(isAdmin) {
+        this.isAdmin = isAdmin;
     }
 
     setActiveTab(tab) {
@@ -70,6 +75,13 @@ export class TopNavigation {
                         <span class="nav-icon">⚙️</span>
                         <span class="nav-label">Settings</span>
                     </button>
+                    
+                    ${this.isAdmin ? `
+                        <button class="top-nav-item" data-tab="admin" title="Admin">
+                            <span class="nav-icon">👨‍💼</span>
+                            <span class="nav-label">Admin</span>
+                        </button>
+                    ` : ''}
                 </div>
             </nav>
         `;

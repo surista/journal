@@ -280,8 +280,9 @@ export class Metronome {
         this.updateUI();
 
         // Notify timer if sync is enabled
-        if (window.currentTimer?.syncWithAudio) {
-            window.currentTimer.syncStart('metronome');
+        const timer = this.findTimer();
+        if (timer && timer.syncWithAudio) {
+            timer.syncStart('metronome');
         }
     }
 
@@ -296,8 +297,9 @@ export class Metronome {
         this.updateUI();
 
         // Notify timer if sync is enabled
-        if (window.currentTimer?.syncWithAudio) {
-            window.currentTimer.syncStop('metronome');
+        const timer = this.findTimer();
+        if (timer && timer.syncWithAudio) {
+            timer.syncStop('metronome');
         }
     }
 
@@ -305,6 +307,28 @@ export class Metronome {
         this.pause();
         this.currentBeat = 0;
         this.updateBeatDisplay();
+        
+        // Sync with timer when stopped
+        const timer = this.findTimer();
+        if (timer) {
+            timer.syncStop('metronome');
+        }
+    }
+    
+    findTimer() {
+        // Use timer registry for standardized access
+        if (window.timerRegistry) {
+            return window.timerRegistry.getPrimary();
+        }
+        
+        // Fallback to legacy patterns if registry not available
+        if (window.currentTimer) {
+            return window.currentTimer;
+        } else if (window.app?.currentPage?.timer) {
+            return window.app.currentPage.timer;
+        }
+        
+        return null;
     }
 
     getCurrentBPM() {

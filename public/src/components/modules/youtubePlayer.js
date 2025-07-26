@@ -453,18 +453,25 @@ export class YouTubePlayer {
             timestamp: Date.now()
         };
 
-        // Get existing loops
-        const savedLoops = await this.loadSavedLoops();
-        savedLoops.push(loop);
+        try {
+            // Get existing loops
+            const savedLoops = await this.loadSavedLoops();
+            // Ensure savedLoops is an array
+            const loopsArray = Array.isArray(savedLoops) ? savedLoops : [];
+            loopsArray.push(loop);
 
-        // Save using StorageService for cloud sync
-        const success = await this.storageService.saveYouTubeLoop(this.videoId, savedLoops);
+            // Save using StorageService for cloud sync
+            const success = await this.storageService.saveYouTubeLoop(this.videoId, loopsArray);
 
-        if (success) {
-            this.savedLoops = savedLoops;
+            if (success) {
+                this.savedLoops = loopsArray;
+            }
+
+            return success;
+        } catch (error) {
+            console.error('Error saving loop:', error);
+            return false;
         }
-
-        return success;
     }
 
     async loadSavedLoops() {
@@ -472,7 +479,9 @@ export class YouTubePlayer {
 
         try {
             // Use StorageService to get loops (with cloud sync)
-            this.savedLoops = await this.storageService.getYouTubeLoops(this.videoId);
+            const loops = await this.storageService.getYouTubeLoops(this.videoId);
+            // Ensure we always have an array
+            this.savedLoops = Array.isArray(loops) ? loops : [];
             return this.savedLoops;
         } catch (e) {
             console.error('Error loading saved loops:', e);

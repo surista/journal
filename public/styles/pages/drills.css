@@ -1,557 +1,417 @@
-/* Drills Page Styles - Modern Design */
-
-/* Match the tab styling of other pages */
-#drillsTab,
-.tab-pane:has(.drills-page) {
-    max-width: 1400px !important;
-    margin: 0 auto !important;
-    width: 100%;
-    min-height: calc(100vh - 200px);
-    display: flex;
-    align-items: flex-start;
-}
+/* Drills Page Styles - Matching Repertoire Tab */
 
 .drills-page {
-    padding: 0;
-    width: 100%;
-    box-sizing: border-box;
-    min-height: 100%;
+  max-width: 800px !important; /* Constrained to middle third */
+  margin: 0 auto !important;
+  padding: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-/* Navigation Header */
-.drills-nav-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--space-lg, 1.5rem) var(--space-xl, 2rem);
-    border-bottom: 1px solid var(--border, rgba(255,255,255,0.1));
-    background: var(--bg-secondary, #1a1a1a);
+/* Override form-control width in drills page */
+.drills-controls .form-control {
+  width: auto !important;
+  display: inline-block !important;
 }
 
-.drills-nav-tabs {
-    display: flex;
-    gap: var(--space-xl, 2rem);
+.drills-controls input.form-control {
+  width: 100% !important;
+  display: block !important;
 }
 
-.nav-tab {
-    color: var(--text-secondary, #9ca3af);
-    text-decoration: none;
-    font-size: var(--text-base, 1rem);
-    font-weight: var(--font-medium, 500);
-    padding-bottom: var(--space-xs, 0.25rem);
-    border-bottom: 2px solid transparent;
-    transition: all var(--transition-base, 200ms ease);
+/* Ensure the tab pane container is also constrained */
+#drillsTab,
+.tab-pane:has(.drills-page) {
+  max-width: 800px !important;
+  margin: 0 auto !important;
+  width: 100%;
 }
 
-.nav-tab:hover {
-    color: var(--text-primary, #f9fafb);
+.drills-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-xl);
 }
 
-.nav-tab.active {
-    color: var(--primary, #6366f1);
-    border-bottom-color: var(--primary, #6366f1);
+.drills-header h2 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: var(--text-2xl);
 }
 
-.add-drill-btn {
-    background: var(--primary, #6366f1);
-    color: white;
-    border: none;
-    padding: var(--space-sm, 0.5rem) var(--space-lg, 1.5rem);
-    border-radius: var(--radius-lg, 0.75rem);
-    font-size: var(--text-base, 1rem);
-    font-weight: var(--font-medium, 500);
-    cursor: pointer;
-    transition: all var(--transition-base, 200ms ease);
+/* Match repertoire button style exactly */
+.drills-header .btn-primary {
+  background: #00d9ff;
+  color: #000;
+  border: none;
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: var(--radius-lg);
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  transition: all var(--transition-base);
 }
 
-.add-drill-btn:hover {
-    background: var(--primary-hover, #5558e3);
-    transform: translateY(-1px);
+.drills-header .btn-primary:hover {
+  background: #00bfe6;
+  transform: translateY(-1px);
 }
 
-/* Filters Section */
-.drills-filters-section {
-    background: var(--bg-secondary, #1a1a1a);
-    padding: var(--space-lg, 1.5rem) var(--space-xl, 2rem);
-    border-bottom: 1px solid var(--border, rgba(255,255,255,0.1));
+/* Controls - Force horizontal layout */
+.drills-controls {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+  align-items: center;
+  flex-wrap: nowrap !important;
 }
 
-.filter-row {
-    display: flex;
-    gap: var(--space-lg, 1.5rem);
-    align-items: flex-end;
+.search-bar {
+  flex: 1;
+  min-width: 0;
 }
 
-/* Search Box */
-.search-box {
-    flex: 1;
-    max-width: 400px;
+.search-bar input {
+  width: 100% !important;
+  padding: var(--space-md);
+  font-size: var(--text-base);
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  transition: all var(--transition-base);
 }
 
-.search-input {
-    width: 100%;
-    padding: var(--space-sm, 0.5rem) var(--space-md, 1rem);
-    font-size: var(--text-sm, 0.875rem);
-    background: var(--bg-primary, #0a0a0a);
-    border: 1px solid var(--border, rgba(255,255,255,0.2));
-    border-radius: var(--radius-md, 0.5rem);
-    color: var(--text-primary, #f9fafb);
-    transition: all var(--transition-base, 200ms ease);
-    box-sizing: border-box;
+.drills-filters {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: var(--space-md);
+  flex-shrink: 0;
+  flex-wrap: nowrap !important;
 }
 
-.search-input::placeholder {
-    color: var(--text-muted, #6b7280);
+/* Match repertoire select style */
+.drills-filters select {
+  display: inline-block !important;
+  width: auto !important;
+  min-width: 140px;
+  padding: var(--space-md);
+  font-size: var(--text-base);
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition-base);
 }
 
-.search-input:focus {
-    outline: none;
-    border-color: var(--primary, #6366f1);
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+.drills-filters select:hover,
+.drills-filters select:focus,
+.search-bar input:focus {
+  outline: none;
+  border-color: #00d9ff;
+  box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.2);
 }
 
-/* Filter Groups */
-.filter-group {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-xs, 0.25rem);
+/* Stats - Force horizontal layout */
+.drills-stats {
+  display: flex !important;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+  justify-content: space-between;
 }
 
-.filter-label {
-    font-size: var(--text-xs, 0.75rem);
-    color: var(--text-secondary, #9ca3af);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-weight: var(--font-medium, 500);
+.drills-stats .stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: var(--space-xl);
+  text-align: center;
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+  flex: 1;
 }
 
-.filter-select {
-    padding: var(--space-sm, 0.5rem) var(--space-md, 1rem);
-    font-size: var(--text-sm, 0.875rem);
-    background: var(--bg-primary, #0a0a0a);
-    border: 1px solid var(--border, rgba(255,255,255,0.2));
-    border-radius: var(--radius-md, 0.5rem);
-    color: var(--text-primary, #f9fafb);
-    cursor: pointer;
-    transition: all var(--transition-base, 200ms ease);
-    min-width: 140px;
-    font-family: inherit;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%239ca3af' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 0.7rem top 50%;
-    background-size: 12px auto;
-    padding-right: 2.5rem;
+.drills-stats .stat-value {
+  display: block;
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  color: #00d9ff;
+  margin-bottom: var(--space-xs);
 }
 
-.filter-select:hover {
-    border-color: var(--primary, #6366f1);
+.drills-stats .stat-label {
+  font-size: var(--text-sm);
+  color: #00d9ff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
 }
-
-.filter-select:focus {
-    outline: none;
-    border-color: var(--primary, #6366f1);
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-}
-
-
 
 /* Drills Grid */
 .drills-grid {
-    padding: var(--space-xl, 2rem);
-    background: var(--bg-primary, #0a0a0a);
-    min-height: 400px;
+  min-height: 400px;
 }
 
 /* Table Style for Drills */
 .drills-table {
-    width: 100%;
-    border-collapse: collapse;
+  width: 100%;
+  border-collapse: collapse;
 }
 
 .drills-table th {
-    text-align: left;
-    padding: var(--space-md, 1rem) var(--space-sm, 0.5rem);
-    font-size: var(--text-sm, 0.875rem);
-    color: var(--text-secondary, #9ca3af);
-    font-weight: var(--font-medium, 500);
-    border-bottom: 1px solid var(--border, rgba(255,255,255,0.1));
+  text-align: left;
+  padding: var(--space-md, 1rem) var(--space-sm, 0.5rem);
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-secondary, #9ca3af);
+  font-weight: var(--font-medium, 500);
+  border-bottom: 1px solid var(--border, rgba(255,255,255,0.1));
 }
 
 .drills-table td {
-    padding: var(--space-md, 1rem) var(--space-sm, 0.5rem);
-    font-size: var(--text-sm, 0.875rem);
-    color: var(--text-primary, #f9fafb);
-    border-bottom: 1px solid var(--border, rgba(255,255,255,0.05));
+  padding: var(--space-md, 1rem) var(--space-sm, 0.5rem);
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-primary, #f9fafb);
+  border-bottom: 1px solid var(--border, rgba(255,255,255,0.05));
 }
 
 .drills-table tr:hover {
-    background: var(--bg-secondary, #1a1a1a);
-}
-
-/* Card Grid Alternative */
-.drills-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: var(--space-lg, 1.5rem);
+  background: var(--bg-secondary, #1a1a1a);
 }
 
 /* Table Action Buttons */
 .drill-actions-cell {
-    text-align: right;
-    white-space: nowrap;
+  text-align: right;
+  white-space: nowrap;
 }
 
 .action-btn {
-    background: transparent;
-    border: 1px solid var(--border, rgba(255,255,255,0.1));
-    color: var(--text-secondary, #9ca3af);
-    width: 32px;
-    height: 32px;
-    border-radius: var(--radius-md, 0.5rem);
-    cursor: pointer;
-    transition: all var(--transition-base, 200ms ease);
-    margin-left: var(--space-xs, 0.25rem);
-    font-size: var(--text-sm, 0.875rem);
+  background: transparent;
+  border: 1px solid var(--border, rgba(255,255,255,0.1));
+  color: var(--text-secondary, #9ca3af);
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md, 0.5rem);
+  cursor: pointer;
+  transition: all var(--transition-base, 200ms ease);
+  margin-left: var(--space-xs, 0.25rem);
+  font-size: var(--text-sm, 0.875rem);
 }
 
 .action-btn:hover {
-    background: var(--bg-secondary, #1a1a1a);
-    color: var(--text-primary, #f9fafb);
-    border-color: var(--primary, #6366f1);
+  background: var(--bg-secondary, #1a1a1a);
+  color: var(--text-primary, #f9fafb);
+  border-color: var(--primary, #6366f1);
 }
 
 .action-btn.start-drill-btn:hover {
-    color: var(--primary, #6366f1);
+  color: var(--primary, #6366f1);
 }
 
 .action-btn.favorite-btn {
-    color: var(--text-muted, #6b7280);
+  color: var(--text-muted, #6b7280);
 }
 
 .action-btn.favorite-btn.active,
 .action-btn.favorite-btn:hover {
-    color: #f59e0b;
+  color: #f59e0b;
 }
 
 .favorite-star {
-    color: #f59e0b;
-    margin-right: var(--space-xs, 0.25rem);
+  color: #f59e0b;
+  margin-right: var(--space-xs, 0.25rem);
 }
 
 .drill-name {
-    font-weight: var(--font-medium, 500);
-    color: var(--text-primary, #f9fafb);
+  font-weight: var(--font-medium, 500);
+  color: var(--text-primary, #f9fafb);
 }
-
-.drill-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 12px;
-}
-
-.drill-header h3 {
-    margin: 0;
-    font-size: 1.25rem;
-    color: var(--text-primary);
-    flex: 1;
-}
-
-.favorite-btn {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 8px;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    color: var(--text-secondary);
-}
-
-.favorite-btn:hover {
-    background: var(--bg-primary);
-    color: #f59e0b;
-}
-
-.favorite-btn.active {
-    color: #f59e0b;
-}
-
-/* Drill Meta */
-.drill-meta {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-.category-badge,
-.difficulty-badge,
-.duration-badge {
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 500;
-}
-
-/* Category colors */
-.category-badge.scales { background: #3b82f6; color: white; }
-.category-badge.chords { background: #10b981; color: white; }
-.category-badge.arpeggios { background: #8b5cf6; color: white; }
-.category-badge.technique { background: #f59e0b; color: white; }
-.category-badge.rhythm { background: #ef4444; color: white; }
-.category-badge.theory { background: #6366f1; color: white; }
-.category-badge.ear-training { background: #ec4899; color: white; }
-.category-badge.sight-reading { background: #14b8a6; color: white; }
-.category-badge.improvisation { background: #f97316; color: white; }
-.category-badge.repertoire { background: #84cc16; color: white; }
 
 /* Difficulty badges in table */
 .difficulty-badge {
-    display: inline-block;
-    padding: var(--space-xs, 0.25rem) var(--space-sm, 0.5rem);
-    border-radius: var(--radius-sm, 0.375rem);
-    font-size: var(--text-xs, 0.75rem);
-    font-weight: var(--font-medium, 500);
-    text-transform: uppercase;
+  display: inline-block;
+  padding: var(--space-xs, 0.25rem) var(--space-sm, 0.5rem);
+  border-radius: var(--radius-sm, 0.375rem);
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: var(--font-medium, 500);
+  text-transform: uppercase;
 }
 
 .difficulty-badge.beginner { 
-    background: rgba(16, 185, 129, 0.1); 
-    color: #10b981;
-    border: 1px solid rgba(16, 185, 129, 0.2);
+  background: rgba(16, 185, 129, 0.1); 
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.2);
 }
 .difficulty-badge.intermediate { 
-    background: rgba(59, 130, 246, 0.1); 
-    color: #3b82f6;
-    border: 1px solid rgba(59, 130, 246, 0.2);
+  background: rgba(59, 130, 246, 0.1); 
+  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.2);
 }
 .difficulty-badge.advanced { 
-    background: rgba(245, 158, 11, 0.1); 
-    color: #f59e0b;
-    border: 1px solid rgba(245, 158, 11, 0.2);
+  background: rgba(245, 158, 11, 0.1); 
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.2);
 }
 .difficulty-badge.expert { 
-    background: rgba(239, 68, 68, 0.1); 
-    color: #ef4444;
-    border: 1px solid rgba(239, 68, 68, 0.2);
-}
-
-.duration-badge {
-    background: var(--bg-primary);
-    color: var(--text-secondary);
-}
-
-/* Description */
-.drill-description {
-    color: var(--text-secondary);
-    line-height: 1.6;
-    margin: 0;
-}
-
-/* Tempo Info */
-.tempo-info {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-}
-
-.tempo-info svg {
-    color: var(--primary-color);
-}
-
-/* Tags */
-.drill-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-}
-
-.tag {
-    padding: 3px 10px;
-    background: var(--bg-primary);
-    border-radius: 15px;
-    font-size: 0.8rem;
-    color: var(--text-secondary);
-}
-
-/* Actions */
-.drill-actions {
-    display: flex;
-    gap: 12px;
-    margin-top: auto;
-}
-
-.start-drill-btn {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-sm, 0.5rem);
-    padding: var(--space-md, 1rem) var(--space-lg, 1.5rem);
-    background: var(--primary, #6366f1);
-    color: white;
-    border: none;
-    border-radius: var(--radius-md, 0.5rem);
-    font-size: var(--text-base, 1rem);
-    font-weight: var(--font-medium, 500);
-    cursor: pointer;
-    transition: all var(--transition-base, 200ms ease);
-}
-
-.start-drill-btn:hover {
-    background: var(--primary-hover);
-    transform: translateY(-1px);
-}
-
-.view-details-btn {
-    padding: 12px 20px;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    border: 2px solid var(--border-color);
-    border-radius: 8px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.view-details-btn:hover {
-    border-color: var(--primary-color);
+  background: rgba(239, 68, 68, 0.1); 
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
 /* No Drills State */
 .no-drills {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 80px 20px;
-    color: var(--text-secondary, #9ca3af);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 400px;
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 80px 20px;
+  color: var(--text-secondary, #9ca3af);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
 }
 
 .no-drills svg {
-    margin-bottom: var(--space-lg, 1.5rem);
-    opacity: 0.3;
-    stroke: currentColor;
+  margin-bottom: var(--space-lg, 1.5rem);
+  opacity: 0.3;
+  stroke: currentColor;
 }
 
 .no-drills h3 {
-    font-size: var(--text-xl, 1.25rem);
-    margin-bottom: var(--space-sm, 0.5rem);
-    color: var(--text-primary, #f9fafb);
+  font-size: var(--text-xl, 1.25rem);
+  margin-bottom: var(--space-sm, 0.5rem);
+  color: var(--text-primary, #f9fafb);
 }
 
 .no-drills p {
-    margin: 0;
-    font-size: var(--text-base, 1rem);
-}
-
-/* Drill Details Modal */
-.drill-details-modal .modal-content {
-    max-width: 600px;
-}
-
-.drill-meta-detailed {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 20px;
-}
-
-.detail-section {
-    margin-bottom: 24px;
-}
-
-.detail-section h3 {
-    font-size: 1.1rem;
-    margin-bottom: 8px;
-    color: var(--text-primary);
-}
-
-.detail-section p,
-.detail-section pre {
-    color: var(--text-secondary);
-    line-height: 1.6;
-    margin: 0;
-}
-
-.detail-section pre {
-    white-space: pre-wrap;
-    font-family: inherit;
+  margin: 0;
+  font-size: var(--text-base, 1rem);
 }
 
 /* Responsive Design */
-@media (max-width: 1024px) {
-    .filter-row {
-        flex-wrap: wrap;
-    }
-    
-    .search-box {
-        flex: 1 1 100%;
-        max-width: none;
-        margin-bottom: var(--space-md, 1rem);
-    }
-}
-
 @media (max-width: 768px) {
-    .drills-nav-header {
-        flex-direction: column;
-        gap: var(--space-md, 1rem);
-        padding: var(--space-md, 1rem);
-    }
-    
-    .drills-nav-tabs {
-        width: 100%;
-        justify-content: center;
-    }
-    
-    .add-drill-btn {
-        width: 100%;
-    }
-    
-    .drills-filters-section {
-        padding: var(--space-md, 1rem);
-    }
-    
-    .filter-group {
-        flex: 1;
-        min-width: 120px;
-    }
-    
-    /* Hide some columns on mobile */
-    .drills-table th:nth-child(3),
-    .drills-table td:nth-child(3),
-    .drills-table th:nth-child(4),
-    .drills-table td:nth-child(4) {
-        display: none;
-    }
-    
-    .drills-table {
-        font-size: var(--text-xs, 0.75rem);
-    }
-    
-    .drills-table th,
-    .drills-table td {
-        padding: var(--space-sm, 0.5rem) var(--space-xs, 0.25rem);
-    }
+  .drills-controls {
+    flex-wrap: wrap;
+  }
+  
+  .search-bar {
+    width: 100%;
+    flex-basis: 100%;
+  }
+  
+  .drills-filters {
+    width: 100%;
+    justify-content: space-between;
+    margin-top: var(--space-md);
+  }
+  
+  .drills-filters select {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .drills-stats {
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+  
+  /* Hide some columns on mobile */
+  .drills-table th:nth-child(3),
+  .drills-table td:nth-child(3),
+  .drills-table th:nth-child(4),
+  .drills-table td:nth-child(4) {
+    display: none;
+  }
+  
+  .drills-table {
+    font-size: var(--text-xs, 0.75rem);
+  }
+  
+  .drills-table th,
+  .drills-table td {
+    padding: var(--space-sm, 0.5rem) var(--space-xs, 0.25rem);
+  }
 }
 
-@media (max-width: 480px) {
-    .filter-select {
-        min-width: 100%;
-    }
-
-    .favorites-toggle {
-        width: 100%;
-        justify-content: center;
-    }
-
-    .clear-filters {
-        width: 100%;
-    }
+/* ULTIMATE OVERRIDES - Force horizontal layout no matter what */
+#drillsTab .drills-controls {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
 }
+
+#drillsTab .search-bar {
+  flex: 1 !important;
+  min-width: 0 !important;
+}
+
+#drillsTab .drills-filters {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+}
+
+/* Override the bundle.css form-control width */
+#drillsTab .drills-controls select.form-control,
+#drillsTab .drills-filters select.form-control {
+  width: auto !important;
+  min-width: 140px !important;
+  display: inline-block !important;
+}
+
+#drillsTab .search-bar input.form-control {
+  width: 100% !important;
+  display: block !important;
+}
+
+/* Progress Chart Modal */
+.progress-chart-modal .modal-content {
+  max-width: 700px;
+  width: 90%;
+}
+
+.progress-chart-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.progress-stats {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+}
+
+.progress-stats .stat {
+  text-align: center;
+}
+
+.progress-stats label {
+  display: block;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin-bottom: 4px;
+}
+
+.progress-stats span {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+/* Drill Type Icon */
+.drill-type-icon {
+  font-size: 1.25rem;
+}
+

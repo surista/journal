@@ -1,11 +1,11 @@
 
-/* ===== Start: styles\main.css ===== */
+/* ===== Start: public\styles\main.css ===== */
 /* Main CSS Entry Point - Guitar Practice Journal */
 /* This file imports all other CSS files in the correct order */
 
 /* Base styles - Must come first */
 
-/* ===== Start: styles\base\reset.css ===== */
+/* ===== Start: public\styles\base\reset.css ===== */
 /* Modern Typography System */
 
 /* Base Typography */
@@ -297,10 +297,10 @@ blockquote {
   }
 }
 
-/* ===== End: styles\base\reset.css ===== */
+/* ===== End: public\styles\base\reset.css ===== */
 @import url('./base/reset.css');
 
-/* ===== Start: styles\base\variables.css ===== */
+/* ===== Start: public\styles\base\variables.css ===== */
 /* CSS Variables - Modern, Clean Design System */
 :root {
   /* Modern Color Palette */
@@ -434,12 +434,12 @@ blockquote {
   --max-content-width: 1200px;
 }
 
-/* ===== End: styles\base\variables.css ===== */
+/* ===== End: public\styles\base\variables.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 
 
-/* ===== Start: styles\base\typography.css ===== */
+/* ===== Start: public\styles\base\typography.css ===== */
 /* Modern Typography System */
 
 /* Base Typography */
@@ -731,14 +731,14 @@ blockquote {
   }
 }
 
-/* ===== End: styles\base\typography.css ===== */
+/* ===== End: public\styles\base\typography.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
 
 
 
-/* ===== Start: styles\base\animations.css ===== */
+/* ===== Start: public\styles\base\animations.css ===== */
 /* Modern Animations */
 
 /* Fade Animations */
@@ -1072,7 +1072,7 @@ blockquote {
   }
 }
 
-/* ===== End: styles\base\animations.css ===== */
+/* ===== End: public\styles\base\animations.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -1081,7 +1081,7 @@ blockquote {
 
 
 
-/* ===== Start: styles\base\mobile-enhancements.css ===== */
+/* ===== Start: public\styles\base\mobile-enhancements.css ===== */
 /* Mobile-First Enhancements for Guitar Practice Journal */
 
 /* ===== Safe Area Handling for Modern Phones ===== */
@@ -1520,7 +1520,7 @@ button + button,
   outline: none;
 }
 
-/* ===== End: styles\base\mobile-enhancements.css ===== */
+/* ===== End: public\styles\base\mobile-enhancements.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -1533,7 +1533,7 @@ button + button,
 
 /* Layout styles */
 
-/* ===== Start: styles\layout\grid.css ===== */
+/* ===== Start: public\styles\layout\grid.css ===== */
 /* Grid System and Layout Utilities */
 
 /* Container */
@@ -1823,7 +1823,7 @@ button + button,
   z-index: auto;
 }
 
-/* ===== End: styles\layout\grid.css ===== */
+/* ===== End: public\styles\layout\grid.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -1840,7 +1840,7 @@ button + button,
 /* Layout styles */
 
 
-/* ===== Start: styles\layout\sidebar.css ===== */
+/* ===== Start: public\styles\layout\sidebar.css ===== */
 /* Modern Sidebar Styles */
 
 .sidebar {
@@ -2051,7 +2051,7 @@ button + button,
   --i: 8;
 }
 
-/* ===== End: styles\layout\sidebar.css ===== */
+/* ===== End: public\styles\layout\sidebar.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -2070,7 +2070,7 @@ button + button,
 
 
 
-/* ===== Start: styles\layout\header.css ===== */
+/* ===== Start: public\styles\layout\header.css ===== */
 /* Modern Header Styles - New Design */
 .app-header {
   position: fixed;
@@ -2351,7 +2351,7 @@ button + button,
   color: rgba(0, 0, 0, 0.7);
 }
 
-/* ===== End: styles\layout\header.css ===== */
+/* ===== End: public\styles\layout\header.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -2372,7 +2372,7 @@ button + button,
 
 
 
-/* ===== Start: styles\layout\responsive.css ===== */
+/* ===== Start: public\styles\layout\responsive.css ===== */
 /* Responsive Design and Media Queries */
 
 /* Mobile first approach - Default styles are for mobile */
@@ -2604,7 +2604,7 @@ button + button,
   }
 }
 
-/* ===== End: styles\layout\responsive.css ===== */
+/* ===== End: public\styles\layout\responsive.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -2629,7 +2629,7 @@ button + button,
 
 /* Component styles */
 
-/* ===== Start: styles\components\buttons.css ===== */
+/* ===== Start: public\styles\components\buttons.css ===== */
 /* Modern Button Styles */
 
 /* Base Button */
@@ -2945,7 +2945,7 @@ button + button,
   }
 }
 
-/* ===== End: styles\components\buttons.css ===== */
+/* ===== End: public\styles\components\buttons.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -2974,7 +2974,7 @@ button + button,
 /* Component styles */
 
 
-/* ===== Start: styles\components\forms.css ===== */
+/* ===== Start: public\styles\components\forms.css ===== */
 /* Modern Form Styles */
 
 /* Form Group */
@@ -3245,7 +3245,7 @@ input[type='range']::-moz-range-thumb {
   padding-bottom: 20px;
 }
 
-/* ===== End: styles\components\forms.css ===== */
+/* ===== End: public\styles\components\forms.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -3276,7 +3276,7 @@ input[type='range']::-moz-range-thumb {
 
 
 
-/* ===== Start: styles\components\cards.css ===== */
+/* ===== Start: public\styles\components\cards.css ===== */
 /* Modern Card Styles */
 
 /* Base Card */
@@ -3538,7 +3538,7 @@ input[type='range']::-moz-range-thumb {
   }
 }
 
-/* ===== End: styles\components\cards.css ===== */
+/* ===== End: public\styles\components\cards.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -3571,7 +3571,7 @@ input[type='range']::-moz-range-thumb {
 
 
 
-/* ===== Start: styles\components\modals.css ===== */
+/* ===== Start: public\styles\components\modals.css ===== */
 /* ============================================
    Modal Component Styles
    ============================================ */
@@ -4327,7 +4327,7 @@ input[type='range']::-moz-range-thumb {
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
-/* ===== End: styles\components\modals.css ===== */
+/* ===== End: public\styles\components\modals.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -4362,7 +4362,7 @@ input[type='range']::-moz-range-thumb {
 
 
 
-/* ===== Start: styles\components\timer.css ===== */
+/* ===== Start: public\styles\components\timer.css ===== */
 /* Timer Component Styles */
 
 /* Timer wrapper */
@@ -4914,7 +4914,7 @@ input[type='range']::-moz-range-thumb {
   overflow-y: auto;
 }
 
-/* ===== End: styles\components\timer.css ===== */
+/* ===== End: public\styles\components\timer.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -4951,7 +4951,7 @@ input[type='range']::-moz-range-thumb {
 
 
 
-/* ===== Start: styles\components\audio-player.css ===== */
+/* ===== Start: public\styles\components\audio-player.css ===== */
 /* Audio Player Component Styles */
 
 /* Audio section container */
@@ -5756,7 +5756,7 @@ input[type='range']::-moz-range-thumb {
   overflow: hidden;
 }
 
-/* ===== End: styles\components\audio-player.css ===== */
+/* ===== End: public\styles\components\audio-player.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -5795,7 +5795,7 @@ input[type='range']::-moz-range-thumb {
 
 
 
-/* ===== Start: styles\components\metronome.css ===== */
+/* ===== Start: public\styles\components\metronome.css ===== */
 .metronome-widget {
   max-width: 400px;
   margin: 0 auto;
@@ -6236,7 +6236,7 @@ input[type='range']::-moz-range-thumb {
   opacity: 0.5;
 }
 
-/* ===== End: styles\components\metronome.css ===== */
+/* ===== End: public\styles\components\metronome.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -6277,7 +6277,7 @@ input[type='range']::-moz-range-thumb {
 
 
 
-/* ===== Start: styles\components\metronome-image.css ===== */
+/* ===== Start: public\styles\components\metronome-image.css ===== */
 /* Metronome Image Upload Styles */
 
 /* Ensure metronome panel shows all content */
@@ -6583,7 +6583,7 @@ input[type='range']::-moz-range-thumb {
   }
 }
 
-/* ===== End: styles\components\metronome-image.css ===== */
+/* ===== End: public\styles\components\metronome-image.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -6626,7 +6626,7 @@ input[type='range']::-moz-range-thumb {
 
 
 
-/* ===== Start: styles\components\achievements.css ===== */
+/* ===== Start: public\styles\components\achievements.css ===== */
 /* Achievement Component Styles */
 
 .achievements-section {
@@ -7027,7 +7027,7 @@ input[type='range']::-moz-range-thumb {
   color: white;
 }
 
-/* ===== End: styles\components\achievements.css ===== */
+/* ===== End: public\styles\components\achievements.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -7072,7 +7072,7 @@ input[type='range']::-moz-range-thumb {
 
 
 
-/* ===== Start: styles\components\lazy-image.css ===== */
+/* ===== Start: public\styles\components\lazy-image.css ===== */
 /* Lazy Image Component Styles */
 
 /* Wrapper for lazy images */
@@ -7186,7 +7186,7 @@ input[type='range']::-moz-range-thumb {
   }
 }
 
-/* ===== End: styles\components\lazy-image.css ===== */
+/* ===== End: public\styles\components\lazy-image.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -7233,7 +7233,7 @@ input[type='range']::-moz-range-thumb {
 
 
 
-/* ===== Start: styles\components\goals.css ===== */
+/* ===== Start: public\styles\components\goals.css ===== */
 /* Goals Component Styles */
 
 .goals-page {
@@ -7815,7 +7815,7 @@ input[type='range']::-moz-range-thumb {
   font-style: italic;
 }
 
-/* ===== End: styles\components\goals.css ===== */
+/* ===== End: public\styles\components\goals.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -7864,7 +7864,7 @@ input[type='range']::-moz-range-thumb {
 
 
 
-/* ===== Start: styles\components\stats.css ===== */
+/* ===== Start: public\styles\components\stats.css ===== */
 /* Statistics Component Styles */
 
 .stats-panel {
@@ -8291,7 +8291,7 @@ input[type='range']::-moz-range-thumb {
   opacity: 1;
 }
 
-/* ===== End: styles\components\stats.css ===== */
+/* ===== End: public\styles\components\stats.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -8342,7 +8342,7 @@ input[type='range']::-moz-range-thumb {
 
 
 
-/* ===== Start: styles\components\quick-stats.css ===== */
+/* ===== Start: public\styles\components\quick-stats.css ===== */
 /* Quick Stats Component Styles */
 
 /* Container for stats */
@@ -8408,7 +8408,7 @@ input[type='range']::-moz-range-thumb {
   }
 }
 
-/* ===== End: styles\components\quick-stats.css ===== */
+/* ===== End: public\styles\components\quick-stats.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -8461,7 +8461,7 @@ input[type='range']::-moz-range-thumb {
 
 
 
-/* ===== Start: styles\components\heatmap.css ===== */
+/* ===== Start: public\styles\components\heatmap.css ===== */
 /* Streak Heatmap Component Styles */
 
 .streak-heatmap {
@@ -8743,7 +8743,7 @@ input[type='range']::-moz-range-thumb {
   }
 }
 
-/* ===== End: styles\components\heatmap.css ===== */
+/* ===== End: public\styles\components\heatmap.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -8798,7 +8798,7 @@ input[type='range']::-moz-range-thumb {
 
 
 
-/* ===== Start: styles\components\waveform.css ===== */
+/* ===== Start: public\styles\components\waveform.css ===== */
 /* Waveform Component Styles */
 
 /* Canvas styles */
@@ -9080,7 +9080,7 @@ input[type='range']::-moz-range-thumb {
   }
 }
 
-/* ===== End: styles\components\waveform.css ===== */
+/* ===== End: public\styles\components\waveform.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -9137,7 +9137,7 @@ input[type='range']::-moz-range-thumb {
 
 
 
-/* ===== Start: styles\components\notifications.css ===== */
+/* ===== Start: public\styles\components\notifications.css ===== */
 /* Notification Component Styles */
 
 /* Base notification element - ensure proper dimensions */
@@ -9417,7 +9417,7 @@ input[type='range']::-moz-range-thumb {
   background: var(--primary-dark);
 }
 
-/* ===== End: styles\components\notifications.css ===== */
+/* ===== End: public\styles\components\notifications.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -9476,7 +9476,7 @@ input[type='range']::-moz-range-thumb {
 
 
 
-/* ===== Start: styles\components\footer.css ===== */
+/* ===== Start: public\styles\components\footer.css ===== */
 /* Footer Styles - Compact with Hover Dropdowns */
 .app-footer {
   position: fixed;
@@ -9720,7 +9720,7 @@ input[type='range']::-moz-range-thumb {
   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
 }
 
-/* ===== End: styles\components\footer.css ===== */
+/* ===== End: public\styles\components\footer.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -9781,7 +9781,7 @@ input[type='range']::-moz-range-thumb {
 
 
 
-/* ===== Start: styles\components\tips-popup.css ===== */
+/* ===== Start: public\styles\components\tips-popup.css ===== */
 /* Tips Popup Styles */
 .tips-popup {
   position: fixed;
@@ -9853,7 +9853,7 @@ input[type='range']::-moz-range-thumb {
   animation: slideInBounce 0.5s ease-out;
 }
 
-/* ===== End: styles\components\tips-popup.css ===== */
+/* ===== End: public\styles\components\tips-popup.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -9916,7 +9916,7 @@ input[type='range']::-moz-range-thumb {
 
 
 
-/* ===== Start: styles\components\cloud-sync-manager.css ===== */
+/* ===== Start: public\styles\components\cloud-sync-manager.css ===== */
 /* Cloud Sync Manager Styles */
 
 .cloud-sync-manager {
@@ -10187,7 +10187,7 @@ input[type='range']::-moz-range-thumb {
   }
 }
 
-/* ===== End: styles\components\cloud-sync-manager.css ===== */
+/* ===== End: public\styles\components\cloud-sync-manager.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -10252,7 +10252,7 @@ input[type='range']::-moz-range-thumb {
 
 
 
-/* ===== Start: styles\components\top-navigation.css ===== */
+/* ===== Start: public\styles\components\top-navigation.css ===== */
 /* Top Navigation Styles */
 .top-navigation {
   width: 100%;
@@ -10352,7 +10352,7 @@ input[type='range']::-moz-range-thumb {
   }
 }
 
-/* ===== End: styles\components\top-navigation.css ===== */
+/* ===== End: public\styles\components\top-navigation.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -10419,7 +10419,7 @@ input[type='range']::-moz-range-thumb {
 
 
 
-/* ===== Start: styles\components\practice-form.css ===== */
+/* ===== Start: public\styles\components\practice-form.css ===== */
 /* Practice Form Component Styles */
 
 .practice-form {
@@ -10597,7 +10597,7 @@ button[type='submit']:disabled {
   background: var(--bg-input) !important;
 }
 
-/* ===== End: styles\components\practice-form.css ===== */
+/* ===== End: public\styles\components\practice-form.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -10666,7 +10666,7 @@ button[type='submit']:disabled {
 
 
 
-/* ===== Start: styles\components\practice-log-modal.css ===== */
+/* ===== Start: public\styles\components\practice-log-modal.css ===== */
 /* Practice Log Modal Styles */
 
 /* Modal overlay */
@@ -10869,7 +10869,7 @@ button[type='submit']:disabled {
   }
 }
 
-/* ===== End: styles\components\practice-log-modal.css ===== */
+/* ===== End: public\styles\components\practice-log-modal.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -10940,7 +10940,7 @@ button[type='submit']:disabled {
 
 
 
-/* ===== Start: styles\components\repertoire.css ===== */
+/* ===== Start: public\styles\components\repertoire.css ===== */
 /* Repertoire Component Styles */
 
 .repertoire-page {
@@ -11416,7 +11416,7 @@ button[type='submit']:disabled {
   }
 }
 
-/* ===== End: styles\components\repertoire.css ===== */
+/* ===== End: public\styles\components\repertoire.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -11489,7 +11489,7 @@ button[type='submit']:disabled {
 
 
 
-/* ===== Start: styles\components\unified-practice.css ===== */
+/* ===== Start: public\styles\components\unified-practice.css ===== */
 /* Unified Practice Component Styles */
 /* Modern, minimalist design with improved spacing and typography */
 
@@ -12239,7 +12239,7 @@ button[type='submit']:disabled {
   }
 }
 
-/* ===== End: styles\components\unified-practice.css ===== */
+/* ===== End: public\styles\components\unified-practice.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -12314,7 +12314,7 @@ button[type='submit']:disabled {
 
 
 
-/* ===== Start: styles\components\daily-suggestion.css ===== */
+/* ===== Start: public\styles\components\daily-suggestion.css ===== */
 /* Daily Practice Suggestion Component Styles */
 
 .daily-practice-suggestion {
@@ -12527,7 +12527,7 @@ button[type='submit']:disabled {
   background: rgba(0, 0, 0, 0.05);
 }
 
-/* ===== End: styles\components\daily-suggestion.css ===== */
+/* ===== End: public\styles\components\daily-suggestion.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -12606,7 +12606,7 @@ button[type='submit']:disabled {
 
 /* Mobile-specific component styles */
 
-/* ===== Start: styles\components\mobile-timer.css ===== */
+/* ===== Start: public\styles\components\mobile-timer.css ===== */
 /* Mobile-Optimized Timer Component */
 
 @media (max-width: 768px) {
@@ -12826,7 +12826,7 @@ button[type='submit']:disabled {
         display: none; /* Hide on landscape to save space */
     }
 }
-/* ===== End: styles\components\mobile-timer.css ===== */
+/* ===== End: public\styles\components\mobile-timer.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -12909,7 +12909,7 @@ button[type='submit']:disabled {
 /* Mobile-specific component styles */
 
 
-/* ===== Start: styles\components\mobile-audio-player.css ===== */
+/* ===== Start: public\styles\components\mobile-audio-player.css ===== */
 /* Mobile-Optimized Audio Player Component */
 
 @media (max-width: 768px) {
@@ -13183,7 +13183,7 @@ button[type='submit']:disabled {
   }
 }
 
-/* ===== End: styles\components\mobile-audio-player.css ===== */
+/* ===== End: public\styles\components\mobile-audio-player.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -13268,7 +13268,7 @@ button[type='submit']:disabled {
 
 
 
-/* ===== Start: styles\components\mobile-navigation.css ===== */
+/* ===== Start: public\styles\components\mobile-navigation.css ===== */
 /* Mobile-Optimized Navigation */
 
 @media (max-width: 768px) {
@@ -13532,7 +13532,7 @@ button[type='submit']:disabled {
   }
 }
 
-/* ===== End: styles\components\mobile-navigation.css ===== */
+/* ===== End: public\styles\components\mobile-navigation.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -13619,7 +13619,7 @@ button[type='submit']:disabled {
 
 
 
-/* ===== Start: styles\components\mobile-practice-tabs.css ===== */
+/* ===== Start: public\styles\components\mobile-practice-tabs.css ===== */
 /* Mobile Practice Tab Styles */
 
 @media (max-width: 768px) {
@@ -13742,7 +13742,7 @@ button[type='submit']:disabled {
   }
 }
 
-/* ===== End: styles\components\mobile-practice-tabs.css ===== */
+/* ===== End: public\styles\components\mobile-practice-tabs.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -13831,7 +13831,7 @@ button[type='submit']:disabled {
 
 
 
-/* ===== Start: styles\components\mobile-unified-practice.css ===== */
+/* ===== Start: public\styles\components\mobile-unified-practice.css ===== */
 /* Mobile Unified Practice Component Styles */
 
 @media (max-width: 768px) {
@@ -14041,7 +14041,7 @@ button[type='submit']:disabled {
   }
 }
 
-/* ===== End: styles\components\mobile-unified-practice.css ===== */
+/* ===== End: public\styles\components\mobile-unified-practice.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -14132,7 +14132,7 @@ button[type='submit']:disabled {
 
 
 
-/* ===== Start: styles\components\recent-sessions.css ===== */
+/* ===== Start: public\styles\components\recent-sessions.css ===== */
 /* Recent Sessions Component Styles */
 
 /* Session item layout */
@@ -14286,7 +14286,7 @@ button[type='submit']:disabled {
   }
 }
 
-/* ===== End: styles\components\recent-sessions.css ===== */
+/* ===== End: public\styles\components\recent-sessions.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -14379,7 +14379,7 @@ button[type='submit']:disabled {
 
 
 
-/* ===== Start: styles\components\calendar-stats.css ===== */
+/* ===== Start: public\styles\components\calendar-stats.css ===== */
 /* Calendar Stats Container Styles */
 
 .calendar-stats-container {
@@ -14402,7 +14402,7 @@ button[type='submit']:disabled {
   }
 }
 
-/* ===== End: styles\components\calendar-stats.css ===== */
+/* ===== End: public\styles\components\calendar-stats.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -14497,7 +14497,7 @@ button[type='submit']:disabled {
 
 
 
-/* ===== Start: styles\components\history-practice-again.css ===== */
+/* ===== Start: public\styles\components\history-practice-again.css ===== */
 /* History Practice Again Button Styles */
 
 .practice-again-btn {
@@ -14563,7 +14563,7 @@ button[type='submit']:disabled {
   }
 }
 
-/* ===== End: styles\components\history-practice-again.css ===== */
+/* ===== End: public\styles\components\history-practice-again.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -14660,7 +14660,7 @@ button[type='submit']:disabled {
 
 
 
-/* ===== Start: styles\components\save-session-image.css ===== */
+/* ===== Start: public\styles\components\save-session-image.css ===== */
 /* Save Session Image Preview Styles */
 
 /* Image preview section in save popup */
@@ -14802,7 +14802,7 @@ button[type='submit']:disabled {
   }
 }
 
-/* ===== End: styles\components\save-session-image.css ===== */
+/* ===== End: public\styles\components\save-session-image.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -14901,7 +14901,7 @@ button[type='submit']:disabled {
 
 
 
-/* ===== Start: styles\components\history-thumbnails.css ===== */
+/* ===== Start: public\styles\components\history-thumbnails.css ===== */
 /* History Item Thumbnails */
 
 /* History item with image */
@@ -15178,7 +15178,7 @@ button[type='submit']:disabled {
   line-height: 1;
 }
 
-/* ===== End: styles\components\history-thumbnails.css ===== */
+/* ===== End: public\styles\components\history-thumbnails.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -15279,7 +15279,7 @@ button[type='submit']:disabled {
 
 
 
-/* ===== Start: styles\minimal-practice.css ===== */
+/* ===== Start: public\styles\minimal-practice.css ===== */
 /* Minimal Practice Design - Ultra Clean & Modern */
 
 /* Audio Control Buttons */
@@ -16862,7 +16862,7 @@ button[type='submit']:disabled {
   }
 }
 
-/* ===== End: styles\minimal-practice.css ===== */
+/* ===== End: public\styles\minimal-practice.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -16965,7 +16965,7 @@ button[type='submit']:disabled {
 
 
 
-/* ===== Start: styles\components\fretboard.css ===== */
+/* ===== Start: public\styles\components\fretboard.css ===== */
 /* Fretboard Diagram Styles */
 .fretboard-diagram {
   margin: 30px 0;
@@ -17248,7 +17248,7 @@ button[type='submit']:disabled {
   }
 }
 
-/* ===== End: styles\components\fretboard.css ===== */
+/* ===== End: public\styles\components\fretboard.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -17353,7 +17353,7 @@ button[type='submit']:disabled {
 
 
 
-/* ===== Start: styles\components\fretboard-v2.css ===== */
+/* ===== Start: public\styles\components\fretboard-v2.css ===== */
 /* Enhanced Fretboard Diagram Styles V2 */
 .fretboard-diagram-v2 {
   margin: 30px 0;
@@ -17627,7 +17627,7 @@ button[type='submit']:disabled {
   }
 }
 
-/* ===== End: styles\components\fretboard-v2.css ===== */
+/* ===== End: public\styles\components\fretboard-v2.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -17734,7 +17734,7 @@ button[type='submit']:disabled {
 
 
 
-/* ===== Start: styles\components\fretboard-simple.css ===== */
+/* ===== Start: public\styles\components\fretboard-simple.css ===== */
 /* Simple Fretboard Diagram Styles */
 .fretboard-simple {
   margin: 30px 0;
@@ -17896,7 +17896,7 @@ button[type='submit']:disabled {
   }
 }
 
-/* ===== End: styles\components\fretboard-simple.css ===== */
+/* ===== End: public\styles\components\fretboard-simple.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -18005,7 +18005,7 @@ button[type='submit']:disabled {
 
 
 
-/* ===== Start: styles\components\fretboard-notes.css ===== */
+/* ===== Start: public\styles\components\fretboard-notes.css ===== */
 /* Fretboard with Note Names */
 .fretboard-notes {
   margin: 30px 0;
@@ -18233,7 +18233,7 @@ button[type='submit']:disabled {
   }
 }
 
-/* ===== End: styles\components\fretboard-notes.css ===== */
+/* ===== End: public\styles\components\fretboard-notes.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -18344,7 +18344,7 @@ button[type='submit']:disabled {
 
 
 
-/* ===== Start: styles\components\c-major-fretboard.css ===== */
+/* ===== Start: public\styles\components\c-major-fretboard.css ===== */
 /* C Major Fretboard Styles */
 .c-major-fretboard {
   padding: 20px;
@@ -18491,7 +18491,7 @@ button[type='submit']:disabled {
   background: #2c3e50;
 }
 
-/* ===== End: styles\components\c-major-fretboard.css ===== */
+/* ===== End: public\styles\components\c-major-fretboard.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -18606,7 +18606,7 @@ button[type='submit']:disabled {
 
 /* Page-specific styles */
 
-/* ===== Start: styles\pages\auth.css ===== */
+/* ===== Start: public\styles\pages\auth.css ===== */
 /* Authentication Page Styles */
 
 .auth-page {
@@ -19040,7 +19040,7 @@ button[type='submit']:disabled {
   color: var(--warning);
 }
 
-/* ===== End: styles\pages\auth.css ===== */
+/* ===== End: public\styles\pages\auth.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -19159,7 +19159,7 @@ button[type='submit']:disabled {
 /* Page-specific styles */
 
 
-/* ===== Start: styles\pages\dashboard-new.css ===== */
+/* ===== Start: public\styles\pages\dashboard-new.css ===== */
 /* Dashboard Layout Styles - Consolidated */
 /* Top Navigation Layout (No Sidebar) */
 
@@ -20043,6 +20043,23 @@ textarea.form-control {
   padding: 2rem;
 }
 
+/* Admin tab layout - uses settings-page layout */
+.admin-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 1rem;
+}
+
+.admin-panel {
+  display: none;
+}
+
+.admin-panel.active {
+  display: block;
+}
+
 /* History tab layout */
 .history-layout {
   max-width: 1000px;
@@ -20799,7 +20816,7 @@ textarea.form-control {
   animation: dashboardLoad 0.4s ease;
 }
 
-/* ===== End: styles\pages\dashboard-new.css ===== */
+/* ===== End: public\styles\pages\dashboard-new.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -20920,7 +20937,7 @@ textarea.form-control {
 
 
 
-/* ===== Start: styles\pages\calendar.css ===== */
+/* ===== Start: public\styles\pages\calendar.css ===== */
 /* Calendar Page Styles - Optimized */
 
 .calendar-page {
@@ -21760,7 +21777,7 @@ textarea.form-control {
   }
 }
 
-/* ===== End: styles\pages\calendar.css ===== */
+/* ===== End: public\styles\pages\calendar.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -21883,7 +21900,7 @@ textarea.form-control {
 
 
 
-/* ===== Start: styles\pages\settings.css ===== */
+/* ===== Start: public\styles\pages\settings.css ===== */
 /* Settings Page Styles */
 .settings-page {
   max-width: 800px;
@@ -22022,7 +22039,7 @@ textarea.form-control {
   }
 }
 
-/* ===== End: styles\pages\settings.css ===== */
+/* ===== End: public\styles\pages\settings.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -22147,7 +22164,7 @@ textarea.form-control {
 
 
 
-/* ===== Start: styles\pages\learning.css ===== */
+/* ===== Start: public\styles\pages\learning.css ===== */
 /* My Learning Page Styles */
 
 .learning-page {
@@ -23163,7 +23180,7 @@ textarea.form-control {
   border-color: var(--primary);
 }
 
-/* ===== End: styles\pages\learning.css ===== */
+/* ===== End: public\styles\pages\learning.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -23290,7 +23307,555 @@ textarea.form-control {
 
 
 
-/* ===== Start: styles\courses\courses.css ===== */
+/* ===== Start: public\styles\pages\drills.css ===== */
+/* Drills Page Styles - Matching Repertoire Tab */
+
+.drills-page {
+  max-width: 800px !important; /* Constrained to middle third */
+  margin: 0 auto !important;
+  padding: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Override form-control width in drills page */
+.drills-controls .form-control {
+  width: auto !important;
+  display: inline-block !important;
+}
+
+.drills-controls input.form-control {
+  width: 100% !important;
+  display: block !important;
+}
+
+/* Ensure the tab pane container is also constrained */
+#drillsTab,
+.tab-pane:has(.drills-page) {
+  max-width: 800px !important;
+  margin: 0 auto !important;
+  width: 100%;
+}
+
+.drills-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-xl);
+}
+
+.drills-header h2 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: var(--text-2xl);
+}
+
+/* Match repertoire button style exactly */
+.drills-header .btn-primary {
+  background: #00d9ff;
+  color: #000;
+  border: none;
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: var(--radius-lg);
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  transition: all var(--transition-base);
+}
+
+.drills-header .btn-primary:hover {
+  background: #00bfe6;
+  transform: translateY(-1px);
+}
+
+/* Controls - Force horizontal layout */
+.drills-controls {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+  align-items: center;
+  flex-wrap: nowrap !important;
+}
+
+.search-bar {
+  flex: 1;
+  min-width: 0;
+}
+
+.search-bar input {
+  width: 100% !important;
+  padding: var(--space-md);
+  font-size: var(--text-base);
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  transition: all var(--transition-base);
+}
+
+.drills-filters {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: var(--space-md);
+  flex-shrink: 0;
+  flex-wrap: nowrap !important;
+}
+
+/* Match repertoire select style */
+.drills-filters select {
+  display: inline-block !important;
+  width: auto !important;
+  min-width: 140px;
+  padding: var(--space-md);
+  font-size: var(--text-base);
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.drills-filters select:hover,
+.drills-filters select:focus,
+.search-bar input:focus {
+  outline: none;
+  border-color: #00d9ff;
+  box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.2);
+}
+
+/* Stats - Force horizontal layout */
+.drills-stats {
+  display: flex !important;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+  justify-content: space-between;
+}
+
+.drills-stats .stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: var(--space-xl);
+  text-align: center;
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+  flex: 1;
+}
+
+.drills-stats .stat-value {
+  display: block;
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  color: #00d9ff;
+  margin-bottom: var(--space-xs);
+}
+
+.drills-stats .stat-label {
+  font-size: var(--text-sm);
+  color: #00d9ff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+/* Drills Grid */
+.drills-grid {
+  min-height: 400px;
+}
+
+/* Table Style for Drills */
+.drills-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.drills-table th {
+  text-align: left;
+  padding: var(--space-md, 1rem) var(--space-sm, 0.5rem);
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-secondary, #9ca3af);
+  font-weight: var(--font-medium, 500);
+  border-bottom: 1px solid var(--border, rgba(255,255,255,0.1));
+}
+
+.drills-table td {
+  padding: var(--space-md, 1rem) var(--space-sm, 0.5rem);
+  font-size: var(--text-sm, 0.875rem);
+  color: var(--text-primary, #f9fafb);
+  border-bottom: 1px solid var(--border, rgba(255,255,255,0.05));
+}
+
+.drills-table tr:hover {
+  background: var(--bg-secondary, #1a1a1a);
+}
+
+/* Table Action Buttons */
+.drill-actions-cell {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.action-btn {
+  background: transparent;
+  border: 1px solid var(--border, rgba(255,255,255,0.1));
+  color: var(--text-secondary, #9ca3af);
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md, 0.5rem);
+  cursor: pointer;
+  transition: all var(--transition-base, 200ms ease);
+  margin-left: var(--space-xs, 0.25rem);
+  font-size: var(--text-sm, 0.875rem);
+}
+
+.action-btn:hover {
+  background: var(--bg-secondary, #1a1a1a);
+  color: var(--text-primary, #f9fafb);
+  border-color: var(--primary, #6366f1);
+}
+
+.action-btn.start-drill-btn:hover {
+  color: var(--primary, #6366f1);
+}
+
+.action-btn.favorite-btn {
+  color: var(--text-muted, #6b7280);
+}
+
+.action-btn.favorite-btn.active,
+.action-btn.favorite-btn:hover {
+  color: #f59e0b;
+}
+
+.favorite-star {
+  color: #f59e0b;
+  margin-right: var(--space-xs, 0.25rem);
+}
+
+.drill-name {
+  font-weight: var(--font-medium, 500);
+  color: var(--text-primary, #f9fafb);
+}
+
+/* Difficulty badges in table */
+.difficulty-badge {
+  display: inline-block;
+  padding: var(--space-xs, 0.25rem) var(--space-sm, 0.5rem);
+  border-radius: var(--radius-sm, 0.375rem);
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: var(--font-medium, 500);
+  text-transform: uppercase;
+}
+
+.difficulty-badge.beginner { 
+  background: rgba(16, 185, 129, 0.1); 
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+.difficulty-badge.intermediate { 
+  background: rgba(59, 130, 246, 0.1); 
+  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+.difficulty-badge.advanced { 
+  background: rgba(245, 158, 11, 0.1); 
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+.difficulty-badge.expert { 
+  background: rgba(239, 68, 68, 0.1); 
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* No Drills State */
+.no-drills {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 80px 20px;
+  color: var(--text-secondary, #9ca3af);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+}
+
+.no-drills svg {
+  margin-bottom: var(--space-lg, 1.5rem);
+  opacity: 0.3;
+  stroke: currentColor;
+}
+
+.no-drills h3 {
+  font-size: var(--text-xl, 1.25rem);
+  margin-bottom: var(--space-sm, 0.5rem);
+  color: var(--text-primary, #f9fafb);
+}
+
+.no-drills p {
+  margin: 0;
+  font-size: var(--text-base, 1rem);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .drills-controls {
+    flex-wrap: wrap;
+  }
+  
+  .search-bar {
+    width: 100%;
+    flex-basis: 100%;
+  }
+  
+  .drills-filters {
+    width: 100%;
+    justify-content: space-between;
+    margin-top: var(--space-md);
+  }
+  
+  .drills-filters select {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .drills-stats {
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+  
+  /* Hide some columns on mobile */
+  .drills-table th:nth-child(3),
+  .drills-table td:nth-child(3),
+  .drills-table th:nth-child(4),
+  .drills-table td:nth-child(4) {
+    display: none;
+  }
+  
+  .drills-table {
+    font-size: var(--text-xs, 0.75rem);
+  }
+  
+  .drills-table th,
+  .drills-table td {
+    padding: var(--space-sm, 0.5rem) var(--space-xs, 0.25rem);
+  }
+}
+
+/* ULTIMATE OVERRIDES - Force horizontal layout no matter what */
+#drillsTab .drills-controls {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+}
+
+#drillsTab .search-bar {
+  flex: 1 !important;
+  min-width: 0 !important;
+}
+
+#drillsTab .drills-filters {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+}
+
+/* Override the bundle.css form-control width */
+#drillsTab .drills-controls select.form-control,
+#drillsTab .drills-filters select.form-control {
+  width: auto !important;
+  min-width: 140px !important;
+  display: inline-block !important;
+}
+
+#drillsTab .search-bar input.form-control {
+  width: 100% !important;
+  display: block !important;
+}
+
+/* Progress Chart Modal */
+.progress-chart-modal .modal-content {
+  max-width: 700px;
+  width: 90%;
+}
+
+.progress-chart-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.progress-stats {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+}
+
+.progress-stats .stat {
+  text-align: center;
+}
+
+.progress-stats label {
+  display: block;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin-bottom: 4px;
+}
+
+.progress-stats span {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+/* Drill Type Icon */
+.drill-type-icon {
+  font-size: 1.25rem;
+}
+
+
+/* ===== End: public\styles\pages\drills.css ===== */
+@import url('./base/reset.css');
+@import url('./base/variables.css');
+@import url('./base/typography.css');
+@import url('./base/animations.css');
+@import url('./base/mobile-enhancements.css');
+
+/* Layout styles */
+@import url('./layout/grid.css');
+@import url('./layout/sidebar.css');
+@import url('./layout/header.css');
+@import url('./layout/responsive.css');
+
+/* Component styles */
+@import url('./components/buttons.css');
+@import url('./components/forms.css');
+@import url('./components/cards.css');
+@import url('./components/modals.css');
+@import url('./components/timer.css');
+@import url('./components/audio-player.css');
+@import url('./components/metronome.css');
+@import url('./components/metronome-image.css');
+@import url('./components/achievements.css');
+@import url('./components/lazy-image.css');
+@import url('./components/goals.css');
+@import url('./components/stats.css');
+@import url('./components/quick-stats.css');
+@import url('./components/heatmap.css');
+@import url('./components/waveform.css');
+@import url('./components/notifications.css');
+@import url('./components/footer.css');
+@import url('./components/tips-popup.css');
+@import url('./components/cloud-sync-manager.css');
+@import url('./components/top-navigation.css');
+@import './components/practice-form.css';
+@import './components/practice-log-modal.css';
+@import './components/repertoire.css';
+@import './components/unified-practice.css';
+@import './components/daily-suggestion.css';
+
+/* Mobile-specific component styles */
+@import url('./components/mobile-timer.css');
+@import url('./components/mobile-audio-player.css');
+@import url('./components/mobile-navigation.css');
+@import url('./components/mobile-practice-tabs.css');
+@import url('./components/mobile-unified-practice.css');
+@import './components/recent-sessions.css';
+@import './components/calendar-stats.css';
+@import url('./components/history-practice-again.css');
+@import url('./components/save-session-image.css');
+@import url('./components/history-thumbnails.css');
+@import './minimal-practice.css';
+@import url('./components/fretboard.css');
+@import url('./components/fretboard-v2.css');
+@import url('./components/fretboard-simple.css');
+@import url('./components/fretboard-notes.css');
+@import url('./components/c-major-fretboard.css');
+
+/* Page-specific styles */
+@import url('./pages/auth.css');
+@import url('./pages/dashboard-new.css');
+@import url('./pages/calendar.css');
+@import url('./pages/settings.css');
+@import url('./pages/learning.css');
+@import url('./pages/drills.css');
+
+
+
+
+
+/* Layout styles */
+
+
+
+
+
+/* Component styles */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Mobile-specific component styles */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Page-specific styles */
+
+
+
+
+
+
+
+/* ===== Start: public\styles\courses\courses.css ===== */
 /* Courses Page Styles */
 .courses-container {
   max-width: 1200px;
@@ -24077,7 +24642,7 @@ textarea.form-control {
   }
 }
 
-/* ===== End: styles\courses\courses.css ===== */
+/* ===== End: public\styles\courses\courses.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -24141,6 +24706,7 @@ textarea.form-control {
 @import url('./pages/calendar.css');
 @import url('./pages/settings.css');
 @import url('./pages/learning.css');
+@import url('./pages/drills.css');
 @import url('./courses/courses.css');
 
 
@@ -24206,9 +24772,10 @@ textarea.form-control {
 
 
 
+
 /* Theme styles */
 
-/* ===== Start: styles\themes\dark.css ===== */
+/* ===== Start: public\styles\themes\dark.css ===== */
 /* Dark Theme Variables */
 [data-theme='dark'] {
   /* Backgrounds - True dark for OLED */
@@ -24292,7 +24859,7 @@ textarea.form-control {
   background: #161616; /* Slightly lighter than --bg-card (#141414) */
 }
 
-/* ===== End: styles\themes\dark.css ===== */
+/* ===== End: public\styles\themes\dark.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -24356,6 +24923,7 @@ textarea.form-control {
 @import url('./pages/calendar.css');
 @import url('./pages/settings.css');
 @import url('./pages/learning.css');
+@import url('./pages/drills.css');
 @import url('./courses/courses.css');
 
 /* Theme styles */
@@ -24424,10 +24992,11 @@ textarea.form-control {
 
 
 
+
 /* Theme styles */
 
 
-/* ===== Start: styles\themes\light.css ===== */
+/* ===== Start: public\styles\themes\light.css ===== */
 /* Light Theme Styles */
 
 /* ========================================
@@ -24830,7 +25399,7 @@ textarea.form-control {
   box-shadow: 0 0 25px rgba(99, 102, 241, 0.25);
 }
 
-/* ===== End: styles\themes\light.css ===== */
+/* ===== End: public\styles\themes\light.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -24894,6 +25463,7 @@ textarea.form-control {
 @import url('./pages/calendar.css');
 @import url('./pages/settings.css');
 @import url('./pages/learning.css');
+@import url('./pages/drills.css');
 @import url('./courses/courses.css');
 
 /* Theme styles */
@@ -24963,11 +25533,12 @@ textarea.form-control {
 
 
 
+
 /* Theme styles */
 
 
 
-/* ===== Start: styles\themes\midnight-blue.css ===== */
+/* ===== Start: public\styles\themes\midnight-blue.css ===== */
 /* Midnight Blue Theme - Deep blue with purple accents */
 [data-theme='midnight-blue'] {
   /* Primary Colors */
@@ -25076,7 +25647,7 @@ textarea.form-control {
   border-color: rgba(255, 255, 255, 0.3);
 }
 
-/* ===== End: styles\themes\midnight-blue.css ===== */
+/* ===== End: public\styles\themes\midnight-blue.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -25140,6 +25711,7 @@ textarea.form-control {
 @import url('./pages/calendar.css');
 @import url('./pages/settings.css');
 @import url('./pages/learning.css');
+@import url('./pages/drills.css');
 @import url('./courses/courses.css');
 
 /* Theme styles */
@@ -25210,12 +25782,13 @@ textarea.form-control {
 
 
 
+
 /* Theme styles */
 
 
 
 
-/* ===== Start: styles\themes\forest-green.css ===== */
+/* ===== Start: public\styles\themes\forest-green.css ===== */
 /* Forest Green Theme - Natural green with earthy tones */
 [data-theme='forest-green'] {
   /* Primary Colors */
@@ -25328,7 +25901,7 @@ textarea.form-control {
   border-color: rgba(255, 255, 255, 0.3);
 }
 
-/* ===== End: styles\themes\forest-green.css ===== */
+/* ===== End: public\styles\themes\forest-green.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -25392,6 +25965,7 @@ textarea.form-control {
 @import url('./pages/calendar.css');
 @import url('./pages/settings.css');
 @import url('./pages/learning.css');
+@import url('./pages/drills.css');
 @import url('./courses/courses.css');
 
 /* Theme styles */
@@ -25463,13 +26037,14 @@ textarea.form-control {
 
 
 
+
 /* Theme styles */
 
 
 
 
 
-/* ===== Start: styles\themes\sunset-orange.css ===== */
+/* ===== Start: public\styles\themes\sunset-orange.css ===== */
 /* Sunset Orange Theme - Warm sunset colors with orange and red tones */
 [data-theme='sunset-orange'] {
   /* Primary Colors */
@@ -25562,7 +26137,7 @@ textarea.form-control {
   background: linear-gradient(135deg, rgba(237, 137, 54, 0.15) 0%, rgba(237, 137, 54, 0.05) 100%);
 }
 
-/* ===== End: styles\themes\sunset-orange.css ===== */
+/* ===== End: public\styles\themes\sunset-orange.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -25626,6 +26201,7 @@ textarea.form-control {
 @import url('./pages/calendar.css');
 @import url('./pages/settings.css');
 @import url('./pages/learning.css');
+@import url('./pages/drills.css');
 @import url('./courses/courses.css');
 
 /* Theme styles */
@@ -25698,6 +26274,7 @@ textarea.form-control {
 
 
 
+
 /* Theme styles */
 
 
@@ -25705,7 +26282,7 @@ textarea.form-control {
 
 
 
-/* ===== Start: styles\themes\royal-purple.css ===== */
+/* ===== Start: public\styles\themes\royal-purple.css ===== */
 /* Royal Purple Theme - Rich purple with gold accents */
 [data-theme='royal-purple'] {
   /* Primary Colors */
@@ -25833,7 +26410,7 @@ textarea.form-control {
   border-color: rgba(255, 255, 255, 0.3);
 }
 
-/* ===== End: styles\themes\royal-purple.css ===== */
+/* ===== End: public\styles\themes\royal-purple.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -25897,6 +26474,7 @@ textarea.form-control {
 @import url('./pages/calendar.css');
 @import url('./pages/settings.css');
 @import url('./pages/learning.css');
+@import url('./pages/drills.css');
 @import url('./courses/courses.css');
 
 /* Theme styles */
@@ -25970,6 +26548,7 @@ textarea.form-control {
 
 
 
+
 /* Theme styles */
 
 
@@ -25978,7 +26557,7 @@ textarea.form-control {
 
 
 
-/* ===== Start: styles\themes\ocean-teal.css ===== */
+/* ===== Start: public\styles\themes\ocean-teal.css ===== */
 /* Ocean Teal Theme - Deep ocean blues with teal accents */
 [data-theme='ocean-teal'] {
   /* Primary Colors */
@@ -26086,7 +26665,7 @@ textarea.form-control {
   pointer-events: none;
 }
 
-/* ===== End: styles\themes\ocean-teal.css ===== */
+/* ===== End: public\styles\themes\ocean-teal.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -26150,6 +26729,7 @@ textarea.form-control {
 @import url('./pages/calendar.css');
 @import url('./pages/settings.css');
 @import url('./pages/learning.css');
+@import url('./pages/drills.css');
 @import url('./courses/courses.css');
 
 /* Theme styles */
@@ -26224,6 +26804,7 @@ textarea.form-control {
 
 
 
+
 /* Theme styles */
 
 
@@ -26233,7 +26814,7 @@ textarea.form-control {
 
 
 
-/* ===== Start: styles\themes\neon-cyber.css ===== */
+/* ===== Start: public\styles\themes\neon-cyber.css ===== */
 /* Neon Cyber Theme - Futuristic with neon accents */
 [data-theme='neon-cyber'] {
   /* Primary Colors */
@@ -26322,7 +26903,7 @@ textarea.form-control {
   border-bottom: 1px solid rgba(0, 255, 255, 0.3);
 }
 
-/* ===== End: styles\themes\neon-cyber.css ===== */
+/* ===== End: public\styles\themes\neon-cyber.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -26386,6 +26967,7 @@ textarea.form-control {
 @import url('./pages/calendar.css');
 @import url('./pages/settings.css');
 @import url('./pages/learning.css');
+@import url('./pages/drills.css');
 @import url('./courses/courses.css');
 
 /* Theme styles */
@@ -26461,6 +27043,7 @@ textarea.form-control {
 
 
 
+
 /* Theme styles */
 
 
@@ -26471,7 +27054,7 @@ textarea.form-control {
 
 
 
-/* ===== Start: styles\themes\coffee-brown.css ===== */
+/* ===== Start: public\styles\themes\coffee-brown.css ===== */
 /* Coffee Brown Theme - Warm coffee tones */
 [data-theme='coffee-brown'] {
   /* Primary Colors */
@@ -26558,7 +27141,7 @@ textarea.form-control {
   background: linear-gradient(135deg, rgba(139, 111, 71, 0.2) 0%, rgba(139, 111, 71, 0.1) 100%);
 }
 
-/* ===== End: styles\themes\coffee-brown.css ===== */
+/* ===== End: public\styles\themes\coffee-brown.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -26622,6 +27205,7 @@ textarea.form-control {
 @import url('./pages/calendar.css');
 @import url('./pages/settings.css');
 @import url('./pages/learning.css');
+@import url('./pages/drills.css');
 @import url('./courses/courses.css');
 
 /* Theme styles */
@@ -26698,6 +27282,7 @@ textarea.form-control {
 
 
 
+
 /* Theme styles */
 
 
@@ -26709,7 +27294,7 @@ textarea.form-control {
 
 
 
-/* ===== Start: styles\themes\northern-lights.css ===== */
+/* ===== Start: public\styles\themes\northern-lights.css ===== */
 /* Northern Lights Theme - Aurora borealis inspired */
 [data-theme='northern-lights'] {
   /* Primary Colors */
@@ -26831,7 +27416,7 @@ textarea.form-control {
   }
 }
 
-/* ===== End: styles\themes\northern-lights.css ===== */
+/* ===== End: public\styles\themes\northern-lights.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -26895,6 +27480,7 @@ textarea.form-control {
 @import url('./pages/calendar.css');
 @import url('./pages/settings.css');
 @import url('./pages/learning.css');
+@import url('./pages/drills.css');
 @import url('./courses/courses.css');
 
 /* Theme styles */
@@ -26972,6 +27558,7 @@ textarea.form-control {
 
 
 
+
 /* Theme styles */
 
 
@@ -26984,7 +27571,7 @@ textarea.form-control {
 
 
 
-/* ===== Start: styles\themes\nordic-ice.css ===== */
+/* ===== Start: public\styles\themes\nordic-ice.css ===== */
 /* Nordic Ice Theme - Cool blues and whites */
 [data-theme='nordic-ice'] {
   /* Primary Colors */
@@ -27038,7 +27625,7 @@ textarea.form-control {
   backdrop-filter: blur(10px);
 }
 
-/* ===== End: styles\themes\nordic-ice.css ===== */
+/* ===== End: public\styles\themes\nordic-ice.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -27102,6 +27689,7 @@ textarea.form-control {
 @import url('./pages/calendar.css');
 @import url('./pages/settings.css');
 @import url('./pages/learning.css');
+@import url('./pages/drills.css');
 @import url('./courses/courses.css');
 
 /* Theme styles */
@@ -27180,6 +27768,7 @@ textarea.form-control {
 
 
 
+
 /* Theme styles */
 
 
@@ -27193,7 +27782,7 @@ textarea.form-control {
 
 
 
-/* ===== Start: styles\themes\cherry-blossom.css ===== */
+/* ===== Start: public\styles\themes\cherry-blossom.css ===== */
 /* Cherry Blossom Theme - Soft pinks and whites */
 [data-theme='cherry-blossom'] {
   /* Primary Colors */
@@ -27247,7 +27836,7 @@ textarea.form-control {
   backdrop-filter: blur(10px);
 }
 
-/* ===== End: styles\themes\cherry-blossom.css ===== */
+/* ===== End: public\styles\themes\cherry-blossom.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -27311,6 +27900,7 @@ textarea.form-control {
 @import url('./pages/calendar.css');
 @import url('./pages/settings.css');
 @import url('./pages/learning.css');
+@import url('./pages/drills.css');
 @import url('./courses/courses.css');
 
 /* Theme styles */
@@ -27390,6 +27980,7 @@ textarea.form-control {
 
 
 
+
 /* Theme styles */
 
 
@@ -27404,7 +27995,7 @@ textarea.form-control {
 
 
 
-/* ===== Start: styles\themes\cyberpunk.css ===== */
+/* ===== Start: public\styles\themes\cyberpunk.css ===== */
 /* Cyberpunk Theme - Neon colors with dark background */
 [data-theme='cyberpunk'] {
   /* Primary Colors */
@@ -27464,7 +28055,7 @@ textarea.form-control {
   text-shadow: 0 0 10px currentColor;
 }
 
-/* ===== End: styles\themes\cyberpunk.css ===== */
+/* ===== End: public\styles\themes\cyberpunk.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -27528,6 +28119,7 @@ textarea.form-control {
 @import url('./pages/calendar.css');
 @import url('./pages/settings.css');
 @import url('./pages/learning.css');
+@import url('./pages/drills.css');
 @import url('./courses/courses.css');
 
 /* Theme styles */
@@ -27608,6 +28200,7 @@ textarea.form-control {
 
 
 
+
 /* Theme styles */
 
 
@@ -27623,7 +28216,7 @@ textarea.form-control {
 
 
 
-/* ===== Start: styles\themes\earth-tone.css ===== */
+/* ===== Start: public\styles\themes\earth-tone.css ===== */
 /* Earth Tone Theme - Natural browns and greens */
 [data-theme='earth-tone'] {
   /* Primary Colors */
@@ -27690,7 +28283,7 @@ textarea.form-control {
   }
 }
 
-/* ===== End: styles\themes\earth-tone.css ===== */
+/* ===== End: public\styles\themes\earth-tone.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -27754,6 +28347,7 @@ textarea.form-control {
 @import url('./pages/calendar.css');
 @import url('./pages/settings.css');
 @import url('./pages/learning.css');
+@import url('./pages/drills.css');
 @import url('./courses/courses.css');
 
 /* Theme styles */
@@ -27835,6 +28429,7 @@ textarea.form-control {
 
 
 
+
 /* Theme styles */
 
 
@@ -27851,8 +28446,7 @@ textarea.form-control {
 
 
 
-
-/* ===== Start: styles\themes\cosmic-purple.css ===== */
+/* ===== Start: public\styles\themes\cosmic-purple.css ===== */
 /* Cosmic Purple Theme - Deep space purples with cosmic accents */
 [data-theme='cosmic-purple'] {
   /* Primary Colors */
@@ -27949,7 +28543,7 @@ textarea.form-control {
   color: #f3e8ff !important;
 }
 
-/* ===== End: styles\themes\cosmic-purple.css ===== */
+/* ===== End: public\styles\themes\cosmic-purple.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -28013,6 +28607,7 @@ textarea.form-control {
 @import url('./pages/calendar.css');
 @import url('./pages/settings.css');
 @import url('./pages/learning.css');
+@import url('./pages/drills.css');
 @import url('./courses/courses.css');
 
 /* Theme styles */
@@ -28030,7 +28625,6 @@ textarea.form-control {
 @import url('./themes/cherry-blossom.css');
 @import url('./themes/cyberpunk.css');
 @import url('./themes/earth-tone.css');
-@import url('./themes/cherry-blossom.css');
 @import url('./themes/cosmic-purple.css');
 
 
@@ -28096,6 +28690,7 @@ textarea.form-control {
 
 
 
+
 /* Theme styles */
 
 
@@ -28113,8 +28708,7 @@ textarea.form-control {
 
 
 
-
-/* ===== Start: styles\themes\crimson-red.css ===== */
+/* ===== Start: public\styles\themes\crimson-red.css ===== */
 /* Crimson Red Theme - Deep crimson with burgundy tones */
 [data-theme='crimson-red'] {
   /* Primary Colors */
@@ -28211,7 +28805,7 @@ textarea.form-control {
   color: #fef2f2 !important;
 }
 
-/* ===== End: styles\themes\crimson-red.css ===== */
+/* ===== End: public\styles\themes\crimson-red.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -28275,6 +28869,7 @@ textarea.form-control {
 @import url('./pages/calendar.css');
 @import url('./pages/settings.css');
 @import url('./pages/learning.css');
+@import url('./pages/drills.css');
 @import url('./courses/courses.css');
 
 /* Theme styles */
@@ -28292,7 +28887,6 @@ textarea.form-control {
 @import url('./themes/cherry-blossom.css');
 @import url('./themes/cyberpunk.css');
 @import url('./themes/earth-tone.css');
-@import url('./themes/cherry-blossom.css');
 @import url('./themes/cosmic-purple.css');
 @import url('./themes/crimson-red.css');
 
@@ -28359,6 +28953,7 @@ textarea.form-control {
 
 
 
+
 /* Theme styles */
 
 
@@ -28377,8 +28972,7 @@ textarea.form-control {
 
 
 
-
-/* ===== Start: styles\themes\golden-amber.css ===== */
+/* ===== Start: public\styles\themes\golden-amber.css ===== */
 /* Golden Amber Theme - Warm golds and amber tones */
 [data-theme='golden-amber'] {
   /* Primary Colors */
@@ -28472,7 +29066,7 @@ textarea.form-control {
   color: #fffbeb !important;
 }
 
-/* ===== End: styles\themes\golden-amber.css ===== */
+/* ===== End: public\styles\themes\golden-amber.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -28536,6 +29130,7 @@ textarea.form-control {
 @import url('./pages/calendar.css');
 @import url('./pages/settings.css');
 @import url('./pages/learning.css');
+@import url('./pages/drills.css');
 @import url('./courses/courses.css');
 
 /* Theme styles */
@@ -28553,7 +29148,6 @@ textarea.form-control {
 @import url('./themes/cherry-blossom.css');
 @import url('./themes/cyberpunk.css');
 @import url('./themes/earth-tone.css');
-@import url('./themes/cherry-blossom.css');
 @import url('./themes/cosmic-purple.css');
 @import url('./themes/crimson-red.css');
 @import url('./themes/golden-amber.css');
@@ -28621,6 +29215,7 @@ textarea.form-control {
 
 
 
+
 /* Theme styles */
 
 
@@ -28640,8 +29235,7 @@ textarea.form-control {
 
 
 
-
-/* ===== Start: styles\themes\emerald-green.css ===== */
+/* ===== Start: public\styles\themes\emerald-green.css ===== */
 /* Emerald Green Theme - Rich emerald with jade accents */
 [data-theme='emerald-green'] {
   /* Primary Colors */
@@ -28735,7 +29329,7 @@ textarea.form-control {
   color: #ecfdf5 !important;
 }
 
-/* ===== End: styles\themes\emerald-green.css ===== */
+/* ===== End: public\styles\themes\emerald-green.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -28799,6 +29393,7 @@ textarea.form-control {
 @import url('./pages/calendar.css');
 @import url('./pages/settings.css');
 @import url('./pages/learning.css');
+@import url('./pages/drills.css');
 @import url('./courses/courses.css');
 
 /* Theme styles */
@@ -28816,7 +29411,6 @@ textarea.form-control {
 @import url('./themes/cherry-blossom.css');
 @import url('./themes/cyberpunk.css');
 @import url('./themes/earth-tone.css');
-@import url('./themes/cherry-blossom.css');
 @import url('./themes/cosmic-purple.css');
 @import url('./themes/crimson-red.css');
 @import url('./themes/golden-amber.css');
@@ -28885,6 +29479,7 @@ textarea.form-control {
 
 
 
+
 /* Theme styles */
 
 
@@ -28905,8 +29500,7 @@ textarea.form-control {
 
 
 
-
-/* ===== Start: styles\themes\slate-gray.css ===== */
+/* ===== Start: public\styles\themes\slate-gray.css ===== */
 /* Slate Gray Theme - Modern grays with blue undertones */
 [data-theme='slate-gray'] {
   /* Primary Colors */
@@ -29001,7 +29595,7 @@ textarea.form-control {
   color: #f1f5f9 !important;
 }
 
-/* ===== End: styles\themes\slate-gray.css ===== */
+/* ===== End: public\styles\themes\slate-gray.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -29065,6 +29659,7 @@ textarea.form-control {
 @import url('./pages/calendar.css');
 @import url('./pages/settings.css');
 @import url('./pages/learning.css');
+@import url('./pages/drills.css');
 @import url('./courses/courses.css');
 
 /* Theme styles */
@@ -29082,7 +29677,6 @@ textarea.form-control {
 @import url('./themes/cherry-blossom.css');
 @import url('./themes/cyberpunk.css');
 @import url('./themes/earth-tone.css');
-@import url('./themes/cherry-blossom.css');
 @import url('./themes/cosmic-purple.css');
 @import url('./themes/crimson-red.css');
 @import url('./themes/golden-amber.css');
@@ -29152,6 +29746,7 @@ textarea.form-control {
 
 
 
+
 /* Theme styles */
 
 
@@ -29173,8 +29768,7 @@ textarea.form-control {
 
 
 
-
-/* ===== Start: styles\themes\pastel-dream.css ===== */
+/* ===== Start: public\styles\themes\pastel-dream.css ===== */
 /* Pastel Dream Theme - Soft, dreamy pastel colors */
 
 [data-theme='pastel-dream'] {
@@ -29262,7 +29856,7 @@ textarea.form-control {
   --opacity-overlay: 0.5;
 }
 
-/* ===== End: styles\themes\pastel-dream.css ===== */
+/* ===== End: public\styles\themes\pastel-dream.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -29326,6 +29920,7 @@ textarea.form-control {
 @import url('./pages/calendar.css');
 @import url('./pages/settings.css');
 @import url('./pages/learning.css');
+@import url('./pages/drills.css');
 @import url('./courses/courses.css');
 
 /* Theme styles */
@@ -29343,7 +29938,6 @@ textarea.form-control {
 @import url('./themes/cherry-blossom.css');
 @import url('./themes/cyberpunk.css');
 @import url('./themes/earth-tone.css');
-@import url('./themes/cherry-blossom.css');
 @import url('./themes/cosmic-purple.css');
 @import url('./themes/crimson-red.css');
 @import url('./themes/golden-amber.css');
@@ -29414,6 +30008,7 @@ textarea.form-control {
 
 
 
+
 /* Theme styles */
 
 
@@ -29436,8 +30031,7 @@ textarea.form-control {
 
 
 
-
-/* ===== Start: styles\themes\cotton-candy.css ===== */
+/* ===== Start: public\styles\themes\cotton-candy.css ===== */
 /* Cotton Candy Theme - Sweet pink and blue pastels */
 
 [data-theme='cotton-candy'] {
@@ -29525,7 +30119,7 @@ textarea.form-control {
   --opacity-overlay: 0.5;
 }
 
-/* ===== End: styles\themes\cotton-candy.css ===== */
+/* ===== End: public\styles\themes\cotton-candy.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -29589,6 +30183,7 @@ textarea.form-control {
 @import url('./pages/calendar.css');
 @import url('./pages/settings.css');
 @import url('./pages/learning.css');
+@import url('./pages/drills.css');
 @import url('./courses/courses.css');
 
 /* Theme styles */
@@ -29606,7 +30201,6 @@ textarea.form-control {
 @import url('./themes/cherry-blossom.css');
 @import url('./themes/cyberpunk.css');
 @import url('./themes/earth-tone.css');
-@import url('./themes/cherry-blossom.css');
 @import url('./themes/cosmic-purple.css');
 @import url('./themes/crimson-red.css');
 @import url('./themes/golden-amber.css');
@@ -29678,6 +30272,7 @@ textarea.form-control {
 
 
 
+
 /* Theme styles */
 
 
@@ -29701,8 +30296,7 @@ textarea.form-control {
 
 
 
-
-/* ===== Start: styles\themes\spring-meadow.css ===== */
+/* ===== Start: public\styles\themes\spring-meadow.css ===== */
 /* Spring Meadow Theme - Fresh greens and flower pastels */
 
 [data-theme='spring-meadow'] {
@@ -29790,7 +30384,7 @@ textarea.form-control {
   --opacity-overlay: 0.5;
 }
 
-/* ===== End: styles\themes\spring-meadow.css ===== */
+/* ===== End: public\styles\themes\spring-meadow.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -29854,6 +30448,7 @@ textarea.form-control {
 @import url('./pages/calendar.css');
 @import url('./pages/settings.css');
 @import url('./pages/learning.css');
+@import url('./pages/drills.css');
 @import url('./courses/courses.css');
 
 /* Theme styles */
@@ -29871,7 +30466,6 @@ textarea.form-control {
 @import url('./themes/cherry-blossom.css');
 @import url('./themes/cyberpunk.css');
 @import url('./themes/earth-tone.css');
-@import url('./themes/cherry-blossom.css');
 @import url('./themes/cosmic-purple.css');
 @import url('./themes/crimson-red.css');
 @import url('./themes/golden-amber.css');
@@ -29944,6 +30538,7 @@ textarea.form-control {
 
 
 
+
 /* Theme styles */
 
 
@@ -29968,8 +30563,7 @@ textarea.form-control {
 
 
 
-
-/* ===== Start: styles\themes\sunset-sherbet.css ===== */
+/* ===== Start: public\styles\themes\sunset-sherbet.css ===== */
 /* Sunset Sherbet Theme - Warm orange, peach, and coral pastels */
 
 [data-theme='sunset-sherbet'] {
@@ -30057,7 +30651,7 @@ textarea.form-control {
   --opacity-overlay: 0.5;
 }
 
-/* ===== End: styles\themes\sunset-sherbet.css ===== */
+/* ===== End: public\styles\themes\sunset-sherbet.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -30121,6 +30715,7 @@ textarea.form-control {
 @import url('./pages/calendar.css');
 @import url('./pages/settings.css');
 @import url('./pages/learning.css');
+@import url('./pages/drills.css');
 @import url('./courses/courses.css');
 
 /* Theme styles */
@@ -30138,7 +30733,6 @@ textarea.form-control {
 @import url('./themes/cherry-blossom.css');
 @import url('./themes/cyberpunk.css');
 @import url('./themes/earth-tone.css');
-@import url('./themes/cherry-blossom.css');
 @import url('./themes/cosmic-purple.css');
 @import url('./themes/crimson-red.css');
 @import url('./themes/golden-amber.css');
@@ -30212,6 +30806,7 @@ textarea.form-control {
 
 
 
+
 /* Theme styles */
 
 
@@ -30237,8 +30832,7 @@ textarea.form-control {
 
 
 
-
-/* ===== Start: styles\themes\ocean-breeze.css ===== */
+/* ===== Start: public\styles\themes\ocean-breeze.css ===== */
 /* Ocean Breeze Theme - Light aqua, teal, and sky blue pastels */
 
 [data-theme='ocean-breeze'] {
@@ -30326,7 +30920,7 @@ textarea.form-control {
   --opacity-overlay: 0.5;
 }
 
-/* ===== End: styles\themes\ocean-breeze.css ===== */
+/* ===== End: public\styles\themes\ocean-breeze.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -30390,6 +30984,7 @@ textarea.form-control {
 @import url('./pages/calendar.css');
 @import url('./pages/settings.css');
 @import url('./pages/learning.css');
+@import url('./pages/drills.css');
 @import url('./courses/courses.css');
 
 /* Theme styles */
@@ -30407,7 +31002,6 @@ textarea.form-control {
 @import url('./themes/cherry-blossom.css');
 @import url('./themes/cyberpunk.css');
 @import url('./themes/earth-tone.css');
-@import url('./themes/cherry-blossom.css');
 @import url('./themes/cosmic-purple.css');
 @import url('./themes/crimson-red.css');
 @import url('./themes/golden-amber.css');
@@ -30482,6 +31076,7 @@ textarea.form-control {
 
 
 
+
 /* Theme styles */
 
 
@@ -30508,8 +31103,7 @@ textarea.form-control {
 
 
 
-
-/* ===== Start: styles\themes\bubblegum-pop.css ===== */
+/* ===== Start: public\styles\themes\bubblegum-pop.css ===== */
 /* Bubblegum Pop Theme - Bright pink, purple, and blue pastels */
 
 [data-theme='bubblegum-pop'] {
@@ -30597,7 +31191,7 @@ textarea.form-control {
   --opacity-overlay: 0.5;
 }
 
-/* ===== End: styles\themes\bubblegum-pop.css ===== */
+/* ===== End: public\styles\themes\bubblegum-pop.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -30661,6 +31255,7 @@ textarea.form-control {
 @import url('./pages/calendar.css');
 @import url('./pages/settings.css');
 @import url('./pages/learning.css');
+@import url('./pages/drills.css');
 @import url('./courses/courses.css');
 
 /* Theme styles */
@@ -30678,7 +31273,6 @@ textarea.form-control {
 @import url('./themes/cherry-blossom.css');
 @import url('./themes/cyberpunk.css');
 @import url('./themes/earth-tone.css');
-@import url('./themes/cherry-blossom.css');
 @import url('./themes/cosmic-purple.css');
 @import url('./themes/crimson-red.css');
 @import url('./themes/golden-amber.css');
@@ -30754,6 +31348,7 @@ textarea.form-control {
 
 
 
+
 /* Theme styles */
 
 
@@ -30781,8 +31376,7 @@ textarea.form-control {
 
 
 
-
-/* ===== Start: styles\themes\pastel-overrides.css ===== */
+/* ===== Start: public\styles\themes\pastel-overrides.css ===== */
 /* Pastel Theme Overrides - Additional styling for light pastel themes */
 
 /* Pastel Dream Theme */
@@ -31248,7 +31842,7 @@ textarea.form-control {
   color: var(--text-secondary) !important;
 }
 
-/* ===== End: styles\themes\pastel-overrides.css ===== */
+/* ===== End: public\styles\themes\pastel-overrides.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -31312,6 +31906,7 @@ textarea.form-control {
 @import url('./pages/calendar.css');
 @import url('./pages/settings.css');
 @import url('./pages/learning.css');
+@import url('./pages/drills.css');
 @import url('./courses/courses.css');
 
 /* Theme styles */
@@ -31329,7 +31924,6 @@ textarea.form-control {
 @import url('./themes/cherry-blossom.css');
 @import url('./themes/cyberpunk.css');
 @import url('./themes/earth-tone.css');
-@import url('./themes/cherry-blossom.css');
 @import url('./themes/cosmic-purple.css');
 @import url('./themes/crimson-red.css');
 @import url('./themes/golden-amber.css');
@@ -31406,6 +32000,7 @@ textarea.form-control {
 
 
 
+
 /* Theme styles */
 
 
@@ -31434,8 +32029,7 @@ textarea.form-control {
 
 
 
-
-/* ===== Start: styles\themes\pastel-backgrounds.css ===== */
+/* ===== Start: public\styles\themes\pastel-backgrounds.css ===== */
 /* Pastel Theme Background Fixes - Ensures colored backgrounds are visible */
 
 /* Pastel Dream - Lavender */
@@ -31570,7 +32164,7 @@ textarea.form-control {
   backdrop-filter: blur(10px) !important;
 }
 
-/* ===== End: styles\themes\pastel-backgrounds.css ===== */
+/* ===== End: public\styles\themes\pastel-backgrounds.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -31634,6 +32228,7 @@ textarea.form-control {
 @import url('./pages/calendar.css');
 @import url('./pages/settings.css');
 @import url('./pages/learning.css');
+@import url('./pages/drills.css');
 @import url('./courses/courses.css');
 
 /* Theme styles */
@@ -31651,7 +32246,6 @@ textarea.form-control {
 @import url('./themes/cherry-blossom.css');
 @import url('./themes/cyberpunk.css');
 @import url('./themes/earth-tone.css');
-@import url('./themes/cherry-blossom.css');
 @import url('./themes/cosmic-purple.css');
 @import url('./themes/crimson-red.css');
 @import url('./themes/golden-amber.css');
@@ -31729,8 +32323,8 @@ textarea.form-control {
 
 
 
-/* Theme styles */
 
+/* Theme styles */
 
 
 
@@ -31761,7 +32355,7 @@ textarea.form-control {
 
 /* Utility styles - Must come last */
 
-/* ===== Start: styles\utilities\spacing.css ===== */
+/* ===== Start: public\styles\utilities\spacing.css ===== */
 /* Spacing Utilities */
 
 /* ========================================
@@ -32467,7 +33061,7 @@ textarea.form-control {
   margin-top: var(--space-xl);
 }
 
-/* ===== End: styles\utilities\spacing.css ===== */
+/* ===== End: public\styles\utilities\spacing.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -32531,6 +33125,7 @@ textarea.form-control {
 @import url('./pages/calendar.css');
 @import url('./pages/settings.css');
 @import url('./pages/learning.css');
+@import url('./pages/drills.css');
 @import url('./courses/courses.css');
 
 /* Theme styles */
@@ -32548,7 +33143,6 @@ textarea.form-control {
 @import url('./themes/cherry-blossom.css');
 @import url('./themes/cyberpunk.css');
 @import url('./themes/earth-tone.css');
-@import url('./themes/cherry-blossom.css');
 @import url('./themes/cosmic-purple.css');
 @import url('./themes/crimson-red.css');
 @import url('./themes/golden-amber.css');
@@ -32629,8 +33223,8 @@ textarea.form-control {
 
 
 
-/* Theme styles */
 
+/* Theme styles */
 
 
 
@@ -32662,7 +33256,7 @@ textarea.form-control {
 /* Utility styles - Must come last */
 
 
-/* ===== Start: styles\utilities\display.css ===== */
+/* ===== Start: public\styles\utilities\display.css ===== */
 /* Display Utilities */
 
 /* ========================================
@@ -33120,7 +33714,7 @@ textarea.form-control {
   resize: vertical !important;
 }
 
-/* ===== End: styles\utilities\display.css ===== */
+/* ===== End: public\styles\utilities\display.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -33184,6 +33778,7 @@ textarea.form-control {
 @import url('./pages/calendar.css');
 @import url('./pages/settings.css');
 @import url('./pages/learning.css');
+@import url('./pages/drills.css');
 @import url('./courses/courses.css');
 
 /* Theme styles */
@@ -33201,7 +33796,6 @@ textarea.form-control {
 @import url('./themes/cherry-blossom.css');
 @import url('./themes/cyberpunk.css');
 @import url('./themes/earth-tone.css');
-@import url('./themes/cherry-blossom.css');
 @import url('./themes/cosmic-purple.css');
 @import url('./themes/crimson-red.css');
 @import url('./themes/golden-amber.css');
@@ -33283,8 +33877,8 @@ textarea.form-control {
 
 
 
-/* Theme styles */
 
+/* Theme styles */
 
 
 
@@ -33317,7 +33911,7 @@ textarea.form-control {
 
 
 /* 
-/* ===== Start: styles\utilities\text.css ===== */
+/* ===== Start: public\styles\utilities\text.css ===== */
 /* Text Utilities - utilities/text.css */
 
 /* Text Alignment */
@@ -33769,7 +34363,7 @@ textarea.form-control {
   word-spacing: 0.1em !important;
 }
 
-/* ===== End: styles\utilities\text.css ===== */
+/* ===== End: public\styles\utilities\text.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -33833,6 +34427,7 @@ textarea.form-control {
 @import url('./pages/calendar.css');
 @import url('./pages/settings.css');
 @import url('./pages/learning.css');
+@import url('./pages/drills.css');
 @import url('./courses/courses.css');
 
 /* Theme styles */
@@ -33850,7 +34445,6 @@ textarea.form-control {
 @import url('./themes/cherry-blossom.css');
 @import url('./themes/cyberpunk.css');
 @import url('./themes/earth-tone.css');
-@import url('./themes/cherry-blossom.css');
 @import url('./themes/cosmic-purple.css');
 @import url('./themes/crimson-red.css');
 @import url('./themes/golden-amber.css');
@@ -33933,8 +34527,8 @@ textarea.form-control {
 
 
 
-/* Theme styles */
 
+/* Theme styles */
 
 
 
@@ -33968,7 +34562,7 @@ textarea.form-control {
 
 /*  */ /* Commented out - file missing */
 
-/* ===== Start: styles\utilities\helpers.css ===== */
+/* ===== Start: public\styles\utilities\helpers.css ===== */
 /* Misc Helper Utilities */
 
 /* ========================================
@@ -34876,7 +35470,7 @@ textarea.form-control {
   display: none !important;
 }
 
-/* ===== End: styles\utilities\helpers.css ===== */
+/* ===== End: public\styles\utilities\helpers.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -34940,6 +35534,7 @@ textarea.form-control {
 @import url('./pages/calendar.css');
 @import url('./pages/settings.css');
 @import url('./pages/learning.css');
+@import url('./pages/drills.css');
 @import url('./courses/courses.css');
 
 /* Theme styles */
@@ -34957,7 +35552,6 @@ textarea.form-control {
 @import url('./themes/cherry-blossom.css');
 @import url('./themes/cyberpunk.css');
 @import url('./themes/earth-tone.css');
-@import url('./themes/cherry-blossom.css');
 @import url('./themes/cosmic-purple.css');
 @import url('./themes/crimson-red.css');
 @import url('./themes/golden-amber.css');
@@ -35041,8 +35635,8 @@ textarea.form-control {
 
 
 
-/* Theme styles */
 
+/* Theme styles */
 
 
 
@@ -35077,7 +35671,7 @@ textarea.form-control {
 /*  */ /* Commented out - file missing */
 
 
-/* ===== Start: styles\utilities\audio-player-fixes.css ===== */
+/* ===== Start: public\styles\utilities\audio-player-fixes.css ===== */
 /* Audio Player Specific CSS Fixes */
 
 /* ============================= */
@@ -35410,7 +36004,7 @@ textarea.form-control {
   box-shadow: var(--shadow-lg);
 }
 
-/* ===== End: styles\utilities\audio-player-fixes.css ===== */
+/* ===== End: public\styles\utilities\audio-player-fixes.css ===== */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
 @import url('./base/typography.css');
@@ -35474,6 +36068,7 @@ textarea.form-control {
 @import url('./pages/calendar.css');
 @import url('./pages/settings.css');
 @import url('./pages/learning.css');
+@import url('./pages/drills.css');
 @import url('./courses/courses.css');
 
 /* Theme styles */
@@ -35491,7 +36086,6 @@ textarea.form-control {
 @import url('./themes/cherry-blossom.css');
 @import url('./themes/cyberpunk.css');
 @import url('./themes/earth-tone.css');
-@import url('./themes/cherry-blossom.css');
 @import url('./themes/cosmic-purple.css');
 @import url('./themes/crimson-red.css');
 @import url('./themes/golden-amber.css');
@@ -35576,8 +36170,8 @@ textarea.form-control {
 
 
 
-/* Theme styles */
 
+/* Theme styles */
 
 
 
@@ -36152,4 +36746,100 @@ textarea.form-control {
   }
 }
 
-/* ===== End: styles\main.css ===== */
+/* Admin Badge Styles */
+.badge {
+    display: inline-block;
+    padding: 4px 8px;
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 4px;
+}
+
+.badge-success {
+    background: var(--success-bg, #10b98115);
+    color: var(--success, #10b981);
+}
+
+/* Account Settings Styles */
+.account-info {
+    background: var(--bg-secondary);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.account-info p {
+    margin: 0.5rem 0;
+}
+
+.admin-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.admin-section h4 {
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.settings-note {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+}
+
+/* Admin Banner Styles */
+body > .admin-banner {
+    position: fixed !important;
+    top: 30px !important;
+    right: -45px !important;
+    background: linear-gradient(135deg, #FFD700, #FFA500) !important;
+    color: #1a1a1a !important;
+    font-weight: 700 !important;
+    font-size: 14px !important;
+    letter-spacing: 0.1em !important;
+    padding: 8px 60px !important;
+    transform: rotate(45deg) !important;
+    transform-origin: center !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+    z-index: 99999 !important;
+    text-align: center !important;
+    min-width: 200px !important;
+    text-transform: uppercase !important;
+    overflow: visible !important;
+    display: block !important;
+    width: auto !important;
+    height: auto !important;
+}
+
+.admin-banner::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.3) 0%, 
+        rgba(255, 255, 255, 0) 50%, 
+        rgba(0, 0, 0, 0.1) 100%);
+    pointer-events: none;
+}
+
+.admin-banner::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(0, 0, 0, 0.2) 20%, 
+        rgba(0, 0, 0, 0.2) 80%, 
+        transparent);
+}
+
+/* ===== End: public\styles\main.css ===== */

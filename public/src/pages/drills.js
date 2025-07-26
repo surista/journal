@@ -2,11 +2,13 @@
 // Provides filtering, search, and favorites management
 
 import { drillsService } from '../services/drillsService.js';
+import { StorageService } from '../services/storageService.js';
 
 export class DrillsPage {
     constructor() {
         this.drills = [];
         this.filteredDrills = [];
+        this.sessionAreas = [];
         this.currentFilters = {
             query: '',
             category: '',
@@ -17,14 +19,26 @@ export class DrillsPage {
         };
         this.debounceTimer = null;
         this.container = null;
+        // Get storage service from window.app or create new instance
+        this.storageService = window.app?.storageService || new StorageService('default');
     }
 
     async init() {
         console.log('Initializing Drills Page...');
+        await this.loadSessionAreas();
         await this.loadDrills();
         console.log('Loaded drills:', this.drills.length);
         if (this.container) {
             this.render(this.container);
+        }
+    }
+
+    async loadSessionAreas() {
+        try {
+            this.sessionAreas = await this.storageService.getSessionAreas();
+        } catch (error) {
+            console.error('Failed to load session areas:', error);
+            this.sessionAreas = [];
         }
     }
 
@@ -37,61 +51,98 @@ export class DrillsPage {
         this.container = container;
         await this.loadDrills();
         
+        // Inject critical styles inline - TEMPORARY FIX
+        if (!document.getElementById('drills-critical-styles')) {
+            const style = document.createElement('style');
+            style.id = 'drills-critical-styles';
+            style.textContent = `
+                #drillsTab .drills-controls {
+                    display: flex !important;
+                    flex-direction: row !important;
+                    flex-wrap: nowrap !important;
+                    gap: 1rem !important;
+                }
+                
+                #drillsTab .search-bar {
+                    flex: 1 !important;
+                }
+                
+                #drillsTab .drills-filters {
+                    display: flex !important;
+                    flex-direction: row !important;
+                    gap: 1rem !important;
+                }
+                
+                #drillsTab .drills-controls select.form-control {
+                    width: auto !important;
+                    min-width: 140px !important;
+                }
+                
+                #drillsTab .search-bar input.form-control {
+                    width: 100% !important;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
         const content = `
             <div class="drills-page">
-                <div class="drills-nav-header">
-                    <nav class="drills-nav-tabs">
-                        <a href="#drills" class="nav-tab active">Drills Library</a>
-                        <a href="#my-drills" class="nav-tab">Your Drills</a>
-                    </nav>
-                    <button class="add-drill-btn" id="addDrillBtn">Add New Drill</button>
+                <div class="drills-header">
+                    <h2>Practice Drills</h2>
+                    <button class="btn btn-primary" id="addDrillBtn">
+                        ➕ Add Drill
+                    </button>
                 </div>
-
-                <div class="drills-filters-section">
-                    <div class="filter-row">
-                        <div class="search-box">
-                            <input 
-                                type="text" 
-                                id="drillSearch" 
-                                class="search-input" 
-                                placeholder="Search"
-                                value="${this.currentFilters.query}"
-                            >
-                        </div>
+                
+                <div class="drills-controls">
+                    <div class="search-bar">
+                        <input type="text" 
+                               id="drillSearch" 
+                               class="form-control" 
+                               placeholder="Search drills, categories, or notes..."
+                               value="${this.currentFilters.query}">
+                    </div>
+                    
+                    <div class="drills-filters">
+                        <select id="categoryFilter" class="form-control">
+                            <option value="">All Categories</option>
+                            ${this.sessionAreas.map(area => 
+                                `<option value="${area}" ${this.currentFilters.category === area ? 'selected' : ''}>${area}</option>`
+                            ).join('')}
+                        </select>
                         
-                        <div class="filter-group">
-                            <label class="filter-label">Category</label>
-                            <select id="categoryFilter" class="filter-select">
-                                <option value="">All</option>
-                                ${drillsService.getCategories().map(cat => 
-                                    `<option value="${cat}" ${this.currentFilters.category === cat ? 'selected' : ''}>${cat}</option>`
-                                ).join('')}
-                            </select>
-                        </div>
-
-                        <div class="filter-group">
-                            <label class="filter-label">Difficulty</label>
-                            <select id="difficultyFilter" class="filter-select">
-                                <option value="">All</option>
-                                ${drillsService.getDifficulties().map(diff => 
-                                    `<option value="${diff}" ${this.currentFilters.difficulty === diff ? 'selected' : ''}>${diff}</option>`
-                                ).join('')}
-                            </select>
-                        </div>
-
-                        <div class="filter-group">
-                            <label class="filter-label">Duration</label>
-                            <select id="durationFilter" class="filter-select">
-                                <option value="">All</option>
-                                <option value="10" ${this.currentFilters.maxDuration === 10 ? 'selected' : ''}>≤ 10 min</option>
-                                <option value="15" ${this.currentFilters.maxDuration === 15 ? 'selected' : ''}>≤ 15 min</option>
-                                <option value="20" ${this.currentFilters.maxDuration === 20 ? 'selected' : ''}>≤ 20 min</option>
-                                <option value="30" ${this.currentFilters.maxDuration === 30 ? 'selected' : ''}>≤ 30 min</option>
-                            </select>
-                        </div>
+                        <select id="difficultyFilter" class="form-control">
+                            <option value="">All Difficulties</option>
+                            ${drillsService.getDifficulties().map(diff => 
+                                `<option value="${diff}" ${this.currentFilters.difficulty === diff ? 'selected' : ''}>${diff}</option>`
+                            ).join('')}
+                        </select>
+                        
+                        <select id="durationFilter" class="form-control">
+                            <option value="">All Durations</option>
+                            <option value="10" ${this.currentFilters.maxDuration === 10 ? 'selected' : ''}>≤ 10 min</option>
+                            <option value="15" ${this.currentFilters.maxDuration === 15 ? 'selected' : ''}>≤ 15 min</option>
+                            <option value="20" ${this.currentFilters.maxDuration === 20 ? 'selected' : ''}>≤ 20 min</option>
+                            <option value="30" ${this.currentFilters.maxDuration === 30 ? 'selected' : ''}>≤ 30 min</option>
+                        </select>
                     </div>
                 </div>
-
+                
+                <div class="drills-stats">
+                    <div class="stat-card">
+                        <span class="stat-value">${this.drills.length}</span>
+                        <span class="stat-label">TOTAL DRILLS</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value">${this.filteredDrills.length}</span>
+                        <span class="stat-label">FILTERED</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value">${this.sessionAreas.length}</span>
+                        <span class="stat-label">CATEGORIES</span>
+                    </div>
+                </div>
+                
                 <div class="drills-grid" id="drillsGrid">
                     ${this.renderDrills()}
                 </div>
@@ -119,46 +170,76 @@ export class DrillsPage {
             <table class="drills-table">
                 <thead>
                     <tr>
-                        <th>Date</th>
                         <th>Drill Name</th>
-                        <th>BPM</th>
-                        <th>Link</th>
+                        <th>Type</th>
                         <th>Category</th>
                         <th>Difficulty</th>
-                        <th>Duration</th>
+                        <th>Target Type</th>
+                        <th>Current</th>
+                        <th>Target</th>
+                        <th>Progress</th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    ${this.filteredDrills.map(drill => `
-                        <tr data-drill-id="${drill.id}">
-                            <td>${this.formatDate(drill.createdAt)}</td>
-                            <td class="drill-name">
-                                ${drill.isFavorite ? '<span class="favorite-star">★</span>' : ''}
-                                ${this.escapeHtml(drill.title)}
-                            </td>
-                            <td>${drill.tempo ? drill.tempo.recommended : '-'}</td>
-                            <td>
-                                ${drill.videoUrl ? `<a href="${drill.videoUrl}" target="_blank">Video</a>` : '-'}
-                            </td>
-                            <td>${drill.category}</td>
-                            <td>
-                                <span class="difficulty-badge ${drill.difficulty.toLowerCase()}">${drill.difficulty}</span>
-                            </td>
-                            <td>${drill.duration} min</td>
-                            <td class="drill-actions-cell">
-                                <button class="action-btn start-drill-btn" data-drill-id="${drill.id}" title="Start Drill">
-                                    ▶
-                                </button>
-                                <button class="action-btn favorite-btn ${drill.isFavorite ? 'active' : ''}" data-drill-id="${drill.id}" title="Toggle Favorite">
-                                    ★
-                                </button>
-                            </td>
-                        </tr>
-                    `).join('')}
+                    ${this.filteredDrills.map(drill => {
+                        const drillType = this.getDrillType(drill);
+                        const targetType = drill.tempo ? 'BPM' : '%';
+                        const currentValue = drill.currentValue || (drill.tempo ? 60 : 0);
+                        const targetValue = drill.targetValue || (drill.tempo ? drill.tempo.max : 100);
+                        
+                        return `
+                            <tr data-drill-id="${drill.id}">
+                                <td class="drill-name">
+                                    ${this.escapeHtml(drill.title)}
+                                </td>
+                                <td>
+                                    <span class="drill-type-icon" title="${drillType}">
+                                        ${this.getDrillTypeIcon(drillType)}
+                                    </span>
+                                </td>
+                                <td>${drill.category}</td>
+                                <td>
+                                    <span class="difficulty-badge ${drill.difficulty.toLowerCase()}">${drill.difficulty}</span>
+                                </td>
+                                <td>${targetType}</td>
+                                <td>${currentValue}</td>
+                                <td>${targetValue}</td>
+                                <td>
+                                    <button class="action-btn progress-btn" data-drill-id="${drill.id}" title="View Progress">
+                                        📊
+                                    </button>
+                                </td>
+                                <td class="drill-actions-cell">
+                                    <button class="action-btn start-drill-btn" data-drill-id="${drill.id}" title="Start Drill">
+                                        ▶
+                                    </button>
+                                    <button class="action-btn edit-drill-btn" data-drill-id="${drill.id}" title="Edit Drill">
+                                        ✏️
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('')}
                 </tbody>
             </table>
         `;
+    }
+
+    getDrillType(drill) {
+        // Determine drill type based on properties
+        if (drill.videoUrl || drill.youtubeUrl) return 'youtube';
+        if (drill.audioUrl || drill.audioFile) return 'audio';
+        return 'metronome'; // Default type
+    }
+
+    getDrillTypeIcon(type) {
+        switch(type) {
+            case 'youtube': return '📹';
+            case 'audio': return '🎵';
+            case 'metronome': return '🎚️';
+            default: return '🎸';
+        }
     }
 
     formatDate(dateString) {
@@ -216,17 +297,24 @@ export class DrillsPage {
 
         // Drill table actions
         document.getElementById('drillsGrid')?.addEventListener('click', async (e) => {
-            // Favorite button
-            if (e.target.closest('.favorite-btn')) {
-                const drillId = e.target.closest('.favorite-btn').dataset.drillId;
-                await this.toggleFavorite(drillId);
-                return;
-            }
-
             // Start drill button
             if (e.target.closest('.start-drill-btn')) {
                 const drillId = e.target.closest('.start-drill-btn').dataset.drillId;
                 await this.startDrill(drillId);
+                return;
+            }
+
+            // Edit drill button
+            if (e.target.closest('.edit-drill-btn')) {
+                const drillId = e.target.closest('.edit-drill-btn').dataset.drillId;
+                await this.editDrill(drillId);
+                return;
+            }
+
+            // Progress button
+            if (e.target.closest('.progress-btn')) {
+                const drillId = e.target.closest('.progress-btn').dataset.drillId;
+                await this.showProgressChart(drillId);
                 return;
             }
 
@@ -253,40 +341,155 @@ export class DrillsPage {
             grid.innerHTML = this.renderDrills();
         }
 
-        // Update stats
-        const stats = document.querySelector('.drills-stats span');
-        if (stats) {
-            stats.textContent = `${this.filteredDrills.length} drill${this.filteredDrills.length !== 1 ? 's' : ''} found`;
+        // Update filtered count
+        const filteredStat = document.querySelector('.drills-stats .stat-card:nth-child(3) .stat-value');
+        if (filteredStat) {
+            filteredStat.textContent = this.filteredDrills.length;
         }
     }
 
-    async toggleFavorite(drillId) {
-        try {
-            const drill = await drillsService.toggleFavorite(drillId);
+
+    async editDrill(drillId) {
+        const drill = await drillsService.getDrillById(drillId);
+        if (!drill) return;
+
+        // Create edit modal
+        const modal = document.createElement('div');
+        modal.className = 'modal drill-edit-modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Edit Drill</h2>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="editDrillForm">
+                        <div class="form-group">
+                            <label>Drill Name</label>
+                            <input type="text" id="drillTitle" class="form-control" value="${this.escapeHtml(drill.title)}" required>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Type</label>
+                                <select id="drillType" class="form-control">
+                                    <option value="metronome" ${this.getDrillType(drill) === 'metronome' ? 'selected' : ''}>Metronome</option>
+                                    <option value="audio" ${this.getDrillType(drill) === 'audio' ? 'selected' : ''}>Audio</option>
+                                    <option value="youtube" ${this.getDrillType(drill) === 'youtube' ? 'selected' : ''}>YouTube</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Category</label>
+                                <select id="drillCategory" class="form-control">
+                                    ${this.sessionAreas.map(area => 
+                                        `<option value="${area}" ${drill.category === area ? 'selected' : ''}>${area}</option>`
+                                    ).join('')}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Difficulty</label>
+                                <select id="drillDifficulty" class="form-control">
+                                    ${drillsService.getDifficulties().map(diff => 
+                                        `<option value="${diff}" ${drill.difficulty === diff ? 'selected' : ''}>${diff}</option>`
+                                    ).join('')}
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Target Type</label>
+                                <select id="targetType" class="form-control">
+                                    <option value="bpm" ${drill.tempo ? 'selected' : ''}>BPM</option>
+                                    <option value="percent" ${!drill.tempo ? 'selected' : ''}>Percent</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Current Value</label>
+                                <input type="number" id="currentValue" class="form-control" 
+                                       value="${drill.currentValue || (drill.tempo ? 60 : 0)}" min="0">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>Target Value</label>
+                                <input type="number" id="targetValue" class="form-control" 
+                                       value="${drill.targetValue || (drill.tempo ? drill.tempo.max : 100)}" min="0">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Instructions</label>
+                            <textarea id="drillInstructions" class="form-control" rows="4">${this.escapeHtml(drill.instructions || '')}</textarea>
+                        </div>
+                        
+                        <div class="modal-actions">
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                            <button type="button" class="btn btn-secondary cancel-btn">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        // Handle form submission
+        const form = modal.querySelector('#editDrillForm');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
             
-            // Update the drill in our local arrays
-            const updateDrill = (drillArray) => {
-                const index = drillArray.findIndex(d => d.id === drillId);
-                if (index !== -1) {
-                    drillArray[index] = drill;
-                }
+            const updates = {
+                title: document.getElementById('drillTitle').value,
+                category: document.getElementById('drillCategory').value,
+                difficulty: document.getElementById('drillDifficulty').value,
+                instructions: document.getElementById('drillInstructions').value,
+                currentValue: parseInt(document.getElementById('currentValue').value),
+                targetValue: parseInt(document.getElementById('targetValue').value)
             };
             
-            updateDrill(this.drills);
-            updateDrill(this.filteredDrills);
+            // Handle type-specific fields
+            const drillType = document.getElementById('drillType').value;
+            const targetType = document.getElementById('targetType').value;
             
-            // Update just the favorite button
-            const btn = document.querySelector(`.favorite-btn[data-drill-id="${drillId}"]`);
-            if (btn) {
-                btn.classList.toggle('active');
-                const svg = btn.querySelector('path');
-                if (svg) {
-                    svg.setAttribute('fill', drill.isFavorite ? 'currentColor' : 'none');
-                }
+            if (targetType === 'bpm') {
+                updates.tempo = {
+                    min: 40,
+                    max: updates.targetValue,
+                    recommended: updates.currentValue
+                };
+            } else {
+                updates.tempo = null;
             }
-        } catch (error) {
-            console.error('Failed to toggle favorite:', error);
-        }
+            
+            // Add type-specific URLs
+            if (drillType === 'youtube') {
+                updates.videoUrl = drill.videoUrl || '';
+            } else if (drillType === 'audio') {
+                updates.audioUrl = drill.audioUrl || '';
+            }
+            
+            try {
+                await drillsService.updateDrill(drillId, updates);
+                modal.remove();
+                await this.loadDrills();
+                this.render(this.container);
+            } catch (error) {
+                console.error('Failed to update drill:', error);
+                alert('Failed to update drill');
+            }
+        });
+
+        // Handle close
+        modal.querySelector('.modal-close').addEventListener('click', () => modal.remove());
+        modal.querySelector('.cancel-btn').addEventListener('click', () => modal.remove());
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.remove();
+        });
     }
 
     async startDrill(drillId) {
@@ -389,6 +592,175 @@ export class DrillsPage {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    }
+
+    async showProgressChart(drillId) {
+        const drill = await drillsService.getDrillById(drillId);
+        if (!drill) return;
+
+        // Get practice sessions for this drill
+        const sessions = await this.getDrillSessions(drillId);
+        
+        // Create modal with chart
+        const modal = document.createElement('div');
+        modal.className = 'modal progress-chart-modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>${this.escapeHtml(drill.title)} - Progress</h2>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="progress-chart-container">
+                        <canvas id="progressChart" width="600" height="400"></canvas>
+                    </div>
+                    <div class="progress-stats">
+                        <div class="stat">
+                            <label>Current:</label>
+                            <span>${drill.currentValue || (drill.tempo ? 60 : 0)} ${drill.tempo ? 'BPM' : '%'}</span>
+                        </div>
+                        <div class="stat">
+                            <label>Target:</label>
+                            <span>${drill.targetValue || (drill.tempo ? drill.tempo.max : 100)} ${drill.tempo ? 'BPM' : '%'}</span>
+                        </div>
+                        <div class="stat">
+                            <label>Sessions:</label>
+                            <span>${sessions.length}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        // Draw chart
+        this.drawProgressChart(sessions, drill);
+
+        // Event listeners
+        modal.querySelector('.modal-close').addEventListener('click', () => modal.remove());
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.remove();
+        });
+    }
+
+    async getDrillSessions(drillId) {
+        // Get all practice sessions that mention this drill
+        try {
+            const entries = await this.storageService.getEntries();
+            return entries.filter(entry => 
+                entry.drillId === drillId || 
+                (entry.notes && entry.notes.includes(drillId))
+            ).map(entry => ({
+                date: entry.date,
+                value: entry.tempo || entry.progress || 0
+            }));
+        } catch (error) {
+            console.error('Failed to get drill sessions:', error);
+            return [];
+        }
+    }
+
+    drawProgressChart(sessions, drill) {
+        const canvas = document.getElementById('progressChart');
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+        const padding = 40;
+
+        // Clear canvas
+        ctx.clearRect(0, 0, width, height);
+
+        // Set up chart area
+        const chartWidth = width - (padding * 2);
+        const chartHeight = height - (padding * 2);
+        const chartX = padding;
+        const chartY = padding;
+
+        // Draw axes
+        ctx.strokeStyle = '#666';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(chartX, chartY + chartHeight);
+        ctx.lineTo(chartX + chartWidth, chartY + chartHeight);
+        ctx.moveTo(chartX, chartY);
+        ctx.lineTo(chartX, chartY + chartHeight);
+        ctx.stroke();
+
+        if (sessions.length === 0) {
+            ctx.fillStyle = '#666';
+            ctx.font = '16px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('No practice sessions yet', width / 2, height / 2);
+            return;
+        }
+
+        // Calculate scale
+        const targetValue = drill.targetValue || (drill.tempo ? drill.tempo.max : 100);
+        const maxValue = Math.max(targetValue * 1.1, ...sessions.map(s => s.value));
+        const minValue = 0;
+        const valueRange = maxValue - minValue;
+
+        // Draw target line
+        ctx.strokeStyle = '#00d9ff';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([5, 5]);
+        const targetY = chartY + chartHeight - ((targetValue - minValue) / valueRange * chartHeight);
+        ctx.beginPath();
+        ctx.moveTo(chartX, targetY);
+        ctx.lineTo(chartX + chartWidth, targetY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Draw target label
+        ctx.fillStyle = '#00d9ff';
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText(`Target: ${targetValue}`, chartX - 5, targetY + 3);
+
+        // Sort sessions by date
+        sessions.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        // Draw progress line
+        ctx.strokeStyle = '#5b5fde';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+
+        sessions.forEach((session, index) => {
+            const x = chartX + (index / (sessions.length - 1)) * chartWidth;
+            const y = chartY + chartHeight - ((session.value - minValue) / valueRange * chartHeight);
+
+            if (index === 0) {
+                ctx.moveTo(x, y);
+            } else {
+                ctx.lineTo(x, y);
+            }
+
+            // Draw point
+            ctx.fillStyle = '#5b5fde';
+            ctx.beginPath();
+            ctx.arc(x, y, 4, 0, Math.PI * 2);
+            ctx.fill();
+        });
+
+        ctx.stroke();
+
+        // Draw date labels
+        ctx.fillStyle = '#666';
+        ctx.font = '10px sans-serif';
+        ctx.textAlign = 'center';
+        
+        const labelInterval = Math.ceil(sessions.length / 5);
+        sessions.forEach((session, index) => {
+            if (index % labelInterval === 0 || index === sessions.length - 1) {
+                const x = chartX + (index / (sessions.length - 1)) * chartWidth;
+                const date = new Date(session.date);
+                const label = `${date.getMonth() + 1}/${date.getDate()}`;
+                ctx.fillText(label, x, chartY + chartHeight + 20);
+            }
+        });
     }
 
     destroy() {

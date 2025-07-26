@@ -45,7 +45,7 @@ console.log(`🔢 Build Number: ${BUILD_NUMBER}`);
 // Files to update with their specific update functions
 const files = [
     {
-        path: 'src/config/version.js',
+        path: 'public/src/config/version.js',
         update: (content) => {
             // Replace the entire file content to ensure consistency
             return `// src/config/version.js - Version and build information
@@ -73,7 +73,7 @@ console.log(\`📅 Built: \${BUILD_DATE}\`);`;
         }
     },
     {
-        path: 'src/config.js',
+        path: 'public/src/config.js',
         update: (content) => {
             return content.replace(
                 /const APP_VERSION = '[^']*';/,
@@ -82,7 +82,7 @@ console.log(\`📅 Built: \${BUILD_DATE}\`);`;
         }
     },
     {
-        path: 'index.html',
+        path: 'public/index.html',
         update: (content) => {
             // Update multiple version references in index.html
             let updated = content;
@@ -115,7 +115,7 @@ console.log(\`📅 Built: \${BUILD_DATE}\`);`;
         }
     },
     {
-        path: 'manifest.json',
+        path: 'public/manifest.json',
         update: (content) => {
             const manifest = JSON.parse(content);
             manifest.version = VERSION;
@@ -123,7 +123,7 @@ console.log(\`📅 Built: \${BUILD_DATE}\`);`;
         }
     },
     {
-        path: 'package.json',
+        path: 'public/package.json',
         update: (content) => {
             const pkg = JSON.parse(content);
             pkg.version = VERSION;
@@ -131,7 +131,7 @@ console.log(\`📅 Built: \${BUILD_DATE}\`);`;
         }
     },
     {
-        path: 'service-worker.js',
+        path: 'public/service-worker.js',
         update: (content) => {
             // Update CACHE_NAME
             let updated = content.replace(
@@ -191,7 +191,7 @@ const buildInfo = {
     filesUpdated: updateCount
 };
 
-fs.writeFileSync('build-info.json', JSON.stringify(buildInfo, null, 2));
+fs.writeFileSync('public/build-info.json', JSON.stringify(buildInfo, null, 2));
 console.log('📄 Generated build-info.json');
 
 console.log(

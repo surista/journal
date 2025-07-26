@@ -881,6 +881,23 @@ textarea.form-control {
   padding: 2rem;
 }
 
+/* Admin tab layout - uses settings-page layout */
+.admin-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 1rem;
+}
+
+.admin-panel {
+  display: none;
+}
+
+.admin-panel.active {
+  display: block;
+}
+
 /* History tab layout */
 .history-layout {
   max-width: 1000px;

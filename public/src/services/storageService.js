@@ -737,13 +737,14 @@ export class StorageService {
             if (this.cloudSyncEnabled && this.firebaseSync && this.firebaseSync.isAuthenticated()) {
                 try {
                     const cloudLoops = await this.firebaseSync.getLoops('youtube', videoId);
-                    if (cloudLoops && cloudLoops.length > 0) {
+                    if (cloudLoops && Array.isArray(cloudLoops) && cloudLoops.length > 0) {
                         // Save to local cache
                         localStorage.setItem(key, JSON.stringify(cloudLoops));
                         return cloudLoops;
                     }
                 } catch (cloudError) {
                     console.warn('Failed to fetch YouTube loops from cloud:', cloudError);
+                    // Continue to local fallback
                 }
             }
 

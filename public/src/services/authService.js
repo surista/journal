@@ -59,11 +59,15 @@ export class AuthService {
                 console.log('🔑 AuthService: Cloud login result:', result);
 
                 if (result.success) {
+                    // Get existing user data to preserve isAdmin status
+                    const existingUser = this.getCurrentUser();
+                    
                     const user = {
                         id: result.user.uid,
                         email: result.user.email,
                         isCloudEnabled: true,
-                        lastLogin: new Date().toISOString()
+                        lastLogin: new Date().toISOString(),
+                        isAdmin: existingUser?.isAdmin || false // Preserve admin status
                     };
 
                     localStorage.setItem('currentUser', JSON.stringify(user));
@@ -231,12 +235,16 @@ export class AuthService {
                     unsubscribe(); // Unsubscribe after first call
 
                     if (user) {
-                        // Update local storage with Firebase user
+                        // Get existing user data to preserve isAdmin status
+                        const existingUser = this.getCurrentUser();
+                        
+                        // Update local storage with Firebase user, preserving isAdmin
                         const userData = {
                             id: user.uid,
                             email: user.email,
                             isCloudEnabled: true,
-                            lastLogin: new Date().toISOString()
+                            lastLogin: new Date().toISOString(),
+                            isAdmin: existingUser?.isAdmin || false // Preserve admin status
                         };
                         localStorage.setItem('currentUser', JSON.stringify(userData));
                         resolve(userData);

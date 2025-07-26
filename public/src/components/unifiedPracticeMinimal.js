@@ -500,6 +500,9 @@ export class UnifiedPracticeMinimal {
                         cursor: pointer;
                         font-size: 12px;
                         transition: all 0.2s;
+                        text-align: center;
+                        display: inline-block;
+                        line-height: 1.2;
                     }
 
                     .btn-reset:hover:not(:disabled) {
@@ -1823,8 +1826,8 @@ export class UnifiedPracticeMinimal {
 
         // Load and display saved loops for this video
         // Add a small delay to ensure the player is ready
-        setTimeout(() => {
-            this.updateSavedLoopsList();
+        setTimeout(async () => {
+            await this.updateSavedLoopsList();
         }, 500);
 
         // Also update when player is fully ready
@@ -1832,11 +1835,11 @@ export class UnifiedPracticeMinimal {
             const originalStateChange = this.youtubePlayer.onPlayerStateChange.bind(
                 this.youtubePlayer
             );
-            this.youtubePlayer.onPlayerStateChange = (event) => {
+            this.youtubePlayer.onPlayerStateChange = async (event) => {
                 originalStateChange(event);
                 // Update loops list when video is cued (5) or unstarted (-1)
                 if (event.data === 5 || event.data === -1) {
-                    this.updateSavedLoopsList();
+                    await this.updateSavedLoopsList();
                 }
             };
         }
@@ -2603,6 +2606,7 @@ export class UnifiedPracticeMinimal {
         const cancelBtn = modal.querySelector('#cancelSaveBtn');
 
         confirmBtn?.addEventListener('click', async () => {
+            // Collect all form data immediately
             const name = nameInput?.value.trim() || this.sessionManager.generateSessionName();
             const practiceArea = practiceAreaSelect?.value || '';
 
@@ -2623,6 +2627,13 @@ export class UnifiedPracticeMinimal {
             }
 
             const isFavorite = favoriteCheckbox?.checked || false;
+            
+            // Close modal immediately for better UX
+            modal.remove();
+            this.uiController.isModalOpen = false;
+            
+            // Show quick saving notification
+            this.uiController.showNotification('Saving session...', 'info');
 
             // Create enhanced session data
             const sessionData = {
@@ -2650,33 +2661,37 @@ export class UnifiedPracticeMinimal {
                 sessionData.timeSignature = this.metronome.state.timeSignature;
             }
 
-            // Add image data if present
+            // Add image data if present (but not thumbnail yet)
             if (this.imageManager.getCurrentImage()) {
                 sessionData.sheetMusicImage = this.imageManager.getCurrentImage();
-
-                // Generate thumbnail
-                try {
-                    const thumbnail = await this.imageManager.generateThumbnail(
-                        this.imageManager.getCurrentImage(),
-                        200, // max width
-                        200 // max height
-                    );
-                    sessionData.sheetMusicThumbnail = thumbnail;
-                } catch (error) {
-                    console.error('Failed to generate thumbnail:', error);
-                    // Continue without thumbnail
-                }
             }
 
-            // Save the practice entry with all the session data
+            // Create the practice entry
             const practiceEntry = {
                 ...sessionData,
                 id: Date.now() + Math.random()
             };
-
+            
+            // Save with image but without thumbnail first for immediate response
             await this.storageService.savePracticeEntry(practiceEntry);
+            
+            // Process thumbnail in background if image is present
+            if (practiceEntry.sheetMusicImage) {
+                // Generate thumbnail asynchronously
+                this.imageManager.generateThumbnail(
+                    practiceEntry.sheetMusicImage,
+                    200, // max width
+                    200 // max height
+                ).then(async (thumbnail) => {
+                    practiceEntry.sheetMusicThumbnail = thumbnail;
+                    // Update the entry with thumbnail
+                    await this.storageService.updatePracticeEntry(practiceEntry.id, practiceEntry);
+                }).catch(error => {
+                    console.error('Failed to generate thumbnail:', error);
+                    // Still save without thumbnail
+                });
+            }
 
-            // Don't also call sessionManager.saveSession to avoid duplicate entries
             const session = practiceEntry;
 
             if (session && this.onSaveCallback) {
@@ -2684,13 +2699,11 @@ export class UnifiedPracticeMinimal {
             }
 
             // Show success notification
-            this.uiController.showNotification('Practice session saved successfully!', 'success');
+            this.uiController.showNotification('Practice session saved!', 'success');
 
             // Reset timer after saving
             this.timer.stop();
             this.uiController.updateTimerControls(false);
-            modal.remove();
-            this.uiController.isModalOpen = false;
         });
 
         cancelBtn?.addEventListener('click', () => {
@@ -2751,15 +2764,15 @@ export class UnifiedPracticeMinimal {
         const confirmBtn = modal.querySelector('#confirmLoopSaveBtn');
         const cancelBtn = modal.querySelector('#cancelLoopSaveBtn');
 
-        confirmBtn?.addEventListener('click', () => {
+        confirmBtn?.addEventListener('click', async () => {
             const inputValue = nameInput?.value.trim();
             let name = inputValue;
             if (!name) {
                 // Generate default name if none provided
                 name = `Loop ${this.formatTime(this.youtubePlayer.loopStart)} - ${this.formatTime(this.youtubePlayer.loopEnd)}`;
             }
-            this.youtubePlayer.saveLoop(name);
-            this.updateSavedLoopsList();
+            await this.youtubePlayer.saveLoop(name);
+            await this.updateSavedLoopsList();
             this.uiController.showNotification(
                 inputValue ? 'Loop saved successfully' : 'Loop saved with default name',
                 'success'
@@ -2774,26 +2787,24 @@ export class UnifiedPracticeMinimal {
         nameInput?.focus();
     }
 
-    updateSavedLoopsList() {
-        const loops = this.youtubePlayer.loadSavedLoops();
+    async updateSavedLoopsList() {
+        const loops = await this.youtubePlayer.loadSavedLoops();
         const container = document.getElementById('youtubeSavedLoopsList');
 
         if (!container) return;
 
-        if (loops.length === 0) {
+        if (!loops || loops.length === 0) {
             container.innerHTML =
                 '<p class="empty-state" style="color: var(--text-secondary); text-align: center; font-size: 12px; margin: 0; padding: 16px;">No saved loops for this video</p>';
         } else {
             container.innerHTML = loops
                 .map(
                     (loop, index) => `
-                <div class="saved-loop-item" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-bottom: 1px solid var(--border); cursor: pointer;">
-                    <div class="youtube-loop-item" data-index="${index}" style="flex: 1;">
-                        <div style="font-weight: 500;">${escapeHtml(loop.name)}</div>
-                        <div style="font-size: 11px; color: var(--text-muted);">
-                            ${this.formatTime(loop.start)} - ${this.formatTime(loop.end)}
-                        </div>
-                    </div>
+                <div class="saved-loop-item" style="display: flex; align-items: center; padding: 8px 12px; border-bottom: 1px solid var(--border);">
+                    <span class="youtube-loop-item" data-index="${index}" style="font-weight: 500; flex: 1; cursor: pointer; text-align: left;">${escapeHtml(loop.name)}</span>
+                    <span style="font-size: 12px; color: var(--text-secondary); margin-right: 16px;">
+                        ${this.formatTime(loop.start)} - ${this.formatTime(loop.end)}
+                    </span>
                     <div class="loop-actions" style="display: flex; gap: 8px;">
                         <button class="youtube-loop-edit" data-index="${index}" 
                                 title="Edit loop name"
@@ -2826,10 +2837,10 @@ export class UnifiedPracticeMinimal {
         }
     }
 
-    deleteYouTubeLoop(index) {
+    async deleteYouTubeLoop(index) {
         if (confirm('Delete this saved loop?')) {
-            this.youtubePlayer.deleteLoop(index);
-            this.updateSavedLoopsList();
+            await this.youtubePlayer.deleteLoop(index);
+            await this.updateSavedLoopsList();
             this.uiController.showNotification('Loop deleted', 'info');
         }
     }
@@ -2847,7 +2858,7 @@ export class UnifiedPracticeMinimal {
             // Save updated loops using StorageService
             await this.storageService.saveYouTubeLoop(this.youtubePlayer.videoId, loops);
 
-            this.updateSavedLoopsList();
+            await this.updateSavedLoopsList();
             this.uiController.showNotification('Loop name updated', 'success');
         }
     }
@@ -2873,13 +2884,11 @@ export class UnifiedPracticeMinimal {
             container.innerHTML = loops
                 .map(
                     (loop, index) => `
-                <div class="saved-loop-item" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-bottom: 1px solid var(--border); cursor: pointer;">
-                    <div class="audio-loop-item" data-index="${index}" style="flex: 1;">
-                        <div style="font-weight: 500;">${escapeHtml(loop.name)}</div>
-                        <div style="font-size: 11px; color: var(--text-muted);">
-                            ${this.formatTime(loop.start)} - ${this.formatTime(loop.end)}
-                        </div>
-                    </div>
+                <div class="saved-loop-item" style="display: flex; align-items: center; padding: 8px 12px; border-bottom: 1px solid var(--border);">
+                    <span class="audio-loop-item" data-index="${index}" style="font-weight: 500; flex: 1; cursor: pointer; text-align: left;">${escapeHtml(loop.name)}</span>
+                    <span style="font-size: 12px; color: var(--text-secondary); margin-right: 16px;">
+                        ${this.formatTime(loop.start)} - ${this.formatTime(loop.end)}
+                    </span>
                     <div class="loop-actions" style="display: flex; gap: 8px;">
                         <button class="audio-loop-edit" data-index="${index}" 
                                 title="Edit loop name"
