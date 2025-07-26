@@ -18,14 +18,20 @@ export const detectEnvironment = () => {
         return 'production';
     }
 
+    // Development domains
+    if (
+        hostname === 'journal-dev-b6257.web.app' ||
+        hostname === 'journal-dev-b6257.firebaseapp.com' ||
+        hostname === 'localhost' || 
+        hostname === '127.0.0.1' || 
+        hostname === ''
+    ) {
+        return 'development';
+    }
+
     // Staging domain (if you have one)
     if (hostname.includes('staging') || hostname.includes('test')) {
         return 'staging';
-    }
-
-    // Local development
-    if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '') {
-        return 'development';
     }
 
     // Default to production for safety
